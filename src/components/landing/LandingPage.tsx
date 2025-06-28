@@ -107,8 +107,19 @@ export function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="max-w-5xl mx-auto"
+            className="relative max-w-5xl mx-auto"
           >
+            {/* Subtle Constellation Background */}
+            <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-60">
+                <motion.div 
+                    className="absolute w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_50%)]"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+                />
+                <div className="absolute w-[500px] h-[500px] rounded-full border border-white/10 animate-pulse-slower"></div>
+                <div className="absolute w-[800px] h-[800px] rounded-full border border-white/10 animate-pulse-slow"></div>
+            </div>
+
             <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-white leading-tight">
               Find Your
               <span className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-400 bg-clip-text text-transparent font-light">
