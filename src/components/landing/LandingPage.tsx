@@ -109,15 +109,23 @@ export function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative max-w-5xl mx-auto"
           >
-            {/* Subtle Constellation Background */}
-            <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-60">
-                <motion.div 
-                    className="absolute w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_50%)]"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-                />
-                <div className="absolute w-[500px] h-[500px] rounded-full border border-white/10 animate-pulse-slower"></div>
-                <div className="absolute w-[800px] h-[800px] rounded-full border border-white/10 animate-pulse-slow"></div>
+            {/* Living Heart Nebula Background */}
+            <div className="absolute inset-0 -z-10 flex items-center justify-center">
+              <motion.div
+                className="absolute w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-[68%] -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12)_0%,transparent_60%)] rounded-full blur-2xl"
+                animate={{ scale: [1, 1.05, 1], opacity: [0.6, 0.8, 0.6] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                className="absolute w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-[32%] -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12)_0%,transparent_60%)] rounded-full blur-2xl"
+                animate={{ scale: [1, 1.05, 1], opacity: [0.6, 0.8, 0.6] }}
+                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+              />
+              <motion.div
+                className="absolute w-[650px] h-[650px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(138,43,226,0.1)_0%,transparent_70%)] rounded-full blur-3xl"
+                animate={{ scale: [1, 1.03, 1], opacity: [0.4, 0.6, 0.4] }}
+                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+              />
             </div>
 
             <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-white leading-tight">

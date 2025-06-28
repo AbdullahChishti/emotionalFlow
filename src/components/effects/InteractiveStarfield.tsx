@@ -33,66 +33,80 @@ export const InteractiveStarfield = () => {
         events: {
           onHover: {
             enable: true,
-            mode: 'repulse',
+            mode: ["grab", "bubble"],
           },
           resize: {
             enable: true,
           },
         },
         modes: {
-          repulse: {
-            distance: 80,
-            duration: 0.4,
+          grab: {
+            distance: 250,
+            links: {
+              color: "#ffffff",
+              opacity: 0.3,
+            },
+          },
+          bubble: {
+            distance: 200,
+            size: 2,
+            duration: 1,
+            opacity: 1,
           },
         },
       },
       particles: {
         color: {
-          value: ['#FFFFFF', '#FFD700', '#E67E22', '#D35400'],
+          value: ['#ffffff', '#f2f2f2', '#e6e6e6', '#d9d9d9'],
         },
         links: {
-          enable: false,
+          color: "random",
+          distance: 150,
+          enable: true,
+          opacity: 0.1,
+          width: 1,
         },
         move: {
-          direction: 'none',
+          direction: "none",
           enable: true,
           outModes: {
-            default: 'out',
+            default: "out",
           },
-          random: false,
-          speed: 0.2,
+          random: true,
+          speed: 0.1,
           straight: false,
           attract: {
             enable: true,
             rotate: {
-              x: 300,
-              y: 600,
+              x: 1200,
+              y: 1200,
             },
           },
         },
         number: {
           density: {
             enable: true,
+            value_area: 800,
           },
-          value: 1200,
+          value: 300,
         },
         opacity: {
-          value: { min: 0.3, max: 0.8 },
+          value: { min: 0.1, max: 0.5 },
           animation: {
             enable: true,
-            speed: 0.5,
-            sync: false
-          }
+            speed: 0.2,
+            sync: false,
+          },
         },
         shape: {
           type: 'circle',
         },
         size: {
-          value: { min: 1, max: 2.5 },
+          value: { min: 0.5, max: 1.5 },
            animation: {
             enable: true,
-            speed: 2,
-            sync: false
+            speed: 1,
+            sync: false,
           }
         },
       },
