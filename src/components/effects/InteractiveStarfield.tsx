@@ -41,14 +41,14 @@ export const InteractiveStarfield = () => {
         },
         modes: {
           repulse: {
-            distance: 60,
+            distance: 80,
             duration: 0.4,
           },
         },
       },
       particles: {
         color: {
-          value: '#ffffff',
+          value: ['#FFFFFF', '#FFD700', '#E67E22', '#D35400'],
         },
         links: {
           enable: false,
@@ -57,35 +57,43 @@ export const InteractiveStarfield = () => {
           direction: 'none',
           enable: true,
           outModes: {
-            default: 'bounce',
+            default: 'out',
           },
           random: false,
-          speed: 0.1,
+          speed: 0.2,
           straight: false,
           attract: {
             enable: true,
             rotate: {
-              x: 600,
-              y: 1200,
+              x: 300,
+              y: 600,
             },
           },
         },
         number: {
           density: {
             enable: true,
-            width: 1920,
-            height: 1080,
           },
-          value: 400,
+          value: 1200,
         },
         opacity: {
-          value: { min: 0.1, max: 0.5 },
+          value: { min: 0.3, max: 0.8 },
+          animation: {
+            enable: true,
+            speed: 0.5,
+            sync: false
+          }
         },
         shape: {
           type: 'circle',
         },
         size: {
-          value: { min: 0.5, max: 1.5 },
+          value: { min: 1, max: 2.5 },
+           animation: {
+            enable: true,
+            speed: 2,
+            sync: false
+          }
         },
       },
       detectRetina: true,
@@ -99,7 +107,7 @@ export const InteractiveStarfield = () => {
         id="tsparticles-interactive"
         particlesLoaded={particlesLoaded}
         options={options}
-        className="fixed inset-0 z-0"
+        className="fixed inset-0 z-10"
       />
     );
   }
