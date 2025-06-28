@@ -1,0 +1,247 @@
+/* EmotionEconomy Theme System - CSS Custom Properties */
+
+/* Default theme: Therapeutic Calm */
+:root, [data-theme="therapeutic"] {
+  /* Main colors */
+  --bg-light: #fffdf7;
+  --primary-surface: #fff;
+  --accent: #c9b8db;
+  --text-primary: #4a4a4a;
+  --secondary-accent: #a8c09a;
+  
+  /* Background variations */
+  --bg-primary: #fffdf7;
+  --bg-secondary: #f8f7f5;
+  --bg-tertiary: #f0f4f7;
+  
+  /* Surface variations */
+  --surface-primary: #fff;
+  --surface-secondary: #f8f7f5;
+  --surface-elevated: #fff;
+  --surface-shadow: #e8eef2;
+  
+  /* Text variations */
+  --text-secondary: #6b6b6b;
+  --text-tertiary: #8a8a8a;
+  --text-inverse: #f5f2ed;
+  
+  /* Button states */
+  --button-primary: #c9b8db;
+  --button-primary-hover: #b8a5d1;
+  --button-secondary: #a8c09a;
+  --button-secondary-hover: #98b088;
+  --button-disabled: #d4dce6;
+  
+  /* Border colors */
+  --border-primary: #b8c5e0;
+  --border-secondary: #e8eef2;
+  --border-light: #f0f4f7;
+  
+  /* Status colors */
+  --status-success: #b8e4d0;
+  --status-warning: #f5e6d3;
+  --status-error: #f5c6cb;
+  --status-info: #d1ecf1;
+  
+  /* Mood colors */
+  --mood-happy: #f0e68c;
+  --mood-calm: #b0e0e6;
+  --mood-anxious: #dda0dd;
+  --mood-sad: #d3d3d3;
+  --mood-angry: #f0a0a0;
+  --mood-excited: #ffb6c1;
+}
+
+/* Purple Sparkle theme */
+[data-theme="purpleSparkle"] {
+  /* Main colors */
+  --bg-light: #f8f4ff;
+  --primary-surface: #fff;
+  --accent: #800080;
+  --text-primary: #333;
+  --secondary-accent: #ccccff;
+  
+  /* Background variations */
+  --bg-primary: #f8f4ff;
+  --bg-secondary: #f0e6ff;
+  --bg-tertiary: #e8d4ff;
+  
+  /* Surface variations */
+  --surface-primary: #fff;
+  --surface-secondary: #f8f4ff;
+  --surface-elevated: #fff;
+  --surface-shadow: #e0d0ff;
+  
+  /* Text variations */
+  --text-secondary: #555;
+  --text-tertiary: #777;
+  --text-inverse: #fff;
+  
+  /* Button states */
+  --button-primary: #800080;
+  --button-primary-hover: #6a006a;
+  --button-secondary: #ccccff;
+  --button-secondary-hover: #b8b8ff;
+  --button-disabled: #d4d4d4;
+  
+  /* Border colors */
+  --border-primary: #ccccff;
+  --border-secondary: #e0d0ff;
+  --border-light: #f0e6ff;
+  
+  /* Status colors */
+  --status-success: #90ee90;
+  --status-warning: #ffd700;
+  --status-error: #ff6b6b;
+  --status-info: #87ceeb;
+  
+  /* Mood colors */
+  --mood-happy: #ffd700;
+  --mood-calm: #e6e6fa;
+  --mood-anxious: #dda0dd;
+  --mood-sad: #d8bfd8;
+  --mood-angry: #ff69b4;
+  --mood-excited: #ff1493;
+}
+
+/* Utility classes for easy styling */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-surface { background-color: var(--surface-primary); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+
+.border-primary { border-color: var(--border-primary); }
+.border-secondary { border-color: var(--border-secondary); }
+
+.btn-primary {
+  background-color: var(--button-primary);
+  color: var(--text-inverse);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--button-secondary);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: var(--button-secondary-hover);
+}
+
+.card {
+  background-color: var(--surface-primary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modal {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(16px);
+}
+
+.input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(201, 184, 219, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.status-success {
+  color: var(--status-success);
+  background-color: rgba(184, 228, 208, 0.1);
+}
+.status-warning {
+  color: var(--status-warning);
+  background-color: rgba(245, 230, 211, 0.1);
+}
+.status-error {
+  color: var(--status-error);
+  background-color: rgba(245, 198, 203, 0.1);
+}
+.status-info {
+  color: var(--status-info);
+  background-color: rgba(209, 236, 241, 0.1);
+}
+
+/* Mood card breathing animation */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.mood-card-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+.mood-card-breathe:hover {
+  animation-play-state: paused;
+}
+
+/* Floating animation for ambient elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-1deg); }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}

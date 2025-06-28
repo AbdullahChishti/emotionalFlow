@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Therapeutic theme colors (default) */
+  --color-background: #fffdf7;
+  --color-foreground: #4a4a4a;
+  --color-card: #ffffff;
+  --color-card-foreground: #4a4a4a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #4a4a4a;
+  --color-primary: #c9b8db;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #a8c09a;
+  --color-secondary-foreground: #4a4a4a;
+  --color-muted: #f8f7f5;
+  --color-muted-foreground: #6b6b6b;
+  --color-accent: #c9b8db;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #b8c5e0;
+  --color-input: #b8c5e0;
+  --color-ring: #c9b8db;
+  --radius: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Dark theme overrides for Purple Sparkle */
+.dark {
+  --color-background: #f8f4ff;
+  --color-foreground: #333333;
+  --color-card: #ffffff;
+  --color-card-foreground: #333333;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #333333;
+  --color-primary: #800080;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #ccccff;
+  --color-secondary-foreground: #333333;
+  --color-muted: #f0e6ff;
+  --color-muted-foreground: #555555;
+  --color-accent: #800080;
+  --color-accent-foreground: #ffffff;
+  --color-border: #ccccff;
+  --color-input: #ccccff;
+  --color-ring: #800080;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: theme(colors.border);
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: theme(colors.background);
+    color: theme(colors.foreground);
+  }
 }

@@ -1,103 +1,91 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { useAuth } from '@/components/providers/AuthProvider'
+import { LandingPage } from '@/components/landing/LandingPage'
+import { ParticlesTest } from '@/components/test/ParticlesTest'
+import { Dashboard } from '@/components/dashboard/Dashboard'
+import { ScreenRouter } from '@/components/ScreenRouter'
+import { OnboardingFlow } from '@/components/auth/OnboardingFlow'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { ScreenDemo } from '@/components/screens/ScreenDemo'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { user, loading, needsOnboarding } = useAuth()
+  const [showScreenDemo, setShowScreenDemo] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
+  }
+
+  if (showScreenDemo) {
+    return (
+      <div>
+        <ScreenRouter />
+        <button
+          onClick={() => setShowScreenDemo(false)}
+          className="fixed top-4 left-4 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors z-50"
+        >
+          ← Back to Landing
+        </button>
+      </div>
+    )
+  }
+
+  if (user) {
+    // Show onboarding for new users
+    if (needsOnboarding || showOnboarding) {
+      return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
+    }
+
+    return <Dashboard />
+  }
+
+  return (
+    <>
+      <LandingPage />
+
+      {/* Demo Controls */}
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-3">
+        {/* Complete Flow Demo */}
+        <div className="group relative">
+          <button
+            onClick={() => setShowScreenDemo(true)}
+            className="px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-primary-foreground rounded-full shadow-lg hover:shadow-xl shadow-violet-300/50 hover:from-violet-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-105 flex items-center gap-2 font-medium"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M19 10a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            View Complete Flow
+          </button>
+          <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            See the entire user journey from start to finish
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+
+        {/* Individual Screens Demo */}
+        <div className="group relative">
+          <button
+            onClick={() => setShowScreenDemo(true)}
+            className="px-4 py-2 bg-white/80 backdrop-blur-sm border border-white/30 text-foreground rounded-full shadow-lg hover:bg-white/90 transition-all duration-300 hover:scale-105 flex items-center gap-2 text-sm"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Screen Navigator
+          </button>
+          <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-black/80 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Navigate between individual screens manually
+          </div>
+        </div>
+      </div>
+
+      {showScreenDemo && <ScreenDemo onClose={() => setShowScreenDemo(false)} />}
+    </>
+  )
 }
