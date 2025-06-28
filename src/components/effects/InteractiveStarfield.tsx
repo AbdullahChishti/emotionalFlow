@@ -25,7 +25,7 @@ export const InteractiveStarfield = () => {
       fullScreen: { enable: false },
       background: {
         color: {
-          value: '#0d1117',
+          value: 'transparent',
         },
       },
       fpsLimit: 120,

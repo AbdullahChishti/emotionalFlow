@@ -44,7 +44,7 @@ export function LandingPage() {
   const [hoveredFeature, setHoveredFeature] = useState(features[0].id)
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0d1117]">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_center,_from-[#21262d]_to-[#0d1117])]">
       <AmbientStarfield />
       <InteractiveStarfield />
       {/* Main Landing Content */}
