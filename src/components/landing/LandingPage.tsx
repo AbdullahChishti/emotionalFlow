@@ -46,50 +46,119 @@ export function LandingPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      {/* Ethereal artistic background elements */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 via-blue-50/20 to-purple-50/30" />
+      {/* Therapeutic constellation background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/40 via-blue-50/30 to-indigo-50/40" />
 
-      {/* Floating artistic elements */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-indigo-200/40 to-purple-200/40 rounded-full blur-2xl animate-pulse" />
-      <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-blue-200/30 to-cyan-200/30 rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s' }} />
-      <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-violet-200/30 to-pink-200/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-gradient-to-br from-emerald-200/40 to-teal-200/40 rounded-full blur-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }} />
+      {/* Constellation stars - therapeutic and calming */}
+      <div className="absolute inset-0">
+        {/* Major constellation points */}
+        <div className="absolute top-20 left-1/4 w-2 h-2 bg-indigo-300 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-32 left-1/3 w-1.5 h-1.5 bg-blue-300 rounded-full animate-pulse opacity-50" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-28 left-1/2 w-2.5 h-2.5 bg-purple-300 rounded-full animate-pulse opacity-70" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-40 left-2/3 w-1 h-1 bg-cyan-300 rounded-full animate-pulse opacity-40" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-24 right-1/4 w-2 h-2 bg-violet-300 rounded-full animate-pulse opacity-60" style={{ animationDelay: '0.5s' }} />
 
-      {/* Flowing lines */}
+        {/* Mid-section constellation */}
+        <div className="absolute top-1/2 left-20 w-1.5 h-1.5 bg-teal-300 rounded-full animate-pulse opacity-50" style={{ animationDelay: '4s' }} />
+        <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-indigo-400 rounded-full animate-pulse opacity-65" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-blue-400 rounded-full animate-pulse opacity-45" style={{ animationDelay: '2.5s' }} />
+        <div className="absolute top-1/2 right-20 w-2.5 h-2.5 bg-purple-400 rounded-full animate-pulse opacity-70" style={{ animationDelay: '3.5s' }} />
+
+        {/* Lower constellation */}
+        <div className="absolute bottom-32 left-1/5 w-2 h-2 bg-emerald-300 rounded-full animate-pulse opacity-55" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-40 left-1/2 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse opacity-60" style={{ animationDelay: '4.5s' }} />
+        <div className="absolute bottom-28 right-1/4 w-1 h-1 bg-indigo-300 rounded-full animate-pulse opacity-40" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-36 right-1/3 w-2.5 h-2.5 bg-violet-400 rounded-full animate-pulse opacity-75" style={{ animationDelay: '3s' }} />
+      </div>
+
+      {/* Connecting constellation lines */}
+      <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 1200 800" fill="none">
+        {/* Therapeutic constellation patterns */}
+        <path d="M300,160 L400,192 L600,176 L800,200 L1000,152" stroke="#6366f1" strokeWidth="0.5" fill="none" className="animate-pulse" style={{ animationDuration: '4s' }} />
+        <path d="M80,400 L400,400 L800,400 L1120,400" stroke="#8b5cf6" strokeWidth="0.5" fill="none" className="animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+        <path d="M240,640 L480,600 L720,640 L960,600" stroke="#06b6d4" strokeWidth="0.5" fill="none" className="animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+
+        {/* Gentle connecting lines between stars */}
+        <path d="M300,160 L400,400" stroke="#e0e7ff" strokeWidth="0.3" fill="none" opacity="0.6" />
+        <path d="M600,176 L800,400" stroke="#e0e7ff" strokeWidth="0.3" fill="none" opacity="0.6" />
+        <path d="M480,600 L600,176" stroke="#e0e7ff" strokeWidth="0.3" fill="none" opacity="0.4" />
+        <path d="M240,640 L300,160" stroke="#e0e7ff" strokeWidth="0.3" fill="none" opacity="0.5" />
+      </svg>
+
+      {/* Soft nebula-like clouds for therapy ambiance */}
+      <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-br from-indigo-100/30 to-purple-100/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '8s' }} />
+      <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-br from-blue-100/25 to-cyan-100/15 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '10s', animationDelay: '2s' }} />
+      <div className="absolute top-1/3 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-violet-100/20 to-pink-100/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '12s', animationDelay: '4s' }} />
+
+      {/* Therapeutic breathing pattern visualization */}
       <div className="absolute top-0 left-0 w-full h-full">
-        <svg className="w-full h-full opacity-20" viewBox="0 0 1200 800" fill="none">
-          <path d="M0,400 Q300,200 600,400 T1200,400" stroke="url(#gradient1)" strokeWidth="2" fill="none" className="animate-pulse" />
-          <path d="M0,300 Q400,100 800,300 T1200,300" stroke="url(#gradient2)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '1s' }} />
-          <path d="M0,500 Q200,300 400,500 T800,500 T1200,500" stroke="url(#gradient3)" strokeWidth="1" fill="none" className="animate-pulse" style={{ animationDelay: '2s' }} />
+        <svg className="w-full h-full opacity-15" viewBox="0 0 1200 800" fill="none">
+          {/* Gentle breathing waves for relaxation */}
+          <path d="M0,400 Q300,350 600,400 Q900,450 1200,400" stroke="url(#breathingGradient1)" strokeWidth="1" fill="none" className="animate-pulse" style={{ animationDuration: '6s' }} />
+          <path d="M0,420 Q300,370 600,420 Q900,470 1200,420" stroke="url(#breathingGradient2)" strokeWidth="0.8" fill="none" className="animate-pulse" style={{ animationDuration: '7s', animationDelay: '1s' }} />
+          <path d="M0,380 Q300,330 600,380 Q900,430 1200,380" stroke="url(#breathingGradient3)" strokeWidth="0.6" fill="none" className="animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }} />
+
+          {/* Meditation circles - expanding and contracting */}
+          <circle cx="600" cy="400" r="50" stroke="url(#meditationGradient)" strokeWidth="0.5" fill="none" className="animate-pulse" style={{ animationDuration: '4s' }} />
+          <circle cx="600" cy="400" r="80" stroke="url(#meditationGradient)" strokeWidth="0.3" fill="none" className="animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+          <circle cx="600" cy="400" r="120" stroke="url(#meditationGradient)" strokeWidth="0.2" fill="none" className="animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+
           <defs>
-            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+            <linearGradient id="breathingGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
               <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.6" />
-              <stop offset="100%" stopColor="#ec4899" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.4" />
             </linearGradient>
-            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+            <linearGradient id="breathingGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.5" />
+            </linearGradient>
+            <linearGradient id="breathingGradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
               <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.4" />
             </linearGradient>
-            <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.3" />
-            </linearGradient>
+            <radialGradient id="meditationGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.2" />
+            </radialGradient>
           </defs>
         </svg>
       </div>
 
-      {/* Subtle particle effect */}
-      <div className="absolute inset-0 opacity-30">
-        {[...Array(20)].map((_, i) => (
+      {/* Therapeutic constellation stars - scattered mindfully */}
+      <div className="absolute inset-0 opacity-40">
+        {/* Carefully positioned stars for therapeutic constellations */}
+        {[
+          { left: '15%', top: '25%', size: 'w-1 h-1', color: 'bg-indigo-300', delay: '0s' },
+          { left: '25%', top: '35%', size: 'w-1.5 h-1.5', color: 'bg-blue-300', delay: '1s' },
+          { left: '35%', top: '20%', size: 'w-1 h-1', color: 'bg-purple-300', delay: '2s' },
+          { left: '45%', top: '30%', size: 'w-2 h-2', color: 'bg-violet-300', delay: '3s' },
+          { left: '55%', top: '25%', size: 'w-1 h-1', color: 'bg-cyan-300', delay: '4s' },
+          { left: '65%', top: '35%', size: 'w-1.5 h-1.5', color: 'bg-teal-300', delay: '0.5s' },
+          { left: '75%', top: '20%', size: 'w-1 h-1', color: 'bg-indigo-400', delay: '1.5s' },
+          { left: '85%', top: '30%', size: 'w-2 h-2', color: 'bg-blue-400', delay: '2.5s' },
+
+          { left: '20%', top: '55%', size: 'w-1.5 h-1.5', color: 'bg-emerald-300', delay: '3.5s' },
+          { left: '30%', top: '65%', size: 'w-1 h-1', color: 'bg-cyan-400', delay: '4.5s' },
+          { left: '40%', top: '50%', size: 'w-2 h-2', color: 'bg-purple-400', delay: '0.2s' },
+          { left: '60%', top: '60%', size: 'w-1 h-1', color: 'bg-violet-400', delay: '1.2s' },
+          { left: '70%', top: '55%', size: 'w-1.5 h-1.5', color: 'bg-indigo-300', delay: '2.2s' },
+          { left: '80%', top: '65%', size: 'w-1 h-1', color: 'bg-blue-300', delay: '3.2s' },
+
+          { left: '10%', top: '75%', size: 'w-2 h-2', color: 'bg-teal-400', delay: '4.2s' },
+          { left: '30%', top: '85%', size: 'w-1 h-1', color: 'bg-cyan-300', delay: '0.8s' },
+          { left: '50%', top: '80%', size: 'w-1.5 h-1.5', color: 'bg-purple-300', delay: '1.8s' },
+          { left: '70%', top: '85%', size: 'w-1 h-1', color: 'bg-violet-300', delay: '2.8s' },
+          { left: '90%', top: '75%', size: 'w-2 h-2', color: 'bg-indigo-400', delay: '3.8s' },
+        ].map((star, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-primary rounded-full animate-ping"
+            className={`absolute ${star.size} ${star.color} rounded-full animate-pulse`}
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
+              left: star.left,
+              top: star.top,
+              animationDelay: star.delay,
+              animationDuration: '3s'
             }}
           />
         ))}
@@ -175,8 +244,20 @@ export function LandingPage() {
             </h1>
             
             <p className="text-2xl md:text-3xl text-muted-foreground mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-              A gentle space where empathy flows naturally. Give support when you can, receive it when you need it.
+              A gentle space where empathy flows naturally.
+              <span className="block mt-2 text-indigo-600/80">Give support when you can, receive it when you need it.</span>
             </p>
+
+            {/* Therapeutic breathing guide */}
+            <div className="mb-12 flex flex-col items-center">
+              <div className="relative w-20 h-20 mb-4">
+                <div className="absolute inset-0 rounded-full border-2 border-indigo-200 animate-pulse" style={{ animationDuration: '4s' }} />
+                <div className="absolute inset-2 rounded-full border border-purple-200 animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+                <div className="absolute inset-4 rounded-full border border-blue-200 animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+                <div className="absolute inset-6 w-8 h-8 rounded-full bg-gradient-to-br from-indigo-300 to-purple-300 animate-pulse" style={{ animationDuration: '4s' }} />
+              </div>
+              <p className="text-sm text-indigo-500/70 font-light">Breathe • Connect • Heal</p>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
