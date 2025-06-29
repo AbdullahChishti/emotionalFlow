@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Users, Shield, ArrowRight, Sparkles } from 'lucide-react'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { ScrollAnimate } from '@/components/effects/ScrollAnimate'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
 const features = [
   {
@@ -55,24 +56,25 @@ export function LandingPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-400 rounded-full flex items-center justify-center shadow-md shadow-violet-200/50">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-md shadow-primary/30">
               <Heart className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-light text-white">EmotionEconomy</span>
+            <span className="text-2xl font-light text-foreground">EmotionEconomy</span>
           </motion.div>
           
-          <motion.div 
+          <motion.div
             className="flex items-center space-x-3"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
+            <ThemeToggle />
             <button
               onClick={() => {
                 setAuthMode('signin')
                 setShowAuthModal(true)
               }}
-              className="px-6 py-2 text-gray-300 hover:text-white transition-colors font-medium"
+              className="px-6 py-2 text-muted-foreground hover:text-foreground transition-colors font-medium"
             >
               Sign In
             </button>
@@ -115,14 +117,14 @@ export function LandingPage() {
               />
             </div>
 
-            <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-white leading-tight">
+            <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-foreground leading-tight">
               Find Your
-              <span className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-400 bg-clip-text text-transparent font-light">
+              <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-light">
                 Emotional Balance
               </span>
             </h1>
             
-            <p className="text-2xl md:text-3xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
+            <p className="text-2xl md:text-3xl text-muted-foreground mb-12 max-w-3xl mx-auto font-light leading-relaxed">
               A gentle space where empathy flows naturally. Give support when you can, receive it when you need it.
             </p>
 
@@ -160,7 +162,7 @@ export function LandingPage() {
                 hidden: { opacity: 0, y: 40 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
               }}
-              className="text-5xl font-light mb-6 text-white"
+              className="text-5xl font-light mb-6 text-foreground"
             >
               An Ecosystem of Care
             </motion.h2>
@@ -169,7 +171,7 @@ export function LandingPage() {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
               }}
-              className="text-xl text-gray-400 font-light max-w-2xl mx-auto"
+              className="text-xl text-muted-foreground font-light max-w-2xl mx-auto"
             >
               Every feature is a star in a constellation, crafted with deep understanding for your wellbeing.
             </motion.p>
@@ -223,9 +225,9 @@ export function LandingPage() {
                     <div className="bg-gradient-to-br from-gray-900/80 to-gray-900/70 backdrop-blur-lg border border-white/10 rounded-2xl p-6">
                       <div className="flex items-center gap-4 mb-3">
                         <selectedFeature.icon className="w-8 h-8 text-primary flex-shrink-0"/>
-                        <h3 className="text-xl font-light text-white">{selectedFeature.title}</h3>
+                        <h3 className="text-xl font-light text-foreground">{selectedFeature.title}</h3>
                       </div>
-                      <p className="text-md text-gray-300 font-light leading-relaxed">
+                      <p className="text-md text-muted-foreground font-light leading-relaxed">
                         {selectedFeature.description}
                       </p>
                     </div>
@@ -261,7 +263,7 @@ export function LandingPage() {
                 hidden: { opacity: 0, y: 50, scale: 0.8 },
                 visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
               }}
-              className="text-5xl md:text-6xl font-light mb-6 text-white leading-tight"
+              className="text-5xl md:text-6xl font-light mb-6 text-foreground leading-tight"
             >
               Ready to Rediscover Balance?
             </motion.h2>
@@ -270,7 +272,7 @@ export function LandingPage() {
                 hidden: { opacity: 0, y: 30 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 } }
               }}
-              className="text-xl text-gray-300 mb-12 font-light"
+              className="text-xl text-muted-foreground mb-12 font-light"
             >
               Step into a universe designed for genuine connection. Your community is waiting among the stars.
             </motion.p>
@@ -286,7 +288,7 @@ export function LandingPage() {
                   setAuthMode('signup')
                   setShowAuthModal(true)
                 }}
-                className="group relative inline-flex items-center justify-center h-16 w-16 sm:h-auto sm:w-auto sm:px-10 sm:py-4 bg-transparent border-2 border-primary/50 text-white rounded-full transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_0] hover:shadow-primary/50"
+                className="group relative inline-flex items-center justify-center h-16 w-16 sm:h-auto sm:w-auto sm:px-10 sm:py-4 bg-transparent border-2 border-primary/50 text-foreground rounded-full transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_0] hover:shadow-primary/50"
               >
                 <span className="hidden sm:inline">Join the Cosmos</span>
                 <ArrowRight className="w-6 h-6 sm:hidden" />
@@ -298,7 +300,7 @@ export function LandingPage() {
 
         {/* Minimal Footer */}
         <footer className="container mx-auto px-6 py-8 text-center">
-          <p className="text-gray-500 font-light">
+          <p className="text-muted-foreground font-light">
             &copy; 2024 EmotionEconomy. Nurturing emotional connections with care.
           </p>
         </footer>
@@ -356,7 +358,7 @@ const FeatureNode = ({ feature, onClick, selectedId }: { feature: any, onClick: 
         transition={{ duration: 0.5 }}
       />
       <motion.span 
-        className="mt-4 text-center text-sm font-light text-gray-300"
+        className="mt-4 text-center text-sm font-light text-muted-foreground"
         animate={{ opacity: isSelected ? 1 : 0.7 }}
       >
         {feature.title}

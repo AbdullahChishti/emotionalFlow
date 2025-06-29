@@ -24,25 +24,25 @@
   --radius: 0.5rem;
 }
 
-/* Dark theme overrides for Purple Sparkle */
+/* Dark theme overrides */
 .dark {
-  --color-background: #f8f4ff;
-  --color-foreground: #333333;
-  --color-card: #ffffff;
-  --color-card-foreground: #333333;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #333333;
-  --color-primary: #800080;
+  --color-background: #0f0f23;
+  --color-foreground: #e4e4e7;
+  --color-card: #1a1a2e;
+  --color-card-foreground: #e4e4e7;
+  --color-popover: #1a1a2e;
+  --color-popover-foreground: #e4e4e7;
+  --color-primary: #a855f7;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #ccccff;
-  --color-secondary-foreground: #333333;
-  --color-muted: #f0e6ff;
-  --color-muted-foreground: #555555;
-  --color-accent: #800080;
+  --color-secondary: #3f3f46;
+  --color-secondary-foreground: #e4e4e7;
+  --color-muted: #27272a;
+  --color-muted-foreground: #a1a1aa;
+  --color-accent: #a855f7;
   --color-accent-foreground: #ffffff;
-  --color-border: #ccccff;
-  --color-input: #ccccff;
-  --color-ring: #800080;
+  --color-border: #3f3f46;
+  --color-input: #3f3f46;
+  --color-ring: #a855f7;
 }
 
 @layer base {

@@ -111,6 +111,61 @@ export const themes = {
         excited: '#FF1493'
       }
     }
+  },
+  darkPurple: {
+    name: 'Dark Purple',
+    description: 'Dark theme with purple accents',
+    colors: {
+      backgroundLight: '#0f0f23',
+      primarySurface: '#1a1a2e',
+      accent: '#a855f7',
+      textPrimary: '#e4e4e7',
+      secondaryAccent: '#3f3f46',
+
+      background: {
+        primary: '#0f0f23',
+        secondary: '#27272a',
+        tertiary: '#3f3f46'
+      },
+      surface: {
+        primary: '#1a1a2e',
+        secondary: '#27272a',
+        elevated: '#3f3f46',
+        shadow: '#000000'
+      },
+      text: {
+        primary: '#e4e4e7',
+        secondary: '#a1a1aa',
+        tertiary: '#71717a',
+        inverse: '#18181b'
+      },
+      button: {
+        primary: '#a855f7',
+        primaryHover: '#9333ea',
+        secondary: '#3f3f46',
+        secondaryHover: '#52525b',
+        disabled: '#27272a'
+      },
+      border: {
+        primary: '#3f3f46',
+        secondary: '#27272a',
+        light: '#52525b'
+      },
+      status: {
+        success: '#22c55e',
+        warning: '#eab308',
+        error: '#ef4444',
+        info: '#3b82f6'
+      },
+      mood: {
+        happy: '#fbbf24',
+        calm: '#8b5cf6',
+        anxious: '#a855f7',
+        sad: '#6b7280',
+        angry: '#ef4444',
+        excited: '#ec4899'
+      }
+    }
   }
 } as const
 

@@ -21,7 +21,7 @@ export function useColorTheme() {
 }
 
 export function ColorThemeProvider({ children }: { children: React.ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>('therapeutic')
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>('darkPurple')
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -37,8 +37,8 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
       // Set data-theme attribute on document element
       document.documentElement.setAttribute('data-theme', currentTheme)
 
-      // Toggle dark class for purple theme to use different Tailwind variables
-      if (currentTheme === 'purpleSparkle') {
+      // Toggle dark class for themes that require it
+      if (currentTheme === 'darkPurple') {
         document.documentElement.classList.add('dark')
       } else {
         document.documentElement.classList.remove('dark')
@@ -73,6 +73,26 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
       root.style.setProperty('--accent', themeColors.accent)
       root.style.setProperty('--text-primary', themeColors.textPrimary)
       root.style.setProperty('--secondary-accent', themeColors.secondaryAccent)
+
+      // Set all theme CSS variables for themes.css compatibility
+      root.style.setProperty('--bg-primary', themeColors.background.primary)
+      root.style.setProperty('--bg-secondary', themeColors.background.secondary)
+      root.style.setProperty('--bg-tertiary', themeColors.background.tertiary)
+      root.style.setProperty('--surface-primary', themeColors.surface.primary)
+      root.style.setProperty('--surface-secondary', themeColors.surface.secondary)
+      root.style.setProperty('--surface-elevated', themeColors.surface.elevated)
+      root.style.setProperty('--surface-shadow', themeColors.surface.shadow)
+      root.style.setProperty('--text-secondary', themeColors.text.secondary)
+      root.style.setProperty('--text-tertiary', themeColors.text.tertiary)
+      root.style.setProperty('--text-inverse', themeColors.text.inverse)
+      root.style.setProperty('--button-primary', themeColors.button.primary)
+      root.style.setProperty('--button-primary-hover', themeColors.button.primaryHover)
+      root.style.setProperty('--button-secondary', themeColors.button.secondary)
+      root.style.setProperty('--button-secondary-hover', themeColors.button.secondaryHover)
+      root.style.setProperty('--button-disabled', themeColors.button.disabled)
+      root.style.setProperty('--border-primary', themeColors.border.primary)
+      root.style.setProperty('--border-secondary', themeColors.border.secondary)
+      root.style.setProperty('--border-light', themeColors.border.light)
       
       // Add theme class to body for additional styling
       document.body.className = document.body.className.replace(/theme-\w+/g, '')
@@ -86,7 +106,7 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
   }
 
   const toggleTheme = () => {
-    const newTheme = currentTheme === 'therapeutic' ? 'purpleSparkle' : 'therapeutic'
+    const newTheme = currentTheme === 'darkPurple' ? 'purpleSparkle' : 'darkPurple'
     setTheme(newTheme)
   }
 

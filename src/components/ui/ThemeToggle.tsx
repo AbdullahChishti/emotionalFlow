@@ -10,9 +10,9 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors border border-primary/20"
-      title={`Switch to ${currentTheme === 'therapeutic' ? 'Purple Sparkle' : 'Therapeutic'} theme`}
+      title={`Switch to ${currentTheme === 'darkPurple' ? 'Purple Sparkle' : 'Dark Purple'} theme`}
     >
-      {currentTheme === 'therapeutic' ? (
+      {currentTheme === 'darkPurple' ? (
         <Sparkles className="w-4 h-4 text-primary" />
       ) : (
         <Palette className="w-4 h-4 text-primary" />

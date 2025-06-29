@@ -104,6 +104,58 @@
   --mood-excited: #ff1493;
 }
 
+/* Dark Purple theme */
+[data-theme="darkPurple"] {
+  /* Main colors */
+  --bg-light: #0f0f23;
+  --primary-surface: #1a1a2e;
+  --accent: #a855f7;
+  --text-primary: #e4e4e7;
+  --secondary-accent: #3f3f46;
+
+  /* Background variations */
+  --bg-primary: #0f0f23;
+  --bg-secondary: #27272a;
+  --bg-tertiary: #3f3f46;
+
+  /* Surface variations */
+  --surface-primary: #1a1a2e;
+  --surface-secondary: #27272a;
+  --surface-elevated: #3f3f46;
+  --surface-shadow: #000000;
+
+  /* Text variations */
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-inverse: #18181b;
+
+  /* Button states */
+  --button-primary: #a855f7;
+  --button-primary-hover: #9333ea;
+  --button-secondary: #3f3f46;
+  --button-secondary-hover: #52525b;
+  --button-disabled: #27272a;
+
+  /* Border colors */
+  --border-primary: #3f3f46;
+  --border-secondary: #27272a;
+  --border-light: #52525b;
+
+  /* Status colors */
+  --status-success: #22c55e;
+  --status-warning: #eab308;
+  --status-error: #ef4444;
+  --status-info: #3b82f6;
+
+  /* Mood colors */
+  --mood-happy: #fbbf24;
+  --mood-calm: #8b5cf6;
+  --mood-anxious: #a855f7;
+  --mood-sad: #6b7280;
+  --mood-angry: #ef4444;
+  --mood-excited: #ec4899;
+}
+
 /* Utility classes for easy styling */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }
@@ -145,6 +197,21 @@
   background-color: var(--button-secondary-hover);
 }
 
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-color: var(--surface-secondary);
+  border-color: var(--border-secondary);
+}
+
 .card {
   background-color: var(--surface-primary);
   border: 1px solid var(--border-secondary);
@@ -154,16 +221,16 @@
 }
 
 .modal {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-secondary);
   border-radius: 1.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(16px);
 }
 
 .input {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
   color: var(--text-primary);
@@ -173,9 +240,9 @@
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(201, 184, 219, 0.15);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  background: var(--surface-primary);
 }
 
 .input::placeholder {

@@ -99,11 +99,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-4">
       {/* Background gradients matching landing page */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-transparent to-green-50/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-violet-200/40 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-200/40 to-transparent rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-secondary/5" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-accent/10 to-transparent rounded-full blur-3xl" />
 
       <div className="w-full max-w-2xl relative">
         {/* Progress Bar */}
@@ -118,7 +118,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           </div>
           <div className="w-full bg-white/30 backdrop-blur-sm rounded-full h-3">
             <motion.div
-              className="bg-gradient-to-r from-primary to-blue-500 h-3 rounded-full shadow-sm"
+              className="bg-gradient-to-r from-primary to-accent h-3 rounded-full shadow-sm"
               initial={{ width: '25%' }}
               animate={{ width: `${(currentStep / 4) * 100}%` }}
               transition={{ duration: 0.3 }}
@@ -136,7 +136,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               exit={{ opacity: 0, x: -20 }}
               className="text-center"
             >
-              <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+              <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
                 <Heart className="w-12 h-12 text-primary" />
               </div>
               <h1 className="text-4xl font-light text-foreground mb-4">

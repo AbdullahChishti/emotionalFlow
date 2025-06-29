@@ -77,7 +77,7 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background text-foreground">
       {renderScreen()}
       
       {/* Debug Navigation (remove in production) */}
