@@ -7,13 +7,8 @@ import { AuthModal } from '@/components/auth/AuthModal'
 import dynamic from 'next/dynamic'
 import { ScrollAnimate } from '@/components/effects/ScrollAnimate'
 
-const InteractiveStarfield = dynamic(
-  () => import('@/components/effects/InteractiveStarfield').then(mod => mod.InteractiveStarfield),
-  { ssr: false }
-)
-
-const AmbientStarfield = dynamic(
-  () => import('@/components/effects/AmbientStarfield').then(mod => mod.AmbientStarfield),
+const RadiantAura = dynamic(
+  () => import('@/components/effects/RadiantAura').then(mod => mod.RadiantAura),
   { ssr: false }
 )
 
@@ -56,8 +51,7 @@ export function LandingPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_center,_from-[#21262d]_to-[#0d1117])]">
-      <AmbientStarfield />
-      <InteractiveStarfield />
+      <RadiantAura />
       {/* Main Landing Content */}
       <div className="relative z-20">
         {/* Minimal Header */}
