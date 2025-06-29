@@ -38,14 +38,14 @@ export const AmbientStarfield = () => {
           value: { min: 1, max: 2 },
         },
         move: {
-          direction: 'none',
+          direction: 'top',
           enable: true,
           outModes: {
             default: 'out',
           },
-          random: true,
-          speed: 0.05,
-          straight: false,
+          random: false,
+          speed: 0.1,
+          straight: true,
         },
       },
       interactivity: {
