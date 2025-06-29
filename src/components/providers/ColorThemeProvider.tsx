@@ -21,7 +21,7 @@ export function useColorTheme() {
 }
 
 export function ColorThemeProvider({ children }: { children: React.ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<ThemeName>('darkPurple')
+  const [currentTheme, setCurrentTheme] = useState<ThemeName>('etherealBreeze')
 
   // Load theme from localStorage on mount
   useEffect(() => {
@@ -106,7 +106,7 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
   }
 
   const toggleTheme = () => {
-    const newTheme = currentTheme === 'darkPurple' ? 'purpleSparkle' : 'darkPurple'
+    const newTheme = currentTheme === 'etherealBreeze' ? 'darkPurple' : 'etherealBreeze'
     setTheme(newTheme)
   }
 

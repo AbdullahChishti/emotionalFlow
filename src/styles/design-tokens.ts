@@ -166,6 +166,61 @@ export const themes = {
         excited: '#ec4899'
       }
     }
+  },
+  etherealBreeze: {
+    name: 'Ethereal Breeze',
+    description: 'A beautiful, artistic theme with soft flowing colors that feels like a gentle breeze',
+    colors: {
+      backgroundLight: '#faf9f7',
+      primarySurface: '#ffffff',
+      accent: '#6366f1',
+      textPrimary: '#1f2937',
+      secondaryAccent: '#e0e7ff',
+
+      background: {
+        primary: '#faf9f7',
+        secondary: '#f8fafc',
+        tertiary: '#f1f5f9'
+      },
+      surface: {
+        primary: '#ffffff',
+        secondary: '#f8fafc',
+        elevated: '#ffffff',
+        shadow: '#64748b'
+      },
+      text: {
+        primary: '#1f2937',
+        secondary: '#64748b',
+        tertiary: '#94a3b8',
+        inverse: '#ffffff'
+      },
+      button: {
+        primary: '#6366f1',
+        primaryHover: '#4f46e5',
+        secondary: '#e2e8f0',
+        secondaryHover: '#cbd5e1',
+        disabled: '#f1f5f9'
+      },
+      border: {
+        primary: '#e2e8f0',
+        secondary: '#f1f5f9',
+        light: '#f8fafc'
+      },
+      status: {
+        success: '#10b981',
+        warning: '#f59e0b',
+        error: '#ef4444',
+        info: '#3b82f6'
+      },
+      mood: {
+        happy: '#fbbf24',
+        calm: '#8b5cf6',
+        anxious: '#6366f1',
+        sad: '#64748b',
+        angry: '#ef4444',
+        excited: '#ec4899'
+      }
+    }
   }
 } as const
 

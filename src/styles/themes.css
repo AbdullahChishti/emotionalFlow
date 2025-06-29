@@ -156,6 +156,58 @@
   --mood-excited: #ec4899;
 }
 
+/* Ethereal Breeze theme - Beautiful, artistic, and breezy */
+[data-theme="etherealBreeze"] {
+  /* Main colors */
+  --bg-light: #faf9f7;
+  --primary-surface: #ffffff;
+  --accent: #6366f1;
+  --text-primary: #1f2937;
+  --secondary-accent: #e0e7ff;
+
+  /* Background variations */
+  --bg-primary: #faf9f7;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+
+  /* Surface variations */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8fafc;
+  --surface-elevated: #ffffff;
+  --surface-shadow: #64748b;
+
+  /* Text variations */
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Button states */
+  --button-primary: #6366f1;
+  --button-primary-hover: #4f46e5;
+  --button-secondary: #e2e8f0;
+  --button-secondary-hover: #cbd5e1;
+  --button-disabled: #f1f5f9;
+
+  /* Border colors */
+  --border-primary: #e2e8f0;
+  --border-secondary: #f1f5f9;
+  --border-light: #f8fafc;
+
+  /* Status colors */
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+  --status-info: #3b82f6;
+
+  /* Mood colors */
+  --mood-happy: #fbbf24;
+  --mood-calm: #8b5cf6;
+  --mood-anxious: #6366f1;
+  --mood-sad: #64748b;
+  --mood-angry: #ef4444;
+  --mood-excited: #ec4899;
+}
+
 /* Utility classes for easy styling */
 .bg-primary { background-color: var(--bg-primary); }
 .bg-secondary { background-color: var(--bg-secondary); }

@@ -45,7 +45,56 @@ export function LandingPage() {
   const selectedFeature = selectedFeatureId ? features.find(f => f.id === selectedFeatureId) : null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      {/* Ethereal artistic background elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/30 via-blue-50/20 to-purple-50/30" />
+
+      {/* Floating artistic elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-indigo-200/40 to-purple-200/40 rounded-full blur-2xl animate-pulse" />
+      <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-blue-200/30 to-cyan-200/30 rounded-full blur-xl animate-bounce" style={{ animationDuration: '3s' }} />
+      <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-br from-violet-200/30 to-pink-200/30 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-gradient-to-br from-emerald-200/40 to-teal-200/40 rounded-full blur-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '2s' }} />
+
+      {/* Flowing lines */}
+      <div className="absolute top-0 left-0 w-full h-full">
+        <svg className="w-full h-full opacity-20" viewBox="0 0 1200 800" fill="none">
+          <path d="M0,400 Q300,200 600,400 T1200,400" stroke="url(#gradient1)" strokeWidth="2" fill="none" className="animate-pulse" />
+          <path d="M0,300 Q400,100 800,300 T1200,300" stroke="url(#gradient2)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '1s' }} />
+          <path d="M0,500 Q200,300 400,500 T800,500 T1200,500" stroke="url(#gradient3)" strokeWidth="1" fill="none" className="animate-pulse" style={{ animationDelay: '2s' }} />
+          <defs>
+            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+              <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ec4899" stopOpacity="0.3" />
+            </linearGradient>
+            <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.4" />
+            </linearGradient>
+            <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      {/* Subtle particle effect */}
+      <div className="absolute inset-0 opacity-30">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-primary rounded-full animate-ping"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
       {/* Main Landing Content */}
       <div className="relative z-20">
         {/* Minimal Header */}
@@ -83,7 +132,7 @@ export function LandingPage() {
                 setAuthMode('signup')
                 setShowAuthModal(true)
               }}
-              className="px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-primary-foreground rounded-full hover:from-violet-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl shadow-violet-300/40 font-medium"
+              className="px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-full hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-purple-500/30 font-medium transform hover:scale-105 hover:-translate-y-1"
             >
               Begin Journey
             </button>
@@ -118,8 +167,9 @@ export function LandingPage() {
             </div>
 
             <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-foreground leading-tight">
-              Find Your
-              <span className="block bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent font-light">
+              <span className="inline-block animate-fade-in-up">Find</span>{' '}
+              <span className="inline-block animate-fade-in-up" style={{ animationDelay: '0.2s' }}>Your</span>
+              <span className="block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent font-light animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                 Emotional Balance
               </span>
             </h1>

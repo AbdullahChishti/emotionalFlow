@@ -10,12 +10,12 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors border border-primary/20"
-      title={`Switch to ${currentTheme === 'darkPurple' ? 'Purple Sparkle' : 'Dark Purple'} theme`}
+      title={`Switch to ${currentTheme === 'etherealBreeze' ? 'Dark Purple' : 'Ethereal Breeze'} theme`}
     >
-      {currentTheme === 'darkPurple' ? (
-        <Sparkles className="w-4 h-4 text-primary" />
-      ) : (
+      {currentTheme === 'etherealBreeze' ? (
         <Palette className="w-4 h-4 text-primary" />
+      ) : (
+        <Sparkles className="w-4 h-4 text-primary" />
       )}
       <span className="text-sm font-medium text-primary">
         {themeData.name}
