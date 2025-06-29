@@ -4,13 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Users, Shield, ArrowRight, Sparkles } from 'lucide-react'
 import { AuthModal } from '@/components/auth/AuthModal'
-import dynamic from 'next/dynamic'
 import { ScrollAnimate } from '@/components/effects/ScrollAnimate'
-
-const RadiantAura = dynamic(
-  () => import('@/components/effects/RadiantAura').then(mod => mod.RadiantAura),
-  { ssr: false }
-)
 
 const features = [
   {
@@ -50,8 +44,7 @@ export function LandingPage() {
   const selectedFeature = selectedFeatureId ? features.find(f => f.id === selectedFeatureId) : null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_center,_from-[#21262d]_to-[#0d1117])]">
-      <RadiantAura />
+    <div className="relative min-h-screen overflow-hidden">
       {/* Main Landing Content */}
       <div className="relative z-20">
         {/* Minimal Header */}

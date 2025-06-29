@@ -4,6 +4,7 @@ import "./globals.css";
 import "@/styles/themes.css";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ColorThemeProvider } from "@/components/providers/ColorThemeProvider";
+import { ClientRadiantAura } from "@/components/effects/ClientRadiantAura";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,10 +30,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-[#0d1117] text-gray-300`}>
+      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground relative`}>
+        <ClientRadiantAura />
         <ColorThemeProvider>
           <AuthProvider>
-            {children}
+            <main className="relative z-10">{children}</main>
           </AuthProvider>
         </ColorThemeProvider>
       </body>
