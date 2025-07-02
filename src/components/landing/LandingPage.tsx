@@ -1,323 +1,204 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Heart, Users, Shield, ArrowRight, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { DoodleHeart, DoodleLightbulb, DoodleSparkle, DoodleArrow } from '@/components/landing/DoodleIcons'
+import { ScribbleIllustration } from '@/components/landing/ScribbleIllustration'
 import { AuthModal } from '@/components/auth/AuthModal'
-import dynamic from 'next/dynamic'
-import { ScrollAnimate } from '@/components/effects/ScrollAnimate'
-
-const InteractiveStarfield = dynamic(
-  () => import('@/components/effects/InteractiveStarfield').then(mod => mod.InteractiveStarfield),
-  { ssr: false }
-)
-
-const AmbientStarfield = dynamic(
-  () => import('@/components/effects/AmbientStarfield').then(mod => mod.AmbientStarfield),
-  { ssr: false }
-)
+import SketchbookBackground from '@/components/ui/SketchbookBackground'
 
 const features = [
   {
-    icon: Heart,
-    title: "Empathy Exchange",
-    description: "Give and receive support in a beautifully balanced ecosystem. Your emotional wellness is nurtured through genuine, reciprocal connections.",
-    id: "empathy",
+    icon: DoodleHeart,
+    title: 'Find Your Space',
+    description: 'A safe, judgment-free zone to share your thoughts and feelings.',
+    color: 'text-rose-500',
   },
   {
-    icon: Users,
-    title: "Mindful Matching",
-    description: "Our algorithm connects you with individuals who truly understand your current emotional state, ensuring every interaction is meaningful and supportive.",
-    id: "matching",
+    icon: DoodleLightbulb,
+    title: 'Gain Perspective',
+    description: 'Connect with others who have walked similar paths and find new insights.',
+    color: 'text-amber-500',
   },
   {
-    icon: Shield,
-    title: "Gentle Protection",
-    description: "Advanced safeguards and burnout prevention tools honor your emotional energy, creating a sustainable and safe space for healing.",
-    id: "protection",
-  }
-];
+    icon: DoodleSparkle,
+    title: 'Feel Understood',
+    description: "It's not about fixing, it's about feeling heard and validated.",
+    color: 'text-teal-500',
+  },
+]
+
+
 
 export function LandingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
-  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(features[0].id)
-
-  useEffect(() => {
-    if (selectedFeatureId) {
-      const timer = setTimeout(() => {
-        setSelectedFeatureId(null);
-      }, 5000); // Auto-hide after 5 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [selectedFeatureId]);
-
-  const selectedFeature = selectedFeatureId ? features.find(f => f.id === selectedFeatureId) : null;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_center,_from-[#21262d]_to-[#0d1117])]">
-      <AmbientStarfield />
-      <InteractiveStarfield />
-      {/* Main Landing Content */}
-      <div className="relative z-20">
-        {/* Minimal Header */}
-        <header className="container mx-auto px-6 py-8 flex justify-between items-center">
-          <motion.div 
-            className="flex items-center space-x-3"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-400 rounded-full flex items-center justify-center shadow-md shadow-violet-200/50">
-              <Heart className="w-6 h-6 text-primary-foreground" />
+    <div className="relative min-h-screen overflow-x-hidden bg-white font-sans text-slate-700">
+      <SketchbookBackground />
+
+      <div className="relative z-10">
+        <header className="absolute top-0 left-0 right-0 z-50">
+          <div className="container mx-auto px-6 py-5 flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                <DoodleHeart className="w-8 h-8 text-indigo-500" />
+              </motion.div>
+              <span className="text-2xl font-medium text-slate-600">heard</span>
             </div>
-            <span className="text-2xl font-light text-white">EmotionEconomy</span>
-          </motion.div>
-          
-          <motion.div 
-            className="flex items-center space-x-3"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <button
-              onClick={() => {
-                setAuthMode('signin')
-                setShowAuthModal(true)
-              }}
-              className="px-6 py-2 text-gray-300 hover:text-white transition-colors font-medium"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                setAuthMode('signup')
-                setShowAuthModal(true)
-              }}
-              className="px-6 py-3 bg-gradient-to-r from-primary to-blue-500 text-primary-foreground rounded-full hover:from-violet-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl shadow-violet-300/40 font-medium"
-            >
-              Begin Journey
-            </button>
-          </motion.div>
+            
+            <div className="flex items-center space-x-2">
+              <motion.button
+                onClick={() => { setAuthMode('signin'); setShowAuthModal(true); }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-6 py-2 text-slate-600 font-medium rounded-lg transition-colors hover:bg-slate-100"
+              >
+                Sign In
+              </motion.button>
+              <motion.button
+                onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+                whileHover={{ scale: 1.03, y: -2, filter: 'brightness(1.1)' }}
+                whileTap={{ scale: 0.97 }}
+                title="Create a new account"
+                className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all"
+              >
+                Start Your Story
+              </motion.button>
+            </div>
+          </div>
         </header>
 
-        {/* Hero Section */}
-        <section className="container mx-auto px-6 py-28 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative max-w-5xl mx-auto"
-          >
-            {/* Living Heart Nebula Background */}
-            <div className="absolute inset-0 -z-10 flex items-center justify-center">
-              <motion.div
-                className="absolute w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-[68%] -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12)_0%,transparent_60%)] rounded-full blur-2xl"
-                animate={{ scale: [1, 1.05, 1], opacity: [0.6, 0.8, 0.6] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              <motion.div
-                className="absolute w-[500px] h-[500px] top-1/2 left-1/2 -translate-x-[32%] -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.12)_0%,transparent_60%)] rounded-full blur-2xl"
-                animate={{ scale: [1, 1.05, 1], opacity: [0.6, 0.8, 0.6] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-              />
-              <motion.div
-                className="absolute w-[650px] h-[650px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] bg-[radial-gradient(circle_at_center,rgba(138,43,226,0.1)_0%,transparent_70%)] rounded-full blur-3xl"
-                animate={{ scale: [1, 1.03, 1], opacity: [0.4, 0.6, 0.4] }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            </div>
-
-            <h1 className="text-6xl md:text-8xl font-extralight mb-8 text-white leading-tight">
-              Find Your
-              <span className="block bg-gradient-to-r from-primary via-blue-500 to-cyan-400 bg-clip-text text-transparent font-light">
-                Emotional Balance
-              </span>
-            </h1>
-            
-            <p className="text-2xl md:text-3xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-              A gentle space where empathy flows naturally. Give support when you can, receive it when you need it.
-            </p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <button
-                onClick={() => {
-                  setAuthMode('signup')
-                  setShowAuthModal(true)
-                }}
-                className="group px-8 py-4 bg-gradient-to-r from-primary to-blue-500 text-primary-foreground rounded-full hover:from-violet-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl shadow-violet-300/50 flex items-center gap-3 font-medium text-lg"
+        <main className="pt-32 pb-20">
+          <section className="text-center px-6">
+            <div className="max-w-4xl mx-auto">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="text-5xl md:text-7xl font-light tracking-tight text-slate-800 mb-6 leading-tight"
               >
-                Start Your Healing
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* Features Section - Stellar Navigation */}
-        <section className="container mx-auto px-6 py-32">
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ staggerChildren: 0.2 }}
-            className="text-center mb-20"
-          >
-            <motion.h2 
-              variants={{
-                hidden: { opacity: 0, y: 40 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-              }}
-              className="text-5xl font-light mb-6 text-white"
-            >
-              An Ecosystem of Care
-            </motion.h2>
-            <motion.p 
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-              }}
-              className="text-xl text-gray-400 font-light max-w-2xl mx-auto"
-            >
-              Every feature is a star in a constellation, crafted with deep understanding for your wellbeing.
-            </motion.p>
-          </motion.div>
-          
-          <div className="relative max-w-5xl mx-auto min-h-[500px] flex items-center justify-center">
-            {/* Connecting Lines */}
-            <svg className="absolute w-full h-full" style={{ zIndex: 0 }}>
-              <defs>
-                <linearGradient id="line-glow-gradient">
-                  <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
-                  <stop offset="50%" stopColor="rgba(255, 255, 255, 0.9)" />
-                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
-                </linearGradient>
-              </defs>
-
-              {/* Base track lines */}
-              <line x1="15%" y1="20%" x2="50%" y2="80%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <line x1="50%" y1="80%" x2="85%" y2="20%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-              <line x1="85%" y1="20%" x2="15%" y2="20%" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-
-              {/* Animated light pulses */}
-              <motion.line x1="15%" y1="20%" x2="50%" y2="80%" stroke="url(#line-glow-gradient)" strokeWidth="2" strokeDasharray="80 350" animate={{ strokeDashoffset: [0, -430] }} transition={{ duration: 5, repeat: Infinity, ease: 'linear' }} />
-              <motion.line x1="50%" y1="80%" x2="85%" y2="20%" stroke="url(#line-glow-gradient)" strokeWidth="2" strokeDasharray="80 350" animate={{ strokeDashoffset: [0, -430] }} transition={{ duration: 5, repeat: Infinity, ease: 'linear', delay: 1.7 }} />
-              <motion.line x1="85%" y1="20%" x2="15%" y2="20%" stroke="url(#line-glow-gradient)" strokeWidth="2" strokeDasharray="80 350" animate={{ strokeDashoffset: [0, -430] }} transition={{ duration: 5, repeat: Infinity, ease: 'linear', delay: 3.4 }} />
-            </svg>
-
-            {/* Feature Nodes */}
-            <div className="absolute top-[15%] left-[10%]">
-              <FeatureNode feature={features[0]} onClick={setSelectedFeatureId} selectedId={selectedFeatureId} />
-            </div>
-            <div className="absolute top-[75%] left-1/2 -translate-x-1/2">
-              <FeatureNode feature={features[1]} onClick={setSelectedFeatureId} selectedId={selectedFeatureId} />
-            </div>
-            <div className="absolute top-[15%] right-[10%]">
-              <FeatureNode feature={features[2]} onClick={setSelectedFeatureId} selectedId={selectedFeatureId} />
-            </div>
-            
-            {/* Contextual Description Display */}
-            <div className="absolute w-full h-full pointer-events-none">
-              <AnimatePresence>
-                {selectedFeature && (
-                  <motion.div
-                    key={selectedFeature.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1, transition: { duration: 0.4, ease: "backOut" } }}
-                    exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2, ease: "easeIn" } }}
-                    className="absolute w-80"
-                    style={getDescriptionPosition(selectedFeature.id)}
+                A Digital Sketchbook for Your <br />
+                <span className="relative inline-block">
+                  <span className="text-violet-600">Emotions</span>
+                  <svg
+                    className="absolute -bottom-3 left-0 w-full h-4 text-violet-300"
+                    viewBox="0 0 120 12"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
                   >
-                    <div className="bg-gradient-to-br from-gray-900/80 to-gray-900/70 backdrop-blur-lg border border-white/10 rounded-2xl p-6">
-                      <div className="flex items-center gap-4 mb-3">
-                        <selectedFeature.icon className="w-8 h-8 text-primary flex-shrink-0"/>
-                        <h3 className="text-xl font-light text-white">{selectedFeature.title}</h3>
-                      </div>
-                      <p className="text-md text-gray-300 font-light leading-relaxed">
-                        {selectedFeature.description}
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section - Celestial Vortex */}
-        <section className="relative container mx-auto px-6 py-40 overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div 
-              className="absolute w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(138,43,226,0.15)_0%,transparent_50%)]"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            />
-            <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(76,147,255,0.1)_0%,transparent_45%)]"></div>
-             <div className="absolute w-[1000px] h-[1000px] border border-blue-500/10 rounded-full animate-pulse-slow"></div>
-             <div className="absolute w-[700px] h-[700px] border border-primary/10 rounded-full animate-pulse-slower"></div>
-          </div>
-          
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ staggerChildren: 0.3 }}
-            className="relative z-10 max-w-2xl mx-auto text-center"
-          >
-            <motion.h2 
-              variants={{
-                hidden: { opacity: 0, y: 50, scale: 0.8 },
-                visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
-              }}
-              className="text-5xl md:text-6xl font-light mb-6 text-white leading-tight"
-            >
-              Ready to Rediscover Balance?
-            </motion.h2>
-            <motion.p 
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 } }
-              }}
-              className="text-xl text-gray-300 mb-12 font-light"
-            >
-              Step into a universe designed for genuine connection. Your community is waiting among the stars.
-            </motion.p>
-
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, scale: 0.5 },
-                visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 100, damping: 10, delay: 0.4 } }
-              }}
-            >
-              <button
-                onClick={() => {
-                  setAuthMode('signup')
-                  setShowAuthModal(true)
-                }}
-                className="group relative inline-flex items-center justify-center h-16 w-16 sm:h-auto sm:w-auto sm:px-10 sm:py-4 bg-transparent border-2 border-primary/50 text-white rounded-full transition-all duration-300 hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_0] hover:shadow-primary/50"
+                    <path
+                      d="M0.89386,8.82331 C31.1385,2.14342 61.3831,2.14342 91.6278,8.82331 C101.87,11.1633 112.112,11.1633 122.355,8.82331"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+                className="text-lg md:text-xl text-slate-500 mb-12 max-w-2xl mx-auto"
               >
-                <span className="hidden sm:inline">Join the Cosmos</span>
-                <ArrowRight className="w-6 h-6 sm:hidden" />
-                <ArrowRight className="w-5 h-5 hidden sm:inline sm:ml-2 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            </motion.div>
-          </motion.div>
-        </section>
+                This is your space. To feel. To speak. <span className="text-violet-600">To be heard.</span>
+              </motion.p>
 
-        {/* Minimal Footer */}
-        <footer className="container mx-auto px-6 py-8 text-center">
-          <p className="text-gray-500 font-light">
-            &copy; 2024 EmotionEconomy. Nurturing emotional connections with care.
+              <motion.button
+                onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+                whileHover={{ scale: 1.03, y: -2, filter: 'brightness(1.1)' }}
+                whileTap={{ scale: 0.97 }}
+                title="Create a new account" 
+                className="group px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <span className="flex items-center">
+                  Start Your Story
+                  <DoodleArrow className="w-5 h-5 ml-3 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </motion.button>
+            </div>
+          </section>
+
+          <section className="container mx-auto px-6 mt-32">
+            <div className="grid md:grid-cols-3 gap-x-8 gap-y-16 text-center">
+              {features.map((feature, index) => (
+                <motion.div 
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.5 }}
+                  transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
+                >
+                  <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-indigo-100/70">
+                    <feature.icon className={`w-12 h-12 ${feature.color}`} />
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">{feature.title}</h3>
+                  <p className="text-slate-500 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          <section className="py-24 mt-24 bg-indigo-50/70">
+            <div className="container mx-auto px-6 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <ScribbleIllustration className="mx-auto h-48 w-auto text-slate-400" />
+                <h2 className="mt-8 text-4xl font-light text-slate-800 leading-tight max-w-2xl mx-auto">Your thoughts have a home here.</h2>
+                <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">This is a space to untangle the knots, to map out your feelings, and to see your own mind in a new light. No judgment, no expectations.</p>
+              </motion.div>
+            </div>
+          </section>
+
+          <section className="container mx-auto px-6 my-24 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
+              <h2 className="text-4xl font-light text-slate-800 mb-4">Ready to find your people?</h2>
+              <p className="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
+                Create your anonymous sketchbook and connect with a community that understands.
+              </p>
+              <motion.button
+                onClick={() => { setAuthMode('signup'); setShowAuthModal(true); }}
+                whileHover={{ scale: 1.03, y: -2, filter: 'brightness(1.1)' }}
+                whileTap={{ scale: 0.97 }}
+                title="Create a new account" 
+                className="group relative inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+              >
+                <span className="flex items-center">
+                  Find Your People
+                  <DoodleArrow className="w-5 h-5 ml-3 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+              </motion.button>
+            </motion.div>
+          </section>
+        </main>
+
+        <footer className="py-8 text-center border-t border-slate-200">
+          <p className="text-slate-400">
+            &copy; 2024 heard. A sketchbook for the heart.
           </p>
         </footer>
       </div>
 
-      {/* Auth Modal */}
       {showAuthModal && (
         <AuthModal
           mode={authMode}
@@ -328,52 +209,3 @@ export function LandingPage() {
     </div>
   )
 }
-
-const getDescriptionPosition = (id: string) => {
-  switch (id) {
-    case 'empathy':
-      return { top: '15%', left: 'calc(10% + 140px)', transform: 'translateY(-20%)' };
-    case 'matching':
-      return { top: 'calc(75% - 200px)', left: '50%', transform: 'translateX(-50%)' };
-    case 'protection':
-      return { top: '15%', right: 'calc(10% + 140px)', transform: 'translateY(-20%)' };
-    default:
-      return {};
-  }
-};
-
-const FeatureNode = ({ feature, onClick, selectedId }: { feature: any, onClick: (id: string) => void, selectedId: string | null }) => {
-  const isSelected = feature.id === selectedId;
-  return (
-    <motion.button
-      onClick={() => onClick(feature.id)}
-      className="relative w-28 h-28 flex flex-col items-center justify-center z-10"
-      whileHover={{ scale: 1.1 }}
-      transition={{ type: "spring", stiffness: 300 }}
-    >
-      <motion.div 
-        className="absolute inset-0 rounded-full border-2"
-        animate={{ 
-          borderColor: isSelected ? 'rgba(138, 43, 226, 0.8)' : 'rgba(255, 255, 255, 0.1)',
-          boxShadow: isSelected ? '0 0 20px rgba(138, 43, 226, 0.5)' : 'none',
-          opacity: isSelected ? 1 : 0.5,
-        }}
-        transition={{ duration: 0.5 }}
-      />
-      <motion.div 
-        className="w-2 h-2 rounded-full"
-        animate={{ 
-          backgroundColor: isSelected ? 'rgba(138, 43, 226, 1)' : 'rgba(255, 255, 255, 0.5)',
-          scale: isSelected ? 1.5 : 1
-        }}
-        transition={{ duration: 0.5 }}
-      />
-      <motion.span 
-        className="mt-4 text-center text-sm font-light text-gray-300"
-        animate={{ opacity: isSelected ? 1 : 0.7 }}
-      >
-        {feature.title}
-      </motion.span>
-    </motion.button>
-  )
-};

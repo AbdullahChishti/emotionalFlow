@@ -140,7 +140,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
                 <Heart className="w-12 h-12 text-primary" />
               </div>
               <h1 className="text-4xl font-light text-foreground mb-4">
-                Welcome to EmotionEconomy!
+                Welcome to heard!
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-lg mx-auto font-light">
                 Let's set up your profile so we can provide you with the best emotional support experience.

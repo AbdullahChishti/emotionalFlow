@@ -1,8 +1,8 @@
-# EmotionEconomy - Therapeutic Color Palette
+# heard - Therapeutic Color Palette
 
 ## 🎨 Color Transformation
 
-We've successfully updated EmotionEconomy to use a therapeutic color palette specifically designed for mental health applications.
+We've successfully updated heard to use a therapeutic color palette specifically designed for mental health applications.
 
 ### Before vs After
 
@@ -122,7 +122,7 @@ export const colors = {
 
 ## 🎯 Summary
 
-EmotionEconomy now uses a scientifically-informed therapeutic color palette that:
+heard now uses a scientifically-informed therapeutic color palette that:
 - **Reduces stress and anxiety**
 - **Promotes emotional safety**
 - **Encourages healthy engagement**

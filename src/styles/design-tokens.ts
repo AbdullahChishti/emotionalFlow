@@ -1,4 +1,4 @@
-// EmotionEconomy Design System - Multi-Theme Color Management
+// heard Design System - Multi-Theme Color Management
 
 // Complete theme definitions
 export const themes = {

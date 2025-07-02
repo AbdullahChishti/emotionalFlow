@@ -1,4 +1,4 @@
-# Supabase Setup Guide for EmotionEconomy
+# Supabase Setup Guide for heard
 
 ## 1. Create Supabase Project
 
@@ -32,7 +32,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 
 # App Configuration
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_APP_NAME=EmotionEconomy
+NEXT_PUBLIC_APP_NAME=heard
 
 # Feature Flags
 NEXT_PUBLIC_ENABLE_VOICE_CHAT=false
@@ -230,4 +230,4 @@ Once Supabase is set up:
 4. Implement real-time matching
 5. Add session management
 
-Your EmotionEconomy app should now have a fully functional authentication system! 🎉
+Your heard app should now have a fully functional authentication system! 🎉

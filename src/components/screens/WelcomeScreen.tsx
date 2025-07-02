@@ -95,7 +95,7 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
           className="absolute bottom-8 left-0 right-0"
         >
           <p className="text-sm text-text-tertiary text-center px-8">
-            EmotionEconomy © 2024. Building a more empathetic world, together.
+            heard &copy; 2024. Building a more empathetic world, together.
           </p>
         </motion.div>
       </div>

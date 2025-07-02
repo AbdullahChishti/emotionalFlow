@@ -1,0 +1,235 @@
+/* Theme-specific overrides and enhancements */
+
+/* Base theme variables (fallbacks) */
+:root {
+  /* Default to Jony Ive theme with strong contrast */
+  --color-background: #fafafa;
+  --color-background-secondary: #f2f2f7;
+  --color-background-tertiary: #e5e5ea;
+  --color-foreground: #000000;
+  --color-foreground-secondary: #333333;
+  --color-foreground-tertiary: #666666;
+  --color-foreground-inverse: #ffffff;
+  
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f2f2f7;
+  --color-surface-elevated: #ffffff;
+  --color-surface-shadow: #e5e5ea;
+  
+  --color-primary: #1c1c1e;
+  --color-primary-hover: #2c2c2e;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f2f2f7;
+  --color-secondary-hover: #e5e5ea;
+  --color-secondary-foreground: #1c1c1e;
+  
+  --color-border: #c6c6c8;
+  --color-border-secondary: #e5e5ea;
+  --color-border-light: #f2f2f7;
+  
+  --color-accent: #1c1c1e;
+  --color-accent-foreground: #ffffff;
+  
+  /* Status colors */
+  --color-success: #34c759;
+  --color-warning: #ff9500;
+  --color-error: #ff3b30;
+  --color-info: #007aff;
+}
+
+/* Theme-specific customizations */
+[data-theme="ive"] {
+  /* Jony Ive theme enhancements */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --animation-spring: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+[data-theme="therapeutic"] {
+  /* Therapeutic theme customizations */
+  --font-family-primary: 'Inter', system-ui, sans-serif;
+  --animation-gentle: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="purpleSparkle"] {
+  /* Purple theme customizations */
+  --font-family-primary: 'Inter', system-ui, sans-serif;
+  --animation-playful: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Global component styles using theme variables */
+.theme-button {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  border-radius: var(--radius-full, 9999px);
+  transition: all var(--duration-normal, 300ms) var(--easing-apple, ease);
+  font-weight: var(--font-weight-light, 300);
+  letter-spacing: var(--letter-spacing-wide, 0.025em);
+}
+
+.theme-button:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-md);
+  transition: all var(--duration-normal, 300ms) var(--easing-apple, ease);
+}
+
+.theme-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.theme-text-primary {
+  color: var(--color-foreground);
+}
+
+.theme-text-secondary {
+  color: var(--color-foreground-secondary);
+}
+
+.theme-text-tertiary {
+  color: var(--color-foreground-tertiary);
+}
+
+.theme-surface {
+  background-color: var(--color-surface);
+}
+
+.theme-surface-secondary {
+  background-color: var(--color-surface-secondary);
+}
+
+.theme-border {
+  border-color: var(--color-border);
+}
+
+.theme-border-light {
+  border-color: var(--color-border-light);
+}
+
+/* Animation classes using theme variables */
+.theme-transition {
+  transition: all var(--duration-normal, 300ms) var(--easing-apple, ease);
+}
+
+.theme-transition-fast {
+  transition: all var(--duration-fast, 150ms) var(--easing-apple, ease);
+}
+
+.theme-transition-slow {
+  transition: all var(--duration-slow, 500ms) var(--easing-apple, ease);
+}
+
+/* Typography classes using theme variables */
+.theme-heading-1 {
+  font-size: var(--font-size-5xl, 48px);
+  font-weight: var(--font-weight-extralight, 200);
+  line-height: var(--line-height-tight, 1.25);
+  letter-spacing: var(--letter-spacing-tight, -0.025em);
+  color: var(--color-foreground);
+}
+
+.theme-heading-2 {
+  font-size: var(--font-size-4xl, 36px);
+  font-weight: var(--font-weight-extralight, 200);
+  line-height: var(--line-height-tight, 1.25);
+  color: var(--color-foreground);
+}
+
+.theme-heading-3 {
+  font-size: var(--font-size-2xl, 24px);
+  font-weight: var(--font-weight-light, 300);
+  line-height: var(--line-height-snug, 1.375);
+  color: var(--color-foreground);
+}
+
+.theme-body {
+  font-size: var(--font-size-base, 16px);
+  font-weight: var(--font-weight-normal, 400);
+  line-height: var(--line-height-relaxed, 1.625);
+  color: var(--color-foreground-secondary);
+}
+
+.theme-body-large {
+  font-size: var(--font-size-xl, 20px);
+  font-weight: var(--font-weight-light, 300);
+  line-height: var(--line-height-relaxed, 1.625);
+  color: var(--color-foreground-secondary);
+}
+
+.theme-caption {
+  font-size: var(--font-size-sm, 14px);
+  font-weight: var(--font-weight-light, 300);
+  line-height: var(--line-height-normal, 1.5);
+  letter-spacing: var(--letter-spacing-wide, 0.025em);
+  color: var(--color-foreground-tertiary);
+}
+
+/* Layout utilities */
+.theme-container {
+  max-width: var(--container-xl, 1280px);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg, 24px);
+}
+
+.theme-section {
+  padding: var(--spacing-3xl, 64px) 0;
+}
+
+.theme-section-sm {
+  padding: var(--spacing-2xl, 48px) 0;
+}
+
+/* Focus styles using theme variables */
+.theme-focus:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.theme-focus:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .theme-heading-1 {
+    font-size: var(--font-size-4xl, 36px);
+  }
+  
+  .theme-heading-2 {
+    font-size: var(--font-size-3xl, 30px);
+  }
+  
+  .theme-section {
+    padding: var(--spacing-2xl, 48px) 0;
+  }
+}
+
+/* Smooth theme transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: var(--duration-fast, 150ms);
+  transition-timing-function: var(--easing-apple, ease);
+}
+
+/* Disable transitions during theme changes to prevent flashing */
+.theme-changing * {
+  transition: none !important;
+}
+
+/* Print styles */
+@media print {
+  :root {
+    --color-background: #ffffff;
+    --color-foreground: #000000;
+    --color-foreground-secondary: #333333;
+    --color-foreground-tertiary: #666666;
+  }
+}

@@ -1,4 +1,4 @@
-# EmotionEconomy Design System
+# heard Design System
 
 ## 🎨 Centralized Color Management
 
@@ -259,4 +259,4 @@ Then use it:
 ✅ **Consistent** across the entire app  
 ✅ **Scalable** design system  
 
-Your EmotionEconomy color palette is now centrally managed and can be updated in seconds! 🎨
+Your heard color palette is now centrally managed and can be updated in seconds! 🎨

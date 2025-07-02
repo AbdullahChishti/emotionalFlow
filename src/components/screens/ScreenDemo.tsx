@@ -78,7 +78,7 @@ export function ScreenDemo({ onClose }: ScreenDemoProps) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/20">
           <div className="flex items-center gap-4">
-            <h2 className="text-2xl font-light text-foreground">EmotionEconomy Flow Demo</h2>
+            <h2 className="text-2xl font-light text-foreground">heard Flow Demo</h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setMode('flow')}
@@ -235,7 +235,7 @@ export function ScreenDemo({ onClose }: ScreenDemoProps) {
               </div>
 
               <div className="mt-6 p-4 bg-white/30 rounded-xl">
-                <h4 className="font-medium text-foreground mb-2">About EmotionEconomy</h4>
+                <h4 className="font-medium text-foreground mb-2">About heard</h4>
                 <p className="text-sm text-muted-foreground">
                   A platform connecting people for emotional support through a credit-based system.
                   Users can both provide and receive support, creating a balanced community of care.
