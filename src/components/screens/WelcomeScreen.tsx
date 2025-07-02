@@ -1,8 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Heart, Ear, Users, ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { motion, Variants } from 'framer-motion'
+import { Ear, Users } from 'lucide-react'
+import SketchbookBackground from '@/components/ui/SketchbookBackground'
+import { DoodleHeart } from '@/components/landing/DoodleIcons'
 
 interface WelcomeScreenProps {
   onNavigate: (screen: string, params?: any) => void
@@ -17,88 +18,85 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
     onNavigate('MoodSelection', { mode: 'support' })
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Background gradients matching landing page */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-transparent to-green-50/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-violet-200/40 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-200/40 to-transparent rounded-full blur-3xl" />
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.2, delayChildren: 0.1 },
+    },
+  }
 
-      <div className="container mx-auto px-8 py-16 flex flex-col items-center justify-center min-h-screen relative">
-        {/* Icon */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="mb-12"
-        >
-          <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-full flex items-center justify-center shadow-lg">
-            <Heart className="w-12 h-12 text-primary" />
+  const itemVariants: Variants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'easeInOut' },
+    },
+  }
+
+  return (
+    <div className="min-h-screen bg-zinc-50 relative overflow-hidden flex flex-col">
+      <SketchbookBackground />
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="container mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center"
+      >
+        <motion.div variants={itemVariants} className="mb-10">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-indigo-100/80 border border-indigo-200/50">
+            <DoodleHeart className="w-12 h-12 text-indigo-500" />
           </div>
         </motion.div>
 
-        {/* Heading */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-center mb-8"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-            How are you
-          </h1>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground">
-            feeling{' '}
-            <span className="text-primary">today?</span>
+        <motion.div variants={itemVariants} className="mb-6">
+          <h1 className="text-4xl md:text-5xl font-light text-zinc-800 leading-tight">
+            Welcome to your
+            <br />
+            <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500">
+              safe space
+            </span>
           </h1>
         </motion.div>
 
-        {/* Description */}
         <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-lg text-muted-foreground text-center max-w-md mb-12 leading-relaxed"
+          variants={itemVariants}
+          className="text-lg text-zinc-600 max-w-md mb-12 leading-relaxed"
         >
-          Connect with others, share your feelings, and find support in our community.
+          Here, you can be yourself. Choose whether you'd like to share your story or listen to another's.
         </motion.p>
 
-        {/* Buttons */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="w-full max-w-sm space-y-4"
-        >
-          <button
-            onClick={handleListenPress}
-            className="w-full py-4 bg-white/80 backdrop-blur-sm border border-white/30 text-foreground rounded-full hover:bg-white/90 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 group font-medium text-lg"
-          >
-            <Ear className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            I want to listen
-          </button>
-
+        <motion.div variants={itemVariants} className="w-full max-w-xs space-y-4">
           <button
             onClick={handleSupportPress}
-            className="w-full py-4 bg-gradient-to-r from-primary to-blue-500 text-primary-foreground rounded-full hover:from-violet-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl shadow-violet-300/50 flex items-center justify-center gap-3 group font-medium text-lg transform hover:scale-105"
+            className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.03] transition-all duration-300 flex items-center justify-center gap-3 group text-lg"
           >
             <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
             I need support
           </button>
-        </motion.div>
 
-        {/* Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="absolute bottom-8 left-0 right-0"
-        >
-          <p className="text-sm text-text-tertiary text-center px-8">
-            heard &copy; 2024. Building a more empathetic world, together.
-          </p>
+          <button
+            onClick={handleListenPress}
+            className="w-full py-4 bg-white/80 backdrop-blur-sm border border-zinc-300/60 text-zinc-700 rounded-xl hover:bg-white transition-all duration-300 shadow-md shadow-zinc-900/5 flex items-center justify-center gap-3 group font-medium text-lg"
+          >
+            <Ear className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            I want to listen
+          </button>
         </motion.div>
-      </div>
+      </motion.div>
+
+      <motion.footer
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+        className="text-center py-6 px-4"
+      >
+        <p className="text-sm text-zinc-500">
+          heard &copy; 2024 &middot; A more empathetic world, together.
+        </p>
+      </motion.footer>
     </div>
   )
 }

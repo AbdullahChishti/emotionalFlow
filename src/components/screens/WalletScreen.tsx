@@ -2,169 +2,136 @@
 
 import { motion } from 'framer-motion'
 import { ChevronLeft, ArrowUp, ArrowDown, Coins, TrendingUp, Heart } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
+import SketchbookBackground from '../ui/SketchbookBackground'
 
 interface WalletScreenProps {
   onNavigate: (screen: string, params?: any) => void
 }
 
+const transactions = [
+  {
+    id: 1, type: 'received', amount: 50, description: 'From a listening session',
+    source: 'From Alex', time: '2h ago',
+  },
+  {
+    id: 2, type: 'sent', amount: 30, description: 'For a support session',
+    source: 'To Sarah', time: '5h ago',
+  },
+  {
+    id: 3, type: 'received', amount: 100, description: 'From a listening session',
+    source: 'From EmpatheticSoul', time: '1d ago',
+  },
+  {
+    id: 4, type: 'sent', amount: 60, description: 'For a support session',
+    source: 'To MindfulListener', time: '2d ago',
+  },
+  {
+    id: 5, type: 'received', amount: 25, description: 'From a listening session',
+    source: 'From KindHeart', time: '3d ago',
+  },
+]
+
+const totalBalance = transactions.reduce((acc, t) => acc + (t.type === 'received' ? t.amount : -t.amount), 0)
+const totalReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + t.amount, 0)
+const totalSent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + t.amount, 0)
+
 export function WalletScreen({ onNavigate }: WalletScreenProps) {
-  const transactions = [
-    {
-      id: 1,
-      type: 'received',
-      amount: 50,
-      description: 'Credits Received',
-      source: 'From Alex',
-      time: '2h ago',
-    },
-    {
-      id: 2,
-      type: 'sent',
-      amount: 30,
-      description: 'Credits Sent',
-      source: 'To Sarah',
-      time: '5h ago',
-    },
-    {
-      id: 3,
-      type: 'received',
-      amount: 100,
-      description: 'Credits Received',
-      source: 'From EmpatheticSoul',
-      time: '1d ago',
-    },
-    {
-      id: 4,
-      type: 'sent',
-      amount: 60,
-      description: 'Credits Sent',
-      source: 'To MindfulListener',
-      time: '2d ago',
-    },
-  ]
-
-  const totalBalance = 120
-  const totalReceived = transactions.filter(t => t.type === 'received').reduce((sum, t) => sum + t.amount, 0)
-  const totalSent = transactions.filter(t => t.type === 'sent').reduce((sum, t) => sum + t.amount, 0)
-
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Background gradients matching landing page */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-transparent to-green-50/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-violet-200/40 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-200/40 to-transparent rounded-full blur-3xl" />
+    <div className="min-h-screen flex flex-col bg-stone-50 font-sans">
+      <SketchbookBackground />
       {/* Header */}
-      <div className="flex items-center justify-between p-4 md:p-6 bg-white/60 backdrop-blur-sm border-b border-white/20 relative z-10">
-        <button
-          onClick={() => onNavigate('Welcome')}
-          className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-        >
-          <ChevronLeft className="w-6 h-6 text-foreground" />
+      <header className="flex items-center justify-between p-4 bg-stone-50/80 backdrop-blur-sm border-b border-zinc-200/80 z-10">
+        <button onClick={() => onNavigate('Welcome')} className="p-2 text-zinc-600 hover:bg-zinc-200/70 rounded-full transition-colors">
+          <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg md:text-xl font-light text-foreground tracking-tight">
-          Emotional Wallet
-        </h1>
+        <h1 className="text-xl font-medium text-zinc-800 tracking-tight">Wallet</h1>
         <div className="w-10" />
-      </div>
+      </header>
 
-      <div className="flex-1 flex flex-col items-center justify-center relative px-2 md:px-6 py-4 md:py-8 z-10">
-        {/* Main Balance */}
-        <div className="flex flex-col items-center mb-8 md:mb-12">
-          <div className="relative">
-            <div className="w-40 h-40 md:w-56 md:h-56 rounded-full bg-white/80 shadow-2xl shadow-primary/10 flex flex-col items-center justify-center border-4 border-white/40 backdrop-blur-xl">
-              <span className="text-5xl md:text-6xl font-bold text-foreground mb-2">{totalBalance}</span>
-              <span className="text-lg md:text-xl text-muted-foreground font-light">Credits</span>
+      <main className="flex-1 flex flex-col p-4 md:p-6 z-0 overflow-y-auto">
+        <div className="w-full max-w-2xl mx-auto">
+          {/* Main Balance Card */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="bg-white/70 border border-zinc-200/80 rounded-2xl p-6 mb-6 text-center shadow-lg shadow-zinc-900/5 relative"
+          >
+            <div className="absolute top-4 right-4 p-2 bg-amber-100/80 rounded-full border border-amber-200/80">
+                <Coins className="w-5 h-5 text-amber-600" />
             </div>
-            <div className="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-              <Coins className="w-5 h-5 text-white" />
-            </div>
-          </div>
-        </div>
+            <p className="text-sm text-zinc-500 mb-1">Your Balance</p>
+            <p className="text-5xl font-light text-zinc-800 tracking-tight">{totalBalance} <span className="text-3xl text-zinc-400">credits</span></p>
+          </motion.div>
 
-        {/* Stat Cards */}
-        <div className="flex flex-row gap-6 mb-8 md:mb-12 w-full max-w-xl justify-center">
-          <div className="flex-1 bg-white/80 rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center border border-white/30 backdrop-blur-xl">
-            <ArrowDown className="w-6 h-6 text-green-500 mb-2" />
-            <span className="text-2xl font-semibold text-green-600">+{totalReceived}</span>
-            <span className="text-sm text-muted-foreground">Credits Received</span>
+          {/* Stat Cards */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <StatCard icon={ArrowDown} label="Received" value={totalReceived} color="text-emerald-600" bgColor="bg-emerald-50" borderColor="border-emerald-200/80" />
+            <StatCard icon={ArrowUp} label="Sent" value={totalSent} color="text-sky-600" bgColor="bg-sky-50" borderColor="border-sky-200/80" />
           </div>
-          <div className="flex-1 bg-white/80 rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center border border-white/30 backdrop-blur-xl">
-            <ArrowUp className="w-6 h-6 text-blue-500 mb-2" />
-            <span className="text-2xl font-semibold text-blue-600">-{totalSent}</span>
-            <span className="text-sm text-muted-foreground">Credits Sent</span>
-          </div>
-        </div>
 
-        {/* Empathy Credits Info */}
-        <div className="flex items-center gap-3 mb-8 md:mb-12">
-          <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
-            <Heart className="w-5 h-5 text-pink-500" />
-          </div>
+          {/* Transaction History */}
           <div>
-            <div className="text-base font-medium text-foreground">Empathy Credits</div>
-            <div className="text-xs text-muted-foreground">Give empathy to earn more credits and spread kindness</div>
+            <h2 className="text-lg font-medium text-zinc-700 mb-4 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-zinc-400" />
+              History
+            </h2>
+            <div className="space-y-3">
+              {transactions.map((transaction, index) => (
+                <motion.div
+                  key={transaction.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05, ease: 'easeOut' }}
+                >
+                  <TransactionItem {...transaction} />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <button
+              onClick={() => onNavigate('Welcome')}
+              className="w-full max-w-sm mx-auto py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 text-lg"
+            >
+              Start a New Session
+            </button>
           </div>
         </div>
-
-        {/* Transaction History */}
-        <div className="w-full max-w-xl">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-text-secondary" />
-            <h2 className="text-lg font-semibold text-text-primary">Give & Receive History</h2>
-          </div>
-          <div className="bg-white/80 rounded-2xl shadow-lg border border-white/30 backdrop-blur-xl overflow-hidden">
-            {transactions.map((transaction, index) => (
-              <div
-                key={transaction.id}
-                className="flex items-center p-4 border-b border-border-light last:border-b-0 hover:bg-surface-secondary transition-colors"
-              >
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${
-                  transaction.type === 'received'
-                    ? 'bg-status-success'
-                    : 'bg-status-info'
-                }`}>
-                  {transaction.type === 'received' ? (
-                    <ArrowDown className="w-5 h-5 text-text-primary" />
-                  ) : (
-                    <ArrowUp className="w-5 h-5 text-text-primary" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-text-primary text-base">
-                    {transaction.description}
-                  </div>
-                  <div className="text-xs text-text-tertiary">
-                    {transaction.source}
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className={`font-semibold text-base ${
-                    transaction.type === 'received' ? 'text-status-success' : 'text-status-info'
-                  }`}>
-                    {transaction.type === 'received' ? '+' : '-'}{transaction.amount}
-                  </div>
-                  <div className="text-xs text-text-tertiary">
-                    {transaction.time}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Action Button at the bottom with space above */}
-      <div className="flex justify-center py-6 md:py-8 z-10">
-        <Button
-          onClick={() => onNavigate('Welcome')}
-          variant="primary"
-          size="lg"
-        >
-          Start New Session
-        </Button>
-      </div>
+      </main>
     </div>
   )
 }
+
+const StatCard = ({ icon: Icon, label, value, color, bgColor, borderColor }: any) => (
+  <div className={`p-4 rounded-2xl border ${bgColor} ${borderColor}`}>
+    <div className="flex items-center gap-3">
+      <div className={`p-2 rounded-full ${color.replace('text-', 'bg-').replace('-600', '-100/80')}`}>
+        <Icon className={`w-5 h-5 ${color}`} />
+      </div>
+      <div>
+        <p className={`text-2xl font-medium ${color}`}>{label === 'Received' ? '+' : '-'}{value}</p>
+        <p className="text-sm text-zinc-500 -mt-1">{label}</p>
+      </div>
+    </div>
+  </div>
+)
+
+const TransactionItem = ({ type, amount, description, source, time }: any) => (
+  <div className="flex items-center p-3 bg-white/60 border border-zinc-200/80 rounded-xl hover:bg-white/100 hover:border-zinc-300/80 transition-colors duration-200">
+    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${ type === 'received' ? 'bg-emerald-100/80 text-emerald-700' : 'bg-sky-100/80 text-sky-700' }`}>
+      {type === 'received' ? <ArrowDown className="w-5 h-5" /> : <ArrowUp className="w-5 h-5" />}
+    </div>
+    <div className="flex-1">
+      <p className="font-medium text-zinc-800">{description}</p>
+      <p className="text-sm text-zinc-500">{source}</p>
+    </div>
+    <div className="text-right">
+      <p className={`font-semibold text-lg ${ type === 'received' ? 'text-emerald-600' : 'text-sky-600' }`}>
+        {type === 'received' ? '+' : '-'}{amount}
+      </p>
+      <p className="text-xs text-zinc-400">{time}</p>
+    </div>
+  </div>
+)

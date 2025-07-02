@@ -20,15 +20,15 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
   const [notes, setNotes] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const moodEmojis = ['😢', '😔', '😕', '😐', '🙂', '😊', '😄', '😁', '🤩', '🥳']
+  const moodEmojis = ['😔', '😟', '😕', '😐', '🙂', '😊', '😄', '😁', '🤩', '💖']
   const moodLabels = [
-    'Terrible', 'Very Bad', 'Bad', 'Poor', 'Okay', 
-    'Good', 'Great', 'Excellent', 'Amazing', 'Euphoric'
+    'Very Low', 'Low', 'Down', 'Neutral', 'Okay', 
+    'Good', 'Happy', 'Great', 'Excited', 'Euphoric'
   ]
 
   const getEmotionalCapacity = (mood: number): 'low' | 'medium' | 'high' => {
     if (mood <= 3) return 'low'
-    if (mood <= 6) return 'medium'
+    if (mood <= 7) return 'medium'
     return 'high'
   }
 
@@ -39,7 +39,6 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
     try {
       const emotionalCapacity = getEmotionalCapacity(moodScore)
 
-      // Insert mood entry
       const { error: moodError } = await supabase
         .from('mood_entries')
         .insert({
@@ -53,7 +52,6 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
 
       if (moodError) throw moodError
 
-      // Update profile with current emotional capacity
       const { error: profileError } = await supabase
         .from('profiles')
         .update({
@@ -74,29 +72,40 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      >
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          className="bg-card rounded-xl p-6 w-full max-w-md border border-border"
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="bg-stone-50 rounded-2xl p-6 w-full max-w-md border border-zinc-200/80 shadow-2xl shadow-zinc-900/10"
         >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">How are you feeling?</h2>
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h2 className="text-2xl font-light text-zinc-800">Check-in</h2>
+              <p className="text-sm text-zinc-500">How are you feeling right now?</p>
+            </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-2 text-zinc-500 hover:bg-zinc-200/70 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Mood Scale */}
-          <div className="mb-6">
+          <div className="mb-8">
             <div className="text-center mb-4">
-              <div className="text-6xl mb-2">{moodEmojis[moodScore - 1]}</div>
-              <div className="text-xl font-semibold">{moodLabels[moodScore - 1]}</div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-6xl mb-2 transition-transform duration-300 ease-out" style={{ transform: `scale(${1 + (moodScore - 5) / 20})` }}>
+                {moodEmojis[moodScore - 1]}
+              </div>
+              <div className="text-xl font-medium text-zinc-700">{moodLabels[moodScore - 1]}</div>
+              <div className="text-sm text-zinc-400 font-mono">
                 {moodScore}/10
               </div>
             </div>
@@ -108,93 +117,79 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
                 max="10"
                 value={moodScore}
                 onChange={(e) => setMoodScore(parseInt(e.target.value))}
-                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer slider"
+                className="w-full h-2 bg-zinc-200/80 rounded-lg appearance-none cursor-pointer mood-slider"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>1</span>
-                <span>5</span>
-                <span>10</span>
-              </div>
             </div>
           </div>
 
           {/* Availability Options */}
-          <div className="space-y-4 mb-6">
-            <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Heart className="w-5 h-5 text-blue-500" />
-                <div>
-                  <div className="font-medium">Seeking Support</div>
-                  <div className="text-sm text-muted-foreground">
-                    I could use someone to listen
-                  </div>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={seekingSupport}
-                  onChange={(e) => setSeekingSupport(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-secondary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between p-3 border border-border rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Ear className="w-5 h-5 text-green-500" />
-                <div>
-                  <div className="font-medium">Willing to Listen</div>
-                  <div className="text-sm text-muted-foreground">
-                    I can support others right now
-                  </div>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={willingToListen}
-                  onChange={(e) => setWillingToListen(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-secondary peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-              </label>
-            </div>
+          <div className="space-y-3 mb-8">
+            <AvailabilityToggle
+              icon={Heart}
+              label="Seeking Support"
+              description="I could use someone to listen"
+              checked={seekingSupport}
+              onChange={setSeekingSupport}
+            />
+            <AvailabilityToggle
+              icon={Ear}
+              label="Willing to Listen"
+              description="I can support others right now"
+              checked={willingToListen}
+              onChange={setWillingToListen}
+            />
           </div>
 
           {/* Notes */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium mb-2">
-              Notes (optional)
-            </label>
+          <div className="mb-8">
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Anything specific you'd like to share about how you're feeling..."
-              className="w-full p-3 border border-border rounded-lg bg-background resize-none"
-              rows={3}
+              placeholder="Add a private note..."
+              className="w-full p-3 border border-zinc-200/80 rounded-lg bg-white/50 resize-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-shadow,border-color duration-200 shadow-inner-sm text-zinc-700 placeholder-zinc-400"
+              rows={2}
               maxLength={200}
             />
-            <div className="text-xs text-muted-foreground mt-1">
-              {notes.length}/200 characters
-            </div>
           </div>
 
           {/* Submit Button */}
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:scale-100"
           >
-            {loading ? (
-              <LoadingSpinner size="sm" />
-            ) : (
-              'Update Mood'
-            )}
+            {loading ? <LoadingSpinner size="sm" /> : 'Update Mood'}
           </button>
         </motion.div>
-      </div>
+      </motion.div>
     </AnimatePresence>
   )
 }
+
+const AvailabilityToggle = ({ icon: Icon, label, description, checked, onChange }: any) => (
+  <div
+    onClick={() => onChange(!checked)}
+    className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all duration-300 ${ 
+      checked 
+        ? 'bg-white border-transparent shadow-lg shadow-indigo-500/10 ring-2 ring-indigo-400'
+        : 'bg-white/60 border-zinc-200/80 hover:border-zinc-300 hover:bg-white'
+    }`}
+  >
+    <div className="flex items-center space-x-4">
+      <div className={`p-2 rounded-full transition-colors duration-300 ${checked ? 'bg-indigo-100' : 'bg-zinc-100'}`}>
+        <Icon className={`w-5 h-5 transition-colors duration-300 ${checked ? 'text-indigo-500' : 'text-zinc-500'}`} />
+      </div>
+      <div>
+        <div className={`font-medium transition-colors duration-300 ${checked ? 'text-zinc-800' : 'text-zinc-700'}`}>{label}</div>
+        <div className={`text-sm transition-colors duration-300 ${checked ? 'text-zinc-600' : 'text-zinc-500'}`}>{description}</div>
+      </div>
+    </div>
+    <div className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${checked ? 'bg-indigo-500' : 'bg-zinc-300'}`}>
+      <motion.div 
+        layout 
+        transition={{ type: 'spring', stiffness: 700, damping: 30 }}
+        className="w-5 h-5 bg-white rounded-full shadow-sm"
+      />
+    </div>
+  </div>
+)
