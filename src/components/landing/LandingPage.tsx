@@ -1,33 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, ArrowRight, HeartHandshake, Link2, Wallet } from 'lucide-react'
+import { Heart, ArrowRight } from 'lucide-react'
 import { AuthModal } from '@/components/auth/AuthModal'
+import { EmpathyWalletGraph } from './EmpathyWalletGraph'
+import { SplitPortraitIllustration } from './SplitPortraitIllustration'
+import { ReachingHandsIllustration } from './ReachingHandsIllustration'
 
-const features = [
-  {
-    icon: HeartHandshake,
-    title: 'Support, Shared.',
-    description: 'Give support to others and earn empathy credits. Use those credits to ask for support when you need it — guilt-free.',
-  },
-  {
-    icon: Link2,
-    title: 'Emotional Matching.',
-    description: 'We connect you with someone who’s emotionally available and understands what you’re going through.',
-  },
-  {
-    icon: Wallet,
-    title: 'Your Empathy Wallet.',
-    description: 'Keep track of how much you’ve given and received. Because emotional labor deserves recognition.',
-  },
-]
+
 
 export function LandingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [scrollBg, setScrollBg] = useState('from-blue-50 via-purple-50 to-green-50')
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY
+      const pageHeight = document.documentElement.scrollHeight - window.innerHeight
+      const scrollFraction = scrollY / pageHeight
+
+      if (scrollFraction < 0.33) {
+        setScrollBg('from-blue-50 via-purple-50 to-green-50')
+      } else if (scrollFraction < 0.66) {
+        setScrollBg('from-purple-50 via-rose-50 to-amber-50')
+      } else {
+        setScrollBg('from-amber-50 via-teal-50 to-cyan-50')
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 font-sans text-zinc-800 overflow-x-hidden">
+    <div className={`min-h-screen w-full bg-gradient-to-br ${scrollBg} font-sans text-zinc-800 overflow-x-hidden transition-all duration-1000 ease-in-out`}>
       <div className="relative z-10">
         {/* Header */}
         <header className="py-6 px-4 md:px-8">
@@ -58,53 +65,92 @@ export function LandingPage() {
               transition={{ duration: 20, ease: 'easeInOut', repeat: Infinity }}
             />
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: 'easeOut' }}>
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-zinc-800 leading-tight md:leading-snug">
-                Find Your Calm, <br /> Understand Your Mind.
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-zinc-900 leading-tight md:leading-snug">
+                Feeling off? <br /> You don’t have to carry it alone.
               </h1>
-              <p className="max-w-2xl mx-auto mt-6 text-lg md:text-xl text-zinc-600">
-                A safe and supportive space to navigate your emotions, practice mindfulness, and foster personal growth.
+              <p className="max-w-2xl mx-auto mt-4 text-xl md:text-2xl text-zinc-700 leading-relaxed">
+                Heard connects you to someone who listens. Just listens.
               </p>
-              <motion.button
-                onClick={() => setShowAuthModal(true)}
-                className="group mt-10 inline-flex items-center gap-3 px-8 py-4 bg-purple-500 text-lg font-semibold text-white rounded-full shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Get Started for Free <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-              </motion.button>
+              <div className="mt-8 flex flex-col items-center gap-4">
+                <motion.button
+                  onClick={() => setShowAuthModal(true)}
+                  className="group inline-flex items-center gap-3 px-8 py-4 bg-purple-500 text-lg font-semibold text-white rounded-full shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300 animate-pulse-slow"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Get Started for Free <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </motion.button>
+                <a href="#features" className="text-zinc-500 hover:text-zinc-700 transition-colors text-sm">
+                    See how it works ↓
+                </a>
+              </div>
             </motion.div>
           </section>
 
           {/* Features Section */}
-          <section className="container mx-auto px-4 mt-24 md:mt-32">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-zinc-800">A New Kind of Support System</h2>
-              <p className="text-lg text-zinc-500 mt-2">Built on mutual respect and reciprocity.</p>
-            </div>
-            <div className="space-y-20 md:space-y-28">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  className={`group flex flex-col md:flex-row items-center gap-12 md:gap-16 ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                >
-                  <div className="w-full md:w-1/2 flex justify-center">
-                    <div className="relative w-64 h-64 flex items-center justify-center">
-                      <motion.div 
-                        className="absolute inset-0 bg-gradient-to-br from-purple-200 via-blue-200 to-green-200 rounded-full blur-2xl opacity-80 transition-all duration-500 ease-in-out group-hover:blur-3xl group-hover:scale-110"
-                      />
-                      <feature.icon className="relative w-32 h-32 text-purple-500/80 transition-transform duration-500 ease-in-out group-hover:scale-110" strokeWidth={1} />
-                    </div>
-                  </div>
-                  <div className="w-full md:w-1/2 text-center md:text-left">
-                    <h3 className="text-2xl font-bold text-zinc-800 mb-4">{feature.title}</h3>
-                    <p className="text-lg text-zinc-600 leading-relaxed">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+          <section id="features" className="container mx-auto px-4 mt-32 md:mt-48">
+            <div className="space-y-32 md:space-y-48">
+
+              {/* Section 1: Give support, feel connection. */}
+              <motion.div
+                className="flex flex-col md:flex-row items-center gap-12 md:gap-24"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <div className="w-full md:w-1/2 flex justify-center">
+                  <ReachingHandsIllustration />
+                </div>
+                <div className="w-full md:w-1/2 text-center md:text-left">
+                  <h3 className="text-3xl font-bold text-zinc-800 mb-4">Give support, feel connection.</h3>
+                  <p className="text-lg text-zinc-600 leading-relaxed">
+                    Sometimes listening is the most powerful gift. Give support, earn empathy credits, and know someone’s there when you need to reach out.
+                  </p>
+                </div>
+              </motion.div>
+
+              {/* Section 2: We pair you with someone who truly gets it. */}
+              <motion.div
+                className="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-24"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <div className="w-full md:w-1/2 flex justify-center">
+                  <SplitPortraitIllustration />
+                </div>
+                <div className="w-full md:w-1/2 text-center md:text-left">
+                  <h3 className="text-3xl font-bold text-zinc-800 mb-4">We pair you with someone who truly gets it.</h3>
+                  <p className="text-lg text-zinc-600 leading-relaxed">
+                    You’ll connect with someone who understands your state of mind — not just listens, but really hears you.
+                  </p>
+                  <a href="#" className="inline-block mt-4 text-purple-500 font-semibold hover:text-purple-600 transition-colors">
+                    See how it works →
+                  </a>
+                </div>
+              </motion.div>
+
+              {/* Section 3: Track the emotional support you give and receive. */}
+              <motion.div
+                className="flex flex-col md:flex-row items-center gap-12 md:gap-24"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <div className="w-full md:w-1/2 flex justify-center">
+                  <EmpathyWalletGraph />
+                </div>
+                <div className="w-full md:w-1/2 text-center md:text-left">
+                  <h3 className="text-3xl font-bold text-zinc-800 mb-4">Track the emotional support you give and receive.</h3>
+                  <p className="text-lg text-zinc-600 leading-relaxed">
+                    Your emotional labor matters. Keep track of how much care you’ve shared — and how much has come your way.
+                  </p>
+                </div>
+              </motion.div>
+
             </div>
           </section>
 
