@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react'
 import { WelcomeScreen } from './screens/WelcomeScreen'
 import { MoodSelectionScreen } from './screens/MoodSelectionScreen'
+import { EmotionRefinementScreen } from './screens/EmotionRefinementScreen'
 import { MatchingScreen } from './screens/MatchingScreen'
 import { SessionScreen } from './screens/SessionScreen'
 import { WalletScreen } from './screens/WalletScreen'
 
-type Screen = 'Welcome' | 'MoodSelection' | 'Matching' | 'Session' | 'Wallet'
+type Screen = 'Welcome' | 'MoodSelection' | 'EmotionRefinement' | 'Matching' | 'Session' | 'Wallet'
 
 interface ScreenParams {
   mode?: 'listen' | 'support'
@@ -44,8 +45,19 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
       case 'MoodSelection':
         return (
           <MoodSelectionScreen 
+            key="mood-selection"
             onNavigate={handleNavigate} 
             mode={screenParams.mode || 'listen'} 
+          />
+        )
+      
+      case 'EmotionRefinement':
+        return (
+          <EmotionRefinementScreen 
+            key="emotion-refinement"
+            onNavigate={handleNavigate} 
+            mode={screenParams.mode || 'listen'}
+            mood={screenParams.mood || 5}
           />
         )
       

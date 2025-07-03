@@ -1,133 +1,177 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, FC } from 'react'
 import { motion, AnimatePresence, Variants } from 'framer-motion'
-import { ChevronLeft, ArrowRight } from 'lucide-react'
-import SketchbookBackground from '@/components/ui/SketchbookBackground'
+import { ChevronLeft, ArrowRight, Leaf } from 'lucide-react'
 
+// --- Animated Scene Components ---
+const OverwhelmedScene = () => (
+  <div className="absolute inset-0 overflow-hidden bg-gray-800">
+    {[...Array(30)].map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute bg-white/30 rounded-full"
+        initial={{ x: Math.random() * 300 - 50, y: Math.random() * 500 - 100, scale: Math.random() * 0.5 + 0.2, opacity: 0 }}
+        animate={{ 
+          x: Math.random() * 300 - 50,
+          y: Math.random() * 500 - 100,
+          opacity: [0, 0.5, 0]
+        }}
+        transition={{
+          duration: Math.random() * 2 + 1,
+          repeat: Infinity,
+          delay: Math.random() * 2,
+          ease: 'linear'
+        }}
+        style={{ width: `${Math.random() * 8 + 4}px`, height: `${Math.random() * 8 + 4}px` }}
+      />
+    ))}
+  </div>
+)
+
+const NumbScene = () => (
+  <div className="absolute inset-0 bg-gray-400 overflow-hidden">
+    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/noise.svg)', backgroundSize: '100px' }}></div>
+  </div>
+)
+
+const CalmScene = () => (
+  <div className="absolute inset-0 flex items-center justify-center bg-blue-900">
+    <motion.div
+      className="w-24 h-24 bg-blue-400 rounded-full"
+      animate={{ scale: [1, 1.05, 1], opacity: [0.7, 0.9, 0.7] }}
+      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      style={{ boxShadow: '0 0 40px 20px rgba(100, 180, 255, 0.5)' }}
+    />
+  </div>
+)
+
+const LostScene = () => (
+  <div className="absolute inset-0 flex items-center justify-center bg-gray-700 overflow-hidden">
+    <motion.div
+      initial={{ y: -100, rotate: -45, opacity: 0 }}
+      animate={{ y: 100, rotate: 45, opacity: 1 }}
+      transition={{ duration: 8, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
+    >
+      <Leaf className="w-16 h-16 text-gray-400/80" />
+    </motion.div>
+  </div>
+)
+
+const HopefulScene = () => (
+  <div className="absolute inset-0 bg-black overflow-hidden">
+    {[...Array(3)].map((_, i) => (
+      <motion.div
+        key={i}
+        className="absolute h-full w-1/3 bg-gradient-to-t from-transparent via-yellow-200/50 to-transparent"
+        initial={{ y: '100%', rotate: 45 }}
+        animate={{ y: '-100%' }}
+        transition={{ 
+          duration: 6 + i * 2, 
+          repeat: Infinity, 
+          ease: 'linear', 
+          delay: i * 2
+        }}
+        style={{ left: `${i * 33.33}%` }}
+      />
+    ))}
+  </div>
+)
+
+// --- Main Component ---
 interface MoodSelectionScreenProps {
   onNavigate: (screen: string, params?: any) => void
   mode: 'listen' | 'support'
 }
 
-const moods = [
-  { emoji: '😔', label: 'Very Low', value: 1 },
-  { emoji: '😟', label: 'Low', value: 2 },
-  { emoji: '😕', label: 'Down', value: 3 },
-  { emoji: '😐', label: 'Neutral', value: 4 },
-  { emoji: '🙂', label: 'Okay', value: 5 },
-  { emoji: '😊', label: 'Good', value: 6 },
-  { emoji: '😄', label: 'Happy', value: 7 },
-  { emoji: '😁', label: 'Great', value: 8 },
-  { emoji: '🤩', label: 'Excited', value: 9 },
-  { emoji: '💖', label: 'Euphoric', value: 10 },
+const scenes = [
+  { component: OverwhelmedScene, label: 'Overwhelmed', value: 1 },
+  { component: NumbScene, label: 'Numb', value: 2 },
+  { component: CalmScene, label: 'Calm', value: 4 },
+  { component: LostScene, label: 'Lost', value: 3 },
+  { component: HopefulScene, label: 'Hopeful', value: 7 },
 ]
 
 export function MoodSelectionScreen({ onNavigate, mode }: MoodSelectionScreenProps) {
-  const [selectedMood, setSelectedMood] = useState<number | null>(null)
+  const [selectedScene, setSelectedScene] = useState<number | null>(null)
+  const [hoveredScene, setHoveredScene] = useState<number | null>(null)
 
   const handleContinue = () => {
-    if (selectedMood !== null) {
-      onNavigate('Matching', { mood: selectedMood, mode })
+    if (selectedScene !== null) {
+      onNavigate('EmotionRefinement', { mood: selectedScene, mode })
     }
   }
 
-  const handleBack = () => {
-    onNavigate('Welcome')
-  }
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 },
-    },
-  }
-
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0, scale: 0.95 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4, ease: 'easeOut' },
-    },
-  }
+  const handleBack = () => onNavigate('Welcome')
+  const handleNotSure = () => setSelectedScene(4) // Selects 'Calm'
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 relative overflow-hidden">
-      <SketchbookBackground />
-
-      {/* Header */}
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white font-sans">
       <header className="flex items-center justify-between p-4 md:p-6 relative z-10">
-        <button
-          onClick={handleBack}
-          className="p-2 text-zinc-600 hover:bg-zinc-200/60 rounded-full transition-colors"
-        >
+        <button onClick={handleBack} className="p-2 text-gray-300 hover:bg-white/10 rounded-full transition-colors">
           <ChevronLeft className="w-6 h-6" />
         </button>
-        <h1 className="text-lg font-medium text-zinc-700">
-          {mode === 'listen' ? 'Ready to Listen' : 'Seeking Support'}
-        </h1>
-        <div className="w-10" /> {/* Spacer */}
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 relative z-10">
-        {/* Title */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
         <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="text-center mb-8 md:mb-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className="text-center mb-10"
         >
-          <h2 className="text-3xl md:text-4xl font-light text-zinc-800 mb-3">
-            How are you feeling now?
-          </h2>
-          <p className="text-base md:text-lg text-zinc-500 max-w-md mx-auto">
-            {mode === 'listen'
-              ? 'Select your current mood to find someone who needs you.'
-              : 'Choose your emotion to connect with the right listener.'}
-          </p>
+          <h1 className="text-3xl md:text-4xl font-bold mb-3">Which moment feels most like you right now?</h1>
+          <p className="text-gray-400">There’s no right answer — just what resonates.</p>
         </motion.div>
 
-        {/* Mood Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-5 max-w-4xl mx-auto mb-8"
-        >
-          {moods.map((mood) => (
-            <motion.button
-              key={mood.value}
-              variants={itemVariants}
-              onClick={() => setSelectedMood(mood.value)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              className={`group relative p-4 text-center rounded-2xl border-2 transition-all duration-300 ${
-                selectedMood === mood.value
-                  ? 'bg-white/90 border-indigo-400 shadow-lg shadow-indigo-500/10'
-                  : 'bg-white/70 border-zinc-200/80 hover:border-zinc-300'
-              }`}
-            >
-              <div className="text-4xl md:text-5xl mb-3 transition-transform duration-300 group-hover:scale-110">
-                {mood.emoji}
-              </div>
-              <div
-                className={`text-sm font-medium transition-colors ${
-                  selectedMood === mood.value ? 'text-indigo-600' : 'text-zinc-700'
-                }`}>
-                {mood.label}
-              </div>
-            </motion.button>
-          ))}
-        </motion.div>
+        <div className="w-full max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                {scenes.map((scene) => (
+                    <motion.div
+                        key={scene.value}
+                        onClick={() => setSelectedScene(scene.value)}
+                        onHoverStart={() => setHoveredScene(scene.value)}
+                        onHoverEnd={() => setHoveredScene(null)}
+                        className="relative aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer transform transition-transform duration-300 hover:scale-105"
+                        animate={{ scale: selectedScene === scene.value ? 1.05 : 1, zIndex: selectedScene === scene.value ? 10 : 1 }}
+                    >
+                        <scene.component />
+                        <AnimatePresence>
+                            {(hoveredScene === scene.value || selectedScene === scene.value) && (
+                                <motion.div 
+                                    className="absolute bottom-0 left-0 right-0 p-4 bg-black/50 backdrop-blur-sm"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                >
+                                    <p className="text-center font-semibold text-white">{scene.label}</p>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                        <AnimatePresence>
+                          {selectedScene === scene.value && (
+                            <motion.div 
+                              className="absolute inset-0 border-4 border-white/80 rounded-2xl pointer-events-none"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            />
+                          )}
+                        </AnimatePresence>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+
+        <div className="text-center mt-10 space-y-4">
+             <button onClick={handleNotSure} className="text-gray-400 hover:text-white transition-colors">Not sure?</button>
+            <p className="text-sm text-gray-500">Don’t worry about explaining. We’ll use this to find the right listener.</p>
+        </div>
       </main>
 
-      {/* Footer with Continue Button */}
       <footer className="p-4 md:p-6 relative z-10">
         <AnimatePresence>
-          {selectedMood !== null && (
+          {selectedScene !== null && (
             <motion.div
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -135,12 +179,14 @@ export function MoodSelectionScreen({ onNavigate, mode }: MoodSelectionScreenPro
               transition={{ duration: 0.4, ease: 'easeInOut' }}
               className="max-w-md mx-auto"
             >
-              <button
+              <motion.button
                 onClick={handleContinue}
-                className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:scale-100"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 bg-white text-black rounded-xl font-bold shadow-lg shadow-white/10 transition-all duration-300 flex items-center justify-center gap-2 text-lg"
               >
                 Continue <ArrowRight className="w-5 h-5" />
-              </button>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>

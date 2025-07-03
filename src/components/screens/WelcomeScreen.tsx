@@ -1,9 +1,7 @@
 'use client'
 
 import { motion, Variants } from 'framer-motion'
-import { Ear, Users } from 'lucide-react'
-import SketchbookBackground from '@/components/ui/SketchbookBackground'
-import { DoodleHeart } from '@/components/landing/DoodleIcons'
+import { Ear, Users, Heart } from 'lucide-react'
 
 interface WelcomeScreenProps {
   onNavigate: (screen: string, params?: any) => void
@@ -31,14 +29,12 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { duration: 0.6, ease: 'easeInOut' },
+      transition: { duration: 0.6, ease: 'easeOut' },
     },
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 relative overflow-hidden flex flex-col">
-      <SketchbookBackground />
-
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 p-4 font-sans">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -46,57 +42,53 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
         className="container mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center"
       >
         <motion.div variants={itemVariants} className="mb-10">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-indigo-100/80 border border-indigo-200/50">
-            <DoodleHeart className="w-12 h-12 text-indigo-500" />
-          </div>
+          <motion.div
+            className="relative w-24 h-24 mx-auto flex items-center justify-center"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
+          >
+            <div className="absolute inset-0 bg-purple-300 rounded-full blur-xl opacity-50"></div>
+            <Heart className="relative w-16 h-16 text-purple-500" fill="currentColor" />
+          </motion.div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="mb-6">
-          <h1 className="text-4xl md:text-5xl font-light text-zinc-800 leading-tight">
-            Welcome to your
-            <br />
-            <span className="font-medium text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-violet-500">
-              safe space
-            </span>
-          </h1>
-        </motion.div>
+        <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-zinc-800 leading-tight mb-4">
+          You’re not alone here.
+        </motion.h1>
 
         <motion.p
           variants={itemVariants}
           className="text-lg text-zinc-600 max-w-md mb-12 leading-relaxed"
         >
-          Here, you can be yourself. Choose whether you'd like to share your story or listen to another's.
+          This is a safe space where support flows both ways. You can speak, you can listen. Either way, you’re part of something healing.
         </motion.p>
 
-        <motion.div variants={itemVariants} className="w-full max-w-xs space-y-4">
-          <button
-            onClick={handleSupportPress}
-            className="w-full py-4 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.03] transition-all duration-300 flex items-center justify-center gap-3 group text-lg"
-          >
-            <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            I need support
-          </button>
+        <motion.div variants={itemVariants} className="w-full max-w-sm space-y-6">
+          <div>
+            <motion.button
+              onClick={handleSupportPress}
+              className="w-full py-4 bg-purple-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3 group text-lg"
+              whileTap={{ scale: 0.98 }}
+            >
+              <Users className="w-5 h-5" />
+              I need support
+            </motion.button>
+            <p className="text-sm text-zinc-500 mt-2 px-4">Spend your empathy credits and share freely.</p>
+          </div>
 
-          <button
-            onClick={handleListenPress}
-            className="w-full py-4 bg-white/80 backdrop-blur-sm border border-zinc-300/60 text-zinc-700 rounded-xl hover:bg-white transition-all duration-300 shadow-md shadow-zinc-900/5 flex items-center justify-center gap-3 group font-medium text-lg"
-          >
-            <Ear className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            I want to listen
-          </button>
+          <div>
+            <motion.button
+              onClick={handleListenPress}
+              className="w-full py-4 bg-white/80 backdrop-blur-sm border border-zinc-300/60 text-zinc-700 rounded-xl hover:bg-white transition-all duration-300 shadow-md shadow-zinc-900/5 flex items-center justify-center gap-3 group font-medium text-lg"
+              whileTap={{ scale: 0.98 }}
+            >
+              <Ear className="w-5 h-5" />
+              I want to listen
+            </motion.button>
+            <p className="text-sm text-zinc-500 mt-2 px-4">Be there for someone and earn empathy credits.</p>
+          </div>
         </motion.div>
       </motion.div>
-
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.8 }}
-        className="text-center py-6 px-4"
-      >
-        <p className="text-sm text-zinc-500">
-          heard &copy; 2024 &middot; A more empathetic world, together.
-        </p>
-      </motion.footer>
     </div>
   )
 }
