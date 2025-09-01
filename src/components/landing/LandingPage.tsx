@@ -161,7 +161,7 @@ export function LandingPage() {
       <div className="relative max-w-screen-lg mx-auto px-8 py-24">
         {/* Chapter 1: The Beginning */}
         <section className="min-h-screen flex flex-col justify-center">
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
@@ -206,8 +206,8 @@ export function LandingPage() {
                   Welcome to Your
                   <br />
                   <span className="text-purple-600 font-normal">Healing Journey</span>
-                </h1>
-
+              </h1>
+              
                 <motion.div
                   className="w-24 h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent mx-auto mt-8"
                   initial={{ scaleX: 0 }}
@@ -298,16 +298,16 @@ export function LandingPage() {
                 </motion.div>
               </motion.div>
             </div>
-
+          
                         {/* Enhanced Services preview */}
-            <motion.div
+          <motion.div 
               className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-20"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 1.3, duration: 1 }}
-            >
-              <motion.div
+          >
+            <motion.div 
                 className="text-center space-y-6 group"
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -332,16 +332,16 @@ export function LandingPage() {
                 <div className="relative w-20 h-20 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-3xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
                   <svg className="w-9 h-9 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                  </svg>
+              </svg>
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-xl font-medium text-slate-800">Support Groups</h3>
                   <p className="text-slate-600 leading-relaxed">Connect with others who truly understand</p>
                 </div>
-              </motion.div>
+            </motion.div>
 
-              <motion.div
+            <motion.div 
                 className="text-center space-y-6 group"
                 whileHover={{ y: -8 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -363,7 +363,7 @@ export function LandingPage() {
 
                 {/* Chapter 3: The Transformation */}
         <section className="py-40 bg-white/70 backdrop-blur-sm rounded-3xl px-16 mx-4 shadow-lg">
-          <motion.div
+        <motion.div 
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -377,7 +377,7 @@ export function LandingPage() {
             />
 
             <div className="max-w-4xl mx-auto space-y-12">
-              <motion.div
+        <motion.div 
                 className="text-center space-y-8"
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -389,9 +389,9 @@ export function LandingPage() {
                   size="xl"
                   delay={0.6}
                   className="text-center leading-relaxed"
-                />
-
-                <motion.div
+        />
+        
+        <motion.div 
                   className="w-32 h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent mx-auto my-8"
                   initial={{ scaleX: 0 }}
                   whileInView={{ scaleX: 1 }}
@@ -409,10 +409,10 @@ export function LandingPage() {
                 />
               </motion.div>
 
-              <motion.div
+        <motion.div 
                 className="text-center pt-12 space-y-8"
                 initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 1.2, duration: 0.8 }}
               >
@@ -459,16 +459,16 @@ export function LandingPage() {
                   </div>
                 </motion.div>
               </motion.div>
-            </div>
-          </motion.div>
+          </div>
+        </motion.div>
         </section>
 
                 {/* Chapter 4: The Invitation */}
         <section className="py-40">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
             transition={{ duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-center space-y-16"
           >
@@ -493,11 +493,11 @@ export function LandingPage() {
                   className="leading-relaxed"
                 />
 
-                <motion.div
+            <motion.div 
                   className="w-40 h-px bg-gradient-to-r from-transparent via-purple-300 to-transparent mx-auto my-10"
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
                   transition={{ delay: 0.8, duration: 0.8 }}
                 />
 
@@ -558,73 +558,48 @@ export function LandingPage() {
           </motion.div>
         </section>
 
-        {/* Enhanced footer */}
-        <footer className="py-20 border-t border-purple-200/60 bg-white/40 backdrop-blur-sm">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0">
-            <motion.div
-              className="text-center md:text-left space-y-3"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="text-3xl font-light text-slate-800 mb-2">Emotion Economy</div>
-              <StoryText
-                text="Where healing begins with understanding."
-                size="base"
-                className="text-slate-600"
-              />
-              <div className="flex items-center space-x-4 pt-4">
+        {/* Clean and reliable footer */}
+        <footer className="py-16 border-t border-purple-200/50 bg-white/30 backdrop-blur-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Left side - Brand and tagline */}
+            <div className="text-center md:text-left space-y-3">
+              <div className="text-2xl font-light text-slate-800">Emotion Economy</div>
+              <p className="text-slate-600 font-light">Where healing begins with understanding.</p>
+              <div className="flex items-center justify-center md:justify-start space-x-2 pt-2">
                 <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-slate-500 font-light">Always here for you</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-12"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="flex items-center space-x-8">
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-300 text-sm font-medium hover:scale-105 transform">
+            {/* Right side - Links */}
+            <div className="flex justify-center md:justify-end">
+              <nav className="flex items-center space-x-8">
+                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
                   Privacy
                 </a>
-                <div className="w-px h-4 bg-purple-300/60"></div>
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-300 text-sm font-medium hover:scale-105 transform">
+                <div className="w-px h-4 bg-purple-300/50"></div>
+                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
                   Terms
                 </a>
-                <div className="w-px h-4 bg-purple-300/60"></div>
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-300 text-sm font-medium hover:scale-105 transform">
+                <div className="w-px h-4 bg-purple-300/50"></div>
+                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
                   Support
                 </a>
-              </div>
-            </motion.div>
+              </nav>
+            </div>
           </div>
-
-          <motion.div
-            className="text-center mt-12 pt-8 border-t border-purple-200/40"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            <div className="text-sm text-slate-500 font-light">
+          
+          {/* Bottom section */}
+          <div className="mt-12 pt-8 border-t border-purple-200/30 text-center">
+            <div className="text-sm text-slate-500 font-light mb-4">
               © {new Date().getFullYear()} Emotion Economy. Crafted with care for your healing journey.
             </div>
-            <motion.div
-              className="flex items-center justify-center space-x-2 mt-4"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-            >
+            <div className="flex items-center justify-center space-x-2">
               <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-slate-400 font-light tracking-widest">WITH COMPASSION</span>
+              <span className="text-xs text-slate-400 font-light tracking-widest uppercase">With Compassion</span>
               <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </footer>
       </div>
     </main>
