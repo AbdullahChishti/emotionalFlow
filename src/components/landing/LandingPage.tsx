@@ -558,49 +558,7 @@ export function LandingPage() {
           </motion.div>
         </section>
 
-        {/* Clean and reliable footer */}
-        <footer className="py-16 border-t border-purple-200/50 bg-white/30 backdrop-blur-sm">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            {/* Left side - Brand and tagline */}
-            <div className="text-center md:text-left space-y-3">
-              <div className="text-2xl font-light text-slate-800">Emotion Economy</div>
-              <p className="text-slate-600 font-light">Where healing begins with understanding.</p>
-              <div className="flex items-center justify-center md:justify-start space-x-2 pt-2">
-                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                <span className="text-sm text-slate-500 font-light">Always here for you</span>
-              </div>
-            </div>
 
-            {/* Right side - Links */}
-            <div className="flex justify-center md:justify-end">
-              <nav className="flex items-center space-x-8">
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
-                  Privacy
-                </a>
-                <div className="w-px h-4 bg-purple-300/50"></div>
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
-                  Terms
-                </a>
-                <div className="w-px h-4 bg-purple-300/50"></div>
-                <a href="#" className="text-slate-600 hover:text-purple-600 transition-colors duration-200 text-sm font-medium">
-                  Support
-                </a>
-              </nav>
-            </div>
-          </div>
-          
-          {/* Bottom section */}
-          <div className="mt-12 pt-8 border-t border-purple-200/30 text-center">
-            <div className="text-sm text-slate-500 font-light mb-4">
-              © {new Date().getFullYear()} Emotion Economy. Crafted with care for your healing journey.
-            </div>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-slate-400 font-light tracking-widest uppercase">With Compassion</span>
-              <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            </div>
-          </div>
-        </footer>
       </div>
     </main>
   )
