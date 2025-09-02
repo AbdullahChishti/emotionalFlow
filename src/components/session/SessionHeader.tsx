@@ -45,13 +45,13 @@ export function SessionHeader({
         {/* Left Section: Session Info */}
         <div className="flex items-center gap-3">
           <motion.div
-            className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center"
+            className="w-8 h-8 bg-brand-green-100 rounded-lg flex items-center justify-center"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             <MaterialSymbolsOutlined
               icon="psychology"
-              className="text-lg text-emerald-600"
+              className="text-lg text-brand-green-600"
               aria-hidden={true}
             />
           </motion.div>
@@ -75,11 +75,11 @@ export function SessionHeader({
           <p className={therapeuticTypography.body.caption}>
             Connected with
           </p>
-          <p className={`${therapeuticTypography.headline.h3} text-emerald-700`}>
+          <p className={`${therapeuticTypography.headline.h3} text-brand-green-700`}>
             {matchedUser.user.name}
           </p>
           <div className="flex items-center justify-center gap-1 mt-1">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-brand-green-500 rounded-full animate-pulse"></div>
             <span className={therapeuticTypography.body.small}>
               Online
             </span>
@@ -111,7 +111,7 @@ export function SessionHeader({
               sessionState.isPaused
                 ? 'bg-amber-500'
                 : sessionState.status === 'active'
-                ? 'bg-emerald-500'
+                ? 'bg-brand-green-500'
                 : 'bg-neutral-400'
             }`}></div>
             <span className={therapeuticTypography.body.caption}>
@@ -126,7 +126,7 @@ export function SessionHeader({
               onClick={() => onAction(sessionState.isPaused ? 'resume-session' : 'pause-session')}
               className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
                 sessionState.isPaused
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  ? 'bg-brand-green-600 hover:bg-brand-green-700 text-white'
                   : 'bg-amber-100 hover:bg-amber-200 text-amber-800'
               }`}
               whileHover={{ scale: 1.02 }}
@@ -191,7 +191,7 @@ export function SessionHeader({
         transition={{ delay: 0.5 }}
       >
         <motion.div
-          className="bg-gradient-to-r from-emerald-500 to-blue-500 h-1 rounded-full"
+          className="bg-gradient-to-r from-brand-green-500 to-brand-green-700 h-1 rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${Math.min((sessionState.duration / 1800) * 100, 100)}%` }} // 30 minutes max
           transition={{ duration: 0.5, ease: 'easeOut' }}

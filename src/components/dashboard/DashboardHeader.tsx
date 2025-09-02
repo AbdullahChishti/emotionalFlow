@@ -28,7 +28,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
         <div className="flex items-center justify-between">
           {/* Logo and Name */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-semibold text-sm">M</span>
             </div>
             <div>
@@ -42,7 +42,7 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
             {/* TEST BUTTON - Remove in production */}
             <button
               onClick={testOnboarding}
-              className="px-3 py-1 text-xs bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              className="px-3 py-1 text-xs bg-brand-green-500 hover:bg-brand-green-600 text-white rounded-lg transition-colors"
               title="Test Onboarding Flow"
             >
               <Play className="w-3 h-3 inline mr-1" />
