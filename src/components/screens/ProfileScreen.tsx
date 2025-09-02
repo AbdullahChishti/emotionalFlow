@@ -90,7 +90,7 @@ export function ProfileScreen() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -98,7 +98,7 @@ export function ProfileScreen() {
           style={{
             width: 300,
             height: 300,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(51, 95, 100, 0.15) 0%, transparent 70%)',
             filter: 'blur(60px)',
             top: '10%',
             left: '10%'
@@ -129,7 +129,7 @@ export function ProfileScreen() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-20 h-20 bg-gradient-to-br from-brand-green-400 to-brand-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-3xl text-white">person</span>
             </div>
             <h1 className="text-3xl font-bold text-secondary-800">Your Profile</h1>
@@ -144,7 +144,7 @@ export function ProfileScreen() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <div className="text-center p-4 bg-white/50 rounded-xl">
-              <div className="text-2xl font-bold text-primary-600">{profile.empathy_credits}</div>
+              <div className="text-2xl font-bold text-brand-green-600">{profile.empathy_credits}</div>
               <div className="text-sm text-secondary-600">Credits</div>
             </div>
             <div className="text-center p-4 bg-white/50 rounded-xl">
@@ -152,14 +152,55 @@ export function ProfileScreen() {
               <div className="text-sm text-secondary-600">Earned</div>
             </div>
             <div className="text-center p-4 bg-white/50 rounded-xl">
-              <div className="text-2xl font-bold text-blue-600">{profile.total_credits_spent}</div>
+              <div className="text-2xl font-bold text-brand-green-600">{profile.total_credits_spent}</div>
               <div className="text-sm text-secondary-600">Spent</div>
             </div>
             <div className="text-center p-4 bg-white/50 rounded-xl">
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-2xl font-bold text-brand-green-600">
                 {new Date(profile.last_active).toLocaleDateString()}
               </div>
               <div className="text-sm text-secondary-600">Last Active</div>
+            </div>
+          </motion.div>
+
+          {/* Quick Actions */}
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35 }}
+          >
+            <h3 className="text-lg font-semibold text-secondary-800">Quick Actions</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <motion.button
+                onClick={() => router.push('/wallet')}
+                className="p-4 bg-white/60 hover:bg-white/80 rounded-xl border border-white/50 hover:border-brand-green-200 transition-all duration-300 flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-brand-green-600">account_balance_wallet</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-secondary-800">Wallet</div>
+                  <div className="text-sm text-secondary-600">View credits & transactions</div>
+                </div>
+              </motion.button>
+
+              <motion.button
+                onClick={() => router.push('/community')}
+                className="p-4 bg-white/60 hover:bg-white/80 rounded-xl border border-white/50 hover:border-brand-green-200 transition-all duration-300 flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-brand-green-600">people</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-secondary-800">Community</div>
+                  <div className="text-sm text-secondary-600">Connect with others</div>
+                </div>
+              </motion.button>
             </div>
           </motion.div>
 
@@ -197,8 +238,8 @@ export function ProfileScreen() {
                     onClick={() => setPreferredMode(mode.value as any)}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       preferredMode === mode.value
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-white/50 hover:border-primary-300'
+                        ? 'border-brand-green-500 bg-brand-green-50'
+                        : 'border-white/50 hover:border-brand-green-300'
                     }`}
                   >
                     <span className="material-symbols-outlined text-2xl block mb-2">
@@ -225,8 +266,8 @@ export function ProfileScreen() {
                     onClick={() => setEmotionalCapacity(capacity.value as any)}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       emotionalCapacity === capacity.value
-                        ? 'border-primary-500 bg-primary-50'
-                        : 'border-white/50 hover:border-primary-300'
+                        ? 'border-brand-green-500 bg-brand-green-50'
+                        : 'border-white/50 hover:border-brand-green-300'
                     }`}
                   >
                     <span className={`material-symbols-outlined text-2xl block mb-2 ${capacity.color}`}>

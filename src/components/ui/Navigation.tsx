@@ -47,16 +47,7 @@ export function Navigation({ className = '' }: NavigationProps) {
       isCrisis: true,
       icon: 'emergency'
     },
-    {
-      name: 'Wallet',
-      href: '/wallet',
-      icon: 'account_balance_wallet'
-    },
-    {
-      name: 'Community',
-      href: '/community',
-      icon: 'people'
-    },
+
     {
       name: 'Profile',
       href: '/profile',
