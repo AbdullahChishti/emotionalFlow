@@ -25,6 +25,32 @@ const config: Config = {
         'brand-background': '#FFFFFF', // Pure white
         'brand-text-primary': '#2c492d', // Dark, soothing green
         'brand-text-secondary': '#58925a', // Mid-tone green for secondary text
+        // Primary colors for consistent theming
+        'primary': {
+          '50': '#FFFEFB',
+          '100': '#FFFDF7',
+          '200': '#F8F7F5',
+          '300': '#F0F4F7',
+          '400': '#E8EEF2',
+          '500': '#C9B8DB',
+          '600': '#B8A5D1',
+          '700': '#A092C7',
+          '800': '#887FBD',
+          '900': '#6F6BB3',
+        },
+        // Secondary colors
+        'secondary': {
+          '50': '#F8F9F8',
+          '100': '#F1F5F1',
+          '200': '#E4EBE4',
+          '300': '#D7E1D7',
+          '400': '#C9D7C9',
+          '500': '#A8C09A',
+          '600': '#98B088',
+          '700': '#889F76',
+          '800': '#788F64',
+          '900': '#687F52',
+        },
       },
       backgroundImage: {
         'brand-gradient': 'linear-gradient(to bottom right, #FFFFFF, #F1F8F1)',
