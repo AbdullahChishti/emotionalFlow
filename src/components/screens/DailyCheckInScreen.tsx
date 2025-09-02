@@ -2,12 +2,11 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Smile, Meh, Frown, Sparkles, PenLine, Check } from 'lucide-react'
 
 const moodOptions = [
-  { icon: Frown, label: 'Sad', color: 'text-blue-500' },
-  { icon: Meh, label: 'Neutral', color: 'text-yellow-500' },
-  { icon: Smile, label: 'Happy', color: 'text-green-500' },
+  { icon: 'sentiment_dissatisfied', label: 'Sad', color: 'text-blue-500' },
+  { icon: 'sentiment_neutral', label: 'Neutral', color: 'text-amber-500' },
+  { icon: 'sentiment_satisfied', label: 'Happy', color: 'text-green-500' },
 ]
 
 export function DailyCheckInScreen() {
@@ -16,81 +15,134 @@ export function DailyCheckInScreen() {
   const [journalText, setJournalText] = useState('')
 
   const getSliderColor = () => {
-    if (mood < 33) return 'from-blue-400 to-purple-400'
-    if (mood < 66) return 'from-yellow-400 to-orange-400'
-    return 'from-green-400 to-teal-400'
+    if (mood < 33) return 'from-blue-400 to-primary-400'
+    if (mood < 66) return 'from-amber-400 to-orange-400'
+    return 'from-green-400 to-emerald-400'
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-green-100 font-sans p-4">
-      <motion.div 
-        className="w-full max-w-md bg-white/70 backdrop-blur-lg rounded-3xl shadow-lg shadow-purple-500/10 p-8 space-y-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      >
-        <div className="text-center">
-          <Sparkles className="mx-auto w-10 h-10 text-purple-400 mb-2" />
-          <h1 className="text-3xl font-bold text-zinc-700">Daily Check-In</h1>
-          <p className="text-zinc-500 mt-1">How are you feeling right now?</p>
-        </div>
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(40px)',
+            top: '20%',
+            right: '20%'
+          }}
+          animate={{
+            y: [0, -20, 0],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+      </div>
 
-        {/* Mood Slider */}
-        <div className="space-y-4">
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={mood}
-            onChange={(e) => setMood(Number(e.target.value))}
-            className={`w-full h-3 bg-gradient-to-r ${getSliderColor()} rounded-full appearance-none cursor-pointer transition-all duration-300`}
-            style={{ 
-              '--thumb-color': mood < 33 ? '#60a5fa' : mood < 66 ? '#fbbf24' : '#2dd4bf',
-            }}
-          />
-          <div className="flex justify-between text-xs text-zinc-500">
-            <span>Not so good</span>
-            <span>Okay</span>
-            <span>Great!</span>
-          </div>
-        </div>
-
-        {/* Emoji Selection */}
-        <div className="flex justify-around items-center">
-          {moodOptions.map(({ icon: Icon, label, color }) => (
-            <motion.button
-              key={label}
-              onClick={() => setSelectedEmoji(label)}
-              className={`p-4 rounded-full transition-all duration-300 ${selectedEmoji === label ? 'bg-purple-100 scale-110' : 'hover:bg-gray-100'}`}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Icon className={`w-10 h-10 ${color}`} strokeWidth={1.5} />
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Quick Journal */}
-        <div className="relative">
-          <PenLine className="absolute top-3 left-3 w-5 h-5 text-zinc-400" />
-          <textarea
-            value={journalText}
-            onChange={(e) => setJournalText(e.target.value)}
-            placeholder="What's on your mind?"
-            className="w-full h-28 p-3 pl-10 bg-white/50 border border-purple-200/50 rounded-xl focus:ring-2 focus:ring-purple-300 focus:outline-none transition-all duration-300 resize-none"
-          />
-        </div>
-
-        {/* Save Button */}
-        <motion.button
-          className="w-full group inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white text-lg font-semibold rounded-full shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all duration-300"
-          whileHover={{ scale: 1.02, y: -1 }}
-          whileTap={{ scale: 0.98 }}
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <motion.div
+          className="w-full max-w-md glassmorphic rounded-3xl shadow-xl p-8 space-y-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <Check className="w-6 h-6" />
-          Save Check-In
-        </motion.button>
-      </motion.div>
+          {/* Header */}
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <span className="material-symbols-outlined text-4xl text-primary-600 mb-3 block">self_improvement</span>
+            <h1 className="text-3xl font-bold text-secondary-800">Daily Check-In</h1>
+            <p className="text-secondary-600 mt-2">How are you feeling right now?</p>
+          </motion.div>
+
+          {/* Mood Slider */}
+          <motion.div
+            className="space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <div className="space-y-4">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={mood}
+                onChange={(e) => setMood(Number(e.target.value))}
+                className={`w-full h-4 bg-gradient-to-r ${getSliderColor()} rounded-full appearance-none cursor-pointer transition-all duration-300`}
+              />
+              <div className="flex justify-between text-sm text-secondary-500">
+                <span>Not so good</span>
+                <span>Okay</span>
+                <span>Great!</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Emoji Selection */}
+          <motion.div
+            className="flex justify-around items-center py-4"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {moodOptions.map(({ icon, label, color }) => (
+              <motion.button
+                key={label}
+                onClick={() => setSelectedEmoji(label)}
+                className={`p-4 rounded-2xl transition-all duration-300 ${
+                  selectedEmoji === label
+                    ? 'bg-primary-100 scale-110 shadow-lg'
+                    : 'hover:bg-white/50'
+                }`}
+                whileHover={{ scale: selectedEmoji === label ? 1.1 : 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className={`material-symbols-outlined text-4xl ${color} block`}>{icon}</span>
+              </motion.button>
+            ))}
+          </motion.div>
+
+          {/* Quick Journal */}
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            <span className="material-symbols-outlined absolute top-4 left-4 text-secondary-400 text-xl">edit_note</span>
+            <textarea
+              value={journalText}
+              onChange={(e) => setJournalText(e.target.value)}
+              placeholder="What's on your mind?"
+              className="w-full h-32 p-4 pl-12 bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 resize-none text-secondary-800 placeholder:text-secondary-400"
+            />
+          </motion.div>
+
+          {/* Save Button */}
+          <motion.button
+            className="w-full group inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-lg font-semibold rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            <span className="material-symbols-outlined text-xl">check_circle</span>
+            Save Check-In
+          </motion.button>
+        </motion.div>
+      </div>
     </div>
   )
 }

@@ -1,62 +1,133 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
-import { Heart, Mail, KeyRound } from 'lucide-react'
+import Link from 'next/link'
 
 export function LoginScreen() {
   return (
-    <div className="min-h-screen w-full font-sans lg:grid lg:grid-cols-2">
-      {/* Left Panel - Emotional Branding */}
-      <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-gradient-to-br from-purple-100 via-blue-100 to-green-100 text-center text-zinc-800">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        >
-          <motion.div 
-            className="relative w-24 h-24 mx-auto mb-8 flex items-center justify-center"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
-          >
-            <div className="absolute inset-0 bg-purple-300 rounded-full blur-xl opacity-50"></div>
-            <Heart className="relative w-16 h-16 text-purple-500" fill="currentColor" />
-          </motion.div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">Welcome back. <br/> We're glad you're here.</h1>
-          <p className="max-w-md mx-auto text-lg text-zinc-600">
-            Your space for safe, reciprocal support is waiting for you.
-          </p>
-          <p className="mt-8 text-sm text-zinc-500 italic">“Healing starts with being seen.”</p>
-        </motion.div>
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            top: '10%',
+            left: '10%'
+          }}
+          animate={{
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 150,
+            height: 150,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            bottom: '20%',
+            right: '15%'
+          }}
+          animate={{
+            y: [0, -20, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 5
+          }}
+        />
       </div>
 
-      {/* Right Panel - Login Form */}
-      <div className="w-full flex items-center justify-center bg-zinc-50 py-16 px-4">
+      <div className="relative min-h-screen flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8 lg:hidden">
-            <Heart className="w-10 h-10 text-purple-400 mx-auto mb-3" strokeWidth={1.5} />
-            <h1 className="text-2xl font-bold text-zinc-800">Welcome Back</h1>
-          </div>
+          {/* Header */}
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              className="flex items-center justify-center gap-3 mb-6"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <span className="material-symbols-outlined text-4xl text-primary-600">psychology</span>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                MindWell
+              </h1>
+            </motion.div>
+            <h2 className="text-2xl font-semibold text-secondary-800 mb-2">Welcome Back</h2>
+            <p className="text-secondary-600">Continue your healing journey</p>
+          </motion.div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg shadow-zinc-500/10 space-y-6">
-             <h2 className="text-xl font-semibold text-center text-zinc-700">Sign in to your account</h2>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-              <input type="email" placeholder="Your Email" className="w-full bg-zinc-50 border border-zinc-200 rounded-lg py-3 pl-12 pr-4 text-zinc-700 placeholder:text-zinc-400 focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all outline-none" />
-            </div>
-            <div className="relative">
-              <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-              <input type="password" placeholder="Password" className="w-full bg-zinc-50 border border-zinc-200 rounded-lg py-3 pl-12 pr-4 text-zinc-700 placeholder:text-zinc-400 focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all outline-none" />
-            </div>
-          </div>
+          {/* Login Form */}
+          <motion.div
+            className="glassmorphic rounded-3xl p-8 space-y-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h3 className="text-xl font-semibold text-center text-secondary-800">Sign in to your account</h3>
 
-          <div className="mt-8 text-center">
-            <button className="w-full bg-zinc-800 text-white font-bold py-4 rounded-lg shadow-lg hover:bg-zinc-700 transition-colors">
-              Sign In
-            </button>
-            <p className="text-sm text-zinc-500 mt-4">
-              Don't have an account? <a href="/signup" className="font-medium text-purple-600 hover:underline">Sign Up</a>
+            <div className="space-y-4">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 text-xl">mail</span>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                />
+              </div>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 text-xl">lock</span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <motion.button
+                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Sign In
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div
+            className="mt-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <p className="text-secondary-600">
+              Don't have an account?{' '}
+              <Link href="/signup" className="font-semibold text-primary-600 hover:text-primary-700 transition-colors hover:underline">
+                Sign Up
+              </Link>
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

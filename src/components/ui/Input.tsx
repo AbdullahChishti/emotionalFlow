@@ -11,8 +11,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          'input',
-          error && 'border-status-error focus:border-status-error',
+          'w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 outline-none',
+          error && 'border-red-300 focus:border-red-300 focus:ring-red-200',
           className
         )}
         ref={ref}
@@ -32,8 +32,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         className={cn(
-          'input min-h-[80px] resize-none',
-          error && 'border-status-error focus:border-status-error',
+          'w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 outline-none resize-none min-h-[80px]',
+          error && 'border-red-300 focus:border-red-300 focus:ring-red-200',
           className
         )}
         ref={ref}
@@ -52,7 +52,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
       <label
         ref={ref}
         className={cn(
-          'text-sm font-medium text-primary leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+          'text-sm font-semibold text-secondary-700 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
           className
         )}
         {...props}

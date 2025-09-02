@@ -29,11 +29,19 @@ export default function SessionPage() {
     return null
   }
 
+  const handleNavigate = (screen: string, params?: any) => {
+    router.push(`/${screen.toLowerCase()}`)
+  }
+
+  const matchedUser = {
+    name: 'Alex' // This would typically come from your matching logic
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="pt-16 pb-20 md:pb-0">
-        <SessionScreen />
+        <SessionScreen onNavigate={handleNavigate} matchedUser={matchedUser} />
       </div>
     </div>
   )

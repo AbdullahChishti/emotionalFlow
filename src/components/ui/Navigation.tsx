@@ -1,8 +1,12 @@
 'use client'
 
+import React from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
 
 interface NavigationProps {
   className?: string
@@ -40,15 +44,21 @@ export function Navigation({ className = '' }: NavigationProps) {
   ]
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 ${className}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-40 glassmorphic ${className}`}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
-            </div>
-            <span className="text-lg font-semibold text-gray-900">MindWell</span>
+            <motion.div
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <span className="material-symbols-outlined text-2xl text-primary-600">psychology</span>
+              <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                MindWell
+              </span>
+            </motion.div>
           </Link>
 
           {/* Navigation Items */}
@@ -57,15 +67,17 @@ export function Navigation({ className = '' }: NavigationProps) {
               const isActive = pathname === item.href
               return (
                 <Link key={item.href} href={item.href}>
-                  <button
-                    className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  <motion.button
+                    className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
                       isActive
-                        ? 'text-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
+                        ? 'text-primary-600 bg-primary-50 shadow-sm'
+                        : 'text-secondary-600 hover:text-primary-600 hover:bg-white/50'
                     }`}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
                     {item.name}
-                  </button>
+                  </motion.button>
                 </Link>
               )
             })}

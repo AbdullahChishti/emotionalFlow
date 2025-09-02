@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ['latin'] })
 
 // Define metadata for the application
 export const metadata: Metadata = {
-  title: 'Heard - Your Mental Wellness Companion',
-  description: 'A safe space to find peace, support, and personal growth.',
+  title: 'MindWell - Your Personal Therapy Companion',
+  description: 'Connect with our AI-powered therapy bot for personalized support and guidance, anytime, anywhere.',
 }
 
 // Define the root layout for the application
@@ -21,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+      </head>
       {/* Apply the Inter font className to the body */}
       <body className={inter.className}>
         <ColorThemeProvider>

@@ -24,8 +24,7 @@ export function ParticlesTest() {
       
       <Particles
         id="tsparticles-test"
-        init={particlesInit}
-        loaded={particlesLoaded}
+        url=""
         className="absolute inset-0"
         options={{
           fullScreen: { enable: false },

@@ -7,6 +7,8 @@ import { Dashboard } from '@/components/dashboard/Dashboard'
 import { OnboardingFlow } from '@/components/auth/OnboardingFlow'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Navigation } from '@/components/ui/Navigation'
+import { ScreenRouter } from '@/components/ScreenRouter'
+import { ScreenDemo } from '@/components/screens/ScreenDemo'
 
 export default function Home() {
   const { user, loading, needsOnboarding } = useAuth()

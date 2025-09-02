@@ -1,27 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  /* Therapeutic theme colors (default) */
-  --color-background: #fffdf7;
-  --color-foreground: #4a4a4a;
+  /* MindWell Design System Colors */
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
   --color-card: #ffffff;
-  --color-card-foreground: #4a4a4a;
+  --color-card-foreground: #0f172a;
   --color-popover: #ffffff;
-  --color-popover-foreground: #4a4a4a;
-  --color-primary: #c9b8db;
+  --color-popover-foreground: #0f172a;
+
+  /* Primary colors (Sky blue theme) */
+  --color-primary: #0ea5e9;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #a8c09a;
-  --color-secondary-foreground: #4a4a4a;
-  --color-muted: #f8f7f5;
-  --color-muted-foreground: #6b6b6b;
-  --color-accent: #c9b8db;
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+
+  /* Secondary colors (Slate theme) */
+  --color-secondary: #64748b;
+  --color-secondary-foreground: #0f172a;
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+
+  /* Other colors */
+  --color-muted: #f8fafc;
+  --color-muted-foreground: #64748b;
+  --color-accent: #0ea5e9;
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #b8c5e0;
-  --color-input: #b8c5e0;
-  --color-ring: #c9b8db;
-  --radius: 0.5rem;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #0ea5e9;
+  --radius: 0.75rem;
 }
 
 /* Dark theme overrides for Purple Sparkle */
@@ -52,5 +78,18 @@
   body {
     background-color: theme(colors.background);
     color: theme(colors.foreground);
+  }
+}
+
+@layer utilities {
+  .glassmorphic {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
   }
 }

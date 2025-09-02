@@ -1,88 +1,181 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, User, Mail, KeyRound } from 'lucide-react'
+import Link from 'next/link'
 
 export function SignupScreen() {
   const [intent, setIntent] = useState<'listen' | 'support' | null>(null)
 
   return (
-    <div className="min-h-screen w-full font-sans lg:grid lg:grid-cols-2">
-      {/* Left Panel - Emotional Branding */}
-      <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-gradient-to-br from-purple-100 via-blue-100 to-green-100 text-center text-zinc-800">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        >
-          <motion.div 
-            className="relative w-24 h-24 mx-auto mb-8 flex items-center justify-center"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
-          >
-            <div className="absolute inset-0 bg-purple-300 rounded-full blur-xl opacity-50"></div>
-            <Heart className="relative w-16 h-16 text-purple-500" fill="currentColor" />
-          </motion.div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">You deserve to be heard. <br/> And so does everyone else.</h1>
-          <p className="max-w-md mx-auto text-lg text-zinc-600">
-            Heard is a safe space where care goes both ways. You give support. You get support. You never have to carry it alone.
-          </p>
-          <p className="mt-8 text-sm text-zinc-500 italic">“Healing starts with being seen.”</p>
-        </motion.div>
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 220,
+            height: 220,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            top: '8%',
+            left: '8%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 180,
+            height: 180,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            bottom: '15%',
+            right: '12%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 6
+          }}
+        />
       </div>
 
-      {/* Right Panel - Signup Form */}
-      <div className="w-full flex items-center justify-center bg-zinc-50 py-16 px-4">
+      <div className="relative min-h-screen flex items-center justify-center px-4 py-16">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8 lg:hidden">
-            <Heart className="w-10 h-10 text-purple-400 mx-auto mb-3" strokeWidth={1.5} />
-            <h1 className="text-2xl font-bold text-zinc-800">Welcome to Heard</h1>
-          </div>
+          {/* Header */}
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              className="flex items-center justify-center gap-3 mb-6"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <span className="material-symbols-outlined text-4xl text-primary-600">psychology</span>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                MindWell
+              </h1>
+            </motion.div>
+            <h2 className="text-2xl font-semibold text-secondary-800 mb-2">Join Your Healing Community</h2>
+            <p className="text-secondary-600">Start your journey toward better mental wellness</p>
+          </motion.div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg shadow-zinc-500/10 space-y-6">
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-              <input type="text" placeholder="Your Name" className="w-full bg-zinc-50 border border-zinc-200 rounded-lg py-3 pl-12 pr-4 text-zinc-700 placeholder:text-zinc-400 focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all outline-none" />
-            </div>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-              <input type="email" placeholder="Your Email" className="w-full bg-zinc-50 border border-zinc-200 rounded-lg py-3 pl-12 pr-4 text-zinc-700 placeholder:text-zinc-400 focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all outline-none" />
-            </div>
-            <div className="relative">
-              <KeyRound className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400" />
-              <input type="password" placeholder="Password" className="w-full bg-zinc-50 border border-zinc-200 rounded-lg py-3 pl-12 pr-4 text-zinc-700 placeholder:text-zinc-400 focus:ring-2 focus:ring-purple-300 focus:border-purple-300 transition-all outline-none" />
+          {/* Signup Form */}
+          <motion.div
+            className="glassmorphic rounded-3xl p-8 space-y-6"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h3 className="text-xl font-semibold text-center text-secondary-800">Create your account</h3>
+
+            <div className="space-y-4">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 text-xl">person</span>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                />
+              </div>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 text-xl">mail</span>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                />
+              </div>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 text-xl">lock</span>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                />
+              </div>
             </div>
 
+            {/* Intent Selection */}
             <div className="pt-4 space-y-4">
-              <p className="text-center text-sm text-zinc-600 font-medium">I'm here to...</p>
+              <p className="text-center text-sm text-secondary-600 font-medium">I'm here to...</p>
               <div className="grid grid-cols-2 gap-4">
-                <motion.button 
-                  className={`w-full text-center p-4 rounded-lg border-2 font-semibold transition-all duration-300 ${intent === 'listen' ? 'bg-purple-500 border-purple-500 text-white' : 'bg-zinc-50 border-zinc-200 hover:border-purple-300'}`}
+                <motion.button
+                  className={`w-full text-center p-4 rounded-xl border-2 font-semibold transition-all duration-300 ${
+                    intent === 'listen'
+                      ? 'bg-primary-500 border-primary-500 text-white shadow-lg'
+                      : 'bg-white/80 backdrop-blur-sm border-white/30 hover:border-primary-300 text-secondary-700'
+                  }`}
                   onClick={() => setIntent('listen')}
                   whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: intent === 'listen' ? 1 : 1.02 }}
                 >
+                  <span className="material-symbols-outlined text-xl mb-1 block">headphones</span>
                   Listen
                 </motion.button>
-                <motion.button 
-                  className={`w-full text-center p-4 rounded-lg border-2 font-semibold transition-all duration-300 ${intent === 'support' ? 'bg-blue-500 border-blue-500 text-white' : 'bg-zinc-50 border-zinc-200 hover:border-blue-300'}`}
+                <motion.button
+                  className={`w-full text-center p-4 rounded-xl border-2 font-semibold transition-all duration-300 ${
+                    intent === 'support'
+                      ? 'bg-primary-500 border-primary-500 text-white shadow-lg'
+                      : 'bg-white/80 backdrop-blur-sm border-white/30 hover:border-primary-300 text-secondary-700'
+                  }`}
                   onClick={() => setIntent('support')}
                   whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: intent === 'support' ? 1 : 1.02 }}
                 >
+                  <span className="material-symbols-outlined text-xl mb-1 block">favorite</span>
                   Get Support
                 </motion.button>
               </div>
             </div>
-          </div>
 
-          <div className="mt-8 text-center">
-            <button className="w-full bg-zinc-800 text-white font-bold py-4 rounded-lg shadow-lg hover:bg-zinc-700 transition-colors disabled:bg-zinc-400 disabled:cursor-not-allowed" disabled={!intent}>
-              Enter Heard
-            </button>
-            <p className="text-sm text-zinc-500 mt-4">
-              Already have an account? <a href="#" className="font-medium text-purple-600 hover:underline">Sign In</a>
+            <div className="pt-2">
+              <motion.button
+                className={`w-full font-bold py-4 rounded-xl shadow-lg transition-all duration-300 transform ${
+                  intent
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-xl hover:scale-105 shadow-primary-500/30'
+                    : 'bg-secondary-300 text-secondary-500 cursor-not-allowed'
+                }`}
+                disabled={!intent}
+                whileHover={intent ? { scale: 1.02 } : {}}
+                whileTap={intent ? { scale: 0.98 } : {}}
+              >
+                Join MindWell
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Footer */}
+          <motion.div
+            className="mt-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <p className="text-secondary-600">
+              Already have an account?{' '}
+              <Link href="/login" className="font-semibold text-primary-600 hover:text-primary-700 transition-colors hover:underline">
+                Sign In
+              </Link>
             </p>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>

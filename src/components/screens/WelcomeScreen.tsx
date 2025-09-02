@@ -1,10 +1,14 @@
 'use client'
 
-import { motion, Variants } from 'framer-motion'
-import { Ear, Users, Heart } from 'lucide-react'
+import React from 'react'
+import { motion } from 'framer-motion'
+
+interface NavigationParams {
+  mode?: 'listen' | 'support'
+}
 
 interface WelcomeScreenProps {
-  onNavigate: (screen: string, params?: any) => void
+  onNavigate: (screen: string, params?: NavigationParams) => void
 }
 
 export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
@@ -16,79 +20,107 @@ export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
     onNavigate('MoodSelection', { mode: 'support' })
   }
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.1 },
-    },
-  }
-
-  const itemVariants: Variants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.6, ease: 'easeOut' },
-    },
-  }
-
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-green-50 p-4 font-sans">
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="container mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center"
-      >
-        <motion.div variants={itemVariants} className="mb-10">
-          <motion.div
-            className="relative w-24 h-24 mx-auto flex items-center justify-center"
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 250,
+            height: 250,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            top: '15%',
+            left: '10%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            bottom: '20%',
+            right: '15%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 7
+          }}
+        />
+      </div>
+
+      <div className="min-h-screen flex items-center justify-center p-4 relative">
+        <motion.div
+          className="container mx-auto px-6 py-12 flex flex-col items-center justify-center flex-grow text-center"
+        >
+          <motion.div className="mb-10">
+            <motion.div
+              className="relative w-24 h-24 mx-auto flex items-center justify-center"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
+            >
+              <div className="absolute inset-0 bg-primary-300 rounded-full blur-xl opacity-30"></div>
+              <span className="relative text-6xl text-primary-600">🧠</span>
+            </motion.div>
+          </motion.div>
+
+          <motion.h1 className="text-4xl md:text-5xl font-bold text-secondary-800 leading-tight mb-4">
+            You&apos;re not alone here.
+          </motion.h1>
+
+          <motion.p
+            className="text-lg text-secondary-600 max-w-md mb-12 leading-relaxed"
           >
-            <div className="absolute inset-0 bg-purple-300 rounded-full blur-xl opacity-50"></div>
-            <Heart className="relative w-16 h-16 text-purple-500" fill="currentColor" />
+            This is a safe space where support flows both ways. You can speak, you can listen. Either way, you&apos;re part of something healing.
+          </motion.p>
+
+          <motion.div className="w-full max-w-sm space-y-6">
+            <div>
+              <motion.button
+                onClick={handleSupportPress}
+                className="w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 group text-lg"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="text-xl">❤️</span>
+                I need support
+              </motion.button>
+              <p className="text-sm text-secondary-500 mt-2 px-4">Spend your empathy credits and share freely.</p>
+            </div>
+
+            <div>
+              <motion.button
+                onClick={handleListenPress}
+                className="w-full py-4 glassmorphic text-secondary-800 rounded-xl hover:bg-white/50 transition-all duration-300 shadow-md flex items-center justify-center gap-3 group font-medium text-lg"
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span className="text-xl">🎧</span>
+                I want to listen
+              </motion.button>
+              <p className="text-sm text-secondary-500 mt-2 px-4">Be there for someone and earn empathy credits.</p>
+            </div>
           </motion.div>
         </motion.div>
-
-        <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-zinc-800 leading-tight mb-4">
-          You’re not alone here.
-        </motion.h1>
-
-        <motion.p
-          variants={itemVariants}
-          className="text-lg text-zinc-600 max-w-md mb-12 leading-relaxed"
-        >
-          This is a safe space where support flows both ways. You can speak, you can listen. Either way, you’re part of something healing.
-        </motion.p>
-
-        <motion.div variants={itemVariants} className="w-full max-w-sm space-y-6">
-          <div>
-            <motion.button
-              onClick={handleSupportPress}
-              className="w-full py-4 bg-purple-500 text-white rounded-xl font-semibold shadow-lg shadow-purple-500/20 hover:shadow-xl hover:shadow-purple-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-3 group text-lg"
-              whileTap={{ scale: 0.98 }}
-            >
-              <Users className="w-5 h-5" />
-              I need support
-            </motion.button>
-            <p className="text-sm text-zinc-500 mt-2 px-4">Spend your empathy credits and share freely.</p>
-          </div>
-
-          <div>
-            <motion.button
-              onClick={handleListenPress}
-              className="w-full py-4 bg-white/80 backdrop-blur-sm border border-zinc-300/60 text-zinc-700 rounded-xl hover:bg-white transition-all duration-300 shadow-md shadow-zinc-900/5 flex items-center justify-center gap-3 group font-medium text-lg"
-              whileTap={{ scale: 0.98 }}
-            >
-              <Ear className="w-5 h-5" />
-              I want to listen
-            </motion.button>
-            <p className="text-sm text-zinc-500 mt-2 px-4">Be there for someone and earn empathy credits.</p>
-          </div>
-        </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }

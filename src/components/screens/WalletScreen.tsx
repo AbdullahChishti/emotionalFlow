@@ -1,11 +1,16 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
-import { ChevronLeft, ArrowUp, ArrowDown, Coins, TrendingUp, Heart } from 'lucide-react'
-import SketchbookBackground from '../ui/SketchbookBackground'
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
+
+interface NavigationParams {
+  mode?: 'listen' | 'support'
+}
 
 interface WalletScreenProps {
-  onNavigate: (screen: string, params?: any) => void
+  onNavigate: (screen: string, params?: NavigationParams) => void
 }
 
 const transactions = [
@@ -37,46 +42,109 @@ const totalSent = transactions.filter(t => t.type === 'sent').reduce((sum, t) =>
 
 export function WalletScreen({ onNavigate }: WalletScreenProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 font-sans">
-      <SketchbookBackground />
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 250,
+            height: 250,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            top: '15%',
+            left: '10%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(50px)',
+            bottom: '20%',
+            right: '15%'
+          }}
+          animate={{
+            y: [0, -25, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 7
+          }}
+        />
+      </div>
+
       {/* Header */}
-      <header className="flex items-center justify-between p-4 bg-stone-50/80 backdrop-blur-sm border-b border-zinc-200/80 z-10">
-        <button onClick={() => onNavigate('Welcome')} className="p-2 text-zinc-600 hover:bg-zinc-200/70 rounded-full transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-xl font-medium text-zinc-800 tracking-tight">Wallet</h1>
-        <div className="w-10" />
+      <header className="relative flex items-center justify-between p-6 glassmorphic z-10">
+        <motion.button
+          onClick={() => onNavigate('Welcome')}
+          className="p-3 text-secondary-500 hover:bg-secondary-100/70 hover:text-secondary-700 rounded-full transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <span className="material-symbols-outlined text-2xl">arrow_back</span>
+        </motion.button>
+        <div className="text-center">
+          <motion.div
+            className="flex items-center justify-center gap-3 mb-2"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <span className="material-symbols-outlined text-3xl text-primary-600">psychology</span>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              MindWell
+            </h1>
+          </motion.div>
+          <h2 className="text-lg font-semibold text-secondary-800">Your Wallet</h2>
+        </div>
+        <div className="w-14" />
       </header>
 
-      <main className="flex-1 flex flex-col p-4 md:p-6 z-0 overflow-y-auto">
+      <main className="relative flex-1 flex flex-col p-6 z-0 overflow-y-auto">
         <div className="w-full max-w-2xl mx-auto">
           {/* Main Balance Card */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: 'easeOut' }}
-            className="bg-white/70 border border-zinc-200/80 rounded-2xl p-6 mb-6 text-center shadow-lg shadow-zinc-900/5 relative"
+            className="glassmorphic rounded-3xl p-8 mb-8 text-center shadow-2xl shadow-secondary-900/20 relative overflow-hidden"
+            whileHover={{ scale: 1.02 }}
           >
-            <div className="absolute top-4 right-4 p-2 bg-amber-100/80 rounded-full border border-amber-200/80">
-                <Coins className="w-5 h-5 text-amber-600" />
+            <div className="absolute top-6 right-6 p-3 bg-primary-100/80 rounded-full border border-primary-200/60">
+                <span className="material-symbols-outlined text-2xl text-primary-600">monetization_on</span>
             </div>
-            <p className="text-sm text-zinc-500 mb-1">Your Balance</p>
-            <p className="text-5xl font-light text-zinc-800 tracking-tight">{totalBalance} <span className="text-3xl text-zinc-400">credits</span></p>
+            <p className="text-base text-secondary-600 mb-2 font-medium">Your Balance</p>
+            <p className="text-6xl font-bold text-secondary-800 tracking-tight mb-2">{totalBalance}</p>
+            <p className="text-2xl text-secondary-500 font-medium">empathy credits</p>
           </motion.div>
 
           {/* Stat Cards */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <StatCard icon={ArrowDown} label="Received" value={totalReceived} color="text-emerald-600" bgColor="bg-emerald-50" borderColor="border-emerald-200/80" />
-            <StatCard icon={ArrowUp} label="Sent" value={totalSent} color="text-sky-600" bgColor="bg-sky-50" borderColor="border-sky-200/80" />
+          <div className="grid grid-cols-2 gap-6 mb-10">
+            <StatCard icon="arrow_downward" label="Received" value={totalReceived} color="text-green-600" />
+            <StatCard icon="arrow_upward" label="Sent" value={totalSent} color="text-primary-600" />
           </div>
 
           {/* Transaction History */}
           <div>
-            <h2 className="text-lg font-medium text-zinc-700 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-zinc-400" />
-              History
-            </h2>
-            <div className="space-y-3">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="material-symbols-outlined text-2xl text-secondary-600">history</span>
+              <h2 className="text-xl font-bold text-secondary-800">Transaction History</h2>
+            </div>
+            <div className="space-y-4">
               {transactions.map((transaction, index) => (
                 <motion.div
                   key={transaction.id}
@@ -90,13 +158,16 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
             </div>
           </div>
 
-          <div className="mt-8 text-center">
-            <button
+          <div className="mt-12 text-center">
+            <motion.button
               onClick={() => onNavigate('Welcome')}
-              className="w-full max-w-sm mx-auto py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 text-lg"
+              className="w-full max-w-sm mx-auto py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg"
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
             >
+              <span className="material-symbols-outlined text-xl">psychology</span>
               Start a New Session
-            </button>
+            </motion.button>
           </div>
         </div>
       </main>
@@ -104,34 +175,40 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
   )
 }
 
-const StatCard = ({ icon: Icon, label, value, color, bgColor, borderColor }: any) => (
-  <div className={`p-4 rounded-2xl border ${bgColor} ${borderColor}`}>
-    <div className="flex items-center gap-3">
-      <div className={`p-2 rounded-full ${color.replace('text-', 'bg-').replace('-600', '-100/80')}`}>
-        <Icon className={`w-5 h-5 ${color}`} />
-      </div>
-      <div>
-        <p className={`text-2xl font-medium ${color}`}>{label === 'Received' ? '+' : '-'}{value}</p>
-        <p className="text-sm text-zinc-500 -mt-1">{label}</p>
-      </div>
+const StatCard = ({ icon, label, value, color }: { icon: string; label: string; value: number; color: string }) => (
+  <motion.div
+    className="glassmorphic rounded-2xl p-6 flex items-center gap-4"
+    whileHover={{ scale: 1.05 }}
+    transition={{ duration: 0.2 }}
+  >
+    <div className={`p-3 rounded-full bg-primary-100/60 border border-primary-200/60`}>
+      <span className={`material-symbols-outlined text-2xl ${color}`}>{icon}</span>
     </div>
-  </div>
+    <div>
+      <p className={`text-3xl font-bold ${color}`}>{label === 'Received' ? '+' : '-'}{value}</p>
+      <p className="text-sm text-secondary-600 font-medium">{label}</p>
+    </div>
+  </motion.div>
 )
 
-const TransactionItem = ({ type, amount, description, source, time }: any) => (
-  <div className="flex items-center p-3 bg-white/60 border border-zinc-200/80 rounded-xl hover:bg-white/100 hover:border-zinc-300/80 transition-colors duration-200">
-    <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 ${ type === 'received' ? 'bg-emerald-100/80 text-emerald-700' : 'bg-sky-100/80 text-sky-700' }`}>
-      {type === 'received' ? <ArrowDown className="w-5 h-5" /> : <ArrowUp className="w-5 h-5" />}
+const TransactionItem = ({ type, amount, description, source, time }: { type: string; amount: number; description: string; source: string; time: string }) => (
+  <motion.div
+    className="glassmorphic rounded-2xl p-5 flex items-center hover:shadow-lg transition-all duration-300"
+    whileHover={{ scale: 1.02 }}
+    transition={{ duration: 0.2 }}
+  >
+    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 ${ type === 'received' ? 'bg-green-100/80 text-green-600' : 'bg-primary-100/80 text-primary-600' } border border-opacity-30 ${ type === 'received' ? 'border-green-200' : 'border-primary-200' }`}>
+      <span className="material-symbols-outlined text-xl">{type === 'received' ? 'arrow_downward' : 'arrow_upward'}</span>
     </div>
     <div className="flex-1">
-      <p className="font-medium text-zinc-800">{description}</p>
-      <p className="text-sm text-zinc-500">{source}</p>
+      <p className="font-semibold text-secondary-800 text-base">{description}</p>
+      <p className="text-sm text-secondary-600">{source}</p>
     </div>
     <div className="text-right">
-      <p className={`font-semibold text-lg ${ type === 'received' ? 'text-emerald-600' : 'text-sky-600' }`}>
+      <p className={`font-bold text-xl ${ type === 'received' ? 'text-green-600' : 'text-primary-600' }`}>
         {type === 'received' ? '+' : '-'}{amount}
       </p>
-      <p className="text-xs text-zinc-400">{time}</p>
+      <p className="text-xs text-secondary-500 font-medium">{time}</p>
     </div>
-  </div>
+  </motion.div>
 )

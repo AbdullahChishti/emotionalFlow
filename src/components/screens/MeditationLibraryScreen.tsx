@@ -83,7 +83,7 @@ export function MeditationLibraryScreen() {
               key={meditation.id}
               className="group bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg shadow-purple-500/5 overflow-hidden cursor-pointer"
               variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
-              whileHover={{ y: -5, shadow: '0 10px 20px rgba(168, 85, 247, 0.1)' }}
+              whileHover={{ y: -5 }}
             >
               <div className="relative h-40 bg-gradient-to-br from-purple-200 to-blue-200">
                 {/* Placeholder for image */}

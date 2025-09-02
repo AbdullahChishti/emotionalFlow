@@ -72,11 +72,9 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
       
       case 'Session':
         return (
-          <SessionScreen 
-            onNavigate={handleNavigate} 
-            mood={screenParams.mood || 5}
-            mode={screenParams.mode || 'listen'}
-            matchedUser={screenParams.matchedUser || { name: 'Alex', avatar: '😊' }}
+          <SessionScreen
+            onNavigate={handleNavigate}
+            matchedUser={screenParams.matchedUser || { name: 'Alex' }}
           />
         )
       

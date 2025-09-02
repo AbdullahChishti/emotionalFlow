@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Heart, Ear } from 'lucide-react'
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -76,63 +77,75 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-zinc-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        className="fixed inset-0 bg-secondary-900/20 backdrop-blur-sm flex items-center justify-center p-4 z-50"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="bg-stone-50 rounded-2xl p-6 w-full max-w-md border border-zinc-200/80 shadow-2xl shadow-zinc-900/10"
+          className="glassmorphic rounded-3xl p-8 w-full max-w-md shadow-2xl shadow-secondary-900/20"
         >
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex justify-between items-start mb-8">
             <div>
-              <h2 className="text-2xl font-light text-zinc-800">Check-in</h2>
-              <p className="text-sm text-zinc-500">How are you feeling right now?</p>
+              <h2 className="text-3xl font-bold text-secondary-800">Daily Check-in</h2>
+              <p className="text-base text-secondary-600 mt-1">How are you feeling right now?</p>
             </div>
-            <button
+            <motion.button
               onClick={onClose}
-              className="p-2 text-zinc-500 hover:bg-zinc-200/70 rounded-full transition-colors"
+              className="p-3 text-secondary-500 hover:bg-secondary-100/70 hover:text-secondary-700 rounded-full transition-all duration-300"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <X className="w-5 h-5" />
-            </button>
+              <span className="material-symbols-outlined text-2xl">close</span>
+            </motion.button>
           </div>
 
           {/* Mood Scale */}
-          <div className="mb-8">
-            <div className="text-center mb-4">
-              <div className="text-6xl mb-2 transition-transform duration-300 ease-out" style={{ transform: `scale(${1 + (moodScore - 5) / 20})` }}>
+          <div className="mb-10">
+            <div className="text-center mb-6">
+              <motion.div
+                className="text-7xl mb-3 transition-transform duration-300 ease-out"
+                style={{ transform: `scale(${1 + (moodScore - 5) / 20})` }}
+                key={moodScore}
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 + (moodScore - 5) / 20 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 {moodEmojis[moodScore - 1]}
-              </div>
-              <div className="text-xl font-medium text-zinc-700">{moodLabels[moodScore - 1]}</div>
-              <div className="text-sm text-zinc-400 font-mono">
+              </motion.div>
+              <div className="text-2xl font-bold text-secondary-800">{moodLabels[moodScore - 1]}</div>
+              <div className="text-base text-secondary-500 font-medium mt-1">
                 {moodScore}/10
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <input
                 type="range"
                 min="1"
                 max="10"
                 value={moodScore}
                 onChange={(e) => setMoodScore(parseInt(e.target.value))}
-                className="w-full h-2 bg-zinc-200/80 rounded-lg appearance-none cursor-pointer mood-slider"
+                className="w-full h-3 bg-secondary-200 rounded-full appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, rgb(14 165 233) 0%, rgb(14 165 233) ${(moodScore - 1) * 11.11}%, rgb(148 163 184) ${(moodScore - 1) * 11.11}%, rgb(148 163 184) 100%)`
+                }}
               />
             </div>
           </div>
 
           {/* Availability Options */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-4 mb-10">
             <AvailabilityToggle
-              icon={Heart}
+              icon="favorite"
               label="Seeking Support"
               description="I could use someone to listen"
               checked={seekingSupport}
               onChange={setSeekingSupport}
             />
             <AvailabilityToggle
-              icon={Ear}
+              icon="headphones"
               label="Willing to Listen"
               description="I can support others right now"
               checked={willingToListen}
@@ -141,55 +154,66 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
           </div>
 
           {/* Notes */}
-          <div className="mb-8">
+          <div className="mb-10">
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Add a private note..."
-              className="w-full p-3 border border-zinc-200/80 rounded-lg bg-white/50 resize-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition-shadow,border-color duration-200 shadow-inner-sm text-zinc-700 placeholder-zinc-400"
-              rows={2}
+              placeholder="Add a private note... (optional)"
+              className="w-full p-4 border border-secondary-200/80 rounded-xl bg-white/60 backdrop-blur-sm resize-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 transition-all duration-300 shadow-inner text-secondary-700 placeholder-secondary-400 font-medium"
+              rows={3}
               maxLength={200}
             />
           </div>
 
           {/* Submit Button */}
-          <button
+          <motion.button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center gap-2 text-lg disabled:opacity-50 disabled:scale-100"
+            className="w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg disabled:opacity-50 disabled:scale-100"
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
-            {loading ? <LoadingSpinner size="sm" /> : 'Update Mood'}
-          </button>
+            {loading ? <LoadingSpinner size="sm" /> : (
+              <>
+                <span className="material-symbols-outlined text-xl">check_circle</span>
+                Update Mood
+              </>
+            )}
+          </motion.button>
         </motion.div>
       </motion.div>
     </AnimatePresence>
   )
 }
 
-const AvailabilityToggle = ({ icon: Icon, label, description, checked, onChange }: any) => (
-  <div
+const AvailabilityToggle = ({ icon, label, description, checked, onChange }: { icon: string; label: string; description: string; checked: boolean; onChange: (checked: boolean) => void }) => (
+  <motion.div
     onClick={() => onChange(!checked)}
-    className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all duration-300 ${ 
-      checked 
-        ? 'bg-white border-transparent shadow-lg shadow-indigo-500/10 ring-2 ring-indigo-400'
-        : 'bg-white/60 border-zinc-200/80 hover:border-zinc-300 hover:bg-white'
+    className={`flex items-center justify-between p-5 border rounded-2xl cursor-pointer transition-all duration-300 glassmorphic ${
+      checked
+        ? 'bg-white/80 border-primary-300 shadow-lg shadow-primary-500/20 ring-2 ring-primary-400/50'
+        : 'bg-white/40 border-secondary-200/60 hover:border-secondary-300 hover:bg-white/60'
     }`}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
   >
     <div className="flex items-center space-x-4">
-      <div className={`p-2 rounded-full transition-colors duration-300 ${checked ? 'bg-indigo-100' : 'bg-zinc-100'}`}>
-        <Icon className={`w-5 h-5 transition-colors duration-300 ${checked ? 'text-indigo-500' : 'text-zinc-500'}`} />
+      <div className={`p-3 rounded-full transition-all duration-300 ${checked ? 'bg-primary-100 shadow-sm' : 'bg-secondary-100'}`}>
+        <span className={`material-symbols-outlined text-xl transition-colors duration-300 ${checked ? 'text-primary-600' : 'text-secondary-500'}`}>
+          {icon}
+        </span>
       </div>
       <div>
-        <div className={`font-medium transition-colors duration-300 ${checked ? 'text-zinc-800' : 'text-zinc-700'}`}>{label}</div>
-        <div className={`text-sm transition-colors duration-300 ${checked ? 'text-zinc-600' : 'text-zinc-500'}`}>{description}</div>
+        <div className={`font-semibold transition-colors duration-300 ${checked ? 'text-secondary-800' : 'text-secondary-700'}`}>{label}</div>
+        <div className={`text-sm transition-colors duration-300 ${checked ? 'text-secondary-600' : 'text-secondary-500'}`}>{description}</div>
       </div>
     </div>
-    <div className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-300 ${checked ? 'bg-indigo-500' : 'bg-zinc-300'}`}>
-      <motion.div 
-        layout 
+    <div className={`w-12 h-7 flex items-center rounded-full p-1 transition-all duration-300 ${checked ? 'bg-primary-500 shadow-sm' : 'bg-secondary-300'}`}>
+      <motion.div
+        layout
         transition={{ type: 'spring', stiffness: 700, damping: 30 }}
         className="w-5 h-5 bg-white rounded-full shadow-sm"
       />
     </div>
-  </div>
+  </motion.div>
 )

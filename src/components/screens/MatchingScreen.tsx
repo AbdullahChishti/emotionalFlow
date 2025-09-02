@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, Check, Heart } from 'lucide-react'
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
 
 // --- Helper Components ---
 const FloatingParticles = () => (
@@ -10,9 +11,9 @@ const FloatingParticles = () => (
     {[...Array(15)].map((_, i) => (
       <motion.div
         key={i}
-        className="absolute bg-white/10 rounded-full"
+        className="absolute bg-primary-400/20 rounded-full"
         initial={{ y: '100%', x: `${Math.random() * 100}%`, opacity: 0 }}
-        animate={{ y: '-10%', opacity: [0, 1, 0] }}
+        animate={{ y: '-10%', opacity: [0, 0.6, 0] }}
         transition={{
           duration: Math.random() * 10 + 10,
           repeat: Infinity,
@@ -33,20 +34,26 @@ const AnimatedChecklistItem = ({ text, delay }: { text: string; delay: number })
     transition={{ duration: 0.5, delay }}
   >
     <motion.div
-      className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center"
+      className="w-6 h-6 rounded-full bg-primary-500/20 flex items-center justify-center"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay: delay + 0.3, type: 'spring', stiffness: 300, damping: 20 }}
     >
-      <Check className="w-4 h-4 text-green-300" />
+      <span className="material-symbols-outlined text-primary-600 text-lg">check_circle</span>
     </motion.div>
-    <span className="text-gray-300">{text}</span>
+    <span className="text-secondary-600">{text}</span>
   </motion.div>
 )
 
 // --- Main Component ---
+interface NavigationParams {
+  mood?: number
+  mode?: 'listen' | 'support'
+  matchedUser?: any
+}
+
 interface MatchingScreenProps {
-  onNavigate: (screen: string, params?: any) => void
+  onNavigate: (screen: string, params?: NavigationParams) => void
   mood: number
   mode: 'listen' | 'support'
 }
@@ -73,16 +80,80 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white font-sans relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 text-secondary-800 font-sans relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 300,
+            height: 300,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+            top: '10%',
+            right: '10%'
+          }}
+          animate={{
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 250,
+            height: 250,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+            bottom: '20%',
+            left: '15%'
+          }}
+          animate={{
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 8
+          }}
+        />
+      </div>
+
       <FloatingParticles />
-      
-      <header className="flex items-center justify-between p-4 md:p-6 relative z-10">
-        <button onClick={handleBack} className="p-2 text-gray-300 hover:bg-white/10 rounded-full transition-colors">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+
+      {/* Header */}
+      <header className="relative flex items-center justify-between p-6 glassmorphic z-10">
+        <motion.button
+          onClick={handleBack}
+          className="p-3 text-secondary-500 hover:bg-secondary-100/70 hover:text-secondary-700 rounded-full transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <span className="material-symbols-outlined text-2xl">arrow_back</span>
+        </motion.button>
+        <div className="flex-1 text-center">
+          <motion.div
+            className="flex items-center justify-center gap-3"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            <span className="material-symbols-outlined text-3xl text-primary-600">psychology</span>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              MindWell
+            </h1>
+          </motion.div>
+        </div>
+        <div className="w-14" />
       </header>
 
-      <main className="flex-1 flex flex-col items-center justify-center p-4 text-center">
+      <main className="relative flex-1 flex flex-col items-center justify-center p-6 text-center">
         <AnimatePresence mode="wait">
           {matchingStage === 'searching' && (
             <motion.div
@@ -93,33 +164,46 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
               className="flex flex-col items-center justify-center gap-8"
             >
               <motion.div
-                className="w-24 h-24 bg-purple-500/20 rounded-full flex items-center justify-center"
+                className="w-24 h-24 bg-primary-500/20 rounded-full flex items-center justify-center"
                 animate={{ scale: [1, 1.05, 1] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <motion.div 
-                  className="w-16 h-16 bg-purple-500 rounded-full shadow-2xl shadow-purple-500/50"
+                <motion.div
+                  className="w-16 h-16 bg-primary-500 rounded-full shadow-2xl shadow-primary-500/30"
                   animate={{ scale: [1, 0.95, 1] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
                 />
               </motion.div>
 
               <div className="max-w-lg">
-                <h1 className="text-3xl md:text-4xl font-bold mb-3">Someone’s here — just for you.</h1>
-                <p className="text-gray-400">We’re connecting you with a listener who understands what you’re feeling.</p>
+                <h1 className="text-4xl md:text-5xl font-bold text-secondary-800 mb-4 leading-tight">
+                  Someone&apos;s here — just for you.
+                </h1>
+                <p className="text-secondary-600 text-lg max-w-2xl mx-auto leading-relaxed">
+                  We&apos;re connecting you with a listener who understands what you&apos;re feeling.
+                </p>
               </div>
 
-              <div className="space-y-4 self-start">
-                <AnimatedChecklistItem text="Finding someone who’s… emotionally present" delay={1} />
-                <AnimatedChecklistItem text="Finding someone who’s… experienced with this mood" delay={2} />
-                <AnimatedChecklistItem text="Finding someone who’s… online now" delay={3} />
+              <div className="space-y-6 self-start">
+                <AnimatedChecklistItem text="Finding someone who&apos;s… emotionally present" delay={1} />
+                <AnimatedChecklistItem text="Finding someone who&apos;s… experienced with this mood" delay={2} />
+                <AnimatedChecklistItem text="Finding someone who&apos;s… online now" delay={3} />
               </div>
 
-              <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-lg max-w-sm text-sm">
-                <p className="text-gray-400 italic">“We don’t heal alone. We heal when we’re heard.”</p>
-              </div>
+              <motion.div
+                className="mt-12 p-6 glassmorphic rounded-2xl max-w-sm shadow-lg"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 4, duration: 0.8 }}
+              >
+                <p className="text-secondary-600 italic font-medium text-base">
+                  "We don&apos;t heal alone. We heal when we&apos;re heard."
+                </p>
+              </motion.div>
 
-              <p className="text-xs text-gray-500 mt-4">While you wait, take a breath. You're not alone anymore.</p>
+              <p className="text-sm text-secondary-500 mt-8 font-medium">
+                While you wait, take a breath. You&apos;re not alone anymore.
+              </p>
             </motion.div>
           )}
 
@@ -131,30 +215,34 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
               className="flex flex-col items-center justify-center gap-8"
             >
                 <motion.div
-                  className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center"
+                  className="w-24 h-24 bg-primary-500/20 rounded-full flex items-center justify-center"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 200, damping: 15 }}
                 >
-                    <Check className="w-12 h-12 text-green-300" />
+                    <span className="material-symbols-outlined text-5xl text-primary-600">check_circle</span>
                 </motion.div>
 
                 <div className="max-w-lg">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-3">We’ve found a match.</h1>
-                    <p className="text-gray-400">You're being connected with {matchedUser.name}.</p>
+                    <h1 className="text-4xl md:text-5xl font-bold text-secondary-800 mb-4 leading-tight">
+                      We&apos;ve found a match.
+                    </h1>
+                    <p className="text-secondary-600 text-lg">
+                      You&apos;re being connected with {matchedUser.name}.
+                    </p>
                 </div>
 
                 <motion.button
                     onClick={handleConnect}
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full max-w-xs mt-4 py-4 bg-white text-gray-800 rounded-full font-bold shadow-lg shadow-white/20 transition-all duration-300 flex items-center justify-center gap-2 text-lg relative overflow-hidden group"
+                    className="w-full max-w-xs mt-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                 >
-                    <span className="absolute w-full h-full bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse-slow" />
-                    <span className="relative z-10 flex items-center justify-center gap-2">Connect <Heart className="w-5 h-5" /></span>
+                    Connect
+                    <span className="material-symbols-outlined text-xl">favorite</span>
                 </motion.button>
             </motion.div>
           )}

@@ -9,19 +9,19 @@ interface ScreenDemoProps {
 }
 
 type DemoMode = 'flow' | 'navigator'
-type Screen = 'Welcome' | 'MoodSelection' | 'Matching' | 'Session' | 'Wallet'
+type DemoScreen = 'Welcome' | 'MoodSelection' | 'Matching' | 'Session' | 'Wallet'
 
 const FLOW_STEPS = [
-  { screen: 'Welcome' as Screen, title: 'Welcome Screen', description: 'User chooses to listen or seek support', duration: 3000 },
-  { screen: 'MoodSelection' as Screen, title: 'Mood Selection', description: 'User selects their current emotional state', duration: 4000 },
-  { screen: 'Matching' as Screen, title: 'Matching Process', description: 'System finds compatible users for connection', duration: 5000 },
-  { screen: 'Session' as Screen, title: 'Support Session', description: 'Users engage in emotional support conversation', duration: 6000 },
-  { screen: 'Wallet' as Screen, title: 'Credit Management', description: 'Users manage their emotional support credits', duration: 3000 }
+  { screen: 'Welcome' as DemoScreen, title: 'Welcome Screen', description: 'User chooses to listen or seek support', duration: 3000 },
+  { screen: 'MoodSelection' as DemoScreen, title: 'Mood Selection', description: 'User selects their current emotional state', duration: 4000 },
+  { screen: 'Matching' as DemoScreen, title: 'Matching Process', description: 'System finds compatible users for connection', duration: 5000 },
+  { screen: 'Session' as DemoScreen, title: 'Support Session', description: 'Users engage in emotional support conversation', duration: 6000 },
+  { screen: 'Wallet' as DemoScreen, title: 'Credit Management', description: 'Users manage their emotional support credits', duration: 3000 }
 ]
 
 export function ScreenDemo({ onClose }: ScreenDemoProps) {
   const [mode, setMode] = useState<DemoMode>('flow')
-  const [currentScreen, setCurrentScreen] = useState<Screen>('Welcome')
+  const [currentScreen, setCurrentScreen] = useState<DemoScreen>('Welcome')
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [flowInterval, setFlowInterval] = useState<NodeJS.Timeout | null>(null)
@@ -67,9 +67,12 @@ export function ScreenDemo({ onClose }: ScreenDemoProps) {
     setCurrentScreen(FLOW_STEPS[nextIndex].screen)
   }
 
-  const handleScreenChange = (screen: Screen) => {
-    setCurrentScreen(screen)
-    pauseFlow()
+  const handleScreenChange = (screen: any) => {
+    // Only update if it's a valid demo screen
+    if (['Welcome', 'MoodSelection', 'Matching', 'Session', 'Wallet'].includes(screen)) {
+      setCurrentScreen(screen as DemoScreen)
+      pauseFlow()
+    }
   }
 
   return (

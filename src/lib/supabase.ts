@@ -13,7 +13,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 })
 
 // Client-side supabase client
-export const createClientComponentClient = () => 
+export const createClientComponentClient = () =>
   createClient<Database>(supabaseUrl, supabaseAnonKey)
 
 // Server-side supabase client for API routes

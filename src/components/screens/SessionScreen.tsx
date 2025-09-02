@@ -2,29 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, X, Clock } from 'lucide-react'
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
 import { ListenerPresence } from './ListenerPresence'
-
-// --- Helper Components ---
-const FloatingParticles = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    {[...Array(15)].map((_, i) => (
-      <motion.div
-        key={i}
-        className="absolute bg-white/5 rounded-full"
-        initial={{ y: '100%', x: `${Math.random() * 100}%`, opacity: 0 }}
-        animate={{ y: '-10%', opacity: [0, 0.5, 0] }}
-        transition={{
-          duration: Math.random() * 15 + 15,
-          repeat: Infinity,
-          delay: Math.random() * 10,
-          ease: 'linear',
-        }}
-        style={{ width: `${Math.random() * 4 + 2}px`, height: `${Math.random() * 4 + 2}px` }}
-      />
-    ))}
-  </div>
-)
+import { supabase } from '@/lib/supabase'
+import { CHAT_CONFIG, detectMood, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
 
 interface Message {
   id: number
@@ -39,9 +21,13 @@ const ChatMessage = ({ message }: { message: Message }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`flex my-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      className={`flex my-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl ${isUser ? 'bg-purple-400/20 text-purple-100 rounded-br-none' : 'bg-white/5 text-gray-300 rounded-bl-none'}`}>
+        className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl shadow-sm ${
+          isUser
+            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-br-none'
+            : 'glassmorphic text-secondary-800 rounded-bl-none'
+        }`}>
         <p className="text-base font-light leading-relaxed">{message.text}</p>
       </div>
     </motion.div>
@@ -49,14 +35,16 @@ const ChatMessage = ({ message }: { message: Message }) => {
 }
 
 // --- Main Component ---
+interface NavigationParams {
+  mode?: 'listen' | 'support'
+}
+
 interface SessionScreenProps {
-  onNavigate: (screen: string, params?: any) => void
+  onNavigate: (screen: string, params?: NavigationParams) => void
   matchedUser: { name: string }
 }
 
 export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
-  // Set a single, calming theme for the session
-  const theme = 'from-gray-900 via-purple-900 to-blue-900'
   const [messages, setMessages] = useState<Message[]>([])
   const [inputValue, setInputValue] = useState('')
   const [timeElapsed, setTimeElapsed] = useState(0)
@@ -68,33 +56,17 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   const [selectedMood, setSelectedMood] = useState<string>('calm')
   const chatEndRef = useRef<HTMLDivElement>(null)
 
-  
-
-  const placeholders = [
-    "Share what you're feeling...",
-    'Start with one word, if that’s easier.',
-    'No pressure. Just type what’s on your mind.',
-    'You don’t have to explain. Just be here.',
-  ]
-  const [placeholder, setPlaceholder] = useState(placeholders[0])
-
-  const quickTags = ['Overwhelmed', 'Anxious', 'Hopeful', 'Tired']
-  const moodIcons = ['🌧️', '😐', '☀️']
-  const typingSuggestions = [
-    "You could start by telling me how you're feeling today.",
-    'Is there something specific that’s weighing on you?',
-    'No pressure, just share what comes to mind.',
-  ]
+  const [placeholder, setPlaceholder] = useState(getRandomPlaceholder())
 
   // Initial message from the listener & intro card timer
   useEffect(() => {
-    const introTimer = setTimeout(() => setShowIntroCard(false), 8000)
+    const introTimer = setTimeout(() => setShowIntroCard(false), CHAT_CONFIG.timing.introCardDuration)
 
     const messageTimer = setTimeout(() => {
       setMessages([
         {
           id: 1,
-          text: `Hey, I'm ${matchedUser?.name || 'here'}. Thanks for reaching out. What's on your mind?`,
+          text: CHAT_CONFIG.uiText.initialMessageTemplate(matchedUser?.name || 'here'),
           sender: 'other',
         },
       ])
@@ -109,11 +81,8 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   // Placeholder rotation
   useEffect(() => {
     const interval = setInterval(() => {
-      setPlaceholder(p => {
-        const currentIndex = placeholders.indexOf(p)
-        return placeholders[(currentIndex + 1) % placeholders.length]
-      })
-    }, 5000)
+      setPlaceholder(getRandomPlaceholder())
+    }, CHAT_CONFIG.timing.placeholderRotation)
     return () => clearInterval(interval)
   }, [])
 
@@ -123,9 +92,9 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
     const lastMessage = messages[messages.length - 1]
     if (inputValue === '' && lastMessage && lastMessage.sender === 'other') {
       const suggestionTimer = setTimeout(() => {
-        setCurrentSuggestion(typingSuggestions[Math.floor(Math.random() * typingSuggestions.length)])
+        setCurrentSuggestion(getRandomSuggestion())
         setShowSuggestion(true)
-      }, 15000) // 15 seconds of inactivity
+      }, CHAT_CONFIG.timing.suggestionDelay)
       return () => clearTimeout(suggestionTimer)
     }
   }, [messages, inputValue])
@@ -160,36 +129,17 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
       setInputValue('')
       setInteractionCount(c => c + 1)
       
-      // Simple mood detection based on message content
-      // This is a basic implementation - in a real app, this would use NLP
-      const lowerContent = inputValue.toLowerCase()
-      if (lowerContent.includes('sad') || lowerContent.includes('unhappy') || lowerContent.includes('down')) {
-        setSelectedMood('sad')
-      } else if (lowerContent.includes('anxious') || lowerContent.includes('worry') || lowerContent.includes('stress')) {
-        setSelectedMood('anxious')
-      } else if (lowerContent.includes('angry') || lowerContent.includes('upset') || lowerContent.includes('frustrat')) {
-        setSelectedMood('angry')
-      } else if (lowerContent.includes('overwhelm') || lowerContent.includes('too much') || lowerContent.includes('can\'t handle')) {
-        setSelectedMood('overwhelmed')
-      } else if (lowerContent.includes('hope') || lowerContent.includes('better') || lowerContent.includes('improve')) {
-        setSelectedMood('hopeful')
-      }
+      // Mood detection using configurable keywords
+      const detectedMood = detectMood(inputValue)
+      setSelectedMood(detectedMood)
 
-      // Call AI therapy function
+      // Call AI therapy function with proper configuration
       setTimeout(async () => {
         try {
-          // Import Supabase client
-          const { createClient } = await import('@supabase/supabase-js')
-          const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-          )
-
-          // Call the Edge Function
           const { data, error } = await supabase.functions.invoke('chat-ai', {
             body: {
               message: inputValue,
-              conversationHistory: messages.slice(-3).map(m => ({
+              conversationHistory: messages.slice(-CHAT_CONFIG.ai.conversationHistoryLength).map(m => ({
                 sender: m.sender,
                 text: m.text
               }))
@@ -210,24 +160,24 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
           setMessages(prev => [...prev, aiResponse])
           setInteractionCount(c => c + 1)
 
-          // Log usage for cost tracking
-          if (data.usage) {
+          // Log usage for cost tracking (only in development)
+          if (process.env.NODE_ENV === 'development' && data.usage) {
             console.log('AI Usage:', data.usage)
           }
 
         } catch (error) {
           console.error('AI Error:', error)
 
-          // Fallback response
+          // Use fallback response from config
           const fallbackResponse: Message = {
             id: Date.now() + 1,
-            text: 'Thank you for sharing that. Tell me more.',
+            text: CHAT_CONFIG.uiText.fallbackResponse,
             sender: 'other',
           }
           setMessages(prev => [...prev, fallbackResponse])
           setInteractionCount(c => c + 1)
         }
-      }, 1000)
+      }, CHAT_CONFIG.timing.aiResponseDelay)
     }
   }
 
@@ -238,48 +188,113 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   }
 
   return (
-    <div className={`min-h-screen flex flex-row bg-gradient-to-br ${theme} text-white font-sans relative overflow-hidden bg-[length:200%_200%] animate-breathing-gradient`}>
+    <div className="min-h-screen flex flex-row bg-gradient-to-br from-primary-100 via-white to-primary-50 text-secondary-800 font-sans relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 300,
+            height: 300,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+            top: '10%',
+            left: '10%'
+          }}
+          animate={{
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+        />
+        <motion.div
+          className="absolute rounded-full opacity-20"
+          style={{
+            width: 250,
+            height: 250,
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+            bottom: '20%',
+            right: '15%'
+          }}
+          animate={{
+            y: [0, -30, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 8
+          }}
+        />
+      </div>
 
       {/* Left Panel: Listener Presence */}
-      <div className="w-1/2 h-screen sticky top-0">
+      <div className="w-1/2 h-screen sticky top-0 relative z-10">
         <ListenerPresence interactionCount={interactionCount} selectedMood={selectedMood} />
       </div>
 
       {/* Right Panel: Chat UI */}
-      <div className="w-1/2 flex flex-col h-screen">
+      <div className="w-1/2 flex flex-col h-screen relative z-10">
         <AnimatePresence>
           {showIntroCard && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20, transition: { duration: 0.5 } }}
-              className="absolute top-4 right-4 w-[90%] max-w-md bg-black/30 backdrop-blur-lg border border-white/10 rounded-xl p-4 text-center z-20">
-              <p className="font-light text-gray-200">
-                <span className="font-semibold text-white">{matchedUser?.name || 'Your listener'}</span> is here to listen without judgment. You’re safe here.
+              className="absolute top-4 right-4 w-[90%] max-w-md glassmorphic rounded-2xl p-6 text-center z-20 shadow-lg">
+              <p className="font-medium text-secondary-700 leading-relaxed">
+                {CHAT_CONFIG.uiText.listenerIntro(matchedUser?.name || 'Your listener')}
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Header */}
-        <header className="flex items-center justify-between p-4 border-b border-white/10 backdrop-blur-sm shrink-0">
-          <div>
-            <p className="text-sm text-gray-400">You're with</p>
-            <p className="font-bold text-lg">{matchedUser?.name || 'your listener'}</p>
-          </div>
+        <header className="flex items-center justify-between p-6 glassmorphic shrink-0 relative z-20">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-gray-300 bg-white/5 px-3 py-1 rounded-full">
-              <Clock className="w-4 h-4" />
-              <span>{formatTime(timeElapsed)}</span>
+            <motion.div
+              className="flex items-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            >
+              <span className="material-symbols-outlined text-2xl text-primary-600">psychology</span>
+              <div>
+                <h2 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                  {CHAT_CONFIG.appName}
+                </h2>
+                <p className="text-xs text-secondary-500">{CHAT_CONFIG.uiText.therapySession}</p>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="text-center">
+              <p className="text-sm text-secondary-500">{CHAT_CONFIG.uiText.youreWith}</p>
+              <p className="font-bold text-secondary-800">{matchedUser?.name || 'your listener'}</p>
             </div>
-            <button onClick={() => setShowEndModal(true)} className="px-4 py-2 text-sm bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 rounded-full transition-colors">
-              Close Space
-            </button>
+            <div className="flex items-center gap-2 text-secondary-600 glassmorphic px-4 py-2 rounded-full">
+              <span className="material-symbols-outlined text-lg">schedule</span>
+              <span className="font-medium">{formatTime(timeElapsed)}</span>
+            </div>
+            <motion.button
+              onClick={() => setShowEndModal(true)}
+              className="px-6 py-2 text-sm bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-full transition-all duration-300 shadow-lg shadow-primary-500/30 hover:shadow-xl"
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {CHAT_CONFIG.uiText.endSession}
+            </motion.button>
           </div>
         </header>
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col p-4 overflow-y-auto">
+        <main className="flex-1 flex flex-col p-6 overflow-y-auto relative">
           <div className="flex-1 space-y-4">
             {messages.map(msg => (
               <ChatMessage key={msg.id} message={msg} />
@@ -289,22 +304,25 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         </main>
 
         {/* Input Area */}
-        <footer className="p-4 border-t border-white/10 backdrop-blur-sm shrink-0">
+        <footer className="p-6 glassmorphic shrink-0 relative">
           <AnimatePresence>
             {showSuggestion && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="mb-2 text-center">
-                <button
+                className="mb-4 text-center">
+                <motion.button
                   onClick={() => {
                     setInputValue(currentSuggestion + ' ')
                     setShowSuggestion(false)
                   }}
-                  className="text-sm text-purple-300 hover:text-white transition-colors p-1">
-                    {currentSuggestion}
-                </button>
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors p-2 glassmorphic rounded-lg hover:bg-primary-50"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  💭 {currentSuggestion}
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -315,17 +333,24 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
               onChange={e => setInputValue(e.target.value)}
               onKeyPress={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
               placeholder={placeholder}
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 resize-none focus:ring-1 focus:ring-purple-300/70 focus:outline-none transition-all duration-300 h-12 min-h-[48px] max-h-32"
+              className="flex-1 bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl p-4 resize-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 h-12 min-h-[52px] max-h-32 text-secondary-800 placeholder:text-secondary-400"
             />
-            <button
+            <motion.button
               onClick={handleSendMessage}
               disabled={!inputValue.trim()}
-              className="w-12 h-12 bg-purple-500 hover:bg-purple-400 rounded-full flex items-center justify-center transition-all duration-300 disabled:bg-gray-600 disabled:cursor-not-allowed transform hover:scale-110 disabled:scale-100">
-              <Send className="w-6 h-6" />
-            </button>
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg transform ${
+                inputValue.trim()
+                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-primary-500/30 hover:shadow-xl hover:scale-110'
+                  : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
+              }`}
+              whileHover={inputValue.trim() ? { scale: 1.05 } : {}}
+              whileTap={inputValue.trim() ? { scale: 0.95 } : {}}
+            >
+              <span className="material-symbols-outlined text-xl">send</span>
+            </motion.button>
           </div>
-          <p className="text-center text-xs text-gray-500 mt-3 px-4">
-            This session is private and won’t be saved. You’re in control—end anytime.
+          <p className="text-center text-xs text-secondary-500 mt-4 px-4">
+            {CHAT_CONFIG.uiText.sessionPrivate}
           </p>
         </footer>
       </div>
@@ -337,21 +362,34 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+            className="fixed inset-0 bg-secondary-900/20 backdrop-blur-lg flex items-center justify-center z-50 p-4">
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-gray-800 border border-white/10 rounded-2xl p-8 max-w-sm w-full text-center">
-              <h2 className="text-2xl font-bold mb-4">End this session?</h2>
-              <p className="text-gray-400 mb-8">You can always start a new one whenever you're ready.</p>
+              className="glassmorphic rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+              <div className="mb-8">
+                <span className="material-symbols-outlined text-5xl text-amber-500 mb-4 block">logout</span>
+                <h2 className="text-2xl font-bold text-secondary-800 mb-3">{CHAT_CONFIG.uiText.endSessionConfirm}</h2>
+                <p className="text-secondary-600 leading-relaxed">{CHAT_CONFIG.uiText.endSessionDescription}</p>
+              </div>
               <div className="flex gap-4">
-                <button onClick={() => setShowEndModal(false)} className="flex-1 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors">
-                  Stay
-                </button>
-                <button onClick={handleEndSession} className="flex-1 py-3 bg-red-500 hover:bg-red-400 text-white font-bold rounded-full transition-colors">
-                  End Now
-                </button>
+                <motion.button
+                  onClick={() => setShowEndModal(false)}
+                  className="flex-1 py-4 glassmorphic text-secondary-700 font-semibold rounded-xl hover:bg-white/60 transition-all duration-300"
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+{CHAT_CONFIG.uiText.stayHere}
+                </motion.button>
+                <motion.button
+                  onClick={handleEndSession}
+                  className="flex-1 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 hover:shadow-xl transition-all duration-300"
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  End Session
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>
