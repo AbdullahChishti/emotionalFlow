@@ -67,7 +67,8 @@ export default function AssessmentsPage() {
       console.warn('🚨 CRISIS DETECTED - Immediate intervention needed!')
       router.push('/crisis-support')
     } else {
-      // Redirect to results page to show user their assessment results
+      // All assessments completed - redirect to results page to show comprehensive results
+      console.log('All assessments completed - showing final results')
       router.push('/results')
     }
   }

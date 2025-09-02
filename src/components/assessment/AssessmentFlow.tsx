@@ -85,39 +85,8 @@ export function AssessmentFlow({
       }
       setResults(newResults)
 
-      // Move to next assessment or show results
-      if (currentAssessmentIndex < assessmentIds.length - 1) {
-        setCurrentAssessmentIndex(currentAssessmentIndex + 1)
-        setCurrentQuestionIndex(0)
-        setResponses({}) // Reset for next assessment
-      } else {
-        setCurrentState('completed')
-        // Process results into user profile (now async with AI explanations)
-        try {
-          const userProfile = await AssessmentIntegrator.processResults(newResults)
-          onComplete(newResults, userProfile)
-        } catch (error) {
-          console.error('Error processing assessment results:', error)
-          // Fallback to basic processing without AI explanations
-          const symptomData = AssessmentIntegrator.extractSymptomData(newResults)
-          const resilienceData = AssessmentIntegrator.extractResilienceData(newResults)
-
-          const basicProfile = {
-            id: 'user_' + Date.now(),
-            traumaHistory: AssessmentIntegrator.extractTraumaData(newResults),
-            currentSymptoms: {
-              depression: symptomData.depression,
-              anxiety: symptomData.anxiety,
-              stress: symptomData.stress
-            },
-            resilience: resilienceData,
-            riskFactors: AssessmentIntegrator.assessRiskFactors(newResults),
-            preferences: AssessmentIntegrator.generatePreferences(newResults),
-            lastAssessed: new Date()
-          }
-          onComplete(newResults, basicProfile)
-        }
-      }
+      // Show results for this assessment first
+      setCurrentState('results')
     }
   }
 
@@ -162,6 +131,31 @@ export function AssessmentFlow({
       setCurrentState('taking')
     } else {
       setCurrentState('completed')
+      // Process all results when all assessments are completed
+      try {
+        const userProfile = await AssessmentIntegrator.processResults(results)
+        onComplete(results, userProfile)
+      } catch (error) {
+        console.error('Error processing assessment results:', error)
+        // Fallback to basic processing without AI explanations
+        const symptomData = AssessmentIntegrator.extractSymptomData(results)
+        const resilienceData = AssessmentIntegrator.extractResilienceData(results)
+
+        const basicProfile = {
+          id: 'user_' + Date.now(),
+          traumaHistory: AssessmentIntegrator.extractTraumaData(results),
+          currentSymptoms: {
+            depression: symptomData.depression,
+            anxiety: symptomData.anxiety,
+            stress: symptomData.stress
+          },
+          resilience: resilienceData,
+          riskFactors: AssessmentIntegrator.assessRiskFactors(results),
+          preferences: AssessmentIntegrator.generatePreferences(results),
+          lastAssessed: new Date()
+        }
+        onComplete(results, basicProfile)
+      }
     }
   }
 
