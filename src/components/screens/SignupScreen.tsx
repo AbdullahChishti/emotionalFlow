@@ -79,7 +79,7 @@ export function SignupScreen() {
 
           {/* Signup Form */}
           <motion.div
-            className="glassmorphic rounded-3xl p-8 space-y-6"
+            className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-xl space-y-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -92,7 +92,7 @@ export function SignupScreen() {
                 <input
                   type="text"
                   placeholder="Your Name"
-                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
                 />
               </div>
               <div className="relative">
@@ -100,7 +100,7 @@ export function SignupScreen() {
                 <input
                   type="email"
                   placeholder="Your Email"
-                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
                 />
               </div>
               <div className="relative">
@@ -108,7 +108,7 @@ export function SignupScreen() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
                 />
               </div>
             </div>
@@ -121,7 +121,7 @@ export function SignupScreen() {
                   className={`w-full text-center p-4 rounded-xl border-2 font-semibold transition-all duration-300 ${
                     intent === 'listen'
                       ? 'bg-primary-500 border-primary-500 text-white shadow-lg'
-                      : 'bg-white/80 backdrop-blur-sm border-white/30 hover:border-primary-300 text-secondary-700'
+                      : 'bg-white/70 backdrop-blur-sm border-white/40 hover:border-primary-300 text-secondary-700'
                   }`}
                   onClick={() => setIntent('listen')}
                   whileTap={{ scale: 0.97 }}
@@ -134,7 +134,7 @@ export function SignupScreen() {
                   className={`w-full text-center p-4 rounded-xl border-2 font-semibold transition-all duration-300 ${
                     intent === 'support'
                       ? 'bg-primary-500 border-primary-500 text-white shadow-lg'
-                      : 'bg-white/80 backdrop-blur-sm border-white/30 hover:border-primary-300 text-secondary-700'
+                      : 'bg-white/70 backdrop-blur-sm border-white/40 hover:border-primary-300 text-secondary-700'
                   }`}
                   onClick={() => setIntent('support')}
                   whileTap={{ scale: 0.97 }}
@@ -150,7 +150,7 @@ export function SignupScreen() {
               <motion.button
                 className={`w-full font-bold py-4 rounded-xl shadow-lg transition-all duration-300 transform ${
                   intent
-                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white hover:shadow-xl hover:scale-105 shadow-primary-500/30'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white hover:shadow-xl hover:scale-105 shadow-primary-500/30'
                     : 'bg-secondary-300 text-secondary-500 cursor-not-allowed'
                 }`}
                 disabled={!intent}

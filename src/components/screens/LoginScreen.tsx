@@ -77,7 +77,7 @@ export function LoginScreen() {
 
           {/* Login Form */}
           <motion.div
-            className="glassmorphic rounded-3xl p-8 space-y-6"
+            className="bg-white/60 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-xl space-y-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -90,7 +90,7 @@ export function LoginScreen() {
                 <input
                   type="email"
                   placeholder="Your Email"
-                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
                 />
               </div>
               <div className="relative">
@@ -98,14 +98,14 @@ export function LoginScreen() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className="w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
                 />
               </div>
             </div>
 
             <div className="pt-2">
               <motion.button
-                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
