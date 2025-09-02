@@ -288,8 +288,8 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
           </button>
 
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100/80 mx-auto mb-5 border border-indigo-200/50">
-              <DoodleHeart className="w-9 h-9 text-indigo-500" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-green-100/80 mx-auto mb-5 border border-brand-green-200/50">
+              <DoodleHeart className="w-9 h-9 text-brand-green-500" />
             </div>
             <h2 className="text-3xl font-light text-zinc-800">
               {mode === 'signin' ? 'Welcome Back' : 'Create Your Sketchbook'}
@@ -318,7 +318,7 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="w-full bg-white/70 border border-zinc-300/50 rounded-lg text-zinc-800 px-12 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-300/50 focus:border-indigo-400 transition-all placeholder:text-zinc-400"
+                  className="w-full bg-white/70 border border-zinc-300/50 rounded-lg text-zinc-800 px-12 py-3 focus:outline-none focus:ring-2 focus:ring-brand-green-300/50 focus:border-brand-green-400 transition-all placeholder:text-zinc-400"
                   placeholder="Your Name"
                   required disabled={loading}
                 />
@@ -347,12 +347,12 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
                 placeholder="Password"
                 required minLength={6} disabled={loading}
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 text-zinc-500 hover:text-indigo-500" disabled={loading}>
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 text-zinc-500 hover:text-brand-green-500" disabled={loading}>
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white rounded-lg font-semibold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed">
+            <button type="submit" disabled={loading} className="w-full py-3.5 bg-gradient-to-r from-brand-green-500 to-brand-green-600 text-white rounded-lg font-semibold shadow-lg shadow-brand-green-500/20 hover:shadow-xl hover:shadow-brand-green-500/30 hover:scale-[1.02] transition-all duration-300 flex items-center justify-center disabled:opacity-60 disabled:cursor-not-allowed">
               {loading ? <LoadingSpinner /> : (mode === 'signin' ? 'Sign In' : 'Create Account')}
             </button>
           </form>
@@ -369,7 +369,7 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
 
           <div className="mt-8 text-center text-sm text-zinc-500">
             {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
-            <button onClick={() => onSwitchMode(mode === 'signin' ? 'signup' : 'signin')} className="font-semibold text-indigo-600 hover:underline" disabled={loading}>
+            <button onClick={() => onSwitchMode(mode === 'signin' ? 'signup' : 'signin')} className="font-semibold text-brand-green-600 hover:underline" disabled={loading}>
               {mode === 'signin' ? 'Sign Up' : 'Sign In'}
             </button>
           </div>
