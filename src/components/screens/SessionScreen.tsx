@@ -7,6 +7,7 @@ import 'material-symbols/outlined.css'
 
 import { supabase } from '@/lib/supabase'
 import { CHAT_CONFIG, detectMood, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
+import { ListenerPresence } from './ListenerPresence'
 
 interface Message {
   id: number
@@ -196,8 +197,15 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-50/10 rounded-full blur-2xl"></div>
       </div>
 
-      {/* Main Chat Container */}
-      <div className="flex-1 flex flex-col h-screen relative z-10 mx-auto max-w-4xl w-full">
+      {/* Two-Panel Layout */}
+      <div className="flex w-full h-screen">
+        {/* Left Panel: Listener Presence */}
+        <div className="w-1/2 h-screen border-r border-white/20">
+          <ListenerPresence interactionCount={interactionCount} selectedMood={selectedMood} />
+        </div>
+
+        {/* Right Panel: Chat Interface */}
+        <div className="w-1/2 flex flex-col h-screen relative z-10">
         <AnimatePresence>
           {showIntroCard && (
             <motion.div
@@ -259,7 +267,7 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
 
         {/* Chat Area */}
         <main className="flex-1 flex flex-col px-6 py-4 overflow-y-auto relative">
-          <div className="flex-1 space-y-2 max-w-3xl mx-auto w-full">
+          <div className="flex-1 space-y-3 w-full">
             {messages.map(msg => (
               <ChatMessage key={msg.id} message={msg} />
             ))}
@@ -292,7 +300,7 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
             )}
           </AnimatePresence>
 
-          <div className="max-w-3xl mx-auto">
+          <div className="w-full">
             <div className="flex items-end gap-3">
               <div className="flex-1 relative">
                 <textarea
@@ -323,6 +331,7 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
             </p>
           </div>
         </footer>
+        </div>
       </div>
 
       {/* End Session Modal */}
