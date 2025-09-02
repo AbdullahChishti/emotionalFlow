@@ -29,8 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfile = async (userId: string) => {
     try {
-      console.log('🔍 FETCHING PROFILE for user:', userId)
-
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -38,29 +36,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('❌ PROFILE FETCH ERROR:', error)
-        console.error('Profile error type:', typeof error)
-        console.error('Profile error keys:', Object.keys(error || {}))
-        console.error('Profile error details:', {
-          message: error?.message,
-          details: error?.details,
-          hint: error?.hint,
-          code: error?.code
-        })
-
-        // Check if this is the "no rows" error
+        // Check if this is the "no rows" error (expected for new users)
         if (error?.code === 'PGRST116' || error?.message?.includes('Cannot coerce the result to a single JSON object')) {
-          console.log('⚠️ Profile not found (expected for new users)')
           return null
         }
-
+        console.error('Profile fetch error:', error)
         return null
       }
 
-      console.log('✅ PROFILE FETCHED SUCCESSFULLY:', data)
       return data
     } catch (error) {
-      console.error('💥 PROFILE FETCH EXCEPTION:', error)
+      console.error('Profile fetch exception:', error)
       return null
     }
   }
@@ -97,27 +83,121 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    console.log('🚀 AUTH PROVIDER INITIALIZING...')
+    let isMounted = true
 
-    // Get initial session
-    console.log('🔍 Getting initial session...')
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      console.log('📊 Initial session result:')
-      console.log('Has Session:', !!session)
-      if (session) {
-        console.log('Session User ID:', session.user.id)
-        console.log('Session User Email:', session.user.email)
+    const initializeAuth = async () => {
+      try {
+        // Get initial session with timeout
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session timeout')), 10000)
+        )
+        
+        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any
+
+        if (!isMounted) return
+
+        if (error) {
+          console.error('Session error:', error)
+          setLoading(false)
+          return
+        }
+
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          // Fetch profile with timeout
+          try {
+            const profileData = await fetchProfile(session.user.id)
+            if (!isMounted) return
+
+            if (!profileData) {
+              // Create profile if it doesn't exist
+              const newProfileData = {
+                id: session.user.id,
+                display_name: session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'User',
+                username: null,
+                avatar_url: null,
+                bio: null,
+                empathy_credits: 10,
+                total_credits_earned: 10,
+                total_credits_spent: 0,
+                emotional_capacity: 'medium',
+                preferred_mode: 'both',
+                is_anonymous: false,
+                last_active: new Date().toISOString()
+              }
+
+              const { data: createdProfile, error: createError } = await supabase
+                .from('profiles')
+                .insert(newProfileData)
+                .select()
+
+              if (!isMounted) return
+
+              if (createError) {
+                console.error('Profile creation failed:', createError)
+              } else {
+                setProfile(createdProfile?.[0] || createdProfile)
+              }
+            } else {
+              setProfile(profileData)
+            }
+
+            // Check onboarding status
+            await checkOnboardingStatus(session.user.id)
+          } catch (profileError) {
+            console.error('Profile fetch error:', profileError)
+          }
+        }
+
+        if (isMounted) {
+          setLoading(false)
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
-      if (error) {
-        console.error('Session error:', error)
+    }
+
+    const checkOnboardingStatus = async (userId: string) => {
+      try {
+        // Check for test flag first
+        const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
+        if (testOnboarding) {
+          localStorage.removeItem('testOnboarding')
+          setNeedsOnboarding(true)
+          return
+        }
+
+        // Check if they have any mood entries
+        const { data: moodEntries } = await supabase
+          .from('mood_entries')
+          .select('id')
+          .eq('user_id', userId)
+          .limit(1)
+
+        setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
+      } catch (error) {
+        console.error('Onboarding check error:', error)
+        setNeedsOnboarding(false)
       }
+    }
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return
 
       setUser(session?.user ?? null)
+
       if (session?.user) {
-        console.log('🎯 Fetching profile for initial session user...')
-        fetchProfile(session.user.id).then(async (profileData) => {
+        try {
+          const profileData = await fetchProfile(session.user.id)
+          if (!isMounted) return
+
           if (!profileData) {
-            console.log('⚠️ Profile not found for initial session, creating new profile...')
             // Create profile if it doesn't exist
             const newProfileData = {
               id: session.user.id,
@@ -134,139 +214,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               last_active: new Date().toISOString()
             }
 
-            console.log('📝 Creating profile for initial session:', newProfileData)
-            try {
-                          console.log('🚀 About to insert profile...')
             const { data: createdProfile, error: createError } = await supabase
               .from('profiles')
               .insert(newProfileData)
               .select()
 
-            console.log('📊 Profile creation response:')
-            console.log('Created profile data:', createdProfile)
-            console.log('Creation error:', createError)
+            if (!isMounted) return
 
             if (createError) {
-              console.error('❌ Initial profile creation failed:', createError)
-              console.error('Creation error details:', {
-                message: createError?.message,
-                details: createError?.details,
-                hint: createError?.hint,
-                code: createError?.code
-              })
+              console.error('Profile creation failed:', createError)
             } else {
-              console.log('✅ Initial profile created successfully:', createdProfile)
               setProfile(createdProfile?.[0] || createdProfile)
-            }
-            } catch (createError) {
-              console.error('💥 Initial profile creation exception:', createError)
             }
           } else {
             setProfile(profileData)
           }
-        })
-      } else {
-        console.log('⚠️ No user in initial session')
-      }
-      setLoading(false)
-    })
 
-    // Listen for auth changes
-    console.log('👂 Setting up auth state change listener...')
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('🔄 AUTH STATE CHANGE DETECTED')
-      console.log('Event:', event)
-      console.log('Has Session:', !!session)
-      if (session) {
-        console.log('New Session User ID:', session.user.id)
-        console.log('New Session User Email:', session.user.email)
-      }
-
-      setUser(session?.user ?? null)
-
-      if (session?.user) {
-        console.log('🎯 Fetching profile for new session user...')
-        const profileData = await fetchProfile(session.user.id)
-
-        if (!profileData) {
-          console.log('⚠️ Profile not found, creating new profile...')
-          // Create profile if it doesn't exist
-          const newProfileData = {
-            id: session.user.id,
-            display_name: session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'User',
-            username: null,
-            avatar_url: null,
-            bio: null,
-            empathy_credits: 10,
-            total_credits_earned: 10,
-            total_credits_spent: 0,
-            emotional_capacity: 'medium',
-            preferred_mode: 'both',
-            is_anonymous: false,
-            last_active: new Date().toISOString()
-          }
-
-          console.log('📝 Creating profile:', newProfileData)
-          try {
-            console.log('🚀 About to insert profile for auth change...')
-            const { data: createdProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert(newProfileData)
-              .select()
-
-            console.log('📊 Auth change profile creation response:')
-            console.log('Created profile data:', createdProfile)
-            console.log('Creation error:', createError)
-
-            if (createError) {
-              console.error('❌ Profile creation failed:', createError)
-              console.error('Auth change creation error details:', {
-                message: createError?.message,
-                details: createError?.details,
-                hint: createError?.hint,
-                code: createError?.code
-              })
-            } else {
-              console.log('✅ Profile created successfully:', createdProfile)
-              setProfile(createdProfile?.[0] || createdProfile)
-            }
-          } catch (createError) {
-            console.error('💥 Profile creation exception:', createError)
-          }
-        } else {
-          setProfile(profileData)
-        }
-        
-        // Check if user needs onboarding after setting profile
-        if (session?.user) {
-          if (profileData) {
-            // Check if they have any mood entries (indicating they've completed onboarding)
-            const { data: moodEntries } = await supabase
-              .from('mood_entries')
-              .select('id')
-              .eq('user_id', session.user.id)
-              .limit(1)
-
-            // User needs onboarding if they have no mood entries (haven't completed onboarding)
-            setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
-          } else {
-            // No profile means new user - needs onboarding
-            setNeedsOnboarding(true)
-          }
+          // Check onboarding status
+          await checkOnboardingStatus(session.user.id)
+        } catch (error) {
+          console.error('Auth state change error:', error)
         }
       } else {
-        console.log('⚠️ Clearing profile (no user)')
         setProfile(null)
         setNeedsOnboarding(false)
       }
 
-      setLoading(false)
+      if (isMounted) {
+        setLoading(false)
+      }
     })
 
+    // Initialize auth
+    initializeAuth()
+
     return () => {
-      console.log('🧹 Cleaning up auth subscription')
+      isMounted = false
       subscription.unsubscribe()
     }
   }, [])
