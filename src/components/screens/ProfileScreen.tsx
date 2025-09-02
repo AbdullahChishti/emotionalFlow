@@ -148,7 +148,7 @@ export function ProfileScreen() {
               <div className="text-sm text-secondary-600">Credits</div>
             </div>
             <div className="text-center p-4 bg-white/50 rounded-xl">
-              <div className="text-2xl font-bold text-green-600">{profile.total_credits_earned}</div>
+              <div className="text-2xl font-bold text-brand-green-600">{profile.total_credits_earned}</div>
               <div className="text-sm text-secondary-600">Earned</div>
             </div>
             <div className="text-center p-4 bg-white/50 rounded-xl">

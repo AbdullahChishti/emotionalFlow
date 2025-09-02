@@ -66,8 +66,8 @@ export function Navigation({ className = '' }: NavigationProps) {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <span className="material-symbols-outlined text-2xl text-primary-600">psychology</span>
-              <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              <span className="material-symbols-outlined text-2xl text-brand-green-600">psychology</span>
+              <span className="text-lg font-bold bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
                 MindWell
               </span>
             </motion.div>
@@ -87,8 +87,8 @@ export function Navigation({ className = '' }: NavigationProps) {
                           ? 'text-red-600 bg-red-50 shadow-sm border border-red-200'
                           : 'text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300'
                         : isActive
-                        ? 'text-primary-600 bg-primary-50 shadow-sm'
-                        : 'text-secondary-600 hover:text-primary-600 hover:bg-white/50'
+                        ? 'text-brand-green-600 bg-brand-green-50 shadow-sm'
+                        : 'text-secondary-600 hover:text-brand-green-600 hover:bg-white/50'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
