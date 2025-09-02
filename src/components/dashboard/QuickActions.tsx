@@ -70,11 +70,11 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
   return (
     <div>
       <div className="flex items-center justify-between mb-6 px-2">
-        <h2 className="text-2xl font-semibold text-foreground">How can we help?</h2>
+        <h2 className="text-2xl font-semibold text-secondary-900">How can we help?</h2>
         {currentMood && (
           <button 
             onClick={() => setShowMoodSelector(true)} 
-            className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="flex items-center space-x-2 text-sm text-secondary-600 hover:text-secondary-900 transition-colors"
           >
             <span>Your mood:</span>
             <span className="text-2xl">{getMoodEmoji(currentMood.mood_score)}</span>
@@ -90,7 +90,7 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
           icon={Ear}
           available={profile.emotional_capacity !== 'low'}
           action={() => onNavigate?.('/session')}
-          gradient="bg-gradient-to-br from-green-400 to-cyan-500"
+          gradient="bg-gradient-to-br from-brand-green-400 to-brand-green-600"
         />
         <ActionCard
           title="I need support"
@@ -98,7 +98,7 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
           icon={Heart}
           available={profile.empathy_credits >= 5}
           action={() => onNavigate?.('/session')}
-          gradient="bg-gradient-to-br from-blue-400 to-violet-500"
+          gradient="bg-gradient-to-br from-brand-green-500 to-brand-green-700"
         />
       </div>
 
@@ -128,13 +128,13 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
       <div className="mt-8 grid grid-cols-2 gap-4 text-center">
          <button
             onClick={() => setShowMoodSelector(true)}
-            className="px-4 py-3 bg-card hover:bg-muted/50 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="px-4 py-3 bg-white/60 hover:bg-white/80 rounded-2xl text-sm font-medium text-secondary-600 hover:text-secondary-900 transition-colors"
           >
             Update Mood
           </button>
           <button
             onClick={() => onNavigate?.('/crisis-support')}
-            className="px-4 py-3 bg-card hover:bg-muted/50 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            className="px-4 py-3 bg-white/60 hover:bg-white/80 rounded-2xl text-sm font-medium text-secondary-600 hover:text-secondary-900 transition-colors"
           >
             Crisis Support
           </button>
