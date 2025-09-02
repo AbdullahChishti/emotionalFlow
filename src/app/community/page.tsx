@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/components/providers/TestAuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
 import { CommunityScreen } from '@/components/screens/CommunityScreen'
 import { useRouter } from 'next/navigation'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/components/providers/TestAuthProvider'
 import { LandingPage } from '@/components/landing/LandingPage'
 import { Dashboard } from '@/components/dashboard/Dashboard'
 import { EnhancedOnboardingFlow } from '@/components/auth/EnhancedOnboardingFlow'
@@ -12,6 +12,9 @@ import { Navigation } from '@/components/ui/Navigation'
 export default function Home() {
   const { user, loading, needsOnboarding } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
+  
+  // FOR TESTING: Uncomment the line below to force onboarding
+  // const [showOnboarding, setShowOnboarding] = useState(true)
 
   if (loading) {
     return (

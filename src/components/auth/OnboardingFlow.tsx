@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Ear, Users, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/components/providers/TestAuthProvider'
 import { WelcomeTutorial } from '@/components/ui/WelcomeTutorial'
 
 interface OnboardingFlowProps {
