@@ -315,7 +315,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
               </span>
             </h1>
             <p className="text-lg md:text-xl text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
-              When the world feels heavy and your thoughts race, you deserve a gentle space where you can breathe freely. Our caring AI companion listens with patience and offers wisdom from the heart—here whenever you need comfort, always without judgment.
+              When life feels overwhelming, you deserve a gentle space where your heart can rest. Here, you'll find compassionate support that listens with love and offers wisdom from the heart—always here, always free.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
               <motion.button
