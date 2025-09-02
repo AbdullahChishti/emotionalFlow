@@ -15,8 +15,9 @@ import {
 } from '@/data/assessments'
 import { AssessmentIntegrator, UserProfile } from '@/data/assessment-integration'
 import { AssessmentQuestionComponent } from './AssessmentQuestion'
-import { AssessmentResults } from './AssessmentResults'
+import AssessmentResults from './AssessmentResults'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
+import { ASSESSMENT_ICONS } from '@/data/assessment-icons'
 
 interface AssessmentFlowProps {
   assessmentIds: string[]
@@ -42,6 +43,12 @@ export function AssessmentFlow({
   const currentAssessment = ASSESSMENTS[assessmentIds[currentAssessmentIndex]]
   const currentQuestion = currentAssessment?.questions[currentQuestionIndex]
 
+  // Debug logging
+  console.log('Current Assessment Index:', currentAssessmentIndex)
+  console.log('Current Assessment ID:', assessmentIds[currentAssessmentIndex])
+  console.log('Current Assessment:', currentAssessment?.title)
+  console.log('Current Question:', currentQuestion?.text)
+
   // Calculate progress
   const totalQuestions = assessmentIds.reduce((total, id) => {
     return total + (ASSESSMENTS[id]?.questions.length || 0)
@@ -52,6 +59,26 @@ export function AssessmentFlow({
   }, 0) + currentQuestionIndex
 
   const progress = (completedQuestions / totalQuestions) * 100
+
+  const getAssessmentIcon = (assessmentId: string) => {
+    // Map assessment IDs to appropriate SVG icons
+    if (assessmentId.includes('depression') || assessmentId.includes('phq')) {
+      return ASSESSMENT_ICONS.depression
+    } else if (assessmentId.includes('anxiety') || assessmentId.includes('gad')) {
+      return ASSESSMENT_ICONS.anxiety
+    } else if (assessmentId.includes('stress') || assessmentId.includes('pss')) {
+      return ASSESSMENT_ICONS.stress
+    } else if (assessmentId.includes('resilience') || assessmentId.includes('cd-risc')) {
+      return ASSESSMENT_ICONS.resilience
+    } else if (assessmentId.includes('wellness') || assessmentId.includes('mental')) {
+      return ASSESSMENT_ICONS.wellness
+    } else if (assessmentId.includes('cognitive') || assessmentId.includes('thinking')) {
+      return ASSESSMENT_ICONS.cognitive
+    } else if (assessmentId.includes('emotional') || assessmentId.includes('mood')) {
+      return ASSESSMENT_ICONS.emotional
+    }
+    return ASSESSMENT_ICONS.general
+  }
 
   const handleAnswer = async (answer: number | string) => {
     const newResponses = {
@@ -180,7 +207,7 @@ export function AssessmentFlow({
         transition={{ delay: 0.2 }}
       >
         <h1 className="text-3xl font-light text-gray-800 mb-4">
-          Psychological Assessments
+          Mental Health Assessments
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           These scientifically validated assessments can help you understand your mental health
@@ -193,37 +220,74 @@ export function AssessmentFlow({
         {assessmentIds.map((assessmentId, index) => {
           const assessment = ASSESSMENTS[assessmentId]
           const category = ASSESSMENT_CATEGORIES[assessment.category]
+          const AssessmentIcon = getAssessmentIcon(assessmentId)
+          const isSelected = currentAssessmentIndex === index && currentState === 'taking'
 
           return (
             <motion.div
               key={assessmentId}
-              className={`${glassVariants.panelSizes.medium} cursor-pointer`}
+              className={`${glassVariants.panelSizes.medium} cursor-pointer group ${
+                isSelected ? 'ring-2 ring-brand-green-500 ring-offset-2' : ''
+              }`}
               style={{
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
-                background: `linear-gradient(135deg, ${category.color}, rgba(255, 255, 255, 0.1))`,
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+                background: isSelected 
+                  ? `linear-gradient(135deg, ${category.color}, rgba(255, 255, 255, 0.2))`
+                  : `linear-gradient(135deg, ${category.color}, rgba(255, 255, 255, 0.1))`,
+                border: isSelected 
+                  ? '2px solid rgba(34, 197, 94, 0.5)'
+                  : '1px solid rgba(255, 255, 255, 0.2)'
               }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -5 }}
               onClick={() => {
+                setCurrentAssessmentIndex(index)
+                setCurrentQuestionIndex(0)
+                setResponses({})
                 setCurrentState('taking')
               }}
             >
-              <div className="flex items-start gap-4">
-                <div className="text-3xl">{category.icon}</div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-medium text-gray-800 mb-2">
+              <div className="flex items-start gap-4 p-4">
+                {/* SVG Icon */}
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-300">
+                    <img 
+                      src={AssessmentIcon} 
+                      alt="Assessment Icon" 
+                      className="w-10 h-10"
+                    />
+                  </div>
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-medium text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">
                     {assessment.shortTitle}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-gray-600 mb-3 group-hover:text-gray-700 transition-colors">
                     {assessment.description}
                   </p>
                   <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>{assessment.estimatedTime} min</span>
-                    <span>{assessment.questions.length} questions</span>
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 bg-brand-green-500 rounded-full"></span>
+                      {assessment.estimatedTime} min
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 bg-brand-green-400 rounded-full"></span>
+                      {assessment.questions.length} questions
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Arrow indicator */}
+                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="w-8 h-8 bg-brand-green-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-brand-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                   </div>
                 </div>
               </div>
@@ -241,7 +305,7 @@ export function AssessmentFlow({
       >
         <motion.button
           onClick={() => setCurrentState('taking')}
-          className="px-8 py-4 rounded-2xl backdrop-blur-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-700 hover:bg-emerald-500/30 transition-all duration-300 text-lg font-medium"
+          className="px-8 py-4 rounded-2xl backdrop-blur-xl bg-brand-green-500/20 border border-brand-green-400/30 text-brand-green-700 hover:bg-brand-green-500/30 transition-all duration-300 text-lg font-medium"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -252,34 +316,63 @@ export function AssessmentFlow({
   )
 
   const renderTaking = () => (
-    <div className="max-w-2xl mx-auto">
-      {/* Progress Bar */}
+    <div className="max-w-4xl mx-auto">
+      {/* Back Button */}
       <motion.div
-        className={`${glassVariants.panelSizes.small} mb-6`}
-        style={{
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          background: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}
+        className="mb-6"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+      >
+        <button
+          onClick={() => {
+            setCurrentState('selection')
+            setCurrentAssessmentIndex(0)
+            setCurrentQuestionIndex(0)
+            setResponses({})
+          }}
+          className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Assessment Selection
+        </button>
+      </motion.div>
+
+      {/* Enhanced Progress Bar */}
+      <motion.div
+        className="bg-white rounded-2xl p-6 mb-8 border border-gray-200 shadow-lg"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium text-gray-800">
-            {currentAssessment.shortTitle}
-          </span>
-          <span className="text-sm text-gray-600">
-            {Math.round(progress)}% Complete
-          </span>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-brand-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
+              <span className="text-brand-green-600 text-lg">📊</span>
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{currentAssessment.shortTitle}</h2>
+              <p className="text-sm text-gray-600">Assessment in Progress</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-brand-green-600">{Math.round(progress)}%</div>
+            <div className="text-sm text-gray-600">Complete</div>
+          </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        
+        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <motion.div
-            className="bg-emerald-500 h-2 rounded-full"
+            className="h-full bg-gradient-to-r from-brand-green-500 to-emerald-600 rounded-full shadow-sm"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           />
+        </div>
+        
+        <div className="flex justify-between text-sm text-gray-600 mt-2">
+          <span>Question {currentQuestionIndex + 1} of {currentAssessment.questions.length}</span>
+          <span>{Math.round(progress)}% Complete</span>
         </div>
       </motion.div>
 
@@ -306,7 +399,6 @@ export function AssessmentFlow({
       <AssessmentResults
         assessment={currentAssessment}
         result={currentResult}
-        userProfile={userProfile}
         onRetake={handleRetake}
         onContinue={handleContinue}
       />
@@ -321,49 +413,54 @@ export function AssessmentFlow({
       transition={{ duration: 0.6 }}
     >
       <motion.div
-        className={`${glassVariants.panelSizes.large}`}
-        style={{
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          background: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}
+        className="bg-white rounded-2xl p-12 border border-gray-200 shadow-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
       >
-        <div className="mb-6">
-          <span className="text-6xl">🎉</span>
+        <div className="mb-8">
+          <motion.div
+            className="w-24 h-24 bg-gradient-to-br from-brand-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.4, duration: 0.6, type: "spring" }}
+          >
+            <span className="text-4xl">🎉</span>
+          </motion.div>
         </div>
-        <h1 className="text-3xl font-light text-gray-800 mb-4">
+        
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Assessment Complete!
         </h1>
-        <p className="text-lg text-gray-600 mb-8">
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
           Thank you for completing these assessments. Your results provide valuable insights
-          into your mental health and well-being.
+          into your mental health and well-being. We're generating your personalized analysis now.
         </p>
 
-        <div className="flex gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.button
             onClick={() => setCurrentState('selection')}
-            className="px-6 py-3 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20 text-gray-700 hover:bg-white/20 transition-all duration-300"
-            whileHover={{ scale: 1.02 }}
+            className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium hover:shadow-md"
+            whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
           >
-            Take Another Assessment
+            🔄 Take Another Assessment
           </motion.button>
-          <motion.button
-            onClick={onExit}
-            className="px-8 py-3 rounded-xl backdrop-blur-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-700 hover:bg-emerald-500/30 transition-all duration-300"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Return to Dashboard
-          </motion.button>
+                      <motion.button
+              onClick={onExit}
+              className="px-8 py-3 rounded-xl backdrop-blur-xl bg-brand-green-500/20 border border-brand-green-400/30 text-brand-green-700 hover:bg-brand-green-500/30 transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Return to Dashboard
+            </motion.button>
         </div>
       </motion.div>
     </motion.div>
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50/80 via-brand-green-50/60 to-brand-green-50/40 p-6">
       {/* Exit Button */}
       <motion.button
         onClick={onExit}

@@ -23,6 +23,18 @@ import { BackButton } from '@/components/ui/BackButton'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useEffect } from 'react'
 
+// SVG asset paths (from public folder)
+const SVG_ASSETS = {
+  contemplatingBro: '/assets/Contemplating-bro_1.svg',
+  mentalHealthBro: '/assets/Mental_health-bro_2.svg',
+  mentalHealthPana: '/assets/Mental_health-pana_1.svg',
+  overwhelmedBro: '/assets/Overwhelmed-bro_1.svg',
+  peaceOfMindBro: '/assets/Peace_of_mind-bro_2.svg',
+  personalGrowthBro: '/assets/personal_growth-bro_1.svg',
+  psychologistRafiki: '/assets/Psychologist-rafiki_1.svg',
+  thinkingFaceBro: '/assets/Thinking_face-bro_1.svg'
+}
+
 export default function AssessmentsPage() {
   const [selectedFlow, setSelectedFlow] = useState<string | null>(null)
   const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult>>({})
@@ -52,11 +64,20 @@ export default function AssessmentsPage() {
     setSelectedFlow(flowId)
   }
 
+  const handleSingleAssessment = (assessmentId: string) => {
+    setSelectedFlow('single')
+    // Store the single assessment ID in a way AssessmentFlow can access it
+    localStorage.setItem('singleAssessmentId', assessmentId)
+  }
+
   const handleAssessmentComplete = (results: Record<string, AssessmentResult>, processedUserProfile: UserProfile) => {
     setAssessmentResults(results)
     setUserProfile(processedUserProfile)
     console.log('Assessment results:', results)
     console.log('Processed user profile:', processedUserProfile)
+
+    // Clear single assessment ID
+    localStorage.removeItem('singleAssessmentId')
 
     // Store results for later use (after user reviews them)
     localStorage.setItem('assessmentResults', JSON.stringify(results))
@@ -100,6 +121,9 @@ export default function AssessmentsPage() {
   const handleExit = () => {
     // Clear the flow selection
     setSelectedFlow(null)
+    
+    // Clear single assessment ID if it exists
+    localStorage.removeItem('singleAssessmentId')
 
     // Check if we have stored assessment results (meaning user completed assessments)
     const storedResults = localStorage.getItem('assessmentResults')
@@ -117,9 +141,22 @@ export default function AssessmentsPage() {
   }
 
   if (selectedFlow) {
+    let assessmentIds: string[] = []
+    
+    if (selectedFlow === 'single') {
+      // Get the single assessment ID from localStorage
+      const singleAssessmentId = localStorage.getItem('singleAssessmentId')
+      if (singleAssessmentId) {
+        assessmentIds = [singleAssessmentId]
+      }
+    } else {
+      // Use the flow-based assessment IDs
+      assessmentIds = ASSESSMENT_FLOW[selectedFlow as keyof typeof ASSESSMENT_FLOW] || []
+    }
+
     return (
       <AssessmentFlow
-        assessmentIds={ASSESSMENT_FLOW[selectedFlow as keyof typeof ASSESSMENT_FLOW] || []}
+        assessmentIds={assessmentIds}
         onComplete={handleAssessmentComplete}
         onExit={handleExit}
         userProfile={userProfile || undefined}
@@ -184,7 +221,13 @@ export default function AssessmentsPage() {
                   transition={{ duration: 0.6 }}
                 >
                   <div className="mb-6">
-                    <span className="text-5xl">🧠</span>
+                    <div className="w-32 h-32 mx-auto">
+                      <img 
+                        src={SVG_ASSETS.psychologistRafiki} 
+                        alt="Professional Support" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
                   <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">
                     Mental Health Assessments
@@ -210,7 +253,7 @@ export default function AssessmentsPage() {
                 <motion.div
                   className="group relative flex flex-col justify-between p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
                   whileHover={{ scale: 1.02 }}
-                  onClick={() => handleFlowSelect('screening')}
+                  onClick={() => handleSingleAssessment('phq9')}
                 >
                   <div>
                     <p className="text-sm text-blue-600 font-medium">Depression Screening</p>
@@ -230,19 +273,20 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Background Image Placeholder */}
-                <div className="bg-gradient-to-br from-blue-100 to-emerald-100 rounded-lg min-h-[200px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🌱</div>
-                    <p className="text-sm text-gray-600">Mental Wellness</p>
-                  </div>
+                {/* Mental Wellness SVG */}
+                <div className="bg-gradient-to-br from-blue-100 to-emerald-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
+                  <img 
+                    src={SVG_ASSETS.peaceOfMindBro} 
+                    alt="Mental Wellness" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
 
                 {/* CD-RISC Resilience Assessment */}
                 <motion.div
                   className="group relative flex flex-col justify-between p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
                   whileHover={{ scale: 1.02 }}
-                  onClick={() => handleFlowSelect('resilience')}
+                  onClick={() => handleSingleAssessment('cd-risc')}
                 >
                   <div>
                     <p className="text-sm text-emerald-600 font-medium">Emotional Resilience</p>
@@ -262,12 +306,13 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Background Image Placeholder */}
-                <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg min-h-[200px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">💪</div>
-                    <p className="text-sm text-gray-600">Building Strength</p>
-                  </div>
+                {/* Building Strength SVG */}
+                <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
+                  <img 
+                    src={SVG_ASSETS.personalGrowthBro} 
+                    alt="Building Strength" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -286,7 +331,7 @@ export default function AssessmentsPage() {
                 <motion.div
                   className="group relative flex flex-col justify-between p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
                   whileHover={{ scale: 1.02 }}
-                  onClick={() => handleFlowSelect('screening')}
+                  onClick={() => handleSingleAssessment('gad7')}
                 >
                   <div>
                     <p className="text-sm text-amber-600 font-medium">Anxiety Level</p>
@@ -306,12 +351,13 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Background Image Placeholder */}
-                <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg min-h-[200px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🧘</div>
-                    <p className="text-sm text-gray-600">Finding Calm</p>
-                  </div>
+                {/* Finding Calm SVG */}
+                <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
+                  <img 
+                    src={SVG_ASSETS.mentalHealthPana} 
+                    alt="Finding Calm" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </motion.div>
@@ -330,7 +376,7 @@ export default function AssessmentsPage() {
                 <motion.div
                   className="group relative flex flex-col justify-between p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20"
                   whileHover={{ scale: 1.02 }}
-                  onClick={() => handleFlowSelect('comprehensive')}
+                  onClick={() => handleSingleAssessment('ace')}
                 >
                   <div>
                     <p className="text-sm text-purple-600 font-medium">Childhood Trauma</p>
@@ -350,12 +396,13 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Background Image Placeholder */}
-                <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg min-h-[200px] flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🌈</div>
-                    <p className="text-sm text-gray-600">Path to Healing</p>
-                  </div>
+                {/* Path to Healing SVG */}
+                <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
+                  <img 
+                    src={SVG_ASSETS.psychologistRafiki} 
+                    alt="Path to Healing" 
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
                 </div>
               </div>
             </motion.div>

@@ -6,26 +6,33 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
 
-interface AssessmentResult {
-  assessmentId: string
+interface AssessmentData {
   assessmentName: string
   score: number
-  level: string
-  severity: 'normal' | 'mild' | 'moderate' | 'severe' | 'critical'
-  clinicalDescription: string
+  maxScore: number
+  responses: Record<string, number | string>
+  category: string
 }
 
-interface UserContext {
-  assessmentHistory?: 'first_time' | 'follow_up' | 'returning'
-  primaryConcern?: string
-  preferredLanguage?: 'clinical' | 'friendly' | 'simple'
-  culturalContext?: string
+interface UserProfile {
+  display_name?: string
+  preferred_mode?: string
+  emotional_capacity?: string
+  is_anonymous?: boolean
+}
+
+interface AIExplanation {
+  summary: string
+  whatItMeans: string
+  unconsciousManifestations: string[]
+  recommendations: string[]
+  nextSteps: string
+  supportiveMessage: string
 }
 
 interface ExplanationRequest {
-  clinicalResult: AssessmentResult
-  userContext?: UserContext
-  tone?: 'empathetic' | 'encouraging' | 'professional' | 'casual'
+  assessmentData: AssessmentData
+  userProfile?: UserProfile
 }
 
 Deno.serve(async (req) => {
@@ -59,20 +66,19 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
-    const { clinicalResult, userContext, tone = 'empathetic' }: ExplanationRequest = await req.json()
+    const { assessmentData, userProfile }: ExplanationRequest = await req.json()
 
     // Generate AI-friendly explanation
-    const explanation = await generateFriendlyExplanation(clinicalResult, userContext, tone)
+    const explanation = await generateAIAssessmentExplanation(assessmentData, userProfile)
 
     return new Response(
       JSON.stringify({
         success: true,
         explanation,
-        clinicalResult, // Include original for reference
         metadata: {
           generatedAt: new Date().toISOString(),
-          tone,
-          assessmentType: clinicalResult.assessmentId
+          assessmentType: assessmentData.category,
+          assessmentName: assessmentData.assessmentName
         }
       }),
       {
@@ -87,7 +93,7 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: false,
         error: 'Failed to generate explanation',
-        fallback: generateFallbackExplanation(clinicalResult)
+        fallback: generateFallbackExplanation(assessmentData)
       }),
       {
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
@@ -97,12 +103,11 @@ Deno.serve(async (req) => {
   }
 })
 
-async function generateFriendlyExplanation(
-  clinicalResult: AssessmentResult,
-  userContext?: UserContext,
-  tone: string = 'empathetic'
-): Promise<string> {
-  const prompt = buildExplanationPrompt(clinicalResult, userContext, tone)
+async function generateAIAssessmentExplanation(
+  assessmentData: AssessmentData,
+  userProfile?: UserProfile
+): Promise<AIExplanation> {
+  const prompt = buildAssessmentPrompt(assessmentData, userProfile)
 
   try {
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -116,128 +121,243 @@ async function generateFriendlyExplanation(
         messages: [
           {
             role: 'system',
-            content: `You are a compassionate mental health assistant who explains assessment results in warm, supportive, and easy-to-understand language. Your goal is to help users feel understood and hopeful while maintaining clinical accuracy.`
+            content: `You are a friendly, down-to-earth mental health buddy who talks like a caring friend would. You explain assessment results in a casual, conversational way that feels like you're chatting over coffee. Use everyday language, throw in some encouraging phrases, and make the user feel like they're talking to someone who really gets it.
+
+Keep it real and relatable - no medical jargon unless you explain it simply. Be warm, supportive, and genuinely encouraging. Think of yourself as that friend who's always there to listen and give practical advice.
+
+Always respond with a JSON object containing: summary, whatItMeans, unconsciousManifestations (array), recommendations (array), nextSteps, and supportiveMessage.`
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_tokens: 300,
+        max_tokens: 800,
         temperature: 0.7,
+        response_format: { type: "json_object" }
       }),
     })
 
     const data = await openaiResponse.json()
 
     if (data.choices && data.choices[0]) {
-      return data.choices[0].message.content.trim()
+      try {
+        const content = data.choices[0].message.content
+        const parsed = JSON.parse(content)
+        return {
+          summary: parsed.summary || '',
+          whatItMeans: parsed.whatItMeans || '',
+          unconsciousManifestations: Array.isArray(parsed.unconsciousManifestations) ? parsed.unconsciousManifestations : [],
+          recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
+          nextSteps: parsed.nextSteps || '',
+          supportiveMessage: parsed.supportiveMessage || ''
+        }
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response:', parseError)
+        return generateStructuredExplanation(assessmentData, userProfile)
+      }
     }
 
     // Fallback to structured response
-    return generateStructuredExplanation(clinicalResult, userContext, tone)
+    return generateStructuredExplanation(assessmentData, userProfile)
   } catch (error) {
     console.error('OpenAI API error:', error)
-    return generateStructuredExplanation(clinicalResult, userContext, tone)
+    return generateStructuredExplanation(assessmentData, userProfile)
   }
 }
 
-function buildExplanationPrompt(
-  clinicalResult: AssessmentResult,
-  userContext?: UserContext,
-  tone: string
+function buildAssessmentPrompt(
+  assessmentData: AssessmentData,
+  userProfile?: UserProfile
 ): string {
-  const contextInfo = userContext ? `
+  const { assessmentName, score, maxScore, responses, category } = assessmentData
+  const percentage = Math.round((score / maxScore) * 100)
+  
+  const userContext = userProfile ? `
 User Context:
-- Assessment History: ${userContext.assessmentHistory || 'unknown'}
-- Primary Concern: ${userContext.primaryConcern || 'general mental health'}
-- Preferred Style: ${userContext.preferredLanguage || 'friendly'}
-- Cultural Context: ${userContext.culturalContext || 'general'}` : ''
+- Name: ${userProfile.display_name || 'Anonymous'}
+- Preferred Mode: ${userProfile.preferred_mode || 'general'}
+- Emotional Capacity: ${userProfile.emotional_capacity || 'moderate'}` : ''
 
   return `
-Please explain this clinical assessment result in a warm, supportive, and easy-to-understand way:
+Please analyze this assessment result and provide a warm, supportive explanation in JSON format. Pay special attention to how these symptoms might be unconsciously manifesting in the person's daily life.
 
-CLINICAL RESULT:
-- Assessment: ${clinicalResult.assessmentName}
-- Score: ${clinicalResult.score}
-- Level: ${clinicalResult.level}
-- Severity: ${clinicalResult.severity}
-- Clinical Description: ${clinicalResult.clinicalDescription}${contextInfo}
+ASSESSMENT DATA:
+- Assessment: ${assessmentName}
+- Category: ${category}
+- Score: ${score} out of ${maxScore} (${percentage}%)
+- Responses: ${JSON.stringify(responses)}${userContext}
+
+IMPORTANT: For unconscious manifestations, think about:
+- What behaviors might they be doing without realizing it's related to their mental health?
+- How might these symptoms be affecting their relationships, work, or daily routines?
+- What patterns might feel "normal" to them but could actually be symptoms?
+
+REQUIRED JSON RESPONSE FORMAT:
+{
+  "summary": "Brief overview of what the score means",
+  "whatItMeans": "Detailed explanation in everyday language",
+  "unconsciousManifestations": ["Behavior pattern 1", "Behavior pattern 2", "Behavior pattern 3"],
+  "recommendations": ["Actionable suggestion 1", "Actionable suggestion 2", "Actionable suggestion 3"],
+  "nextSteps": "What the user should do next",
+  "supportiveMessage": "Encouraging and validating message"
+}
+
+⚠️ CRITICAL: You MUST include ALL fields, especially unconsciousManifestations. Do not skip any field.
+
+EXAMPLES OF UNCONSCIOUS MANIFESTATIONS:
+- Depression: "You might be avoiding social situations without realizing it", "You could be more irritable with loved ones than usual"
+- Anxiety: "You might be overthinking decisions without realizing it", "You could be experiencing physical tension in your body"
+- Trauma: "You might be avoiding intimacy without understanding why", "You could be people-pleasing to feel safe", "You might be hypervigilant in social situations", "You could be experiencing trust issues that affect relationships"
+- ACE/Childhood Trauma: "You might be avoiding certain triggers without realizing why", "You could be experiencing trust issues that affect relationships", "You might be people-pleasing to feel safe", "You could be experiencing hypervigilance in social situations"
 
 INSTRUCTIONS:
-- Use ${tone} tone throughout
-- Explain what the score means in everyday language
-- Focus on hope, support, and next steps
-- Keep it concise (100-150 words)
-- Avoid medical jargon or explain it simply
-- Emphasize that help is available and recovery is possible
-- Include encouragement and validation
-- End with actionable suggestions
+- Talk like a caring friend would - casual, warm, and real
+- Use everyday language and relatable examples
+- Keep it conversational, like you're chatting over coffee
+- Include encouraging phrases and positive vibes
+- Make the user feel like they're talking to someone who really gets it
 
-Make the user feel understood, not judged. Focus on their strength and potential for improvement.`
+SPECIFICALLY FOR UNCONSCIOUS MANIFESTATIONS:
+- Think about how these symptoms might be showing up in their daily life without them realizing it
+- Consider behaviors like: avoiding social situations, people-pleasing, procrastination, irritability, isolation, etc.
+- Focus on patterns that feel automatic or "just how they are" but might actually be symptoms
+- Give them "aha moments" about behaviors they might not have connected to their mental health
+
+- Include 3-4 specific, actionable recommendations
+- Keep each section friendly and supportive
+- Avoid medical jargon - explain things simply if needed
+- Consider the user's emotional capacity and preferred mode
+
+Think of yourself as that supportive friend who's always there to listen and give practical advice. Make the user feel understood, supported, and hopeful about their journey.
+
+VALIDATION: Before responding, ensure your JSON includes ALL required fields:
+- summary ✓
+- whatItMeans ✓  
+- unconsciousManifestations ✓ (3-4 specific patterns)
+- recommendations ✓ (3-4 actionable suggestions)
+- nextSteps ✓
+- supportMessage ✓
+
+If any field is missing, regenerate the response.`
 }
 
 function generateStructuredExplanation(
-  clinicalResult: AssessmentResult,
-  userContext?: UserContext,
-  tone: string = 'empathetic'
-): string {
-  const { assessmentName, score, level, severity, clinicalDescription } = clinicalResult
+  assessmentData: AssessmentData,
+  userProfile?: UserProfile
+): AIExplanation {
+  const { assessmentName, score, maxScore, category } = assessmentData
+  const percentage = Math.round((score / maxScore) * 100)
+  
+  let summary = ''
+  let whatItMeans = ''
+  let unconsciousManifestations: string[] = []
+  let recommendations: string[] = []
+  let nextSteps = ''
+  let supportiveMessage = ''
 
-  let explanation = ''
-
-  // Opening based on severity
-  if (severity === 'normal') {
-    explanation = `Great news! Your ${assessmentName} results show you're doing well. `
-  } else if (severity === 'mild') {
-    explanation = `Your ${assessmentName} results suggest you're experiencing some challenges, but they're manageable. `
-  } else if (severity === 'moderate') {
-    explanation = `Your ${assessmentName} results indicate you're going through a significant time right now. `
+  if (category === 'depression' || assessmentName.includes('PHQ-9')) {
+    if (score <= 4) {
+      summary = 'Hey, great news! Your assessment shows you\'re doing pretty well overall.'
+      whatItMeans = 'This is awesome! You\'re experiencing the normal ups and downs that everyone goes through - totally normal stuff. Think of it like having a few cloudy days mixed in with the sunny ones.'
+      unconsciousManifestations = [
+        'You might be more resilient than you realize',
+        'Your natural coping mechanisms are working well',
+        'You\'re likely maintaining healthy boundaries naturally'
+      ]
+      recommendations = [
+        'Keep doing what you\'re doing - you\'re on the right track!',
+        'Stay connected with your people - friends and family are gold',
+        'Keep up those self-care habits that are working for you'
+      ]
+      nextSteps = 'Just keep an eye on your mood and reach out if things start feeling off. You\'ve got this!'
+      supportiveMessage = 'You\'re doing really well! Remember, it\'s totally normal to have good days and not-so-great days. That\'s just life being life.'
+    } else if (score <= 9) {
+      summary = 'So, your assessment shows you\'re going through a bit of a rough patch.'
+      whatItMeans = 'Look, it sounds like you\'re dealing with some low mood stuff, but honestly? It\'s totally manageable and super common when life gets stressful. Think of it like having a few bad weather days - they pass.'
+      unconsciousManifestations = [
+        'You might be avoiding social situations without realizing it',
+        'You could be more irritable with loved ones than usual',
+        'You might be procrastinating more than you typically do'
+      ]
+      recommendations = [
+        'Try to keep up with sleep and exercise - even a little bit helps',
+        'Talk to someone you trust about how you\'re feeling - bottling it up never helps',
+        'Find some simple things that boost your mood - whatever works for you'
+      ]
+      nextSteps = 'Keep an eye on how you\'re feeling, and if this stuff sticks around, maybe chat with a mental health pro. No shame in that game!'
+      supportiveMessage = 'Hey, it takes guts to admit when you\'re not feeling great. These feelings won\'t last forever - you\'re stronger than you think.'
+    } else {
+      summary = 'Your assessment shows moderate to severe symptoms of depression.'
+      whatItMeans = 'You\'re experiencing significant emotional distress that deserves professional attention and support.'
+      unconsciousManifestations = [
+        'You might be isolating yourself from friends and family',
+        'You could be neglecting basic self-care without noticing',
+        'You might be experiencing negative thought patterns that feel automatic'
+      ]
+      recommendations = [
+        'Please reach out to a mental health professional',
+        'Talk to your doctor about how you\'re feeling',
+        'Consider reaching out to a crisis helpline if needed'
+      ]
+      nextSteps = 'Professional help can make a real difference. You don\'t have to face this alone.'
+      supportiveMessage = 'Your feelings are valid and important. Getting help is a sign of strength, not weakness.'
+    }
+  } else if (category === 'anxiety' || assessmentName.includes('GAD-7')) {
+    if (score <= 4) {
+      summary = 'Your assessment shows minimal symptoms of anxiety.'
+      whatItMeans = 'You\'re managing stress well and experiencing normal levels of worry.'
+      recommendations = [
+        'Continue your current stress management techniques',
+        'Maintain healthy boundaries and self-care routines',
+        'Practice mindfulness or relaxation exercises'
+      ]
+      nextSteps = 'Keep up your good work in managing stress and anxiety.'
+      supportiveMessage = 'You\'re handling life\'s challenges with resilience and balance.'
+    } else if (score <= 9) {
+      summary = 'Your assessment shows mild symptoms of anxiety.'
+      whatItMeans = 'You may be experiencing some worry and stress, but it\'s manageable.'
+      recommendations = [
+        'Practice deep breathing exercises',
+        'Try to identify and address sources of stress',
+        'Maintain regular sleep and exercise routines'
+      ]
+      nextSteps = 'Consider learning more about anxiety management techniques.'
+      supportiveMessage = 'Anxiety is a normal response to stress. You\'re not alone in feeling this way.'
+    } else {
+      summary = 'Your assessment shows moderate to severe symptoms of anxiety.'
+      whatItMeans = 'Your anxiety is significantly impacting your daily life and deserves professional attention.'
+      recommendations = [
+        'Please consider talking to a mental health professional',
+        'Learn about anxiety management techniques',
+        'Practice grounding exercises when feeling overwhelmed'
+      ]
+      nextSteps = 'Professional help can teach you effective strategies to manage anxiety.'
+      supportiveMessage = 'Anxiety can feel overwhelming, but there are proven ways to manage it. You deserve support.'
+    }
   } else {
-    explanation = `Your ${assessmentName} results show you're experiencing considerable difficulty, and that's completely valid. `
+    // Generic fallback for other assessments
+    summary = `Your ${assessmentName} score is ${score} out of ${maxScore}.`
+    whatItMeans = 'This assessment helps identify areas where you might benefit from additional support or resources.'
+    recommendations = [
+      'Reflect on the areas highlighted in your results',
+      'Consider what support might be helpful',
+      'Talk to a professional if you have concerns'
+    ]
+    nextSteps = 'Use these results as a starting point for understanding your needs.'
+    supportiveMessage = 'Self-awareness is the first step toward positive change. You\'re already making progress.'
   }
 
-  // Score explanation
-  explanation += `A score of ${score} falls in the ${level} range, which means ${getScoreExplanation(severity)}. `
-
-  // Hope and support
-  explanation += `The important thing to know is that you're not alone, and there are many effective ways to feel better. `
-
-  // Next steps
-  explanation += getNextStepsSuggestion(severity, assessmentName)
-
-  return explanation
-}
-
-function getScoreExplanation(severity: string): string {
-  switch (severity) {
-    case 'normal':
-      return "you're in a good place and maintaining your mental wellness"
-    case 'mild':
-      return "you're dealing with some normal life challenges that many people face"
-    case 'moderate':
-      return "life has been quite challenging lately, and that's taking its toll"
-    case 'severe':
-      return "you're carrying a heavy load and could really benefit from additional support"
-    case 'critical':
-      return "you're going through an extremely difficult time and need immediate care"
-    default:
-      return "you're working through some important challenges"
+  return {
+    summary,
+    whatItMeans,
+    unconsciousManifestations,
+    recommendations,
+    nextSteps,
+    supportiveMessage
   }
 }
 
-function getNextStepsSuggestion(severity: string, assessmentName: string): string {
-  const suggestions = {
-    normal: "Keep up the great work with your self-care routines, and consider regular check-ins to maintain your wellness.",
-    mild: "Consider talking to a trusted friend or counselor about what's been on your mind. Small changes in daily habits can make a big difference.",
-    moderate: "I recommend connecting with a mental health professional who can provide personalized support and guidance.",
-    severe: "Please reach out to a mental health professional or counselor as soon as possible. There are effective treatments available.",
-    critical: "This is important - please contact a mental health professional or crisis service right away for immediate support."
-  }
-
-  return suggestions[severity as keyof typeof suggestions] || suggestions.moderate
-}
-
-function generateFallbackExplanation(clinicalResult: AssessmentResult): string {
-  return `Your ${clinicalResult.assessmentName} assessment shows a score of ${clinicalResult.score}, which indicates ${clinicalResult.level} symptoms. While this suggests some challenges, remember that assessment results are just one piece of your wellness picture. Many people in similar situations find meaningful improvement with the right support and strategies. Consider discussing these results with a healthcare provider who can offer personalized guidance.`
+function generateFallbackExplanation(assessmentData: AssessmentData): AIExplanation {
+  return generateStructuredExplanation(assessmentData)
 }
