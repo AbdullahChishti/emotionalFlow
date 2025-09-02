@@ -33,8 +33,9 @@ const ModernHeader = ({ showAuthModal }: { showAuthModal: () => void }) => {
           <div className="flex items-center gap-4">
           <motion.button
             onClick={showAuthModal}
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 bg-brand-green-500 text-white text-base font-bold shadow-lg shadow-brand-green-500/20 hover:bg-brand-green-600 transition-all duration-300 ease-in-out transform hover:scale-105"
-            whileHover={{ scale: 1.05 }}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+              style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.2)' }}
+            whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
             whileTap={{ scale: 0.95 }}
           >
               <span className="truncate">Find Peace</span>
@@ -217,8 +218,9 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
         >
           <motion.button
             onClick={showAuthModal}
-            className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-brand-green-500 text-white text-lg font-bold shadow-lg shadow-brand-green-500/30 hover:bg-brand-green-600 transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
-            whileHover={{ scale: 1.05 }}
+            className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 text-white text-lg font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
+            style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
+            whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
             whileTap={{ scale: 0.95 }}
           >
             <span className="truncate">Begin Your Gentle Assessment</span>
@@ -319,16 +321,18 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
               <motion.button
                 onClick={showAuthModal}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-green-500 text-white text-lg font-bold shadow-lg shadow-green-500/30 hover:bg-green-600 transition-all duration-300 ease-in-out transform hover:scale-105"
-                whileHover={{ scale: 1.05 }}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 text-white text-lg font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+                style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
+                whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
                 whileTap={{ scale: 0.95 }}
               >
                 <span className="truncate text-white">Begin Your Healing Journey</span>
               </motion.button>
               <motion.button
                 onClick={() => window.location.href = '/session'}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-green-600 text-white text-lg font-bold shadow-lg shadow-green-600/30 hover:bg-green-700 transition-all duration-300 ease-in-out transform hover:scale-105"
-                whileHover={{ scale: 1.05 }}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 text-white text-lg font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+                style={{ backgroundColor: '#2a4f54', boxShadow: '0 10px 15px -3px rgba(42, 79, 84, 0.3)' }}
+                whileHover={{ scale: 1.05, backgroundColor: '#1f3d42' }}
                 whileTap={{ scale: 0.95 }}
               >
                 <span className="truncate text-white">💬 I Need Someone to Listen</span>
