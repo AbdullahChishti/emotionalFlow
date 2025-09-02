@@ -139,172 +139,187 @@ export function MoodSelectionScreen({ onNavigate, mode }: MoodSelectionScreenPro
   const handleNotSure = () => setSelectedScene(4) // Selects 'Calm'
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden text-secondary-800 font-sans">
-      {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 300,
-            height: 300,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            top: '10%',
-            right: '10%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
-        <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 250,
-            height: 250,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            bottom: '20%',
-            left: '15%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 8
-          }}
-        />
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-primary-50 text-secondary-800 font-sans relative overflow-hidden">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-20 w-80 h-80 bg-primary-100/30 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-72 h-72 bg-secondary-100/25 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-50/20 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Header */}
-      <header className="relative flex items-center justify-between p-6 glassmorphic z-10">
+      {/* Minimal Header */}
+      <header className="relative p-6 z-10">
         <motion.button
           onClick={handleBack}
-          className="p-3 text-secondary-500 hover:bg-secondary-100/70 hover:text-secondary-700 rounded-full transition-all duration-300"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          className="absolute left-6 top-6 w-10 h-10 bg-white/60 backdrop-blur-sm border border-white/40 rounded-full flex items-center justify-center text-secondary-500 hover:bg-white/80 hover:text-secondary-700 transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <span className="material-symbols-outlined text-2xl">arrow_back</span>
+          <span className="material-symbols-outlined text-xl">arrow_back</span>
         </motion.button>
-        <div className="flex-1 text-center">
+
+        <div className="text-center pt-4">
           <motion.div
-            className="flex items-center justify-center gap-3"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-white/30"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            <span className="material-symbols-outlined text-3xl text-primary-600">psychology</span>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-              MindWell
-            </h1>
+            <div className="w-8 h-8 bg-primary-100/50 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg text-primary-600">psychology</span>
+            </div>
+            <span className="text-lg font-medium text-secondary-800">MindWell</span>
           </motion.div>
         </div>
-        <div className="w-14" />
       </header>
 
-      <main className="relative flex-1 flex flex-col items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-secondary-800 mb-4 leading-tight">
-            Which moment feels most like you right now?
-          </h1>
-          <p className="text-secondary-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Your feelings are valid, and there&apos;s no judgment here. Choose what feels true to your heart in this moment—we&apos;re here to meet you exactly where you are.
-          </p>
-        </motion.div>
+      <main className="relative flex-1 flex flex-col items-center justify-center px-6 py-8">
+        <div className="max-w-2xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="mb-12"
+          >
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full text-primary-700 font-medium text-sm mb-6 border border-white/50"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+              Take Your Time
+            </motion.div>
 
-        <div className="w-full max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                {scenes.map((scene) => (
+            <h1 className="text-3xl md:text-4xl font-bold text-secondary-800 mb-4 leading-tight">
+              How are you feeling
+              <br />
+              <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                right now?
+              </span>
+            </h1>
+            <p className="text-secondary-600 text-base max-w-lg mx-auto leading-relaxed">
+              Every emotion you feel is valid and important. Take a gentle breath and choose what resonates with your heart today.
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="w-full max-w-4xl mx-auto">
+            <motion.div
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+                {scenes.map((scene, index) => (
                     <motion.div
                         key={scene.value}
                         onClick={() => setSelectedScene(scene.value)}
                         onHoverStart={() => setHoveredScene(scene.value)}
                         onHoverEnd={() => setHoveredScene(null)}
-                        className="relative aspect-[3/4] rounded-3xl overflow-hidden cursor-pointer shadow-lg"
-                        animate={{ scale: selectedScene === scene.value ? 1.05 : 1, zIndex: selectedScene === scene.value ? 10 : 1 }}
-                        whileHover={{ scale: selectedScene === scene.value ? 1.05 : 1.03 }}
-                        transition={{ duration: 0.2 }}
+                        className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{
+                          opacity: 1,
+                          scale: selectedScene === scene.value ? 1.05 : 1,
+                          zIndex: selectedScene === scene.value ? 10 : 1
+                        }}
+                        transition={{ delay: index * 0.1, duration: 0.5 }}
+                        whileHover={{ scale: selectedScene === scene.value ? 1.05 : 1.02 }}
                     >
                         <scene.component />
-                        <AnimatePresence>
-                            {(hoveredScene === scene.value || selectedScene === scene.value) && (
-                                <motion.div
-                                    className="absolute bottom-0 left-0 right-0 p-6 glassmorphic"
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                >
-                                    <p className="text-center font-bold text-secondary-800">{scene.label}</p>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+
+                        {/* Minimal overlay */}
+                        <motion.div
+                          className="absolute inset-0 bg-white/10 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: (hoveredScene === scene.value || selectedScene === scene.value) ? 1 : 0 }}
+                        />
+
+                        {/* Label */}
+                        <motion.div
+                          className="absolute bottom-3 left-3 right-3"
+                          initial={{ y: 10, opacity: 0 }}
+                          animate={{
+                            y: (hoveredScene === scene.value || selectedScene === scene.value) ? 0 : 10,
+                            opacity: (hoveredScene === scene.value || selectedScene === scene.value) ? 1 : 0
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
+                            <p className="text-center text-sm font-medium text-secondary-800">{scene.label}</p>
+                          </div>
+                        </motion.div>
+
+                        {/* Selection indicator */}
                         <AnimatePresence>
                           {selectedScene === scene.value && (
                             <motion.div
-                              className="absolute inset-0 border-4 border-primary-400 rounded-3xl pointer-events-none shadow-lg shadow-primary-400/20"
+                              className="absolute inset-0 border-2 border-primary-400 rounded-2xl pointer-events-none"
                               initial={{ opacity: 0, scale: 0.9 }}
                               animate={{ opacity: 1, scale: 1 }}
                               exit={{ opacity: 0, scale: 0.9 }}
                               transition={{ duration: 0.2 }}
-                            />
+                            >
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
+                                <span className="material-symbols-outlined text-xs text-white">check</span>
+                              </div>
+                            </motion.div>
                           )}
                         </AnimatePresence>
                     </motion.div>
                 ))}
-            </div>
+            </motion.div>
         </div>
 
-        <div className="text-center mt-12 space-y-4">
-             <motion.button
-               onClick={handleNotSure}
-               className="text-secondary-500 hover:text-primary-600 transition-colors font-medium text-lg"
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-             >
-               Feeling uncertain?
-             </motion.button>
-            <p className="text-base text-secondary-600 max-w-md mx-auto leading-relaxed">
-              That&apos;s completely okay—emotions can feel complex. We&apos;ll gently guide you to find the perfect listener who can meet you in this tender space.
-            </p>
-        </div>
+        <motion.div
+          className="text-center mt-8 space-y-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          <motion.button
+            onClick={handleNotSure}
+            className="inline-flex items-center gap-2 text-secondary-500 hover:text-primary-600 transition-colors font-medium text-sm px-4 py-2 bg-white/50 backdrop-blur-sm rounded-full border border-white/30 hover:bg-white/70"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <span>💭</span>
+            <span>Not sure?</span>
+          </motion.button>
+          <p className="text-sm text-secondary-600 max-w-sm mx-auto leading-relaxed">
+            That&apos;s perfectly fine. Sometimes emotions need time to settle. We can start with something gentle.
+          </p>
+        </motion.div>
       </main>
 
-      <footer className="p-6 relative z-10">
+      <motion.footer
+        className="p-6 relative z-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
         <AnimatePresence>
           {selectedScene !== null && (
             <motion.div
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-              className="max-w-md mx-auto"
+              initial={{ y: 50, opacity: 0, scale: 0.9 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 50, opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+              className="max-w-sm mx-auto"
             >
               <motion.button
                 onClick={handleContinue}
                 whileHover={{ scale: 1.02, y: -1 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg"
+                className="w-full py-3 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 text-base"
               >
-                Continue
-                <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                <span>Continue with this feeling</span>
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
-      </footer>
+      </motion.footer>
     </div>
   )
 }
