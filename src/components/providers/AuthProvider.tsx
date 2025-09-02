@@ -70,8 +70,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profileData = await fetchProfile(user.id)
       setProfile(profileData)
 
-      // Check if user needs onboarding (new user with default values)
-      if (profileData && profileData.preferred_mode === 'both' && profileData.emotional_capacity === 'medium') {
+      // Check if user needs onboarding
+      if (profileData) {
+        // Check for test flag first
+        const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
+        if (testOnboarding) {
+          localStorage.removeItem('testOnboarding')
+          setNeedsOnboarding(true)
+          return
+        }
+
         // Check if they have any mood entries (indicating they've completed onboarding)
         const { data: moodEntries } = await supabase
           .from('mood_entries')
@@ -79,9 +87,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .eq('user_id', user.id)
           .limit(1)
 
+        // User needs onboarding if they have no mood entries (haven't completed onboarding)
         setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
       } else {
-        setNeedsOnboarding(false)
+        // No profile means new user - needs onboarding
+        setNeedsOnboarding(true)
       }
     }
   }
@@ -228,9 +238,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setProfile(profileData)
         }
+        
+        // Check if user needs onboarding after setting profile
+        if (session?.user) {
+          if (profileData) {
+            // Check if they have any mood entries (indicating they've completed onboarding)
+            const { data: moodEntries } = await supabase
+              .from('mood_entries')
+              .select('id')
+              .eq('user_id', session.user.id)
+              .limit(1)
+
+            // User needs onboarding if they have no mood entries (haven't completed onboarding)
+            setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
+          } else {
+            // No profile means new user - needs onboarding
+            setNeedsOnboarding(true)
+          }
+        }
       } else {
         console.log('⚠️ Clearing profile (no user)')
         setProfile(null)
+        setNeedsOnboarding(false)
       }
 
       setLoading(false)
