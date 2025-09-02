@@ -20,6 +20,7 @@ import {
   SessionAction
 } from '@/types/session'
 import { therapeuticAnimations } from '@/styles/session-design-system'
+import { CHAT_CONFIG } from '@/lib/chat-config'
 
 interface SessionScreenProps {
   onNavigate: (screen: string, params?: Record<string, any>) => void
@@ -28,13 +29,17 @@ interface SessionScreenProps {
   initialEmotionalState?: EmotionalState
 }
 
-// Mock typing suggestions (would come from AI service)
-const MOCK_SUGGESTIONS = [
-  { id: '1', text: "I'd like to talk about what's been weighing on me lately", category: 'opening' as const, priority: 1, isUsed: false, createdAt: new Date() },
-  { id: '2', text: "I'm feeling overwhelmed and need some guidance", category: 'opening' as const, priority: 1, isUsed: false, createdAt: new Date() },
-  { id: '3', text: "Can you help me understand my emotions better?", category: 'reflection' as const, priority: 2, isUsed: false, createdAt: new Date() },
-  { id: '4', text: "I need a moment to collect my thoughts", category: 'transition' as const, priority: 3, isUsed: false, createdAt: new Date() }
-]
+// Dynamic typing suggestions from chat-config
+const generateTypingSuggestions = (): TypingSuggestion[] => {
+  return CHAT_CONFIG.typingSuggestions.map((text, index) => ({
+    id: `suggestion_${index + 1}`,
+    text,
+    category: 'opening' as const,
+    priority: 1,
+    isUsed: false,
+    createdAt: new Date()
+  }))
+}
 
 export function SessionScreen({
   onNavigate,
@@ -53,7 +58,7 @@ export function SessionScreen({
     error,
     isLoading,
     actions
-  } = useSessionState(sessionId, user, matchedUser)
+  } = useSessionState(sessionId, user, matchedUser, setIsTyping)
 
   // Local UI state
   const [emotionalState, setEmotionalState] = useState<EmotionalState>(initialEmotionalState)
@@ -76,6 +81,7 @@ export function SessionScreen({
   })
   const [showCompletionScreen, setShowCompletionScreen] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
+  const [typingSuggestions] = useState<TypingSuggestion[]>(generateTypingSuggestions())
 
   // Handle responsive layout
   useEffect(() => {
@@ -127,9 +133,7 @@ export function SessionScreen({
   const handleSendMessage = useCallback(async (content: string) => {
     setIsTyping(true)
     await actions.sendMessage(content)
-
-    // Simulate AI thinking time
-    setTimeout(() => setIsTyping(false), 2000)
+    // Note: isTyping will be set to false when AI response arrives
   }, [actions])
 
   // Handle message reactions
@@ -219,7 +223,7 @@ export function SessionScreen({
             onSendMessage={handleSendMessage}
             onReact={handleMessageReaction}
             isTyping={isTyping}
-            suggestions={MOCK_SUGGESTIONS}
+            suggestions={typingSuggestions}
             layout={layout}
           />
         </div>

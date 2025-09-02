@@ -25,7 +25,8 @@ import { CHAT_CONFIG } from '@/lib/chat-config'
 export function useSessionState(
   sessionId: string,
   user: SessionUser,
-  matchedUser: SessionParticipant
+  matchedUser: SessionParticipant,
+  onTypingStateChange?: (isTyping: boolean) => void
 ): UseSessionStateReturn {
   // Core state
   const [session, setSession] = useState<SessionState>({
@@ -188,6 +189,9 @@ export function useSessionState(
         messageCount: prev.messageCount + 1
       }))
 
+      // AI response received, stop typing indicator
+      onTypingStateChange?.(false)
+
     } catch (err) {
       console.error('AI service error:', err)
 
@@ -210,6 +214,9 @@ export function useSessionState(
         userFacing: true,
         recoverable: true
       })
+
+      // Error occurred, stop typing indicator
+      onTypingStateChange?.(false)
     }
   }, [messages, user, matchedUser, sessionId])
 
