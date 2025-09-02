@@ -293,7 +293,7 @@ const TherapyJourneySection = () => {
             animate={{ rotate: 360 }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
           >
-            <img src="/assets/Mental health-bro.svg" alt="" className="w-10 h-10" />
+            <img src="/assets/Mental health-bro (2).svg" alt="" className="w-10 h-10" />
           </motion.div>
 
           <motion.div
