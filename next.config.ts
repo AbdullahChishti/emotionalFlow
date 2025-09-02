@@ -16,8 +16,8 @@ const nextConfig: NextConfig = {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Connect to Supabase and OpenAI endpoints for Edge Functions
       "connect-src 'self' https://*.supabase.co https://api.openai.com",
-      // Allow images from self and data/blob URIs
-      "img-src 'self' data: blob:",
+      // Allow images from self, data/blob URIs, and Google-hosted images
+      "img-src 'self' data: blob: https://lh3.googleusercontent.com",
       // Fonts from self, data URIs, and Google Fonts
       "font-src 'self' data: https://fonts.gstatic.com",
       // Media streams (if voice in future)
