@@ -14,7 +14,7 @@ export function LoginScreen() {
           style={{
             width: 200,
             height: 200,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(201, 184, 219, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             top: '10%',
             left: '10%'
@@ -34,7 +34,7 @@ export function LoginScreen() {
           style={{
             width: 150,
             height: 150,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(201, 184, 219, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             bottom: '20%',
             right: '15%'

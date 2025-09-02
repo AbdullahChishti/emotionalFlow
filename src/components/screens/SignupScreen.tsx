@@ -16,7 +16,7 @@ export function SignupScreen() {
           style={{
             width: 220,
             height: 220,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(201, 184, 219, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             top: '8%',
             left: '8%'
@@ -36,7 +36,7 @@ export function SignupScreen() {
           style={{
             width: 180,
             height: 180,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(201, 184, 219, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             bottom: '15%',
             right: '12%'
