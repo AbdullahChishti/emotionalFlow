@@ -17,12 +17,36 @@ import {
 import { UserProfile, AssessmentIntegrations } from '@/data/assessment-integration'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/providers/TestAuthProvider'
+import { Navigation } from '@/components/ui/Navigation'
+import { BackButton } from '@/components/ui/BackButton'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { useEffect } from 'react'
 
 export default function AssessmentsPage() {
   const [selectedFlow, setSelectedFlow] = useState<string | null>(null)
   const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult>>({})
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const router = useRouter()
+  const { user, loading } = useAuth()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
 
   const handleFlowSelect = (flowId: string) => {
     setSelectedFlow(flowId)
@@ -104,7 +128,14 @@ export default function AssessmentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40">
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <div className="pt-16 pb-20 md:pb-0">
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          <div className="bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 rounded-lg p-6">
       {/* Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -420,6 +451,7 @@ export default function AssessmentsPage() {
               </motion.button>
             </div>
           </motion.div>
+          </div>
         </div>
       </div>
     </div>
