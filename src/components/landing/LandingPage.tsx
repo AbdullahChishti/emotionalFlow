@@ -346,7 +346,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             <img
               alt="Gentle therapy and healing illustration"
               className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl"
-              src="/assets/Overwhelmed-bro (1).svg"
+              src="/assets/Psychologist-rafiki (1).svg"
             />
           </motion.div>
         </div>
