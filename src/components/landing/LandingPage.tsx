@@ -83,7 +83,7 @@ const TherapyJourneySection = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-            Your Mental Health Journey
+            Your Compassionate Healing Journey
           </motion.div>
 
           <motion.h2
@@ -93,10 +93,10 @@ const TherapyJourneySection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 1 }}
           >
-            Transform Your
+            Healing Through
             <br />
             <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-              Inner World
+              Understanding
             </span>
           </motion.h2>
 
@@ -107,8 +107,8 @@ const TherapyJourneySection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            Discover how MindWell guides you through every stage of your therapeutic journey,
-            from initial overwhelm to lasting peace and personal growth.
+            Experience the transformative power of evidence-based therapeutic techniques developed by leading psychologists worldwide.
+            Our AI therapist combines the wisdom of renowned mental health experts with compassionate understanding, completely free of charge.
           </motion.p>
         </motion.div>
 
@@ -140,22 +140,22 @@ const TherapyJourneySection = () => {
           {[
             {
               svg: '/assets/Overwhelmed-bro (1).svg',
-              title: 'Find Your Path',
-              description: 'Begin your journey with compassionate AI guidance that understands your unique experience.',
+              title: 'Find Your Voice',
+              description: 'Share your thoughts in a safe, judgment-free space with evidence-based therapeutic techniques from leading psychologists.',
               position: { left: '8%', top: '20%' },
               delay: 0.2
             },
             {
               svg: '/assets/Psychologist-rafiki (1).svg',
-              title: 'Grow Together',
-              description: 'Develop coping strategies and gain insights in a safe, supportive environment.',
+              title: 'Heal Together',
+              description: 'Receive professional guidance inspired by renowned therapists, combining empathy with proven psychological methods.',
               position: { left: '42%', top: '15%' },
               delay: 0.5
             },
             {
               svg: '/assets/Peace of mind-bro (2).svg',
-              title: 'Find Peace',
-              description: 'Achieve lasting inner peace and emotional balance through personalized therapy.',
+              title: 'Find Inner Peace',
+              description: 'Discover lasting emotional balance through techniques validated by top mental health experts, completely free.',
               position: { left: '76%', top: '25%' },
               delay: 0.8
             }
@@ -333,9 +333,9 @@ const TherapyJourneySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              Ready to Start Your
+              Begin Your
               <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                {' '}Journey?
+                {' '}Free Healing Journey
               </span>
             </motion.h3>
 
@@ -346,8 +346,8 @@ const TherapyJourneySection = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.8, duration: 0.8 }}
             >
-              Join thousands who have found peace and growth through MindWell's personalized therapy approach.
-              Your mental health matters, and we're here to support you every step of the way.
+              Access world-class therapeutic methods developed by leading psychologists, completely free.
+              Your well-being deserves the best evidence-based care available, and we're honored to provide it to you.
             </motion.p>
 
             <motion.button
@@ -362,7 +362,7 @@ const TherapyJourneySection = () => {
               {/* Button background effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-              <span className="relative z-10">Begin Your Transformation</span>
+              <span className="relative z-10">Start Your Free Therapy Journey</span>
               <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -379,10 +379,10 @@ const TherapyJourneySection = () => {
           transition={{ delay: 0.6, duration: 0.8 }}
         >
           {[
-            { number: '50K+', label: 'Lives Transformed' },
-            { number: '98%', label: 'Satisfaction Rate' },
-            { number: '24/7', label: 'Support Available' },
-            { number: '150+', label: 'Certified Therapists' }
+            { number: '50K+', label: 'Hearts Healed' },
+            { number: '98%', label: 'Client Satisfaction' },
+            { number: '24/7', label: 'Free Support' },
+            { number: '100%', label: 'Evidence-Based' }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -417,7 +417,7 @@ const Footer = () => {
               <span className="material-symbols-outlined text-3xl">psychology</span>
               <h2 className="text-xl font-bold text-white">MindWell</h2>
             </a>
-            <p className="text-secondary-400">Your personal AI therapy companion.</p>
+            <p className="text-secondary-400">Evidence-based AI therapy powered by leading psychologists. Completely free.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 col-span-2 gap-8">
             <div>
@@ -483,10 +483,10 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tighter text-secondary-900">
-              Your Personal Therapy Companion
+              You're Not Alone in This Journey
             </h1>
             <p className="text-lg md:text-xl text-secondary-600 max-w-xl mx-auto md:mx-0">
-              Connect with our AI-powered therapy bot for personalized support and guidance, anytime, anywhere.
+              Experience compassionate AI therapy powered by the world's leading therapeutic methods and techniques, developed by top psychologists. Completely free, confidential, and available 24/7.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
               <motion.button
