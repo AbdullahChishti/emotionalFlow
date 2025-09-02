@@ -113,10 +113,18 @@ export async function generateFriendlyExplanation(
 
     if (error) {
       console.error('AI explanation error:', error)
+      console.log('Falling back to local explanation generation')
       return generateFallbackExplanation(assessmentName, clinicalResult)
     }
 
-    return data?.explanation || generateFallbackExplanation(assessmentName, clinicalResult)
+    // Check if we got a valid explanation
+    if (data?.explanation && typeof data.explanation === 'string' && data.explanation.trim().length > 0) {
+      console.log('✅ Successfully generated AI explanation for', assessmentName)
+      return data.explanation
+    } else {
+      console.log('⚠️ AI service returned empty response for', assessmentName, '- using intelligent fallback')
+      return generateFallbackExplanation(assessmentName, clinicalResult)
+    }
   } catch (error) {
     console.error('Failed to generate AI explanation:', error)
     return generateFallbackExplanation(assessmentName, clinicalResult)
@@ -126,17 +134,30 @@ export async function generateFriendlyExplanation(
 function generateFallbackExplanation(assessmentName: string, clinicalResult: AssessmentResult): string {
   const { score, level, severity } = clinicalResult
 
-  let explanation = `Your ${assessmentName} assessment shows a score of ${score}, which indicates ${level} symptoms. `
+  let explanation = `Your ${assessmentName} shows a score of ${score}, indicating ${level} symptoms. `
 
-  if (severity === 'normal') {
-    explanation += "This suggests you're doing well in this area. Keep up the good work!"
-  } else if (severity === 'mild') {
-    explanation += "This suggests you're experiencing some challenges, but they're manageable with the right support."
-  } else if (severity === 'moderate') {
-    explanation += "This indicates you're going through a significant time and could benefit from professional support."
-  } else {
-    explanation += "This shows you're experiencing considerable difficulty. Please consider reaching out for professional help."
+  switch (severity) {
+    case 'normal':
+      explanation += "This is great news! It suggests you're doing well in this area. Keep nurturing your mental wellness with the positive habits you already have."
+      break
+    case 'mild':
+      explanation += "You're experiencing some normal life challenges that many people face. This is manageable with good self-care and support from friends or loved ones."
+      break
+    case 'moderate':
+      explanation += "This indicates you're going through a significant time right now. Consider connecting with a mental health professional who can provide personalized guidance and support."
+      break
+    case 'severe':
+      explanation += "This shows you're experiencing considerable difficulty and could really benefit from professional mental health support. Please consider reaching out to a therapist or counselor."
+      break
+    case 'critical':
+      explanation += "This suggests you're going through an extremely challenging time. Please contact a mental health professional or crisis service right away for immediate support."
+      break
+    default:
+      explanation += "Remember that assessment results are just one piece of your overall wellness picture. Consider discussing these results with a healthcare provider for personalized guidance."
   }
+
+  // Add encouraging closing
+  explanation += "\n\nYou're taking an important step by learning more about your mental health. Many people in similar situations find meaningful improvement with the right support and strategies."
 
   return explanation
 }
