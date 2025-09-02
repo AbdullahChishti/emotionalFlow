@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useAuth } from '../providers/TestAuthProvider'
+import { useAuth } from '../providers/AuthProvider'
 import { getAIAssessmentExplanation, AssessmentData, AIExplanation } from '../../lib/assessment-ai'
 import { useEffect, useState } from 'react'
 

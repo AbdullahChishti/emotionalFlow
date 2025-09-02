@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Shield, Users, Sparkles, ArrowRight, ArrowLeft, CheckCircle, Star } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/components/providers/TestAuthProvider'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { EnhancedWelcomeTutorial } from '@/components/ui/EnhancedWelcomeTutorial'
 
 interface EnhancedOnboardingFlowProps {

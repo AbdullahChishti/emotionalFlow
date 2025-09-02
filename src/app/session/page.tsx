@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/components/providers/TestAuthProvider'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
 import { ModernSessionScreen } from '@/components/session/ModernSessionScreen'
 import { BackButton } from '@/components/ui/BackButton'

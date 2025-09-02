@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/components/providers/TestAuthProvider'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { LandingPage } from '@/components/landing/LandingPage'
 import { Dashboard } from '@/components/dashboard/Dashboard'
 import { EnhancedOnboardingFlow } from '@/components/auth/EnhancedOnboardingFlow'

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { TestAuthProvider as AuthProvider } from '@/components/providers/TestAuthProvider'
+import { AuthProvider } from '@/components/providers/AuthProvider'
 import { ColorThemeProvider } from '@/components/providers/ColorThemeProvider'
 
 // Setup the Inter font

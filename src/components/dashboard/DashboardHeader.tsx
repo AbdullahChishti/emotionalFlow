@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/components/providers/TestAuthProvider'
+import { useAuth } from '@/components/providers/AuthProvider'
 import { Profile } from '@/types'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { LogOut, AlertTriangle, Play } from 'lucide-react'
