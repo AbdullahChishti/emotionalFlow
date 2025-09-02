@@ -90,7 +90,7 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
           icon={Ear}
           available={profile.emotional_capacity !== 'low'}
           action={() => onNavigate?.('/session')}
-          gradient="bg-gradient-to-br from-brand-green-400 to-brand-green-600"
+          gradient="bg-gradient-to-br from-[#335f64] to-[#2a4f54]"
         />
         <ActionCard
           title="I need support"
@@ -98,7 +98,7 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
           icon={Heart}
           available={profile.empathy_credits >= 5}
           action={() => onNavigate?.('/session')}
-          gradient="bg-gradient-to-br from-brand-green-500 to-brand-green-700"
+          gradient="bg-gradient-to-br from-[#2a4f54] to-[#1f3d42]"
         />
       </div>
 
