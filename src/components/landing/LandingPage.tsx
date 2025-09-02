@@ -178,222 +178,140 @@ const TestimonialsSection = () => {
   )
 }
 
-// Modern Therapy Journey Section - Interactive Floating Cards Design
+// Minimal Modern Therapy Journey Section
 const TherapyJourneySection = () => {
-  const journeyStages = [
-    {
-      svg: '/assets/Overwhelmed-bro (1).svg',
-      title: 'Feeling Overwhelmed',
-      description: 'Life\'s challenges can leave us feeling overwhelmed and unsure where to turn.',
-      emotion: 'Anxiety',
-      color: 'from-rose-400 to-pink-500',
-      position: { top: '20%', left: '10%' },
-      delay: 0.1
-    },
-    {
-      svg: '/assets/Thinking face-bro (1).svg',
-      title: 'Considering Help',
-      description: 'Taking the first step to acknowledge that you need support is a powerful moment.',
-      emotion: 'Reflection',
-      color: 'from-blue-400 to-indigo-500',
-      position: { top: '15%', right: '15%' },
-      delay: 0.2
-    },
-    {
-      svg: '/assets/Contemplating-bro (1).svg',
-      title: 'Deep Reflection',
-      description: 'Exploring your thoughts and feelings in a safe, supportive environment.',
-      emotion: 'Contemplation',
-      color: 'from-purple-400 to-violet-500',
-      position: { top: '50%', left: '5%' },
-      delay: 0.3
-    },
-    {
-      svg: '/assets/Psychologist-rafiki (1).svg',
-      title: 'Finding Guidance',
-      description: 'Connecting with compassionate professionals who understand your journey.',
-      emotion: 'Support',
-      color: 'from-emerald-400 to-teal-500',
-      position: { top: '45%', right: '10%' },
-      delay: 0.4
-    },
-    {
-      svg: '/assets/Mental health-bro (2).svg',
-      title: 'Processing Emotions',
-      description: 'Working through complex feelings with personalized therapeutic approaches.',
-      emotion: 'Understanding',
-      color: 'from-amber-400 to-orange-500',
-      position: { top: '75%', left: '15%' },
-      delay: 0.5
-    },
-    {
-      svg: '/assets/personal growth-bro (1).svg',
-      title: 'Personal Growth',
-      description: 'Developing new coping strategies and gaining insights about yourself.',
-      emotion: 'Growth',
-      color: 'from-cyan-400 to-blue-500',
-      position: { top: '80%', right: '20%' },
-      delay: 0.6
-    },
-    {
-      svg: '/assets/Peace of mind-bro (2).svg',
-      title: 'Inner Peace',
-      description: 'Finding balance, clarity, and peace of mind through your therapeutic journey.',
-      emotion: 'Peace',
-      color: 'from-green-400 to-emerald-500',
-      position: { bottom: '10%', left: '50%', transform: 'translateX(-50%)' },
-      delay: 0.7
-    }
-  ]
-
   return (
-    <section className="relative py-32 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50">
-      {/* Background decorative elements */}
+    <section className="relative py-24 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50">
+      {/* Subtle background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-primary-100/20 to-transparent rounded-full"></div>
+        <div className="absolute top-20 right-20 w-64 h-64 bg-primary-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-secondary-100/15 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Hero Content */}
+        {/* Clean Hero Section */}
         <motion.div
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 50 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 0.8 }}
         >
           <motion.div
-            className="inline-block px-6 py-2 bg-primary-100/80 backdrop-blur-sm rounded-full text-primary-700 font-semibold text-sm mb-6"
-            initial={{ opacity: 0, scale: 0.8 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50/80 backdrop-blur-sm rounded-full text-primary-700 font-medium text-sm mb-8 border border-primary-100/50"
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            🧠 Your Mental Health Journey
+            <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
+            Your Mental Health Journey
           </motion.div>
 
-          <h2 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-secondary-900 via-primary-800 to-secondary-700 bg-clip-text text-transparent mb-6 leading-tight">
+          <h2 className="text-4xl md:text-6xl font-bold text-secondary-900 mb-6 leading-tight">
             Transform Your
             <br />
-            <span className="text-primary-600">Inner World</span>
+            <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              Inner World
+            </span>
           </h2>
 
-          <p className="text-xl text-secondary-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto leading-relaxed mb-12">
             Discover how MindWell guides you through every stage of your therapeutic journey,
             from initial overwhelm to lasting peace and personal growth.
           </p>
         </motion.div>
 
-        {/* Interactive Floating Cards */}
-        <div className="relative h-[800px] md:h-[600px]">
-          {journeyStages.map((stage, index) => (
+        {/* Minimal Three-Column Layout */}
+        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-16">
+          {[
+            {
+              svg: '/assets/Contemplating-bro (1).svg',
+              title: 'Find Your Path',
+              description: 'Begin your journey with compassionate AI guidance that understands your unique experience.',
+              color: 'from-blue-500 to-indigo-600'
+            },
+            {
+              svg: '/assets/Psychologist-rafiki (1).svg',
+              title: 'Grow Together',
+              description: 'Develop coping strategies and gain insights in a safe, supportive environment.',
+              color: 'from-emerald-500 to-teal-600'
+            },
+            {
+              svg: '/assets/Peace of mind-bro (2).svg',
+              title: 'Find Peace',
+              description: 'Achieve lasting inner peace and emotional balance through personalized therapy.',
+              color: 'from-purple-500 to-violet-600'
+            }
+          ].map((item, index) => (
             <motion.div
-              key={stage.title}
-              className="absolute group cursor-pointer"
-              style={{
-                top: stage.position.top,
-                left: stage.position.left,
-                right: stage.position.right,
-                bottom: stage.position.bottom,
-                transform: stage.position.transform
-              }}
-              initial={{ opacity: 0, scale: 0.5, y: 50 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              key={item.title}
+              className="group"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{
-                delay: stage.delay,
-                duration: 0.8,
-                type: "spring",
-                stiffness: 100,
-                damping: 15
-              }}
-              whileHover={{
-                scale: 1.1,
-                z: 50,
-                transition: { duration: 0.3 }
-              }}
+              transition={{ delay: index * 0.2, duration: 0.8 }}
             >
-              {/* Floating card */}
-              <div className="relative">
-                {/* Glow effect */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${stage.color} opacity-20 rounded-3xl blur-xl group-hover:opacity-40 transition-opacity duration-500`}></div>
-
-                {/* Main card */}
-                <div className="relative bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-6 shadow-2xl group-hover:shadow-3xl transition-all duration-500 group-hover:-translate-y-2">
-                  {/* Stage number */}
-                  <div className={`absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-r ${stage.color} rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    {index + 1}
+              <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 group-hover:-translate-y-1">
+                {/* Single SVG per column */}
+                <div className="relative mb-6">
+                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-inner p-4">
+                    <img
+                      src={item.svg}
+                      alt={item.title}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
+                  {/* Subtle gradient accent */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-5 rounded-2xl`}></div>
+                </div>
 
-                  {/* SVG Container */}
-                  <div className="relative mb-4">
-                    <div className="w-24 h-24 mx-auto bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-inner p-3 group-hover:shadow-lg transition-shadow duration-300">
-                      <img
-                        src={stage.svg}
-                        alt={stage.title}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-
-                    {/* Emotion badge */}
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                      <span className={`bg-gradient-to-r ${stage.color} text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md`}>
-                        {stage.emotion}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="text-center">
-                    <h3 className="text-lg font-bold text-secondary-800 mb-2 group-hover:text-primary-700 transition-colors duration-300">
-                      {stage.title}
-                    </h3>
-                    <p className="text-secondary-600 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 max-w-[200px]">
-                      {stage.description}
-                    </p>
-                  </div>
-
-                  {/* Hover indicator */}
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary-500/5 to-secondary-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-secondary-800 mb-3 group-hover:text-primary-700 transition-colors duration-300">
+                    {item.title}
+                  </h3>
+                  <p className="text-secondary-600 leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             </motion.div>
           ))}
-
-          {/* Central CTA */}
-          <motion.div
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-8"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8, duration: 0.8 }}
-          >
-            <div className="text-center">
-              <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-2xl p-8 shadow-2xl backdrop-blur-sm border border-white/20">
-                <h3 className="text-2xl font-bold text-white mb-4">
-                  Ready to Start Your Journey?
-                </h3>
-                <p className="text-primary-100 mb-6 max-w-md">
-                  Join thousands who have found peace and growth through MindWell's personalized therapy approach.
-                </p>
-                <motion.button
-                  className="px-8 py-4 bg-white text-primary-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Begin Your Transformation
-                </motion.button>
-              </div>
-            </div>
-          </motion.div>
         </div>
 
-        {/* Stats Section */}
+        {/* Clean CTA Section */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 text-center"
+          className="text-center"
           initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/40 shadow-lg max-w-2xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-4">
+              Ready to Start Your Journey?
+            </h3>
+            <p className="text-secondary-600 mb-8 leading-relaxed">
+              Join thousands who have found peace and growth through MindWell's personalized therapy approach.
+              Your mental health matters, and we're here to support you every step of the way.
+            </p>
+            <motion.button
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>Begin Your Transformation</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Minimal Stats */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.6, duration: 0.8 }}
@@ -406,14 +324,16 @@ const TherapyJourneySection = () => {
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30"
+              className="group"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
             >
-              <div className="text-3xl font-black text-primary-600 mb-2">{stat.number}</div>
-              <div className="text-secondary-600 font-medium">{stat.label}</div>
+              <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/30 group-hover:bg-white/60 transition-colors duration-300">
+                <div className="text-2xl md:text-3xl font-black text-primary-600 mb-1">{stat.number}</div>
+                <div className="text-secondary-600 font-medium text-sm">{stat.label}</div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
