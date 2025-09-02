@@ -5,7 +5,7 @@ import { WelcomeScreen } from './screens/WelcomeScreen'
 import { MoodSelectionScreen } from './screens/MoodSelectionScreen'
 import { EmotionRefinementScreen } from './screens/EmotionRefinementScreen'
 import { MatchingScreen } from './screens/MatchingScreen'
-import { GlassmorphicSessionScreen } from './session/GlassmorphicSessionScreen'
+import { ModernSessionScreen } from './session/ModernSessionScreen'
 import { WalletScreen } from './screens/WalletScreen'
 
 type Screen = 'Welcome' | 'MoodSelection' | 'EmotionRefinement' | 'Matching' | 'Session' | 'Wallet'
@@ -72,20 +72,10 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
       
       case 'Session':
         return (
-          <GlassmorphicSessionScreen
+          <ModernSessionScreen
             onNavigate={handleNavigate}
             matchedUser={screenParams.matchedUser || {
-              user: { id: 'listener_1', name: 'Alex', role: 'listener', isOnline: true, joinedAt: new Date() },
-              joinedAt: new Date(),
-              lastActivity: new Date(),
-              emotionalState: 'calm'
-            }}
-            user={{
-              id: 'user_1',
-              name: 'You',
-              role: 'seeker',
-              isOnline: true,
-              joinedAt: new Date()
+              name: 'Alex'
             }}
           />
         )

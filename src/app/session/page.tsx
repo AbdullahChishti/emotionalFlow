@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
-import { GlassmorphicSessionScreen } from '@/components/session/GlassmorphicSessionScreen'
+import { ModernSessionScreen } from '@/components/session/ModernSessionScreen'
 import { BackButton } from '@/components/ui/BackButton'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
@@ -63,10 +63,9 @@ export default function SessionPage() {
           <div className="mb-6">
             <BackButton />
           </div>
-          <GlassmorphicSessionScreen
+          <ModernSessionScreen
             onNavigate={handleNavigate}
             matchedUser={matchedUser}
-            user={currentUser}
           />
         </div>
       </div>
