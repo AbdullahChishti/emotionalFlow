@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [needsOnboarding, setNeedsOnboarding] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -42,61 +43,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const loadProfile = async (userId: string) => {
+    const profileData = await fetchProfile(userId)
+    setProfile(profileData)
+
+    // Check if user needs onboarding (new user with default values)
+    if (profileData && profileData.preferred_mode === 'both' && profileData.emotional_capacity === 'medium') {
+      // Check if they have any mood entries (indicating they've completed onboarding)
+      const { data: moodEntries } = await supabase
+        .from('mood_entries')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1)
+
+      setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
+    } else {
+      setNeedsOnboarding(false)
+    }
+  }
+
   const refreshProfile = async () => {
     if (user) {
-      const profileData = await fetchProfile(user.id)
-      setProfile(profileData)
-
-      // Check if user needs onboarding (new user with default values)
-      if (profileData && profileData.preferred_mode === 'both' && profileData.emotional_capacity === 'medium') {
-        // Check if they have any mood entries (indicating they've completed onboarding)
-        const { data: moodEntries } = await supabase
-          .from('mood_entries')
-          .select('id')
-          .eq('user_id', user.id)
-          .limit(1)
-
-        setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
-      } else {
-        setNeedsOnboarding(false)
-      }
+      await loadProfile(user.id)
     }
   }
 
   useEffect(() => {
-    // Temporarily bypass Supabase for development
-    // TODO: Re-enable when Supabase is properly configured
-    setUser(null)
-    setProfile(null)
-    setLoading(false)
+    const initAuth = async () => {
+      try {
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession()
 
-    // Get initial session
-    // supabase.auth.getSession().then(({ data: { session } }) => {
-    //   setUser(session?.user ?? null)
-    //   if (session?.user) {
-    //     fetchProfile(session.user.id).then(setProfile)
-    //   }
-    //   setLoading(false)
-    // })
+        if (sessionError) throw sessionError
 
-    // Listen for auth changes
-    // const {
-    //   data: { subscription },
-    // } = supabase.auth.onAuthStateChange(async (event, session) => {
-    //   setUser(session?.user ?? null)
-    //
-    //   if (session?.user) {
-    //     const profileData = await fetchProfile(session.user.id)
-    //     setProfile(profileData)
-    //   } else {
-    //     setProfile(null)
-    //   }
-    //
-    //   setLoading(false)
-    // })
+        setUser(session?.user ?? null)
 
-    // return () => subscription.unsubscribe()
-  }, [])
+        if (session?.user) {
+          await loadProfile(session.user.id)
+        } else {
+          setProfile(null)
+        }
+      } catch (err) {
+        console.error('Error initializing auth:', err)
+        setError('Failed to initialize authentication')
+        setUser(null)
+        setProfile(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    initAuth()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      setLoading(true)
+      try {
+        setUser(session?.user ?? null)
+
+        if (session?.user) {
+          await loadProfile(session.user.id)
+        } else {
+          setProfile(null)
+        }
+      } catch (err) {
+        console.error('Error handling auth change:', err)
+        setError('Failed to handle authentication change')
+        setUser(null)
+        setProfile(null)
+      } finally {
+        setLoading(false)
+      }
+    })
+
+      return () => subscription.unsubscribe()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
   const signOut = async () => {
     await supabase.auth.signOut()
@@ -113,11 +138,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshProfile,
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  if (error) {
+    return <div className="p-4 text-red-500">{error}</div>
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
