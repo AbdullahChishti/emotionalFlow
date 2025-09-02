@@ -31,11 +31,7 @@ export function Navigation({ className = '' }: NavigationProps) {
       href: '/assessments',
       icon: 'psychology'
     },
-    {
-      name: 'Wellness',
-      href: '/wellness',
-      icon: 'spa'
-    },
+
     {
       name: 'Therapy',
       href: '/session',

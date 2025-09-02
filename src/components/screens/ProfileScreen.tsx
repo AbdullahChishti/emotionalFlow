@@ -204,12 +204,68 @@ export function ProfileScreen() {
             </div>
           </motion.div>
 
+          {/* Wellness Options */}
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <h3 className="text-lg font-semibold text-secondary-800">Wellness Tools</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <motion.button
+                onClick={() => router.push('/check-in')}
+                className="p-4 bg-white/60 hover:bg-white/80 rounded-xl border border-white/50 hover:border-brand-green-200 transition-all duration-300 flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-green-400 to-brand-green-600 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white">sentiment_satisfied</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-secondary-800">Daily Check-in</div>
+                  <div className="text-sm text-secondary-600">Track your mood</div>
+                </div>
+              </motion.button>
+
+              <motion.button
+                onClick={() => router.push('/meditation')}
+                className="p-4 bg-white/60 hover:bg-white/80 rounded-xl border border-white/50 hover:border-brand-green-200 transition-all duration-300 flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white">self_improvement</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-secondary-800">Meditation</div>
+                  <div className="text-sm text-secondary-600">Find peace & clarity</div>
+                </div>
+              </motion.button>
+
+              <motion.button
+                onClick={() => router.push('/session')}
+                className="p-4 bg-white/60 hover:bg-white/80 rounded-xl border border-white/50 hover:border-brand-green-200 transition-all duration-300 flex items-center gap-3"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-green-600 to-brand-green-800 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-white">chat</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-secondary-800">Therapy Sessions</div>
+                  <div className="text-sm text-secondary-600">Connect with listeners</div>
+                </div>
+              </motion.button>
+            </div>
+          </motion.div>
+
           {/* Settings Form */}
           <motion.div
             className="space-y-6"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
           >
             <div>
               <label className="block text-sm font-medium text-secondary-700 mb-2">
@@ -299,7 +355,7 @@ export function ProfileScreen() {
             className="flex flex-col sm:flex-row gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
           >
             <Button
               onClick={handleSave}
