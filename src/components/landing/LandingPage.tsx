@@ -315,7 +315,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
               </motion.button>
               <motion.button
                 onClick={() => window.location.href = '/session'}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-secondary-600 text-white text-lg font-bold shadow-lg shadow-secondary-600/30 hover:bg-secondary-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-brand-green-500 text-white text-lg font-bold shadow-lg shadow-brand-green-500/30 hover:bg-brand-green-600 transition-all duration-300 ease-in-out transform hover:scale-105"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
