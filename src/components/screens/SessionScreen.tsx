@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
-import { ListenerPresence } from './ListenerPresence'
+
 import { supabase } from '@/lib/supabase'
 import { CHAT_CONFIG, detectMood, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
 
@@ -18,17 +18,17 @@ const ChatMessage = ({ message }: { message: Message }) => {
   const isUser = message.sender === 'user'
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`flex my-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className={`flex my-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-2xl shadow-sm ${
+        className={`max-w-sm md:max-w-md px-5 py-3 rounded-2xl ${
           isUser
-            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-br-none'
-            : 'glassmorphic text-secondary-800 rounded-bl-none'
+            ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-br-sm shadow-lg'
+            : 'bg-white/80 backdrop-blur-sm text-secondary-800 rounded-bl-sm shadow-sm border border-white/50'
         }`}>
-        <p className="text-base font-light leading-relaxed">{message.text}</p>
+        <p className="text-sm leading-relaxed">{message.text}</p>
       </div>
     </motion.div>
   )
@@ -188,67 +188,27 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-row bg-gradient-to-br from-primary-100 via-white to-primary-50 text-secondary-800 font-sans relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 300,
-            height: 300,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            top: '10%',
-            left: '10%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
-        <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 250,
-            height: 250,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            bottom: '20%',
-            right: '15%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 8
-          }}
-        />
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-white to-primary-50 text-secondary-800 font-sans relative overflow-hidden">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-20 w-96 h-96 bg-primary-100/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-secondary-100/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-50/10 rounded-full blur-2xl"></div>
       </div>
 
-      {/* Left Panel: Listener Presence */}
-      <div className="w-1/2 h-screen sticky top-0 relative z-10">
-        <ListenerPresence interactionCount={interactionCount} selectedMood={selectedMood} />
-      </div>
-
-      {/* Right Panel: Chat UI */}
-      <div className="w-1/2 flex flex-col h-screen relative z-10">
+      {/* Main Chat Container */}
+      <div className="flex-1 flex flex-col h-screen relative z-10 mx-auto max-w-4xl w-full">
         <AnimatePresence>
           {showIntroCard && (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20, transition: { duration: 0.5 } }}
-              className="absolute top-4 right-4 w-[90%] max-w-md glassmorphic rounded-2xl p-6 text-center z-20 shadow-lg">
-              <p className="font-medium text-secondary-700 leading-relaxed">
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.4 } }}
+              className="absolute top-6 right-6 max-w-sm bg-white/90 backdrop-blur-xl rounded-2xl p-6 text-center z-20 shadow-xl border border-white/50">
+              <div className="w-12 h-12 bg-primary-100/50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💙</span>
+              </div>
+              <p className="text-secondary-700 leading-relaxed text-sm">
                 {CHAT_CONFIG.uiText.listenerIntro(matchedUser?.name || 'Your listener')}
               </p>
             </motion.div>
@@ -256,46 +216,50 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         </AnimatePresence>
 
         {/* Header */}
-        <header className="flex items-center justify-between p-6 glassmorphic shrink-0 relative z-20">
-          <div className="flex items-center gap-4">
+        <header className="bg-white/80 backdrop-blur-xl border-b border-white/50 p-6 shrink-0 relative z-20">
+          <div className="flex items-center justify-between">
             <motion.div
-              className="flex items-center gap-2"
+              className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <span className="material-symbols-outlined text-2xl text-primary-600">psychology</span>
+              <div className="w-10 h-10 bg-primary-100/50 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl text-primary-600">psychology</span>
+              </div>
               <div>
-                <h2 className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                <h2 className="text-lg font-semibold text-secondary-800">
                   {CHAT_CONFIG.appName}
                 </h2>
                 <p className="text-xs text-secondary-500">{CHAT_CONFIG.uiText.therapySession}</p>
               </div>
             </motion.div>
-          </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <p className="text-sm text-secondary-500">{CHAT_CONFIG.uiText.youreWith}</p>
-              <p className="font-bold text-secondary-800">{matchedUser?.name || 'your listener'}</p>
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <p className="text-xs text-secondary-500 uppercase tracking-wide font-medium">{CHAT_CONFIG.uiText.youreWith}</p>
+                <p className="font-semibold text-secondary-800">{matchedUser?.name || 'your listener'}</p>
+              </div>
+
+              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/50">
+                <span className="material-symbols-outlined text-base text-primary-600">schedule</span>
+                <span className="font-medium text-secondary-700">{formatTime(timeElapsed)}</span>
+              </div>
+
+              <motion.button
+                onClick={() => setShowEndModal(true)}
+                className="px-5 py-2 text-sm bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full font-medium transition-all duration-300 shadow-lg shadow-red-500/30 hover:shadow-xl"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {CHAT_CONFIG.uiText.endSession}
+              </motion.button>
             </div>
-            <div className="flex items-center gap-2 text-secondary-600 glassmorphic px-4 py-2 rounded-full">
-              <span className="material-symbols-outlined text-lg">schedule</span>
-              <span className="font-medium">{formatTime(timeElapsed)}</span>
-            </div>
-            <motion.button
-              onClick={() => setShowEndModal(true)}
-              className="px-6 py-2 text-sm bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-full transition-all duration-300 shadow-lg shadow-primary-500/30 hover:shadow-xl"
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {CHAT_CONFIG.uiText.endSession}
-            </motion.button>
           </div>
         </header>
 
         {/* Chat Area */}
-        <main className="flex-1 flex flex-col p-6 overflow-y-auto relative">
-          <div className="flex-1 space-y-4">
+        <main className="flex-1 flex flex-col px-6 py-4 overflow-y-auto relative">
+          <div className="flex-1 space-y-2 max-w-3xl mx-auto w-full">
             {messages.map(msg => (
               <ChatMessage key={msg.id} message={msg} />
             ))}
@@ -304,54 +268,60 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         </main>
 
         {/* Input Area */}
-        <footer className="p-6 glassmorphic shrink-0 relative">
+        <footer className="bg-white/80 backdrop-blur-xl border-t border-white/50 p-6 shrink-0 relative">
           <AnimatePresence>
             {showSuggestion && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 className="mb-4 text-center">
                 <motion.button
                   onClick={() => {
                     setInputValue(currentSuggestion + ' ')
                     setShowSuggestion(false)
                   }}
-                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors p-2 glassmorphic rounded-lg hover:bg-primary-50"
+                  className="inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 transition-colors px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/50 hover:bg-white/80"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  💭 {currentSuggestion}
+                  <span>💭</span>
+                  <span>{currentSuggestion}</span>
                 </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="flex items-center gap-3">
-            <textarea
-              value={inputValue}
-              onChange={e => setInputValue(e.target.value)}
-              onKeyPress={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
-              placeholder={placeholder}
-              className="flex-1 bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl p-4 resize-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 h-12 min-h-[52px] max-h-32 text-secondary-800 placeholder:text-secondary-400"
-            />
-            <motion.button
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg transform ${
-                inputValue.trim()
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-primary-500/30 hover:shadow-xl hover:scale-110'
-                  : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
-              }`}
-              whileHover={inputValue.trim() ? { scale: 1.05 } : {}}
-              whileTap={inputValue.trim() ? { scale: 0.95 } : {}}
-            >
-              <span className="material-symbols-outlined text-xl">send</span>
-            </motion.button>
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-end gap-3">
+              <div className="flex-1 relative">
+                <textarea
+                  value={inputValue}
+                  onChange={e => setInputValue(e.target.value)}
+                  onKeyPress={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
+                  placeholder={placeholder}
+                  className="w-full bg-white/90 backdrop-blur-sm border border-white/40 rounded-2xl px-5 py-3 resize-none focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 h-12 min-h-[48px] max-h-32 text-secondary-800 placeholder:text-secondary-400 shadow-sm"
+                  rows={1}
+                />
+              </div>
+              <motion.button
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim()}
+                className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg ${
+                  inputValue.trim()
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white shadow-primary-500/30 hover:shadow-xl'
+                    : 'bg-secondary-200 text-secondary-400 cursor-not-allowed'
+                }`}
+                whileHover={inputValue.trim() ? { scale: 1.05 } : {}}
+                whileTap={inputValue.trim() ? { scale: 0.95 } : {}}
+              >
+                <span className="material-symbols-outlined text-lg">send</span>
+              </motion.button>
+            </div>
+            <p className="text-center text-xs text-secondary-500 mt-3">
+              {CHAT_CONFIG.uiText.sessionPrivate}
+            </p>
           </div>
-          <p className="text-center text-xs text-secondary-500 mt-4 px-4">
-            {CHAT_CONFIG.uiText.sessionPrivate}
-          </p>
         </footer>
       </div>
 
@@ -362,30 +332,32 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-secondary-900/20 backdrop-blur-lg flex items-center justify-center z-50 p-4">
+            className="fixed inset-0 bg-black/20 backdrop-blur-xl flex items-center justify-center z-50 p-4">
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="glassmorphic rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
-              <div className="mb-8">
-                <span className="material-symbols-outlined text-5xl text-amber-500 mb-4 block">logout</span>
-                <h2 className="text-2xl font-bold text-secondary-800 mb-3">{CHAT_CONFIG.uiText.endSessionConfirm}</h2>
-                <p className="text-secondary-600 leading-relaxed">{CHAT_CONFIG.uiText.endSessionDescription}</p>
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              className="bg-white/95 backdrop-blur-xl rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl border border-white/50">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-red-100/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-3xl text-red-500">logout</span>
+                </div>
+                <h2 className="text-xl font-bold text-secondary-800 mb-2">{CHAT_CONFIG.uiText.endSessionConfirm}</h2>
+                <p className="text-secondary-600 text-sm leading-relaxed">{CHAT_CONFIG.uiText.endSessionDescription}</p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 <motion.button
                   onClick={() => setShowEndModal(false)}
-                  className="flex-1 py-4 glassmorphic text-secondary-700 font-semibold rounded-xl hover:bg-white/60 transition-all duration-300"
-                  whileHover={{ scale: 1.02, y: -1 }}
+                  className="flex-1 py-3 bg-white/80 text-secondary-700 font-medium rounded-xl border border-white/50 hover:bg-white/90 transition-all duration-300"
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-{CHAT_CONFIG.uiText.stayHere}
+                  {CHAT_CONFIG.uiText.stayHere}
                 </motion.button>
                 <motion.button
                   onClick={handleEndSession}
-                  className="flex-1 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg shadow-red-500/30 hover:shadow-xl transition-all duration-300"
-                  whileHover={{ scale: 1.02, y: -1 }}
+                  className="flex-1 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-lg shadow-red-500/30 hover:shadow-xl transition-all duration-300"
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   End Session
