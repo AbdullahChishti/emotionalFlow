@@ -31,13 +31,14 @@ const MessageBubble = ({ message }: { message: Message }) => {
       <div
         className={`max-w-xs md:max-w-md px-4 py-3 rounded-2xl ${
           isUser
-            ? 'bg-brand-green-500 text-white rounded-br-md'
-            : 'bg-white text-secondary-800 border border-secondary-200 rounded-bl-md shadow-sm'
+            ? 'bg-green-600 text-white rounded-br-md shadow-lg'
+            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
         }`}
+        style={isUser ? { backgroundColor: '#059669' } : {}}
       >
-        <p className="text-sm leading-relaxed">{message.text}</p>
+        <p className="text-sm leading-relaxed font-medium">{message.text}</p>
         <p className={`text-xs mt-1 ${
-          isUser ? 'text-brand-green-100' : 'text-secondary-400'
+          isUser ? 'text-green-100' : 'text-gray-400'
         }`}>
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </p>
@@ -115,7 +116,12 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
       timestamp: new Date(),
     }
     
-    setMessages(prev => [...prev, newMessage])
+    console.log('Adding user message:', newMessage)
+    setMessages(prev => {
+      const updated = [...prev, newMessage]
+      console.log('Updated messages:', updated)
+      return updated
+    })
     setInputValue('')
     setIsTyping(true)
 
@@ -203,8 +209,13 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
       <div className="max-w-4xl mx-auto px-4 py-6">
         <div className="bg-white/60 backdrop-blur-sm rounded-3xl border border-white/50 shadow-lg overflow-hidden">
           {/* Messages */}
-          <div className="h-[70vh] min-h-[400px] overflow-y-auto p-6">
+          <div className="h-[70vh] min-h-[400px] overflow-y-auto p-6 bg-gray-50/50">
             <div className="space-y-2">
+              {messages.length === 0 && (
+                <div className="text-center text-gray-500 py-8">
+                  Start your conversation here...
+                </div>
+              )}
               {messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
               ))}

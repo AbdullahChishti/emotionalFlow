@@ -9,26 +9,8 @@ import { useEffect } from 'react'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 export default function SessionPage() {
-  const { user, loading } = useAuth()
+  // Remove auth requirement - make session page publicly accessible
   const router = useRouter()
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/')
-    }
-  }, [user, loading, router])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return null
-  }
 
   const handleNavigate = (screen: string, params?: any) => {
     router.push(`/${screen.toLowerCase()}`)
@@ -48,8 +30,8 @@ export default function SessionPage() {
   }
 
   const currentUser = {
-    id: user?.id || 'user_1',
-    name: user?.user_metadata?.full_name || 'You',
+    id: 'guest_user',
+    name: 'You',
     role: 'seeker' as const,
     isOnline: true,
     joinedAt: new Date()
