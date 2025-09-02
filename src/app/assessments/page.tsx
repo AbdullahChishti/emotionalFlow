@@ -34,7 +34,11 @@ export default function AssessmentsPage() {
     console.log('Assessment results:', results)
     console.log('Processed user profile:', processedUserProfile)
 
-    // Generate personalized platform recommendations
+    // Store results for later use (after user reviews them)
+    localStorage.setItem('assessmentResults', JSON.stringify(results))
+    localStorage.setItem('userProfile', JSON.stringify(processedUserProfile))
+
+    // Generate personalized platform recommendations (store for later)
     const therapyPersonalization = AssessmentIntegrations.personalizeTherapy(processedUserProfile)
     const contentRecommendations = AssessmentIntegrations.recommendContent(processedUserProfile)
     const communityMatching = AssessmentIntegrations.matchCommunity(processedUserProfile)
@@ -49,22 +53,38 @@ export default function AssessmentsPage() {
       crisis: crisisDetection
     })
 
-    // Avoid persisting sensitive mental health data in storage
-    // If persistence is required, store server-side behind RLS.
+    // Store personalization data for dashboard
+    localStorage.setItem('personalizationData', JSON.stringify({
+      therapy: therapyPersonalization,
+      content: contentRecommendations,
+      community: communityMatching,
+      wellness: wellnessPlan,
+      crisis: crisisDetection
+    }))
 
-    // Trigger personalized experience
+    // Check for crisis - this should override everything
     if (crisisDetection.triggerImmediate) {
-      // Immediate crisis intervention
       console.warn('🚨 CRISIS DETECTED - Immediate intervention needed!')
       router.push('/crisis-support')
     } else {
-      // Personalized dashboard redirect
-      router.push('/dashboard?personalized=true')
+      // Redirect to results page to show user their assessment results
+      router.push('/results')
     }
   }
 
   const handleExit = () => {
+    // Clear the flow selection
     setSelectedFlow(null)
+
+    // Check if we have stored assessment results (meaning user completed assessments)
+    const storedResults = localStorage.getItem('assessmentResults')
+    if (storedResults) {
+      // Redirect to dashboard with personalized flag
+      router.push('/dashboard?personalized=true')
+    } else {
+      // No results, just return to dashboard normally
+      router.push('/dashboard')
+    }
   }
 
   const handleBackToDashboard = () => {
