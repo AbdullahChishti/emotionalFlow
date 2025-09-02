@@ -5,11 +5,8 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Profile, MoodEntry, ListeningSession } from '@/types'
 import { DashboardHeader } from './DashboardHeader'
-import { CreditBalance } from './CreditBalance'
-import { QuickActions } from './QuickActions'
-import { RecentActivity } from './RecentActivity'
-import { EmotionalMetrics } from './EmotionalMetrics'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { Calendar, Heart, BookOpen, TrendingUp, Moon, Sun, Cloud } from 'lucide-react'
 
 export function Dashboard() {
   const { user, profile } = useAuth()
@@ -38,23 +35,33 @@ export function Dashboard() {
         `)
         .or(`listener_id.eq.${user.id},speaker_id.eq.${user.id}`)
         .order('created_at', { ascending: false })
-        .limit(5)
+        .limit(3)
 
       if (sessions) {
         setRecentSessions(sessions)
       }
 
-      // Fetch recent mood entries
-      const { data: moods } = await supabase
-        .from('mood_entries')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(7)
+      // Fetch recent mood entries (handle missing table gracefully)
+      try {
+        const { data: moods, error: moodsError } = await supabase
+          .from('mood_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(7)
 
-      if (moods) {
-        setRecentMoods(moods)
-        setCurrentMood(moods[0] || null)
+        if (moodsError) {
+          console.warn('Mood entries table not available:', moodsError.message)
+          setRecentMoods([])
+          setCurrentMood(null)
+        } else if (moods) {
+          setRecentMoods(moods)
+          setCurrentMood(moods[0] || null)
+        }
+      } catch (moodsError: any) {
+        console.warn('Error fetching mood entries:', moodsError?.message || moodsError)
+        setRecentMoods([])
+        setCurrentMood(null)
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
@@ -65,7 +72,7 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -73,10 +80,10 @@ export function Dashboard() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-foreground mb-4">Setting up your profile...</h2>
-          <p className="text-muted-foreground">This will only take a moment.</p>
+          <h2 className="text-2xl font-light text-slate-700 mb-4">Setting up your profile...</h2>
+          <p className="text-slate-600 font-light">This will only take a moment.</p>
           <LoadingSpinner size="lg" className="mt-6" />
         </div>
       </div>
@@ -84,41 +91,123 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 relative overflow-hidden">
-      {/* Background gradients matching landing page */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-transparent to-green-50/30" />
-      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-violet-200/40 to-transparent rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-200/40 to-transparent rounded-full blur-3xl" />
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
       <DashboardHeader profile={profile} />
-      
-      <main className="container mx-auto px-6 py-8 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column */}
-          <div className="lg:col-span-8 space-y-8">
-            <CreditBalance 
-              credits={profile.empathy_credits}
-              totalEarned={profile.total_credits_earned}
-              totalSpent={profile.total_credits_spent}
-            />
-            
-            <QuickActions 
-              profile={profile}
-              currentMood={currentMood}
-              onMoodUpdate={fetchDashboardData}
-            />
-            
-            <RecentActivity sessions={recentSessions} userId={user!.id} />
+
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        <div className="space-y-12">
+          {/* Welcome Header */}
+          <div className="text-center space-y-4">
+            <h1 className="text-5xl font-light text-slate-800 leading-tight">
+              Welcome back, {profile.display_name?.split(' ')[0] || 'there'}
+            </h1>
+            <p className="text-xl text-slate-600 font-light max-w-2xl mx-auto">
+              How are you feeling today?
+            </p>
           </div>
 
-          {/* Right Column */}
-          <div className="lg:col-span-4 space-y-8">
-            <div className="sticky top-28">
-              <EmotionalMetrics 
-                profile={profile}
-                recentMoods={recentMoods}
-                recentSessions={recentSessions}
-              />
+          {/* Progress Tracker */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-light text-slate-800">Your Progress</h2>
+              <TrendingUp className="w-6 h-6 text-emerald-500" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-4xl font-light text-emerald-600 mb-2">12</div>
+                <p className="text-sm text-slate-600 font-light">Days in a row</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-light text-blue-600 mb-2">8</div>
+                <p className="text-sm text-slate-600 font-light">Sessions this month</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-light text-purple-600 mb-2">85%</div>
+                <p className="text-sm text-slate-600 font-light">Goal completion</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Access Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Upcoming Sessions */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-light text-slate-800">Upcoming Sessions</h2>
+                <Calendar className="w-6 h-6 text-blue-500" />
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl">
+                  <div>
+                    <p className="font-medium text-slate-800">Therapy Session</p>
+                    <p className="text-sm text-slate-600">Tomorrow at 3:00 PM</p>
+                  </div>
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl">
+                  <div>
+                    <p className="font-medium text-slate-800">Group Support</p>
+                    <p className="text-sm text-slate-600">Friday at 6:30 PM</p>
+                  </div>
+                  <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Journal Entries */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-light text-slate-800">Recent Entries</h2>
+                <BookOpen className="w-6 h-6 text-purple-500" />
+              </div>
+              <div className="space-y-4">
+                <div className="p-4 bg-purple-50/50 rounded-xl">
+                  <p className="text-sm text-slate-600 mb-2">Yesterday</p>
+                  <p className="text-slate-800">Feeling more grounded after today's meditation session...</p>
+                </div>
+                <div className="p-4 bg-purple-50/50 rounded-xl">
+                  <p className="text-sm text-slate-600 mb-2">2 days ago</p>
+                  <p className="text-slate-800">Grateful for the small moments of peace...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mood Tracker */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-light text-slate-800">How are you feeling?</h2>
+              <Heart className="w-6 h-6 text-rose-500" />
+            </div>
+            <div className="flex justify-center space-x-4 mb-6">
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
+                <Sun className="w-8 h-8 text-amber-500 mb-2" />
+                <span className="text-sm font-medium text-slate-700">Energetic</span>
+              </button>
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
+                <Cloud className="w-8 h-8 text-slate-500 mb-2" />
+                <span className="text-sm font-medium text-slate-700">Calm</span>
+              </button>
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
+                <Moon className="w-8 h-8 text-indigo-500 mb-2" />
+                <span className="text-sm font-medium text-slate-700">Peaceful</span>
+              </button>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-slate-600 font-light">
+                Track your mood to understand your emotional patterns
+              </p>
+            </div>
+          </div>
+
+          {/* Daily Reflection */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/50 shadow-sm text-center">
+            <h2 className="text-3xl font-light text-slate-800 mb-6">Daily Reflection</h2>
+            <blockquote className="text-xl text-slate-600 font-light leading-relaxed max-w-3xl mx-auto italic">
+              "Every emotion you feel is valid. Every step you take toward understanding yourself is a victory."
+            </blockquote>
+            <div className="mt-8 text-sm text-slate-500 font-light">
+              Take a moment to breathe and be kind to yourself today.
             </div>
           </div>
         </div>

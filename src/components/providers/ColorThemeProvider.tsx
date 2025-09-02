@@ -25,7 +25,7 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
 
   // Load theme from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('emotion-economy-theme')
+    const savedTheme = localStorage.getItem('mindwell-theme')
     if (savedTheme && themes[savedTheme as ThemeName]) {
       setCurrentTheme(savedTheme as ThemeName)
     }
@@ -82,7 +82,7 @@ export function ColorThemeProvider({ children }: { children: React.ReactNode }) 
 
   const setTheme = (theme: ThemeName) => {
     setCurrentTheme(theme)
-    localStorage.setItem('emotion-economy-theme', theme)
+    localStorage.setItem('mindwell-theme', theme)
   }
 
   const toggleTheme = () => {

@@ -60,19 +60,182 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
 
     try {
       if (mode === 'signup') {
+        console.log('🔄 STARTING SIGNUP PROCESS...')
+        console.log('📧 Email:', email.trim())
+        console.log('👤 Display Name:', displayName.trim())
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: { data: { display_name: displayName.trim() } },
         })
-        if (error) throw error
+
+        if (error) {
+          console.error('❌ SIGNUP ERROR:', error)
+          console.error('Error details:', {
+            message: error.message,
+            status: error.status,
+            name: error.name
+          })
+          throw error
+        }
+
         if (data.user) {
-          await supabase.from('profiles').insert({ id: data.user.id, display_name: displayName.trim() })
-          setSuccess('Account created! Please check your email to verify.')
+          console.log('✅ USER SIGNED UP SUCCESSFULLY')
+          console.log('🆔 User ID:', data.user.id)
+          console.log('📧 User Email:', data.user.email)
+          console.log('🔗 User Metadata:', data.user.user_metadata)
+          console.log('📅 Created At:', data.user.created_at)
+          console.log('✅ Email Confirmed:', data.user.email_confirmed_at ? 'Yes' : 'No')
+
+          console.log('⏳ Waiting 1 second for auth to settle...')
+          await new Promise(resolve => setTimeout(resolve, 1000))
+
+          console.log('🔍 Checking session after signup...')
+          const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+
+          if (sessionError) {
+            console.error('❌ SESSION ERROR:', sessionError)
+            console.error('Session error details:', {
+              message: sessionError.message,
+              status: sessionError.status,
+              name: sessionError.name
+            })
+            throw new Error('Authentication session error')
+          }
+
+          console.log('📊 Session Check Results:')
+          console.log('Has Session:', !!sessionData.session)
+          if (sessionData.session) {
+            console.log('Session User ID:', sessionData.session.user.id)
+            console.log('Session Expires At:', sessionData.session.expires_at)
+          }
+
+          if (!sessionData.session) {
+            console.log('⚠️ NO ACTIVE SESSION - This is normal for new signups')
+            console.log('📧 Account created successfully, but session needs activation')
+            console.log('🔐 Please check your email for verification, then sign in')
+
+            // Don't throw error - let the user know to sign in instead
+            setSuccess('Account created! Please check your email and sign in to continue.')
+            return
+          }
+
+          console.log('🎯 SESSION FOUND - Creating profile...')
+          const profileData = {
+            id: data.user.id,
+            display_name: displayName.trim() || email.split('@')[0],
+            username: null,
+            avatar_url: null,
+            bio: null,
+            empathy_credits: 10,
+            total_credits_earned: 10,
+            total_credits_spent: 0,
+            emotional_capacity: 'medium',
+            preferred_mode: 'both',
+            is_anonymous: false,
+            last_active: new Date().toISOString()
+          }
+
+          console.log('📝 Profile Data to Insert:')
+          console.log(JSON.stringify(profileData, null, 2))
+
+          console.log('💾 Inserting profile into database...')
+          const { data: profileInsertData, error: profileError } = await supabase
+            .from('profiles')
+            .insert(profileData)
+            .select()
+
+          if (profileError) {
+            console.error('❌ PROFILE CREATION ERROR:', profileError)
+            console.error('Profile error details:', {
+              message: profileError.message,
+              details: profileError.details,
+              hint: profileError.hint,
+              code: profileError.code
+            })
+            throw new Error(`Profile creation failed: ${profileError.message}`)
+          }
+
+          console.log('✅ PROFILE CREATED SUCCESSFULLY')
+          console.log('📊 Profile Insert Result:', profileInsertData)
+          setSuccess('Account created! Profile setup complete.')
+        } else {
+          console.log('⚠️ No user data returned from signup')
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
-        if (error) throw error
+        console.log('🔄 STARTING SIGNIN PROCESS...')
+        console.log('📧 Email:', email.trim())
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password
+        })
+
+        if (error) {
+          console.error('❌ SIGNIN ERROR:', error)
+          console.error('Signin error details:', {
+            message: error.message,
+            status: error.status,
+            name: error.name
+          })
+          throw error
+        }
+
+        console.log('✅ USER SIGNED IN SUCCESSFULLY')
+        if (data.user) {
+          console.log('🆔 User ID:', data.user.id)
+          console.log('📧 User Email:', data.user.email)
+          console.log('✅ Email Confirmed:', data.user.email_confirmed_at ? 'Yes' : 'No')
+        }
+
+        if (data.session) {
+          console.log('🎯 SESSION ESTABLISHED')
+          console.log('Session User ID:', data.session.user.id)
+          console.log('Session Expires At:', data.session.expires_at)
+
+          // Check if profile exists, create if not
+          console.log('🔍 Checking if profile exists...')
+          const { data: existingProfile, error: profileCheckError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.session.user.id)
+            .single()
+
+          if (profileCheckError && profileCheckError.code === 'PGRST116') {
+            console.log('⚠️ Profile not found, creating new profile...')
+            // Profile doesn't exist, create it
+            const profileData = {
+              id: data.session.user.id,
+              display_name: displayName.trim() || email.split('@')[0],
+              username: null,
+              avatar_url: null,
+              bio: null,
+              empathy_credits: 10,
+              total_credits_earned: 10,
+              total_credits_spent: 0,
+              emotional_capacity: 'medium',
+              preferred_mode: 'both',
+              is_anonymous: false,
+              last_active: new Date().toISOString()
+            }
+
+            console.log('📝 Creating profile:', profileData)
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert(profileData)
+              .select()
+
+            if (createError) {
+              console.error('❌ Profile creation failed:', createError)
+            } else {
+              console.log('✅ Profile created successfully:', newProfile)
+            }
+          } else if (existingProfile) {
+            console.log('✅ Profile already exists:', existingProfile)
+          }
+        }
+
         setSuccess('Welcome back! Redirecting...')
         setTimeout(() => onClose(), 1500)
       }

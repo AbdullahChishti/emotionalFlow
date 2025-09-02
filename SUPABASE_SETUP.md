@@ -7,7 +7,7 @@
 3. Click "New Project"
 4. Choose your organization
 5. Enter project details:
-   - Name: `emotion-economy`
+   - Name: `mindwell`
    - Database Password: (generate a strong password)
    - Region: (choose closest to your users)
 6. Click "Create new project"

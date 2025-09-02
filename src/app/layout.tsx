@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/components/providers/AuthProvider'
+import { ColorThemeProvider } from '@/components/providers/ColorThemeProvider'
 
 // Setup the Inter font
 const inter = Inter({ subsets: ['latin'] })
@@ -22,7 +23,9 @@ export default function RootLayout({
     <html lang="en">
       {/* Apply the Inter font className to the body */}
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+        <ColorThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ColorThemeProvider>
       </body>
     </html>
   )

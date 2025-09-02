@@ -2,12 +2,12 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
-import { MeditationLibraryScreen } from '@/components/screens/MeditationLibraryScreen'
+import { SessionScreen } from '@/components/screens/SessionScreen'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
-export default function MeditationPage() {
+export default function SessionPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
 
@@ -33,7 +33,7 @@ export default function MeditationPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="pt-16 pb-20 md:pb-0">
-        <MeditationLibraryScreen />
+        <SessionScreen />
       </div>
     </div>
   )

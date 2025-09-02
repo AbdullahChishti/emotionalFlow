@@ -175,16 +175,59 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         setSelectedMood('hopeful')
       }
 
-      // Mock reply from listener
-      setTimeout(() => {
-        const reply: Message = {
-          id: Date.now() + 1,
-          text: 'Thank you for sharing that. Tell me more.',
-          sender: 'other',
+      // Call AI therapy function
+      setTimeout(async () => {
+        try {
+          // Import Supabase client
+          const { createClient } = await import('@supabase/supabase-js')
+          const supabase = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+          )
+
+          // Call the Edge Function
+          const { data, error } = await supabase.functions.invoke('chat-ai', {
+            body: {
+              message: inputValue,
+              conversationHistory: messages.slice(-3).map(m => ({
+                sender: m.sender,
+                text: m.text
+              }))
+            }
+          })
+
+          if (error) {
+            console.error('Edge Function error:', error)
+            throw error
+          }
+
+          const aiResponse: Message = {
+            id: Date.now() + 1,
+            text: data.response,
+            sender: 'other',
+          }
+
+          setMessages(prev => [...prev, aiResponse])
+          setInteractionCount(c => c + 1)
+
+          // Log usage for cost tracking
+          if (data.usage) {
+            console.log('AI Usage:', data.usage)
+          }
+
+        } catch (error) {
+          console.error('AI Error:', error)
+
+          // Fallback response
+          const fallbackResponse: Message = {
+            id: Date.now() + 1,
+            text: 'Thank you for sharing that. Tell me more.',
+            sender: 'other',
+          }
+          setMessages(prev => [...prev, fallbackResponse])
+          setInteractionCount(c => c + 1)
         }
-        setMessages(prev => [...prev, reply])
-        setInteractionCount(c => c + 1)
-      }, 2000)
+      }, 1000)
     }
   }
 

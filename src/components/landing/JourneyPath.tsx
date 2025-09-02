@@ -126,7 +126,7 @@ export const JourneyPath = forwardRef<HTMLElement, JourneyPathProps>(
     return (
       <section ref={ref} className="relative h-[250vh] w-full pt-24 pb-12">
         <div className="container mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-zinc-900">How Heard Works: A New Economy of Care</h2>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-zinc-900">How MindWell Works: A New Network of Care</h2>
           <p className="max-w-2xl mx-auto mt-4 text-lg md:text-xl text-zinc-700">Follow the thread of connection. See how giving and receiving support creates a balanced, empathetic community.</p>
         </div>
         <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">

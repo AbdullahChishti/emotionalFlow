@@ -15,7 +15,7 @@ interface MilestoneProps {
 const valueProps = [
   { title: 'Mutual Support', description: 'Give when you can, receive when you need. A balance that honors both sides of connection.', color: '#9333ea' },
   { title: 'Structured Roles', description: 'Hold space, or be held. You\'re never expected to do both at once.', color: '#3b82f6' },
-  { title: 'Empathy Economy', description: 'Your emotional labor is seen, tracked, and honored. Care becomes a currency that flows both ways.', color: '#10b981' },
+  { title: 'MindWell Network', description: 'Your emotional labor is seen, tracked, and honored. Care becomes a currency that flows both ways.', color: '#10b981' },
   { title: 'Authentically You', description: 'No profiles to curate. No personas to maintain. Just your real feelings in a real moment.', color: '#f59e0b' },
   { title: 'Always Held', description: 'Even when the world is asleep, our presence is awake. You\'re never truly alone here.', color: '#f472b6' },
 ];

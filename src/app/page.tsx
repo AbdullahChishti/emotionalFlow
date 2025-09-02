@@ -3,12 +3,10 @@
 import { useState } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { LandingPage } from '@/components/landing/LandingPage'
-import { ParticlesTest } from '@/components/test/ParticlesTest'
 import { Dashboard } from '@/components/dashboard/Dashboard'
-import { ScreenRouter } from '@/components/ScreenRouter'
 import { OnboardingFlow } from '@/components/auth/OnboardingFlow'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { ScreenDemo } from '@/components/screens/ScreenDemo'
+import { Navigation } from '@/components/ui/Navigation'
 
 export default function Home() {
   const { user, loading, needsOnboarding } = useAuth()
@@ -43,7 +41,14 @@ export default function Home() {
       return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
     }
 
-    return <Dashboard />
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navigation />
+        <div className="pt-16 pb-20 md:pb-0">
+          <Dashboard />
+        </div>
+      </div>
+    )
   }
 
   return (
