@@ -309,14 +309,9 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter text-secondary-900">
-              Your Heart
-              <br />
-              <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                Is Safe Here
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                You Are Loved
+              Your heart deserves{' '}
+              <span style={{ color: '#335f64' }}>
+                Peace
               </span>
             </h1>
             <p className="text-lg md:text-xl text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
