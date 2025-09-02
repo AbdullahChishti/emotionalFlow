@@ -112,86 +112,258 @@ const TherapyJourneySection = () => {
           </motion.p>
         </motion.div>
 
-                {/* Therapy Journey Steps */}
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-20">
+                {/* Creative Journey Path */}
+        <div className="relative mb-20">
+          {/* Winding Path Background */}
+          <div className="absolute inset-0">
+            <svg className="w-full h-full" viewBox="0 0 1200 400" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.1" />
+                  <stop offset="50%" stopColor="rgb(16, 185, 129)" stopOpacity="0.1" />
+                  <stop offset="100%" stopColor="rgb(139, 92, 246)" stopOpacity="0.1" />
+                </linearGradient>
+              </defs>
+              {/* Winding path connecting the journey points */}
+              <path
+                d="M100,200 Q300,100 500,200 T900,150 Q1050,200 1100,300"
+                stroke="url(#pathGradient)"
+                strokeWidth="4"
+                fill="none"
+                strokeDasharray="10,5"
+                opacity="0.6"
+              />
+            </svg>
+          </div>
+
+          {/* Journey Points with SVGs */}
           {[
             {
               svg: '/assets/Overwhelmed-bro (1).svg',
               title: 'Find Your Path',
               description: 'Begin your journey with compassionate AI guidance that understands your unique experience.',
-              color: 'from-blue-500 to-indigo-600'
+              position: { left: '8%', top: '20%' },
+              delay: 0.2
             },
             {
               svg: '/assets/Psychologist-rafiki (1).svg',
               title: 'Grow Together',
               description: 'Develop coping strategies and gain insights in a safe, supportive environment.',
-              color: 'from-emerald-500 to-teal-600'
+              position: { left: '42%', top: '15%' },
+              delay: 0.5
             },
             {
               svg: '/assets/Peace of mind-bro (2).svg',
               title: 'Find Peace',
               description: 'Achieve lasting inner peace and emotional balance through personalized therapy.',
-              color: 'from-purple-500 to-violet-600'
+              position: { left: '76%', top: '25%' },
+              delay: 0.8
             }
           ].map((item, index) => (
             <motion.div
               key={item.title}
-              className="group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              className="absolute group cursor-pointer"
+              style={{
+                left: item.position.left,
+                top: item.position.top,
+                transform: 'translate(-50%, -50%)'
+              }}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.2, duration: 0.8 }}
+              transition={{
+                delay: item.delay,
+                duration: 0.8,
+                type: "spring",
+                stiffness: 200
+              }}
+              whileHover={{ scale: 1.1, y: -10 }}
             >
-              <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 group-hover:-translate-y-1">
-                {/* Single SVG per column */}
-                <div className="relative mb-6">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-inner p-4">
-                    <img
-                      src={item.svg}
-                      alt={item.title}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  {/* Subtle gradient accent */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-5 rounded-2xl`}></div>
+              {/* Floating SVG */}
+              <motion.div
+                className="relative"
+                animate={{
+                  y: [0, -8, 0],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: index * 0.5
+                }}
+              >
+                <div className="w-24 h-24 md:w-32 md:h-32 bg-white/90 backdrop-blur-sm rounded-full shadow-xl border border-white/50 flex items-center justify-center group-hover:shadow-2xl transition-all duration-300">
+                  <img
+                    src={item.svg}
+                    alt={item.title}
+                    className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                  />
+                  {/* Subtle glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-200/30 to-secondary-200/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
 
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-secondary-800 mb-3 group-hover:text-primary-700 transition-colors duration-300">
-                    {item.title}
-                  </h3>
-                  <p className="text-secondary-600 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
+                {/* Connecting line to text */}
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-px h-8 bg-gradient-to-b from-primary-300 to-transparent"></div>
+              </motion.div>
+
+              {/* Text Content */}
+              <motion.div
+                className="mt-12 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50 max-w-xs group-hover:shadow-xl transition-all duration-300"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: item.delay + 0.3, duration: 0.6 }}
+              >
+                <h3 className="text-lg font-bold text-secondary-800 mb-2 group-hover:text-primary-700 transition-colors duration-300">
+                  {item.title}
+                </h3>
+                <p className="text-secondary-600 text-sm leading-relaxed">
+                  {item.description}
+                </p>
+              </motion.div>
+
+              {/* Floating particles around each point */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-2 h-2 bg-primary-400/40 rounded-full"
+                    style={{
+                      left: `${20 + i * 30}%`,
+                      top: `${10 + i * 20}%`,
+                    }}
+                    animate={{
+                      y: [0, -15, 0],
+                      opacity: [0.4, 0.8, 0.4],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: i * 0.8
+                    }}
+                  />
+                ))}
               </div>
             </motion.div>
           ))}
+
+          {/* Additional floating SVGs for ambiance */}
+          <motion.div
+            className="absolute top-1/4 right-1/4 opacity-20"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          >
+            <img src="/assets/Thinking face-bro (1).svg" alt="" className="w-16 h-16" />
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-1/4 left-1/4 opacity-15"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          >
+            <img src="/assets/personal growth-bro (1).svg" alt="" className="w-20 h-20" />
+          </motion.div>
         </div>
 
-                {/* Therapy CTA Section */}
+                {/* Creative Therapy CTA Section */}
         <motion.div
-          className="text-center"
+          className="text-center relative"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.8 }}
         >
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/40 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-4">
-              Ready to Start Your Journey?
-            </h3>
-            <p className="text-secondary-600 mb-8 leading-relaxed">
+          {/* Floating SVGs around CTA */}
+          <motion.div
+            className="absolute top-0 left-10 opacity-20"
+            animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <img src="/assets/Contemplating-bro (1).svg" alt="" className="w-12 h-12" />
+          </motion.div>
+
+          <motion.div
+            className="absolute top-0 right-10 opacity-20"
+            animate={{ y: [0, -8, 0], rotate: [0, -5, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          >
+            <img src="/assets/Peace of mind-bro (2).svg" alt="" className="w-14 h-14" />
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-0 left-1/4 opacity-15"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          >
+            <img src="/assets/Mental health-bro.svg" alt="" className="w-10 h-10" />
+          </motion.div>
+
+          <motion.div
+            className="absolute bottom-0 right-1/4 opacity-15"
+            animate={{ rotate: -360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          >
+            <img src="/assets/Thinking face-bro (1).svg" alt="" className="w-12 h-12" />
+          </motion.div>
+
+          <div className="relative bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/40 shadow-lg max-w-2xl mx-auto overflow-hidden">
+            {/* Decorative background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-4 left-4 w-8 h-8 border border-primary-300 rounded-full"></div>
+              <div className="absolute bottom-4 right-4 w-6 h-6 border border-secondary-300 rounded-full"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 border border-purple-300 rounded-full"></div>
+            </div>
+
+            {/* Central SVG accent */}
+            <motion.div
+              className="inline-block mb-6"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <div className="w-16 h-16 bg-primary-50/50 rounded-full flex items-center justify-center border border-primary-200/30">
+                <img src="/assets/Psychologist-rafiki (1).svg" alt="" className="w-10 h-10 opacity-80" />
+              </div>
+            </motion.div>
+
+            <motion.h3
+              className="text-2xl md:text-3xl font-bold text-secondary-900 mb-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              Ready to Start Your
+              <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+                {' '}Journey?
+              </span>
+            </motion.h3>
+
+            <motion.p
+              className="text-secondary-600 mb-8 leading-relaxed"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+            >
               Join thousands who have found peace and growth through MindWell's personalized therapy approach.
               Your mental health matters, and we're here to support you every step of the way.
-            </p>
+            </motion.p>
+
             <motion.button
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1, duration: 0.8 }}
             >
-              <span>Begin Your Transformation</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Button background effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              <span className="relative z-10">Begin Your Transformation</span>
+              <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </motion.button>
