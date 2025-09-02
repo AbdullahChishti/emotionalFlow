@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export function LoginScreen() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -14,7 +14,7 @@ export function LoginScreen() {
           style={{
             width: 200,
             height: 200,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(110, 182, 113, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             top: '10%',
             left: '10%'
@@ -34,7 +34,7 @@ export function LoginScreen() {
           style={{
             width: 150,
             height: 150,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(110, 182, 113, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             bottom: '20%',
             right: '15%'
@@ -66,8 +66,8 @@ export function LoginScreen() {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              <span className="material-symbols-outlined text-4xl text-primary-600">psychology</span>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              <span className="material-symbols-outlined text-4xl text-brand-green-600">psychology</span>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
                 MindWell
               </h1>
             </motion.div>
@@ -90,7 +90,7 @@ export function LoginScreen() {
                 <input
                   type="email"
                   placeholder="Your Email"
-                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-brand-green-300 focus:border-brand-green-300 transition-all outline-none"
                 />
               </div>
               <div className="relative">
@@ -98,14 +98,14 @@ export function LoginScreen() {
                 <input
                   type="password"
                   placeholder="Password"
-                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all outline-none"
+                  className="w-full bg-white/70 backdrop-blur-sm border border-white/40 rounded-xl py-4 pl-12 pr-4 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-brand-green-300 focus:border-brand-green-300 transition-all outline-none"
                 />
               </div>
             </div>
 
             <div className="pt-2">
               <motion.button
-                className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-brand-green-500 to-brand-green-600 hover:from-brand-green-600 hover:to-brand-green-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-brand-green-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -123,7 +123,7 @@ export function LoginScreen() {
           >
             <p className="text-secondary-600">
               Don't have an account?{' '}
-              <Link href="/signup" className="font-semibold text-primary-600 hover:text-primary-700 transition-colors hover:underline">
+              <Link href="/signup" className="font-semibold text-brand-green-600 hover:text-brand-green-700 transition-colors hover:underline">
                 Sign Up
               </Link>
             </p>
