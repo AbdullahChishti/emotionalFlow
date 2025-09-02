@@ -311,11 +311,11 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter text-secondary-900">
               Your Heart
               <br />
-              <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                 Matters
               </span>
               <br />
-              <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
                 Deserves Peace
               </span>
             </h1>
