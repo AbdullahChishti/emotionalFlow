@@ -89,15 +89,7 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
       </div>
 
       {/* Header */}
-      <header className="relative flex items-center justify-between p-6 glassmorphic z-10">
-        <motion.button
-          onClick={() => onNavigate('Welcome')}
-          className="p-3 text-secondary-500 hover:bg-secondary-100/70 hover:text-secondary-700 rounded-full transition-all duration-300"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <span className="material-symbols-outlined text-2xl">arrow_back</span>
-        </motion.button>
+      <header className="relative flex items-center justify-center p-6 glassmorphic z-10">
         <div className="text-center">
           <motion.div
             className="flex items-center justify-center gap-3 mb-2"
@@ -111,7 +103,6 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
           </motion.div>
           <h2 className="text-lg font-semibold text-secondary-800">Your Wallet</h2>
         </div>
-        <div className="w-14" />
       </header>
 
       <main className="relative flex-1 flex flex-col p-6 z-0 overflow-y-auto">

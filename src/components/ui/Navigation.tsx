@@ -23,23 +23,44 @@ export function Navigation({ className = '' }: NavigationProps) {
   const navigationItems = [
     {
       name: 'Dashboard',
-      href: '/'
+      href: '/',
+      icon: 'dashboard'
     },
     {
-      name: 'Check-in',
-      href: '/check-in'
+      name: 'Assessments',
+      href: '/assessments',
+      icon: 'psychology'
+    },
+    {
+      name: 'Wellness',
+      href: '/wellness',
+      icon: 'spa'
     },
     {
       name: 'Therapy',
-      href: '/session'
+      href: '/session',
+      icon: 'chat'
     },
     {
-      name: 'Meditation',
-      href: '/meditation'
+      name: 'Support',
+      href: '/crisis-support',
+      isCrisis: true,
+      icon: 'emergency'
     },
     {
-      name: 'Progress',
-      href: '/dashboard'
+      name: 'Wallet',
+      href: '/wallet',
+      icon: 'account_balance_wallet'
+    },
+    {
+      name: 'Community',
+      href: '/community',
+      icon: 'people'
+    },
+    {
+      name: 'Profile',
+      href: '/profile',
+      icon: 'person'
     }
   ]
 
@@ -62,21 +83,29 @@ export function Navigation({ className = '' }: NavigationProps) {
           </Link>
 
           {/* Navigation Items */}
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-6">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href
+              const isCrisis = item.isCrisis
               return (
                 <Link key={item.href} href={item.href}>
                   <motion.button
-                    className={`px-4 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
-                      isActive
+                    className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+                      isCrisis
+                        ? isActive
+                          ? 'text-red-600 bg-red-50 shadow-sm border border-red-200'
+                          : 'text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300'
+                        : isActive
                         ? 'text-primary-600 bg-primary-50 shadow-sm'
                         : 'text-secondary-600 hover:text-primary-600 hover:bg-white/50'
                     }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {item.name}
+                    <span className="material-symbols-outlined text-base">
+                      {item.icon}
+                    </span>
+                    <span>{item.name}</span>
                   </motion.button>
                 </Link>
               )

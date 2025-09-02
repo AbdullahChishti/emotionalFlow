@@ -28,10 +28,7 @@ const ModernHeader = ({ showAuthModal }: { showAuthModal: () => void }) => {
             <h2 className="text-xl font-bold">MindWell</h2>
           </motion.a>
 
-          <nav className="hidden md:flex items-center gap-8">
-            <a className="text-base font-medium text-secondary-600 hover:text-primary-600 transition-colors" href="#therapy-journey">Therapy Journey</a>
-            <a className="text-base font-medium text-secondary-600 hover:text-primary-600 transition-colors" href="#support">Support</a>
-          </nav>
+
 
           <div className="flex items-center gap-4">
           <motion.button

@@ -5,7 +5,7 @@ import { WelcomeScreen } from './screens/WelcomeScreen'
 import { MoodSelectionScreen } from './screens/MoodSelectionScreen'
 import { EmotionRefinementScreen } from './screens/EmotionRefinementScreen'
 import { MatchingScreen } from './screens/MatchingScreen'
-import { SessionScreen } from './screens/SessionScreen'
+import { GlassmorphicSessionScreen } from './session/GlassmorphicSessionScreen'
 import { WalletScreen } from './screens/WalletScreen'
 
 type Screen = 'Welcome' | 'MoodSelection' | 'EmotionRefinement' | 'Matching' | 'Session' | 'Wallet'
@@ -72,9 +72,21 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
       
       case 'Session':
         return (
-          <SessionScreen
+          <GlassmorphicSessionScreen
             onNavigate={handleNavigate}
-            matchedUser={screenParams.matchedUser || { name: 'Alex' }}
+            matchedUser={screenParams.matchedUser || {
+              user: { id: 'listener_1', name: 'Alex', role: 'listener', isOnline: true, joinedAt: new Date() },
+              joinedAt: new Date(),
+              lastActivity: new Date(),
+              emotionalState: 'calm'
+            }}
+            user={{
+              id: 'user_1',
+              name: 'You',
+              role: 'seeker',
+              isOnline: true,
+              joinedAt: new Date()
+            }}
           />
         )
       
@@ -90,27 +102,7 @@ export function ScreenRouter({ initialScreen = 'Welcome', onScreenChange }: Scre
     <div className="min-h-screen">
       {renderScreen()}
       
-      {/* Debug Navigation (remove in production) */}
-      <div className="fixed bottom-4 right-4 bg-card border border-border rounded-lg shadow-lg p-4">
-        <div className="text-xs font-medium text-muted-foreground mb-2">
-          Debug Navigation
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {(['Welcome', 'MoodSelection', 'Matching', 'Session', 'Wallet'] as Screen[]).map((screen) => (
-            <button
-              key={screen}
-              onClick={() => handleNavigate(screen, { mode: 'listen', mood: 7 })}
-              className={`px-2 py-1 text-xs rounded transition-colors ${
-                currentScreen === screen
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              {screen}
-            </button>
-          ))}
-        </div>
-      </div>
+
     </div>
   )
 }

@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import OpenAI from "https://esm.sh/openai@4"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { getCorsHeaders, handleCorsPreflight } from "../_shared/cors.ts"
 
 // Initialize OpenAI with error handling
 let openai: OpenAI | null = null
@@ -85,19 +87,52 @@ function detectCrisis(message: string): boolean {
 }
 
 serve(async (req) => {
+  // CORS preflight
+  const preflight = handleCorsPreflight(req)
+  if (preflight) return preflight
+
   try {
-    // Handle CORS
-    if (req.method === 'OPTIONS') {
-      return new Response('ok', {
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST',
-          'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-        }
-      })
+    const cors = getCorsHeaders(req)
+
+    if (req.method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
-    const { message, conversationHistory = [] } = await req.json()
+    // Require authenticated Supabase JWT
+    const authHeader = req.headers.get('Authorization') || ''
+    if (!authHeader.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY in environment')
+      return new Response(JSON.stringify({ error: 'Server misconfiguration' }), { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+
+    const { data: authData } = await supabase.auth.getUser()
+    if (!authData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    const {
+      message,
+      conversationHistory = [],
+      emotionalState = 'neutral',
+      sessionId
+    } = await req.json()
+
+    // Basic input validation & limits
+    if (typeof message !== 'string' || message.trim().length === 0) {
+      return new Response(JSON.stringify({ error: 'Invalid message' }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+    const safeMessage = message.slice(0, 2000)
+    const history = Array.isArray(conversationHistory) ? conversationHistory.slice(-3) : []
 
     // Check if OpenAI is available
     if (!openai) {
@@ -109,39 +144,51 @@ serve(async (req) => {
           error: "OpenAI not initialized"
         }),
         {
-          headers: {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: { ...cors, "Content-Type": "application/json" }
         }
       )
     }
 
     // Crisis detection - highest priority
-    if (detectCrisis(message)) {
+    if (detectCrisis(safeMessage)) {
       return new Response(
         JSON.stringify({
           response: "I'm concerned about your safety. Please contact emergency services (911) or a crisis hotline immediately. You can also reach the National Suicide Prevention Lifeline at 988. If you're in immediate danger, please seek help right now.",
           isCrisis: true
         }),
         {
-          headers: {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: { ...cors, "Content-Type": "application/json" }
         }
       )
     }
 
     // Prepare conversation history for OpenAI
-    const messages = [
-      { role: 'system', content: THERAPY_SYSTEM_PROMPT },
-      ...conversationHistory.slice(-3).map((msg: any) => ({
+    // Enhanced system prompt with emotional context
+    const enhancedSystemPrompt = `${THERAPY_SYSTEM_PROMPT}
+
+## Current Session Context
+- User's current emotional state: ${emotionalState}
+- Session ID: ${sessionId || 'unknown'}
+- Conversation context: ${conversationHistory.length} previous messages
+
+## Emotional State Guidelines
+${emotionalState === 'anxious' ? '- User appears anxious - focus on calming techniques and gentle reassurance' : ''}
+${emotionalState === 'overwhelmed' ? '- User feels overwhelmed - help break down concerns into manageable pieces' : ''}
+${emotionalState === 'sad' ? '- User is experiencing sadness - validate feelings and offer gentle support' : ''}
+${emotionalState === 'angry' ? '- User expresses anger - help process emotions without judgment' : ''}
+${emotionalState === 'hopeful' ? '- User shows hope - nurture positive feelings and build on strengths' : ''}
+${emotionalState === 'calm' ? '- User is calm - maintain supportive, present-focused dialogue' : ''}
+
+Adapt your response style to match the user's current emotional state while maintaining therapeutic boundaries.`
+
+      const messages = [
+        { role: 'system', content: enhancedSystemPrompt },
+      ...history.map((msg: any) => ({
         role: msg.sender === 'user' ? 'user' : 'assistant',
         content: msg.text
       })),
-      { role: 'user', content: message }
-    ]
+      { role: 'user', content: safeMessage }
+      ]
 
     // Call OpenAI API with timeout and error handling
     try {
@@ -160,18 +207,27 @@ serve(async (req) => {
       clearTimeout(timeoutId)
       const aiResponse = response.choices[0].message.content
 
+      // Analyze response for emotional metadata
+      const responseLower = aiResponse?.toLowerCase() || ''
+      const isAffirmation = /\b(you're|you're|you are|that's|it's|i hear|i understand|i can see|it's okay|that's understandable|you're not alone|you're doing|you're making|you're taking)\b/i.test(responseLower)
+      const emotionalTone = responseLower.includes('calm') || responseLower.includes('breathe') || responseLower.includes('relax') ? 'calming' :
+                           responseLower.includes('support') || responseLower.includes('help') || responseLower.includes('together') ? 'supportive' :
+                           responseLower.includes('hope') || responseLower.includes('better') || responseLower.includes('progress') ? 'encouraging' :
+                           responseLower.includes('hear') || responseLower.includes('understand') || responseLower.includes('feel') ? 'empathetic' : 'empathetic'
+
       return new Response(
         JSON.stringify({
           response: aiResponse,
           usage: response.usage,
           isCrisis: false,
-          success: true
+          success: true,
+          emotionalTone,
+          isAffirmation,
+          emotionalState: emotionalState,
+          sessionId
         }),
         {
-          headers: {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: { ...cors, "Content-Type": "application/json" }
         }
       )
 
@@ -202,16 +258,13 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           response: errorMessage + " If you're in crisis, please contact emergency services (911) or a crisis hotline.",
-          error: openaiError.message,
+          error: typeof openaiError?.message === 'string' ? openaiError.message : 'openai_error',
           errorType: errorType,
           fallback: true
         }),
         {
           status: 200, // Return 200 for graceful degradation
-          headers: {
-            "Content-Type": "application/json",
-            'Access-Control-Allow-Origin': '*'
-          }
+          headers: { ...cors, "Content-Type": "application/json" }
         }
       )
     }
@@ -227,10 +280,7 @@ serve(async (req) => {
       }),
       {
         status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          'Access-Control-Allow-Origin': '*'
-        }
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }
       }
     )
   }

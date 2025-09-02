@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Ear, Users, ArrowRight, ArrowLeft, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/providers/AuthProvider'
+import { WelcomeTutorial } from '@/components/ui/WelcomeTutorial'
 
 interface OnboardingFlowProps {
   onComplete: () => void
@@ -14,6 +15,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const { user, refreshProfile } = useAuth()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [showTutorial, setShowTutorial] = useState(false)
   
   // Onboarding data
   const [initialMood, setInitialMood] = useState<number | null>(null)
@@ -66,12 +68,17 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       }
 
       await refreshProfile()
-      onComplete()
+      setShowTutorial(true) // Show tutorial before completing
     } catch (error) {
       console.error('Onboarding error:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleTutorialComplete = () => {
+    setShowTutorial(false)
+    onComplete()
   }
 
   const nextStep = () => {
@@ -351,6 +358,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
           </button>
         </div>
       </div>
+
+      {/* Welcome Tutorial */}
+      <WelcomeTutorial
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
+        onComplete={handleTutorialComplete}
+      />
     </div>
   )
 }

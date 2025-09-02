@@ -8,15 +8,16 @@ interface NavigationParams {
 }
 
 interface WelcomeScreenProps {
+  onNavigate?: (screen: string, params?: NavigationParams) => void
 }
 
 export function WelcomeScreen({ onNavigate }: WelcomeScreenProps) {
   const handleListenPress = () => {
-    onNavigate('MoodSelection', { mode: 'listen' })
+    onNavigate?.('MoodSelection', { mode: 'listen' })
   }
 
   const handleSupportPress = () => {
-    onNavigate('MoodSelection', { mode: 'support' })
+    onNavigate?.('MoodSelection', { mode: 'support' })
   }
 
   return (

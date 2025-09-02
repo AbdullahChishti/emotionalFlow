@@ -3,7 +3,8 @@
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Profile } from '@/types'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { LogOut } from 'lucide-react'
+import { LogOut, AlertTriangle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface DashboardHeaderProps {
   profile: Profile
@@ -11,6 +12,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ profile }: DashboardHeaderProps) {
   const { signOut } = useAuth()
+  const router = useRouter()
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200/50">
@@ -29,6 +31,13 @@ export function DashboardHeader({ profile }: DashboardHeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => router.push('/crisis-support')}
+              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors border border-red-200"
+              title="Crisis Support - Available 24/7"
+            >
+              <AlertTriangle className="w-5 h-5" />
+            </button>
             <ThemeToggle />
             <button
               onClick={signOut}

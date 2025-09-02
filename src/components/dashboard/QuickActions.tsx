@@ -11,6 +11,7 @@ interface QuickActionsProps {
   profile: Profile
   currentMood: MoodEntry | null
   onMoodUpdate: () => void
+  onNavigate?: (path: string) => void
 }
 
 interface ActionCardProps {
@@ -55,7 +56,7 @@ function ActionCard({ icon: Icon, title, description, available, action, gradien
   )
 }
 
-export function QuickActions({ profile, currentMood, onMoodUpdate }: QuickActionsProps) {
+export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }: QuickActionsProps) {
   const [showMoodSelector, setShowMoodSelector] = useState(false)
 
   const getMoodEmoji = (score: number) => {
@@ -83,20 +84,20 @@ export function QuickActions({ profile, currentMood, onMoodUpdate }: QuickAction
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <ActionCard 
+        <ActionCard
           title="I want to listen"
           description="Earn empathy credits by providing a listening ear for others in the community."
           icon={Ear}
           available={profile.emotional_capacity !== 'low'}
-          action={() => console.log('Navigate to listening mode')}
+          action={() => onNavigate?.('/session')}
           gradient="bg-gradient-to-br from-green-400 to-cyan-500"
         />
-        <ActionCard 
+        <ActionCard
           title="I need support"
           description="Use your empathy credits to connect with a listener for confidential support."
           icon={Heart}
           available={profile.empathy_credits >= 5}
-          action={() => console.log('Navigate to seeking support mode')}
+          action={() => onNavigate?.('/session')}
           gradient="bg-gradient-to-br from-blue-400 to-violet-500"
         />
       </div>
@@ -125,13 +126,14 @@ export function QuickActions({ profile, currentMood, onMoodUpdate }: QuickAction
       
       {/* Secondary Actions */}
       <div className="mt-8 grid grid-cols-2 gap-4 text-center">
-         <button 
+         <button
             onClick={() => setShowMoodSelector(true)}
             className="px-4 py-3 bg-card hover:bg-muted/50 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Update Mood
           </button>
           <button
+            onClick={() => onNavigate?.('/crisis-support')}
             className="px-4 py-3 bg-card hover:bg-muted/50 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Crisis Support

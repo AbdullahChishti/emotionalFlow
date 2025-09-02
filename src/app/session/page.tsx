@@ -2,7 +2,8 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
-import { SessionScreen } from '@/components/screens/SessionScreen'
+import { GlassmorphicSessionScreen } from '@/components/session/GlassmorphicSessionScreen'
+import { BackButton } from '@/components/ui/BackButton'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -34,14 +35,40 @@ export default function SessionPage() {
   }
 
   const matchedUser = {
-    name: 'Alex' // This would typically come from your matching logic
+    user: {
+      id: 'listener_1',
+      name: 'Alex',
+      role: 'listener' as const,
+      isOnline: true,
+      joinedAt: new Date()
+    },
+    joinedAt: new Date(),
+    lastActivity: new Date(),
+    emotionalState: 'calm' as const
+  }
+
+  const currentUser = {
+    id: user?.id || 'user_1',
+    name: user?.user_metadata?.full_name || 'You',
+    role: 'seeker' as const,
+    isOnline: true,
+    joinedAt: new Date()
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Navigation />
       <div className="pt-16 pb-20 md:pb-0">
-        <SessionScreen onNavigate={handleNavigate} matchedUser={matchedUser} />
+        <div className="container mx-auto px-4 py-6">
+          <div className="mb-6">
+            <BackButton />
+          </div>
+          <GlassmorphicSessionScreen
+            onNavigate={handleNavigate}
+            matchedUser={matchedUser}
+            user={currentUser}
+          />
+        </div>
       </div>
     </div>
   )

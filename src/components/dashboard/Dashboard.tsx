@@ -4,12 +4,15 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Profile, MoodEntry, ListeningSession } from '@/types'
-import { DashboardHeader } from './DashboardHeader'
+
+import { QuickActions } from './QuickActions'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Calendar, Heart, BookOpen, TrendingUp, Moon, Sun, Cloud } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function Dashboard() {
   const { user, profile } = useAuth()
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [recentSessions, setRecentSessions] = useState<ListeningSession[]>([])
   const [recentMoods, setRecentMoods] = useState<MoodEntry[]>([])
@@ -70,6 +73,14 @@ export function Dashboard() {
     }
   }
 
+  const handleNavigate = (path: string) => {
+    router.push(path)
+  }
+
+  const handleMoodUpdate = () => {
+    fetchDashboardData()
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
@@ -92,8 +103,6 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
-      <DashboardHeader profile={profile} />
-
       <main className="max-w-6xl mx-auto px-6 py-12">
         <div className="space-y-12">
           {/* Welcome Header */}
@@ -104,6 +113,16 @@ export function Dashboard() {
             <p className="text-xl text-slate-600 font-light max-w-2xl mx-auto">
               How are you feeling today?
             </p>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
+            <QuickActions
+              profile={profile}
+              currentMood={currentMood}
+              onMoodUpdate={handleMoodUpdate}
+              onNavigate={handleNavigate}
+            />
           </div>
 
           {/* Progress Tracker */}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 const moodOptions = [
   { icon: 'sentiment_dissatisfied', label: 'Sad', color: 'text-blue-500' },
@@ -10,9 +11,38 @@ const moodOptions = [
 ]
 
 export function DailyCheckInScreen() {
+  const router = useRouter()
   const [mood, setMood] = useState(50)
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null)
   const [journalText, setJournalText] = useState('')
+  const [showActions, setShowActions] = useState(false)
+
+  const handleSave = () => {
+    // Here you would typically save the check-in data to the database
+    setShowActions(true)
+  }
+
+  const getRecommendedActions = () => {
+    if (mood < 33) {
+      return [
+        { label: 'Talk to someone', action: () => router.push('/session'), icon: 'chat', color: 'from-blue-500 to-blue-600' },
+        { label: 'Crisis support', action: () => router.push('/crisis-support'), icon: 'emergency', color: 'from-red-500 to-red-600' },
+        { label: 'Guided meditation', action: () => router.push('/meditation'), icon: 'self_improvement', color: 'from-green-500 to-green-600' }
+      ]
+    } else if (mood < 66) {
+      return [
+        { label: 'Journal more', action: () => router.push('/dashboard'), icon: 'edit_note', color: 'from-amber-500 to-amber-600' },
+        { label: 'Listen to others', action: () => router.push('/session'), icon: 'hearing', color: 'from-green-500 to-green-600' },
+        { label: 'Quick meditation', action: () => router.push('/meditation'), icon: 'self_improvement', color: 'from-blue-500 to-blue-600' }
+      ]
+    } else {
+      return [
+        { label: 'Share your joy', action: () => router.push('/session'), icon: 'celebration', color: 'from-yellow-500 to-yellow-600' },
+        { label: 'Listen to others', action: () => router.push('/session'), icon: 'hearing', color: 'from-green-500 to-green-600' },
+        { label: 'Continue journaling', action: () => router.push('/dashboard'), icon: 'edit_note', color: 'from-purple-500 to-purple-600' }
+      ]
+    }
+  }
 
   const getSliderColor = () => {
     if (mood < 33) return 'from-blue-400 to-primary-400'
@@ -131,6 +161,7 @@ export function DailyCheckInScreen() {
 
           {/* Save Button */}
           <motion.button
+            onClick={handleSave}
             className="w-full group inline-flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-lg font-semibold rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -141,6 +172,38 @@ export function DailyCheckInScreen() {
             <span className="material-symbols-outlined text-xl">check_circle</span>
             Save Check-In
           </motion.button>
+
+          {/* Action Recommendations */}
+          {showActions && (
+            <motion.div
+              className="space-y-4 pt-4 border-t border-white/30"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h3 className="text-lg font-semibold text-secondary-800 text-center">
+                What would help right now?
+              </h3>
+              <div className="space-y-3">
+                {getRecommendedActions().map((action, index) => (
+                  <motion.button
+                    key={action.label}
+                    onClick={action.action}
+                    className={`w-full p-4 bg-gradient-to-r ${action.color} text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <span className="material-symbols-outlined text-xl">{action.icon}</span>
+                    <span className="font-medium">{action.label}</span>
+                  </motion.button>
+                ))}
+              </div>
+
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </div>

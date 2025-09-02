@@ -5,9 +5,9 @@ import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types'
 
-// Expose supabase globally for debugging
-if (typeof window !== 'undefined') {
-  (window as any).supabase = supabase
+// Expose supabase for debugging only in development
+if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  ;(window as any).supabase = supabase
 }
 
 interface AuthContextType {
