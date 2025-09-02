@@ -180,14 +180,14 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
                   Someone&apos;s here — just for you.
                 </h1>
                 <p className="text-secondary-600 text-lg max-w-2xl mx-auto leading-relaxed">
-                  We&apos;re connecting you with a listener who understands what you&apos;re feeling.
+                  We&apos;re connecting you with a compassionate listener who truly understands what you&apos;re feeling. Your heart deserves this moment of being truly heard.
                 </p>
               </div>
 
               <div className="space-y-6 self-start">
-                <AnimatedChecklistItem text="Finding someone who&apos;s… emotionally present" delay={1} />
-                <AnimatedChecklistItem text="Finding someone who&apos;s… experienced with this mood" delay={2} />
-                <AnimatedChecklistItem text="Finding someone who&apos;s… online now" delay={3} />
+                <AnimatedChecklistItem text="Finding someone who&apos;s… ready to hold space for your heart" delay={1} />
+                <AnimatedChecklistItem text="Finding someone who&apos;s… walked this emotional path before" delay={2} />
+                <AnimatedChecklistItem text="Finding someone who&apos;s… here, present, and truly listening" delay={3} />
               </div>
 
               <motion.div
@@ -197,12 +197,12 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
                 transition={{ delay: 4, duration: 0.8 }}
               >
                 <p className="text-secondary-600 italic font-medium text-base">
-                  "We don&apos;t heal alone. We heal when we&apos;re heard."
+                  "In the tender space of being heard, we discover our deepest healing begins."
                 </p>
               </motion.div>
 
               <p className="text-sm text-secondary-500 mt-8 font-medium">
-                While you wait, take a breath. You&apos;re not alone anymore.
+                While you wait, take a gentle breath. Your courage in reaching out has already begun your healing journey. You&apos;re not alone—you&apos;re exactly where you need to be.
               </p>
             </motion.div>
           )}
@@ -225,10 +225,10 @@ export function MatchingScreen({ onNavigate, mood, mode }: MatchingScreenProps) 
 
                 <div className="max-w-lg">
                     <h1 className="text-4xl md:text-5xl font-bold text-secondary-800 mb-4 leading-tight">
-                      We&apos;ve found a match.
+                      We&apos;ve found your perfect match.
                     </h1>
                     <p className="text-secondary-600 text-lg">
-                      You&apos;re being connected with {matchedUser.name}.
+                      You&apos;re being connected with {matchedUser.name}, who&apos;s ready to listen with an open heart and walk alongside you in this moment.
                     </p>
                 </div>
 

@@ -221,7 +221,7 @@ export function MoodSelectionScreen({ onNavigate, mode }: MoodSelectionScreenPro
             Which moment feels most like you right now?
           </h1>
           <p className="text-secondary-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            There&apos;s no right answer — just what resonates with you.
+            Your feelings are valid, and there&apos;s no judgment here. Choose what feels true to your heart in this moment—we&apos;re here to meet you exactly where you are.
           </p>
         </motion.div>
 
@@ -274,10 +274,10 @@ export function MoodSelectionScreen({ onNavigate, mode }: MoodSelectionScreenPro
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.95 }}
              >
-               Not sure?
+               Feeling uncertain?
              </motion.button>
             <p className="text-base text-secondary-600 max-w-md mx-auto leading-relaxed">
-              Don&apos;t worry about explaining. We&apos;ll use this to find the right listener.
+              That&apos;s completely okay—emotions can feel complex. We&apos;ll gently guide you to find the perfect listener who can meet you in this tender space.
             </p>
         </div>
       </main>
