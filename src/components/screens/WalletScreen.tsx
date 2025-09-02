@@ -42,7 +42,7 @@ const totalSent = transactions.filter(t => t.type === 'sent').reduce((sum, t) =>
 
 export function WalletScreen({ onNavigate }: WalletScreenProps) {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -50,7 +50,7 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
           style={{
             width: 250,
             height: 250,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(51, 95, 100, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             top: '15%',
             left: '10%'
@@ -70,7 +70,7 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
           style={{
             width: 200,
             height: 200,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(51, 95, 100, 0.15) 0%, transparent 70%)',
             filter: 'blur(50px)',
             bottom: '20%',
             right: '15%'
@@ -96,8 +96,8 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            <span className="material-symbols-outlined text-3xl text-primary-600">psychology</span>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+            <span className="material-symbols-outlined text-3xl text-brand-green-600">psychology</span>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
               MindWell
             </h1>
           </motion.div>
@@ -115,8 +115,8 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
             className="glassmorphic rounded-3xl p-8 mb-8 text-center shadow-2xl shadow-secondary-900/20 relative overflow-hidden"
             whileHover={{ scale: 1.02 }}
           >
-            <div className="absolute top-6 right-6 p-3 bg-primary-100/80 rounded-full border border-primary-200/60">
-                <span className="material-symbols-outlined text-2xl text-primary-600">monetization_on</span>
+            <div className="absolute top-6 right-6 p-3 bg-brand-green-100/80 rounded-full border border-brand-green-200/60">
+                <span className="material-symbols-outlined text-2xl text-brand-green-600">monetization_on</span>
             </div>
             <p className="text-base text-secondary-600 mb-2 font-medium">Your Balance</p>
             <p className="text-6xl font-bold text-secondary-800 tracking-tight mb-2">{totalBalance}</p>
@@ -126,7 +126,7 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
           {/* Stat Cards */}
           <div className="grid grid-cols-2 gap-6 mb-10">
             <StatCard icon="arrow_downward" label="Received" value={totalReceived} color="text-green-600" />
-            <StatCard icon="arrow_upward" label="Sent" value={totalSent} color="text-primary-600" />
+            <StatCard icon="arrow_upward" label="Sent" value={totalSent} color="text-brand-green-600" />
           </div>
 
           {/* Transaction History */}
@@ -152,7 +152,7 @@ export function WalletScreen({ onNavigate }: WalletScreenProps) {
           <div className="mt-12 text-center">
             <motion.button
               onClick={() => onNavigate('Welcome')}
-              className="w-full max-w-sm mx-auto py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-bold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg"
+              className="w-full max-w-sm mx-auto py-4 bg-gradient-to-r from-brand-green-500 to-brand-green-600 text-white rounded-xl font-bold shadow-lg shadow-brand-green-500/30 hover:shadow-xl hover:shadow-brand-green-500/40 transition-all duration-300 flex items-center justify-center gap-3 text-lg"
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -172,7 +172,7 @@ const StatCard = ({ icon, label, value, color }: { icon: string; label: string; 
     whileHover={{ scale: 1.05 }}
     transition={{ duration: 0.2 }}
   >
-    <div className={`p-3 rounded-full bg-primary-100/60 border border-primary-200/60`}>
+    <div className={`p-3 rounded-full bg-brand-green-100/60 border border-brand-green-200/60`}>
       <span className={`material-symbols-outlined text-2xl ${color}`}>{icon}</span>
     </div>
     <div>
@@ -188,7 +188,7 @@ const TransactionItem = ({ type, amount, description, source, time }: { type: st
     whileHover={{ scale: 1.02 }}
     transition={{ duration: 0.2 }}
   >
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 ${ type === 'received' ? 'bg-green-100/80 text-green-600' : 'bg-primary-100/80 text-primary-600' } border border-opacity-30 ${ type === 'received' ? 'border-green-200' : 'border-primary-200' }`}>
+    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mr-5 ${ type === 'received' ? 'bg-green-100/80 text-green-600' : 'bg-brand-green-100/80 text-brand-green-600' } border border-opacity-30 ${ type === 'received' ? 'border-green-200' : 'border-brand-green-200' }`}>
       <span className="material-symbols-outlined text-xl">{type === 'received' ? 'arrow_downward' : 'arrow_upward'}</span>
     </div>
     <div className="flex-1">
@@ -196,7 +196,7 @@ const TransactionItem = ({ type, amount, description, source, time }: { type: st
       <p className="text-sm text-secondary-600">{source}</p>
     </div>
     <div className="text-right">
-      <p className={`font-bold text-xl ${ type === 'received' ? 'text-green-600' : 'text-primary-600' }`}>
+      <p className={`font-bold text-xl ${ type === 'received' ? 'text-green-600' : 'text-brand-green-600' }`}>
         {type === 'received' ? '+' : '-'}{amount}
       </p>
       <p className="text-xs text-secondary-500 font-medium">{time}</p>
