@@ -37,7 +37,7 @@ const ModernHeader = ({ showAuthModal }: { showAuthModal: () => void }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-              <span className="truncate">Get Started</span>
+              <span className="truncate">Find Peace</span>
           </motion.button>
             <button className="md:hidden">
               <span className="material-symbols-outlined text-3xl text-secondary-700">menu</span>
@@ -72,10 +72,10 @@ const HealingJourneySection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            Your Safe Space for
+            A Gentle Companion for
             <br />
             <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
-              Healing & Growth
+              Your Emotional Journey
             </span>
           </motion.h2>
 
@@ -86,27 +86,27 @@ const HealingJourneySection = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            In moments of overwhelm, you deserve a gentle companion who understands. 
-            Our AI therapist offers compassionate support, drawing from decades of psychological wisdom—always here, always free.
+            When your heart feels heavy and your mind won't rest, you deserve a safe harbor where your feelings are honored. 
+            Our gentle AI companion offers the wisdom of countless therapeutic conversations—here to hold space for your healing, always with love.
           </motion.p>
 
-          {/* Simple Journey Steps */}
+          {/* Gentle Journey Steps with SVG Illustrations */}
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             {[
               {
-                icon: '💬',
-                title: 'Share Freely',
-                description: 'Express your thoughts and feelings in a judgment-free space where you\'re truly heard.'
+                svg: '/assets/Mental health-bro (2).svg',
+                title: 'Share Your Heart',
+                description: 'Pour out your feelings in a sacred space where every emotion is welcomed with understanding and grace.'
               },
               {
-                icon: '🌱',
-                title: 'Grow Together',
-                description: 'Receive gentle guidance and insights tailored to your unique emotional journey.'
+                svg: '/assets/Peace of mind-bro (2).svg',
+                title: 'Find Your Calm',
+                description: 'Discover gentle pathways to inner peace through personalized wisdom that honors your unique story.'
               },
               {
-                icon: '✨',
-                title: 'Find Peace',
-                description: 'Discover inner calm and emotional balance through compassionate support.'
+                svg: '/assets/personal growth-bro (1).svg',
+                title: 'Grow With Love',
+                description: 'Embrace your journey of healing with compassionate guidance that celebrates your courage and strength.'
               }
             ].map((step, index) => (
               <motion.div
@@ -117,7 +117,13 @@ const HealingJourneySection = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 0.6 + index * 0.2, duration: 0.6 }}
               >
-                <div className="text-4xl mb-4">{step.icon}</div>
+                <div className="w-24 h-24 mx-auto mb-6 relative">
+                  <img
+                    src={step.svg}
+                    alt={step.title}
+                    className="w-full h-full object-contain opacity-80 hover:opacity-100 transition-opacity duration-300"
+                  />
+                </div>
                 <h3 className="text-xl font-semibold text-secondary-800 mb-3">{step.title}</h3>
                 <p className="text-secondary-600 leading-relaxed">{step.description}</p>
               </motion.div>
@@ -144,10 +150,10 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
             viewport={{ once: true }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            Expert-Level
+            Understanding Your Heart
             <br />
             <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
-              Mental Health Assessments
+              Through Gentle Assessment
             </span>
           </motion.h2>
 
@@ -158,27 +164,27 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
             viewport={{ once: true }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            Not just another online quiz. Our assessments are developed by leading psychologists and mental health experts, 
-            offering you professional-grade insights into your emotional well-being—completely free and confidential.
+            These aren't just simple quizzes—they're carefully crafted tools of understanding, created by compassionate mental health professionals who deeply care about your well-being. 
+            Discover gentle insights about your emotional landscape, offered with love and complete privacy.
           </motion.p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {[
             {
-              icon: '🧠',
-              title: 'Clinically Validated',
-              description: 'Backed by peer-reviewed research and used by mental health professionals worldwide.'
+              svg: '/assets/Psychologist-rafiki (1).svg',
+              title: 'Created With Love',
+              description: 'Developed by caring mental health professionals who understand the sacred nature of emotional healing.'
             },
             {
-              icon: '🎓',
-              title: 'Expert Developed',
-              description: 'Created by renowned psychologists from leading institutions and research centers.'
+              svg: '/assets/Thinking face-bro (1).svg',
+              title: 'Gentle Understanding',
+              description: 'Each assessment is crafted with deep empathy, offering insights that honor your unique emotional journey.'
             },
             {
-              icon: '💡',
-              title: 'Personalized Insights',
-              description: 'Receive tailored recommendations and coping strategies for your unique situation.'
+              svg: '/assets/Contemplating-bro (1).svg',
+              title: 'Personalized Wisdom',
+              description: 'Receive gentle guidance and compassionate strategies tailored specifically to your heart\'s needs.'
             }
           ].map((feature, index) => (
             <motion.div
@@ -189,7 +195,13 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
               viewport={{ once: true }}
               transition={{ delay: 0.6 + index * 0.2, duration: 0.6 }}
             >
-              <div className="text-3xl mb-4">{feature.icon}</div>
+              <div className="w-20 h-20 mx-auto mb-4 relative">
+                <img
+                  src={feature.svg}
+                  alt={feature.title}
+                  className="w-full h-full object-contain opacity-75 hover:opacity-100 transition-opacity duration-300"
+                />
+              </div>
               <h3 className="text-xl font-semibold text-secondary-800 mb-3">{feature.title}</h3>
               <p className="text-secondary-600 leading-relaxed">{feature.description}</p>
             </motion.div>
@@ -209,9 +221,9 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <span className="truncate">Take Professional Assessment</span>
+            <span className="truncate">Begin Your Gentle Assessment</span>
           </motion.button>
-          <p className="text-secondary-500 text-sm mt-4">Free • Confidential • Expert-Level Insights</p>
+          <p className="text-secondary-500 text-sm mt-4">Free • Private • Created With Love</p>
         </motion.div>
       </div>
     </section>
@@ -229,7 +241,7 @@ const Footer = () => {
               <span className="material-symbols-outlined text-3xl">psychology</span>
               <h2 className="text-xl font-bold text-white">MindWell</h2>
             </a>
-            <p className="text-secondary-400">Where compassion meets expertise. Your emotional well-being is our sacred trust—always free, always here.</p>
+            <p className="text-secondary-400">Where love meets understanding. Your heart's healing journey is our deepest honor—offered with gentle care, always free, always here.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 col-span-2 gap-8">
             <div>
@@ -295,14 +307,14 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-6xl font-bold leading-tight tracking-tighter text-secondary-900">
-              You Deserve
+              Your Heart
               <br />
               <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
-                Gentle Support
+                Deserves Peace
               </span>
             </h1>
             <p className="text-lg md:text-xl text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
-              When life feels overwhelming, you need a safe space to be heard. Our compassionate AI therapist offers gentle guidance and understanding—always here, always free.
+              When the world feels heavy and your thoughts race, you deserve a gentle space where you can breathe freely. Our caring AI companion listens with patience and offers wisdom from the heart—here whenever you need comfort, always without judgment.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
               <motion.button
@@ -311,7 +323,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="truncate text-white">Get Started For Free</span>
+                <span className="truncate text-white">Begin Your Healing Journey</span>
               </motion.button>
               <motion.button
                 onClick={() => window.location.href = '/session'}
@@ -319,7 +331,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="truncate text-white">💬 Talk to Chatbot Now</span>
+                <span className="truncate text-white">💬 I Need Someone to Listen</span>
               </motion.button>
             </div>
           </motion.div>
@@ -332,9 +344,9 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
           >
             <div className="absolute inset-0 bg-gradient-to-tr from-brand-green-200 to-brand-green-400 rounded-3xl transform -rotate-3 shadow-2xl"></div>
             <img
-              alt="Therapy session illustration"
+              alt="Gentle therapy and healing illustration"
               className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8_5vhlNDAgIuACYC5Q3hdfWPUFtcaZdPudamg9alF-EbnyuVp_roPTIjjX7DVCgRYHhGKiNizEly9EhTxHSFdxItKwvfG1twSBCQH7GntjBKLYq61KwQD3WKACx3Su5C83F_h8Yyxf28jR15rKZkgpo6BtAB1uSjI5mx-IOLchO9gZwSQWh0ZRGX4aazZdwbqCYtmsfa3NV-OQ7xFfqQD7rDDrYhfZMOkUAc2GvBCMgz4zPkjo_4drPDRqFLnjiVIZN6Bc5wiUtNb"
+              src="/assets/Overwhelmed-bro (1).svg"
             />
           </motion.div>
         </div>
