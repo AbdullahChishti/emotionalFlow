@@ -11,24 +11,24 @@ const wellnessOptions = [
     description: 'Track your mood and get personalized recommendations',
     icon: 'sentiment_satisfied',
     href: '/check-in',
-    color: 'from-blue-500 to-blue-600',
-    bgColor: 'bg-blue-50'
+    color: 'from-brand-green-400 to-brand-green-600',
+    bgColor: 'bg-brand-green-50'
   },
   {
     title: 'Guided Meditation',
     description: 'Find peace and clarity with guided meditation sessions',
     icon: 'self_improvement',
     href: '/meditation',
-    color: 'from-green-500 to-green-600',
-    bgColor: 'bg-green-50'
+    color: 'from-brand-green-500 to-brand-green-700',
+    bgColor: 'bg-brand-green-50'
   },
   {
     title: 'Therapy Sessions',
     description: 'Connect with listeners and share your journey',
     icon: 'chat',
     href: '/session',
-    color: 'from-purple-500 to-purple-600',
-    bgColor: 'bg-purple-50'
+    color: 'from-brand-green-600 to-brand-green-800',
+    bgColor: 'bg-brand-green-50'
   }
 ]
 
@@ -36,7 +36,7 @@ export function WellnessScreen() {
   const router = useRouter()
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -44,7 +44,7 @@ export function WellnessScreen() {
           style={{
             width: 300,
             height: 300,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(51, 95, 100, 0.15) 0%, transparent 70%)',
             filter: 'blur(60px)',
             top: '10%',
             left: '10%'
