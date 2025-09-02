@@ -48,7 +48,7 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
           display_name: userName.trim() || user.user_metadata?.full_name || 'Anonymous',
           preferred_mode: supportPreference,
           emotional_capacity: emotionalCapacity,
-          privacy_level: privacyLevel,
+          is_anonymous: privacyLevel === 'anonymous',
           last_active: new Date().toISOString(),
         })
         .eq('id', user.id)
@@ -384,34 +384,27 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
                 <Shield className="w-10 h-10 text-emerald-600" />
               </div>
               <h2 className="text-3xl font-bold text-secondary-900 mb-4">
-                How private would you like to be?
+                How would you like to be known?
               </h2>
               <p className="text-lg text-secondary-600 mb-8 leading-relaxed">
                 Your privacy and comfort are our top priorities. Choose what feels safe for you.
               </p>
               
-              <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
                 {[
                   { 
                     value: 'anonymous', 
-                    label: 'Completely Anonymous', 
-                    description: 'No personal info shared, maximum privacy',
+                    label: 'Stay Anonymous', 
+                    description: 'Use a nickname, maximum privacy and comfort',
                     icon: '🕶️',
                     color: 'from-gray-400 to-gray-600'
                   },
                   { 
                     value: 'semi-private', 
-                    label: 'Semi-Private', 
-                    description: 'Share first name only, moderate privacy',
+                    label: 'Use My Name', 
+                    description: 'Share your real name for a more personal connection',
                     icon: '👤',
                     color: 'from-blue-400 to-blue-600'
-                  },
-                  { 
-                    value: 'open', 
-                    label: 'Open', 
-                    description: 'Comfortable sharing more about yourself',
-                    icon: '🌱',
-                    color: 'from-green-400 to-green-600'
                   },
                 ].map((privacy) => (
                   <motion.button
