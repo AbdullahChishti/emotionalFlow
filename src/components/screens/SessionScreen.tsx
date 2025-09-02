@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-// Material Symbols icons import
 import 'material-symbols/outlined.css'
 
 import { supabase } from '@/lib/supabase'
 import { CHAT_CONFIG, detectMood, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
-import { ListenerPresence } from './ListenerPresence'
 import { SessionCompletionScreen, SessionFeedback } from './SessionCompletionScreen'
 
 interface Message {
@@ -52,7 +50,6 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [showEndModal, setShowEndModal] = useState(false)
   const [showCompletionScreen, setShowCompletionScreen] = useState(false)
-  const [showIntroCard, setShowIntroCard] = useState(true)
   const [showSuggestion, setShowSuggestion] = useState(false)
   const [interactionCount, setInteractionCount] = useState(0)
   const [currentSuggestion, setCurrentSuggestion] = useState('')
@@ -61,10 +58,8 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
 
   const [placeholder, setPlaceholder] = useState(getRandomPlaceholder())
 
-  // Initial message from the listener & intro card timer
+  // Initial message from the listener
   useEffect(() => {
-    const introTimer = setTimeout(() => setShowIntroCard(false), CHAT_CONFIG.timing.introCardDuration)
-
     const messageTimer = setTimeout(() => {
       setMessages([
         {
@@ -76,7 +71,6 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
     }, 1500)
 
     return () => {
-      clearTimeout(introTimer)
       clearTimeout(messageTimer)
     }
   }, [matchedUser])
@@ -208,101 +202,63 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-12rem)] flex bg-gray-50 text-gray-800 font-sans relative">
-      {/* Clean Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100"></div>
-
-      {/* Two-Panel Layout */}
-      <div className="flex w-full h-full relative">
-        {/* Left Panel: Listener Presence */}
-        <div className="w-1/2 h-full bg-white border-r border-gray-200 flex flex-col">
-          <div className="flex-1">
-            <ListenerPresence interactionCount={interactionCount} selectedMood={selectedMood} />
+    <div className="min-h-screen bg-neutral-50 text-neutral-900">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-white border-b border-neutral-200">
+        <div className="mx-auto max-w-3xl flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-md bg-neutral-100 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[14px] text-neutral-700">psychology</span>
+            </div>
+            <div>
+              <div className="text-sm font-medium">{CHAT_CONFIG.appName}</div>
+              <div className="text-xs text-neutral-500">{CHAT_CONFIG.uiText.therapySession}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block text-sm text-neutral-600">
+              {CHAT_CONFIG.uiText.youreWith} <span className="font-medium text-neutral-900">{matchedUser?.name}</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-neutral-100 rounded-full text-xs text-neutral-700">
+              <span className="material-symbols-outlined text-[14px]">schedule</span>
+              <span className="font-medium">{formatTime(timeElapsed)}</span>
+            </div>
+            <button onClick={() => setShowEndModal(true)} className="px-3 py-2 text-sm bg-neutral-900 text-white rounded-md hover:bg-black">
+              {CHAT_CONFIG.uiText.endSession}
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Right Panel: Chat Interface */}
-        <div className="w-1/2 flex flex-col h-full bg-white">
-        <AnimatePresence>
-          {showIntroCard && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10, transition: { duration: 0.3 } }}
-              className="absolute top-6 right-6 max-w-sm bg-white rounded-xl p-6 text-center z-20 shadow-lg border border-gray-200"
-            >
-              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-lg">💙</span>
-              </div>
-              <p className="text-gray-700 leading-relaxed text-sm">
-                {CHAT_CONFIG.uiText.listenerIntro(matchedUser?.name || 'Your listener')}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Header */}
-        <header className="border-b border-gray-200 p-6 shrink-0 bg-white">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="material-symbols-outlined text-sm text-blue-600">psychology</span>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900">
-                  {CHAT_CONFIG.appName}
-                </h2>
-                <p className="text-xs text-gray-500">{CHAT_CONFIG.uiText.therapySession}</p>
-              </div>
+      {/* Body */}
+      <div className="mx-auto max-w-3xl px-4 py-6">
+        {/* Chat Card */}
+        <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden">
+          {/* Messages */}
+          <main className="h-[60vh] min-h-[360px] overflow-y-auto p-4 bg-white">
+            <div className="space-y-3">
+              {messages.map((msg) => (
+                <ChatMessage key={msg.id} message={msg} />
+              ))}
+              <div ref={chatEndRef} />
             </div>
+          </main>
 
-            <div className="flex items-center gap-6">
-              <div className="text-center">
-                <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">{CHAT_CONFIG.uiText.youreWith}</p>
-                <p className="font-semibold text-gray-900">{matchedUser?.name || 'your listener'}</p>
-              </div>
-
-              <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-full text-sm text-gray-600">
-                <span className="material-symbols-outlined text-sm">schedule</span>
-                <span className="font-medium">{formatTime(timeElapsed)}</span>
-              </div>
-
-              <button
-                onClick={() => setShowEndModal(true)}
-                className="px-4 py-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
-              >
-                {CHAT_CONFIG.uiText.endSession}
-              </button>
-            </div>
-          </div>
-        </header>
-
-        {/* Chat Area */}
-        <main className="flex-1 flex flex-col px-6 py-4 overflow-y-auto bg-gray-50">
-          <div className="flex-1 space-y-4 w-full">
-            {messages.map(msg => (
-              <ChatMessage key={msg.id} message={msg} />
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-        </main>
-
-        {/* Input Area */}
-        <footer className="border-t border-gray-200 p-6 bg-white">
+          {/* Suggestion */}
           <AnimatePresence>
             {showSuggestion && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="mb-4 text-center"
+                exit={{ opacity: 0, y: 8 }}
+                className="px-4 pt-3"
               >
                 <button
                   onClick={() => {
                     setInputValue(currentSuggestion + ' ')
                     setShowSuggestion(false)
                   }}
-                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 px-4 py-2 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors"
+                  className="inline-flex items-center gap-2 text-xs text-neutral-700 hover:text-neutral-900 px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 rounded-full transition-colors"
                 >
                   <span>💭</span>
                   <span>{currentSuggestion}</span>
@@ -311,35 +267,34 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
             )}
           </AnimatePresence>
 
-          <div className="w-full">
-            <div className="flex items-end gap-3">
-              <div className="flex-1 relative">
+          {/* Input */}
+          <footer className="border-t border-neutral-200 p-4 bg-white">
+            <div className="flex items-end gap-2">
+              <div className="flex-1">
                 <textarea
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
-                  onKeyPress={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
+                  onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
                   placeholder={placeholder}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors h-12 min-h-[48px] max-h-32 text-gray-900 placeholder:text-gray-500"
+                  className="w-full border border-neutral-300 rounded-lg px-3 py-3 resize-none focus:ring-2 focus:ring-neutral-900/10 focus:border-neutral-400 transition-colors h-12 min-h-[48px] max-h-32 text-neutral-900 placeholder:text-neutral-500"
                   rows={1}
                 />
               </div>
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${
-                  inputValue.trim()
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                className={`px-3 h-10 rounded-lg flex items-center justify-center text-sm ${
+                  inputValue.trim() ? 'bg-neutral-900 text-white hover:bg-black' : 'bg-neutral-300 text-neutral-600 cursor-not-allowed'
                 }`}
+                title="Send"
               >
-                <span className="material-symbols-outlined text-lg">send</span>
+                <span className="material-symbols-outlined text-[18px]">send</span>
               </button>
             </div>
-            <p className="text-center text-xs text-gray-500 mt-3">
+            <p className="text-center text-[11px] text-neutral-500 mt-3">
               {CHAT_CONFIG.uiText.sessionPrivate}
             </p>
-          </div>
-        </footer>
+          </footer>
         </div>
       </div>
 
@@ -384,7 +339,7 @@ export function SessionScreen({ onNavigate, matchedUser }: SessionScreenProps) {
         )}
       </AnimatePresence>
 
-      {/* Enhanced Session Completion Screen */}
+      {/* Session Completion */}
       <AnimatePresence>
         {showCompletionScreen && (
           <SessionCompletionScreen
