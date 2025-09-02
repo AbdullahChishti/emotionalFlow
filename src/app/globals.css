@@ -9,66 +9,66 @@
   --color-popover: #ffffff;
   --color-popover-foreground: #0f172a;
 
-  /* Primary colors (Therapeutic Lavender theme) */
-  --color-primary: #C9B8DB;
+  /* Primary colors (Sky blue theme) */
+  --color-primary: #0ea5e9;
   --color-primary-foreground: #ffffff;
-  --color-primary-50: #FFFEFB;
-  --color-primary-100: #FFFDF7;
-  --color-primary-200: #F8F7F5;
-  --color-primary-300: #F0F4F7;
-  --color-primary-400: #E8EEF2;
-  --color-primary-500: #C9B8DB;
-  --color-primary-600: #B8A5D1;
-  --color-primary-700: #A092C7;
-  --color-primary-800: #887FBD;
-  --color-primary-900: #6F6BB3;
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
 
-  /* Secondary colors (Therapeutic Green theme) */
-  --color-secondary: #A8C09A;
-  --color-secondary-foreground: #ffffff;
-  --color-secondary-50: #F8F9F8;
-  --color-secondary-100: #F1F5F1;
-  --color-secondary-200: #E4EBE4;
-  --color-secondary-300: #D7E1D7;
-  --color-secondary-400: #C9D7C9;
-  --color-secondary-500: #A8C09A;
-  --color-secondary-600: #98B088;
-  --color-secondary-700: #889F76;
-  --color-secondary-800: #788F64;
-  --color-secondary-900: #687F52;
+  /* Secondary colors (Slate theme) */
+  --color-secondary: #64748b;
+  --color-secondary-foreground: #0f172a;
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
 
   /* Other colors */
-  --color-muted: #F8F7F5;
+  --color-muted: #f8fafc;
   --color-muted-foreground: #64748b;
-  --color-accent: #C9B8DB;
+  --color-accent: #0ea5e9;
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #E8EEF2;
-  --color-input: #E8EEF2;
-  --color-ring: #C9B8DB;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #0ea5e9;
   --radius: 0.75rem;
 }
 
-/* Dark theme overrides for Therapeutic theme */
+/* Dark theme overrides for Purple Sparkle */
 .dark {
-  --color-background: #FFFDF7;
-  --color-foreground: #4A4A4A;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #4A4A4A;
-  --color-popover: #FFFFFF;
-  --color-popover-foreground: #4A4A4A;
-  --color-primary: #C9B8DB;
+  --color-background: #f8f4ff;
+  --color-foreground: #333333;
+  --color-card: #ffffff;
+  --color-card-foreground: #333333;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #333333;
+  --color-primary: #800080;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #A8C09A;
-  --color-secondary-foreground: #ffffff;
-  --color-muted: #F8F7F5;
-  --color-muted-foreground: #6B6B6B;
-  --color-accent: #C9B8DB;
+  --color-secondary: #ccccff;
+  --color-secondary-foreground: #333333;
+  --color-muted: #f0e6ff;
+  --color-muted-foreground: #555555;
+  --color-accent: #800080;
   --color-accent-foreground: #ffffff;
-  --color-border: #E8EEF2;
-  --color-input: #E8EEF2;
-  --color-ring: #C9B8DB;
+  --color-border: #ccccff;
+  --color-input: #ccccff;
+  --color-ring: #800080;
 }
 
 @layer base {

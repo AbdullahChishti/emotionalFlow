@@ -25,31 +25,31 @@ const config: Config = {
         'brand-background': '#FFFFFF', // Pure white
         'brand-text-primary': '#2c492d', // Dark, soothing green
         'brand-text-secondary': '#58925a', // Mid-tone green for secondary text
-        // Primary colors for consistent theming
+        // Primary colors (Sky blue theme)
         'primary': {
-          '50': '#FFFEFB',
-          '100': '#FFFDF7',
-          '200': '#F8F7F5',
-          '300': '#F0F4F7',
-          '400': '#E8EEF2',
-          '500': '#C9B8DB',
-          '600': '#B8A5D1',
-          '700': '#A092C7',
-          '800': '#887FBD',
-          '900': '#6F6BB3',
+          '50': '#f0f9ff',
+          '100': '#e0f2fe',
+          '200': '#bae6fd',
+          '300': '#7dd3fc',
+          '400': '#38bdf8',
+          '500': '#0ea5e9',
+          '600': '#0284c7',
+          '700': '#0369a1',
+          '800': '#075985',
+          '900': '#0c4a6e',
         },
-        // Secondary colors
+        // Secondary colors (Slate theme)
         'secondary': {
-          '50': '#F8F9F8',
-          '100': '#F1F5F1',
-          '200': '#E4EBE4',
-          '300': '#D7E1D7',
-          '400': '#C9D7C9',
-          '500': '#A8C09A',
-          '600': '#98B088',
-          '700': '#889F76',
-          '800': '#788F64',
-          '900': '#687F52',
+          '50': '#f8fafc',
+          '100': '#f1f5f9',
+          '200': '#e2e8f0',
+          '300': '#cbd5e1',
+          '400': '#94a3b8',
+          '500': '#64748b',
+          '600': '#475569',
+          '700': '#334155',
+          '800': '#1e293b',
+          '900': '#0f172a',
         },
       },
       backgroundImage: {
