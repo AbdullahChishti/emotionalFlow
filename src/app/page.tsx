@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { LandingPage } from '@/components/landing/LandingPage'
 import { Dashboard } from '@/components/dashboard/Dashboard'
-import { OnboardingFlow } from '@/components/auth/OnboardingFlow'
+import { EnhancedOnboardingFlow } from '@/components/auth/EnhancedOnboardingFlow'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Navigation } from '@/components/ui/Navigation'
 
@@ -22,9 +22,9 @@ export default function Home() {
   }
 
   if (user) {
-    // Show onboarding for new users
+    // Show enhanced onboarding for new users
     if (needsOnboarding || showOnboarding) {
-      return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />
+      return <EnhancedOnboardingFlow onComplete={() => setShowOnboarding(false)} />
     }
 
     return (
