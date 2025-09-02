@@ -178,161 +178,361 @@ const TestimonialsSection = () => {
   )
 }
 
-// Minimal Modern Therapy Journey Section
+// Artistic SVG Journey Section - Creative Composition Design
 const TherapyJourneySection = () => {
   return (
-    <section className="relative py-24 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50">
-      {/* Subtle background elements */}
+    <section className="relative py-32 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-primary-50">
+      {/* Artistic Background Composition */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 right-20 w-64 h-64 bg-primary-100/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-secondary-100/15 rounded-full blur-3xl"></div>
+        {/* Large central circular pattern */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-5">
+          <div className="absolute inset-0 border-2 border-primary-300 rounded-full"></div>
+          <div className="absolute inset-8 border border-secondary-300 rounded-full"></div>
+          <div className="absolute inset-16 border border-primary-200 rounded-full"></div>
+        </div>
+
+        {/* Floating SVG elements as artistic background */}
+        <motion.div
+          className="absolute top-20 left-20 opacity-10"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        >
+          <img src="/assets/Contemplating-bro (1).svg" alt="" className="w-16 h-16" />
+        </motion.div>
+
+        <motion.div
+          className="absolute bottom-32 right-16 opacity-8"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
+        >
+          <img src="/assets/Peace of mind-bro (2).svg" alt="" className="w-20 h-20" />
+        </motion.div>
+
+        <motion.div
+          className="absolute top-40 right-32 opacity-6"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <img src="/assets/Thinking face-bro (1).svg" alt="" className="w-14 h-14" />
+        </motion.div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Clean Hero Section */}
+        {/* Artistic Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-20"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 1 }}
         >
-          <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50/80 backdrop-blur-sm rounded-full text-primary-700 font-medium text-sm mb-8 border border-primary-100/50"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></span>
-            Your Mental Health Journey
-          </motion.div>
-
-          <h2 className="text-4xl md:text-6xl font-bold text-secondary-900 mb-6 leading-tight">
-            Transform Your
-            <br />
-            <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-              Inner World
-            </span>
-          </h2>
-
-          <p className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto leading-relaxed mb-12">
-            Discover how MindWell guides you through every stage of your therapeutic journey,
-            from initial overwhelm to lasting peace and personal growth.
-          </p>
-        </motion.div>
-
-        {/* Minimal Three-Column Layout */}
-        <div className="grid md:grid-cols-3 gap-8 lg:gap-12 mb-16">
-          {[
-            {
-              svg: '/assets/Contemplating-bro (1).svg',
-              title: 'Find Your Path',
-              description: 'Begin your journey with compassionate AI guidance that understands your unique experience.',
-              color: 'from-blue-500 to-indigo-600'
-            },
-            {
-              svg: '/assets/Psychologist-rafiki (1).svg',
-              title: 'Grow Together',
-              description: 'Develop coping strategies and gain insights in a safe, supportive environment.',
-              color: 'from-emerald-500 to-teal-600'
-            },
-            {
-              svg: '/assets/Peace of mind-bro (2).svg',
-              title: 'Find Peace',
-              description: 'Achieve lasting inner peace and emotional balance through personalized therapy.',
-              color: 'from-purple-500 to-violet-600'
-            }
-          ].map((item, index) => (
+          {/* Artistic SVG arrangement in header */}
+          <div className="flex justify-center items-center gap-4 mb-8">
             <motion.div
-              key={item.title}
-              className="group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              className="relative"
+              initial={{ scale: 0, rotate: -180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.2, duration: 0.8 }}
+              transition={{ delay: 0.2, duration: 0.8, type: "spring" }}
             >
-              <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-500 group-hover:-translate-y-1">
-                {/* Single SVG per column */}
-                <div className="relative mb-6">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-inner p-4">
-                    <img
-                      src={item.svg}
-                      alt={item.title}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  {/* Subtle gradient accent */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-5 rounded-2xl`}></div>
-                </div>
-
-                <div className="text-center">
-                  <h3 className="text-xl font-bold text-secondary-800 mb-3 group-hover:text-primary-700 transition-colors duration-300">
-                    {item.title}
-                  </h3>
-                  <p className="text-secondary-600 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
+              <div className="w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center">
+                <img src="/assets/Contemplating-bro (1).svg" alt="" className="w-6 h-6" />
               </div>
             </motion.div>
-          ))}
+
+            <motion.div
+              className="px-6 py-3 bg-white/60 backdrop-blur-sm rounded-full border border-white/50 shadow-lg"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              <span className="text-primary-700 font-semibold">✨ Your Journey</span>
+            </motion.div>
+
+            <motion.div
+              className="relative"
+              initial={{ scale: 0, rotate: 180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+            >
+              <div className="w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center">
+                <img src="/assets/Peace of mind-bro (2).svg" alt="" className="w-6 h-6" />
+              </div>
+            </motion.div>
+          </div>
+
+          <motion.h2
+            className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8, duration: 1 }}
+          >
+            <span className="text-secondary-900">Art of</span>
+            <br />
+            <span className="bg-gradient-to-r from-primary-600 via-purple-600 to-primary-700 bg-clip-text text-transparent">
+              Transformation
+            </span>
+          </motion.h2>
+
+          <motion.p
+            className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 1, duration: 0.8 }}
+          >
+            Experience the therapeutic journey as a beautiful, artistic evolution of the mind,
+            heart, and spirit through compassionate AI guidance.
+          </motion.p>
+        </motion.div>
+
+        {/* Artistic Three-Act Composition */}
+        <div className="relative mb-20">
+          {/* Connecting artistic lines */}
+          <div className="hidden lg:block absolute top-24 left-0 w-full h-0.5">
+            <div className="w-full h-full bg-gradient-to-r from-transparent via-primary-200 to-transparent"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-primary-400 rounded-full"></div>
+            <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-secondary-400 rounded-full"></div>
+            <div className="absolute top-1/2 right-1/3 transform translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-secondary-400 rounded-full"></div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            {[
+              {
+                svg: '/assets/Overwhelmed-bro (1).svg',
+                title: 'Awakening',
+                description: 'The moment of recognition, where overwhelm becomes the catalyst for change.',
+                color: 'from-rose-400 to-pink-500',
+                rotation: -5,
+                scale: 0.95
+              },
+              {
+                svg: '/assets/Psychologist-rafiki (1).svg',
+                title: 'Guidance',
+                description: 'Finding direction through compassionate support and professional wisdom.',
+                color: 'from-emerald-400 to-teal-500',
+                rotation: 0,
+                scale: 1.05
+              },
+              {
+                svg: '/assets/Peace of mind-bro (2).svg',
+                title: 'Harmony',
+                description: 'The beautiful culmination of inner peace and emotional balance achieved.',
+                color: 'from-purple-400 to-violet-500',
+                rotation: 3,
+                scale: 0.95
+              }
+            ].map((item, index) => (
+              <motion.div
+                key={item.title}
+                className="group relative"
+                initial={{ opacity: 0, y: 50, rotate: item.rotation * 2 }}
+                whileInView={{ opacity: 1, y: 0, rotate: item.rotation }}
+                viewport={{ once: true }}
+                transition={{
+                  delay: index * 0.3,
+                  duration: 0.8,
+                  type: "spring",
+                  stiffness: 100
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  rotate: 0,
+                  transition: { duration: 0.3 }
+                }}
+              >
+                {/* Artistic card with layered effects */}
+                <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/60 shadow-xl overflow-hidden">
+                  {/* Background gradient pattern */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-5`}></div>
+
+                  {/* Decorative corner elements */}
+                  <div className="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary-200 rounded-tr-lg opacity-30"></div>
+                  <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-secondary-200 rounded-bl-lg opacity-30"></div>
+
+                  {/* Main SVG with artistic framing */}
+                  <div className="relative mb-6 flex justify-center">
+                    <motion.div
+                      className="relative"
+                      style={{ scale: item.scale }}
+                      whileHover={{ scale: item.scale * 1.1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {/* Outer decorative ring */}
+                      <div className={`absolute inset-0 rounded-full opacity-20 scale-110 border-2 border-primary-200`}></div>
+
+                      {/* SVG container */}
+                      <div className="relative w-40 h-40 bg-gradient-to-br from-white via-gray-50 to-white rounded-full shadow-inner p-6 border border-white/50">
+                        <img
+                          src={item.svg}
+                          alt={item.title}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+
+                      {/* Subtle glow effect */}
+                      <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-10 rounded-full blur-xl scale-125`}></div>
+                    </motion.div>
+                  </div>
+
+                  {/* Artistic text layout */}
+                  <div className="text-center relative z-10">
+                    <motion.h3
+                      className="text-2xl font-bold mb-3 bg-gradient-to-r from-secondary-800 to-secondary-600 bg-clip-text text-transparent"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.3 + 0.5, duration: 0.6 }}
+                    >
+                      {item.title}
+                    </motion.h3>
+
+                    <motion.p
+                      className="text-secondary-600 leading-relaxed text-sm"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.3 + 0.7, duration: 0.6 }}
+                    >
+                      {item.description}
+                    </motion.p>
+                  </div>
+
+                  {/* Floating particles effect */}
+                  <div className="absolute top-4 left-4 w-1 h-1 bg-primary-400 rounded-full opacity-40 animate-pulse"></div>
+                  <div className="absolute bottom-6 right-6 w-1.5 h-1.5 bg-secondary-400 rounded-full opacity-30 animate-pulse delay-1000"></div>
+                  <div className="absolute top-1/2 right-4 w-1 h-1 bg-purple-400 rounded-full opacity-25 animate-pulse delay-2000"></div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* Clean CTA Section */}
+        {/* Artistic CTA with SVG integration */}
         <motion.div
-          className="text-center"
+          className="text-center relative"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4, duration: 0.8 }}
+          transition={{ delay: 0.8, duration: 0.8 }}
         >
-          <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/40 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-4">
-              Ready to Start Your Journey?
-            </h3>
-            <p className="text-secondary-600 mb-8 leading-relaxed">
-              Join thousands who have found peace and growth through MindWell's personalized therapy approach.
-              Your mental health matters, and we're here to support you every step of the way.
-            </p>
-            <motion.button
-              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
+          {/* Artistic SVG border */}
+          <div className="flex justify-center items-center gap-8 mb-8">
+            <motion.div
+              initial={{ x: -50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1, duration: 0.6 }}
             >
-              <span>Begin Your Transformation</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <img src="/assets/Thinking face-bro (1).svg" alt="" className="w-8 h-8 opacity-60" />
+            </motion.div>
+
+            <div className="h-px bg-gradient-to-r from-transparent via-primary-300 to-transparent flex-1 max-w-32"></div>
+
+            <motion.div
+              initial={{ x: 50, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+            >
+              <img src="/assets/personal growth-bro (1).svg" alt="" className="w-8 h-8 opacity-60" />
+            </motion.div>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-12 border border-white/50 shadow-2xl max-w-3xl mx-auto relative overflow-hidden">
+            {/* Decorative background pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-4 left-4 w-16 h-16 border border-primary-300 rounded-full"></div>
+              <div className="absolute bottom-4 right-4 w-12 h-12 border border-secondary-300 rounded-full"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 border border-purple-300 rounded-full"></div>
+            </div>
+
+            <motion.h3
+              className="text-2xl md:text-4xl font-bold text-secondary-900 mb-6 relative z-10"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1.4, duration: 0.8 }}
+            >
+              Begin Your
+              <span className="bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+                {' '}Artistic Journey
+              </span>
+            </motion.h3>
+
+            <motion.p
+              className="text-secondary-600 mb-8 leading-relaxed max-w-xl mx-auto relative z-10"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1.6, duration: 0.8 }}
+            >
+              Transform your inner world through the beautiful art of therapeutic discovery.
+              Every step is a masterpiece in the making.
+            </motion.p>
+
+            <motion.button
+              className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-primary-500 via-purple-500 to-primary-600 hover:from-primary-600 hover:via-purple-600 hover:to-primary-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden group"
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 1.8, duration: 0.8 }}
+            >
+              {/* Button background effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              <span className="relative z-10">Start Creating Art</span>
+              <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </motion.button>
           </div>
         </motion.div>
 
-        {/* Minimal Stats */}
+        {/* Artistic Stats with SVG accents */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 text-center"
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.8 }}
+          transition={{ delay: 1, duration: 0.8 }}
         >
           {[
-            { number: '50K+', label: 'Lives Transformed' },
-            { number: '98%', label: 'Satisfaction Rate' },
-            { number: '24/7', label: 'Support Available' },
-            { number: '150+', label: 'Certified Therapists' }
+            { number: '50K+', label: 'Artistic Journeys', icon: '/assets/Contemplating-bro (1).svg' },
+            { number: '98%', label: 'Creative Satisfaction', icon: '/assets/Peace of mind-bro (2).svg' },
+            { number: '24/7', label: 'Artistic Support', icon: '/assets/Psychologist-rafiki (1).svg' },
+            { number: '∞', label: 'Creative Potential', icon: '/assets/personal growth-bro (1).svg' }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="group"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              className="group relative"
+              initial={{ opacity: 0, scale: 0.8, rotate: index % 2 === 0 ? -5 : 5 }}
+              whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.8 + index * 0.1, duration: 0.6 }}
+              transition={{ delay: 1.2 + index * 0.1, duration: 0.6 }}
             >
-              <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/30 group-hover:bg-white/60 transition-colors duration-300">
-                <div className="text-2xl md:text-3xl font-black text-primary-600 mb-1">{stat.number}</div>
-                <div className="text-secondary-600 font-medium text-sm">{stat.label}</div>
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1 relative overflow-hidden">
+                {/* Decorative background */}
+                <div className="absolute top-2 right-2 opacity-10">
+                  <img src={stat.icon} alt="" className="w-6 h-6" />
+                </div>
+
+                <div className="text-center relative z-10">
+                  <div className="text-2xl md:text-3xl font-black bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    {stat.number}
+                  </div>
+                  <div className="text-secondary-600 font-medium text-sm">
+                    {stat.label}
+                  </div>
+                </div>
+
+                {/* Subtle animated border */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-200/20 to-purple-200/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
             </motion.div>
           ))}
