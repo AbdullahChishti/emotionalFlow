@@ -402,6 +402,119 @@ const TherapyJourneySection = () => {
 
 
 
+// Professional Assessments Section Component
+const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
+  return (
+    <section className="py-20 bg-gradient-to-r from-primary-50 to-secondary-50">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <motion.div
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-100/80 backdrop-blur-sm rounded-full text-primary-700 font-medium text-sm mb-6 border border-primary-200/50"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="material-symbols-outlined text-lg">verified</span>
+            Professional Assessment Suite
+          </motion.div>
+
+          <motion.h2
+            className="text-4xl md:text-5xl font-black text-secondary-900 mb-6 leading-tight"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            Not Just Any Quiz.
+            <br />
+            <span className="bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+              Expert-Level Assessments
+            </span>
+          </motion.h2>
+
+          <motion.p
+            className="text-lg md:text-xl text-secondary-600 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            Our assessments aren't generic online quizzes. They're comprehensive psychological evaluations
+            developed by the world's leading mental health experts and institutions. Get professional-grade
+            insights into your emotional well-being, completely free.
+          </motion.p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <motion.div
+            className="flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            whileHover={{ y: -5 }}
+          >
+            <div className="p-4 bg-primary-100 rounded-full mb-4">
+              <span className="material-symbols-outlined text-4xl text-primary-600">psychology</span>
+            </div>
+            <h3 className="text-xl font-bold text-secondary-800 mb-2">Clinically Validated</h3>
+            <p className="text-secondary-600">Backed by peer-reviewed research and clinical standards used by professionals worldwide.</p>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            whileHover={{ y: -5 }}
+          >
+            <div className="p-4 bg-primary-100 rounded-full mb-4">
+              <span className="material-symbols-outlined text-4xl text-primary-600">school</span>
+            </div>
+            <h3 className="text-xl font-bold text-secondary-800 mb-2">Expert Developed</h3>
+            <p className="text-secondary-600">Created by renowned psychologists from Harvard, Stanford, and leading mental health institutions.</p>
+          </motion.div>
+
+          <motion.div
+            className="flex flex-col items-center text-center p-8 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            whileHover={{ y: -5 }}
+          >
+            <div className="p-4 bg-primary-100 rounded-full mb-4">
+              <span className="material-symbols-outlined text-4xl text-primary-600">insights</span>
+            </div>
+            <h3 className="text-xl font-bold text-secondary-800 mb-2">Actionable Results</h3>
+            <p className="text-secondary-600">Receive personalized recommendations and coping strategies based on your unique profile.</p>
+          </motion.div>
+        </div>
+
+        <motion.div
+          className="text-center mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.8, duration: 0.6 }}
+        >
+          <motion.button
+            onClick={showAuthModal}
+            className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-primary-500 text-white text-lg font-bold shadow-lg shadow-primary-500/30 hover:bg-primary-600 transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span className="truncate">Take Professional Assessment</span>
+          </motion.button>
+          <p className="text-secondary-500 text-sm mt-4">Free • Confidential • Expert-Level Insights</p>
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
 // Footer Component
 const Footer = () => {
   return (
@@ -493,9 +606,14 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
               >
                 <span className="truncate">Get Started For Free</span>
               </motion.button>
-              <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-white/50 text-secondary-700 text-lg font-bold hover:bg-white/80 transition-all duration-300 border border-secondary-200">
-                <span className="truncate">Learn More</span>
-              </button>
+              <motion.button
+                onClick={() => window.location.href = '/session'}
+                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-8 bg-secondary-600 text-white text-lg font-bold shadow-lg shadow-secondary-600/30 hover:bg-secondary-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="truncate">💬 Talk to Chatbot Now</span>
+              </motion.button>
             </div>
           </motion.div>
 
@@ -540,6 +658,9 @@ export function LandingPage() {
 
         {/* Therapy Journey Section */}
         <TherapyJourneySection />
+
+        {/* Professional Assessments Section */}
+        <ProfessionalAssessmentsSection showAuthModal={handleShowAuthModal} />
       </main>
 
       {/* Footer */}
