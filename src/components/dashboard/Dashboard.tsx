@@ -83,7 +83,7 @@ export function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -91,10 +91,10 @@ export function Dashboard() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50/30">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
         <div className="text-center">
-          <h2 className="text-2xl font-light text-slate-700 mb-4">Setting up your profile...</h2>
-          <p className="text-slate-600 font-light">This will only take a moment.</p>
+          <h2 className="text-2xl font-light text-secondary-700 mb-4">Setting up your profile...</h2>
+          <p className="text-secondary-600 font-light">This will only take a moment.</p>
           <LoadingSpinner size="lg" className="mt-6" />
         </div>
       </div>
@@ -102,15 +102,15 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
       <main className="max-w-6xl mx-auto px-6 py-12">
         <div className="space-y-12">
           {/* Welcome Header */}
           <div className="text-center space-y-4">
-            <h1 className="text-5xl font-light text-slate-800 leading-tight">
+            <h1 className="text-5xl font-light text-secondary-900 leading-tight">
               Welcome back, {profile.display_name?.split(' ')[0] || 'there'}
             </h1>
-            <p className="text-xl text-slate-600 font-light max-w-2xl mx-auto">
+            <p className="text-xl text-secondary-600 font-light max-w-2xl mx-auto">
               How are you feeling today?
             </p>
           </div>
@@ -128,21 +128,21 @@ export function Dashboard() {
           {/* Progress Tracker */}
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-light text-slate-800">Your Progress</h2>
-              <TrendingUp className="w-6 h-6 text-emerald-500" />
+              <h2 className="text-2xl font-light text-secondary-900">Your Progress</h2>
+              <TrendingUp className="w-6 h-6 text-brand-green-500" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="text-4xl font-light text-emerald-600 mb-2">12</div>
-                <p className="text-sm text-slate-600 font-light">Days in a row</p>
+                <div className="text-4xl font-light text-brand-green-600 mb-2">12</div>
+                <p className="text-sm text-secondary-600 font-light">Days in a row</p>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-light text-blue-600 mb-2">8</div>
-                <p className="text-sm text-slate-600 font-light">Sessions this month</p>
+                <div className="text-4xl font-light text-brand-green-500 mb-2">8</div>
+                <p className="text-sm text-secondary-600 font-light">Sessions this month</p>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-light text-purple-600 mb-2">85%</div>
-                <p className="text-sm text-slate-600 font-light">Goal completion</p>
+                <div className="text-4xl font-light text-brand-green-700 mb-2">85%</div>
+                <p className="text-sm text-secondary-600 font-light">Goal completion</p>
               </div>
             </div>
           </div>
@@ -152,23 +152,23 @@ export function Dashboard() {
             {/* Upcoming Sessions */}
             <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-light text-slate-800">Upcoming Sessions</h2>
-                <Calendar className="w-6 h-6 text-blue-500" />
+                <h2 className="text-2xl font-light text-secondary-900">Upcoming Sessions</h2>
+                <Calendar className="w-6 h-6 text-brand-green-500" />
               </div>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-blue-50/50 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-brand-green-50/50 rounded-xl">
                   <div>
-                    <p className="font-medium text-slate-800">Therapy Session</p>
-                    <p className="text-sm text-slate-600">Tomorrow at 3:00 PM</p>
+                    <p className="font-medium text-secondary-900">Therapy Session</p>
+                    <p className="text-sm text-secondary-600">Tomorrow at 3:00 PM</p>
                   </div>
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-brand-green-500 rounded-full"></div>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-emerald-50/50 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-brand-green-100/50 rounded-xl">
                   <div>
-                    <p className="font-medium text-slate-800">Group Support</p>
-                    <p className="text-sm text-slate-600">Friday at 6:30 PM</p>
+                    <p className="font-medium text-secondary-900">Group Support</p>
+                    <p className="text-sm text-secondary-600">Friday at 6:30 PM</p>
                   </div>
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-brand-green-600 rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -176,17 +176,17 @@ export function Dashboard() {
             {/* Recent Journal Entries */}
             <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-light text-slate-800">Recent Entries</h2>
-                <BookOpen className="w-6 h-6 text-purple-500" />
+                <h2 className="text-2xl font-light text-secondary-900">Recent Entries</h2>
+                <BookOpen className="w-6 h-6 text-brand-green-500" />
               </div>
               <div className="space-y-4">
-                <div className="p-4 bg-purple-50/50 rounded-xl">
-                  <p className="text-sm text-slate-600 mb-2">Yesterday</p>
-                  <p className="text-slate-800">Feeling more grounded after today's meditation session...</p>
+                <div className="p-4 bg-brand-green-50/50 rounded-xl">
+                  <p className="text-sm text-secondary-600 mb-2">Yesterday</p>
+                  <p className="text-secondary-900">Feeling more grounded after today's meditation session...</p>
                 </div>
-                <div className="p-4 bg-purple-50/50 rounded-xl">
-                  <p className="text-sm text-slate-600 mb-2">2 days ago</p>
-                  <p className="text-slate-800">Grateful for the small moments of peace...</p>
+                <div className="p-4 bg-brand-green-50/50 rounded-xl">
+                  <p className="text-sm text-secondary-600 mb-2">2 days ago</p>
+                  <p className="text-secondary-900">Grateful for the small moments of peace...</p>
                 </div>
               </div>
             </div>
@@ -195,25 +195,25 @@ export function Dashboard() {
           {/* Mood Tracker */}
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-light text-slate-800">How are you feeling?</h2>
-              <Heart className="w-6 h-6 text-rose-500" />
+              <h2 className="text-2xl font-light text-secondary-900">How are you feeling?</h2>
+              <Heart className="w-6 h-6 text-brand-green-500" />
             </div>
             <div className="flex justify-center space-x-4 mb-6">
-              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
-                <Sun className="w-8 h-8 text-amber-500 mb-2" />
-                <span className="text-sm font-medium text-slate-700">Energetic</span>
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-brand-green-50/50 transition-colors">
+                <Sun className="w-8 h-8 text-brand-green-500 mb-2" />
+                <span className="text-sm font-medium text-secondary-700">Energetic</span>
               </button>
-              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
-                <Cloud className="w-8 h-8 text-slate-500 mb-2" />
-                <span className="text-sm font-medium text-slate-700">Calm</span>
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-brand-green-50/50 transition-colors">
+                <Cloud className="w-8 h-8 text-brand-green-600 mb-2" />
+                <span className="text-sm font-medium text-secondary-700">Calm</span>
               </button>
-              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-blue-50/50 transition-colors">
-                <Moon className="w-8 h-8 text-indigo-500 mb-2" />
-                <span className="text-sm font-medium text-slate-700">Peaceful</span>
+              <button className="flex flex-col items-center p-4 rounded-xl hover:bg-brand-green-50/50 transition-colors">
+                <Moon className="w-8 h-8 text-brand-green-700 mb-2" />
+                <span className="text-sm font-medium text-secondary-700">Peaceful</span>
               </button>
             </div>
             <div className="text-center">
-              <p className="text-sm text-slate-600 font-light">
+              <p className="text-sm text-secondary-600 font-light">
                 Track your mood to understand your emotional patterns
               </p>
             </div>
@@ -221,11 +221,11 @@ export function Dashboard() {
 
           {/* Daily Reflection */}
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-12 border border-white/50 shadow-sm text-center">
-            <h2 className="text-3xl font-light text-slate-800 mb-6">Daily Reflection</h2>
-            <blockquote className="text-xl text-slate-600 font-light leading-relaxed max-w-3xl mx-auto italic">
+            <h2 className="text-3xl font-light text-secondary-900 mb-6">Daily Reflection</h2>
+            <blockquote className="text-xl text-secondary-600 font-light leading-relaxed max-w-3xl mx-auto italic">
               "Every emotion you feel is valid. Every step you take toward understanding yourself is a victory."
             </blockquote>
-            <div className="mt-8 text-sm text-slate-500 font-light">
+            <div className="mt-8 text-sm text-secondary-500 font-light">
               Take a moment to breathe and be kind to yourself today.
             </div>
           </div>
