@@ -135,67 +135,67 @@ export default function AssessmentsPage() {
           <div className="mb-6">
             <BackButton />
           </div>
-          <div className="bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 rounded-lg p-6">
-      {/* Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute top-20 right-20 w-96 h-96 rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
-            filter: 'blur(40px)'
-          }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
+          <div className="bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 rounded-lg p-6 relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <motion.div
+                className="absolute top-20 right-20 w-96 h-96 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+                  filter: 'blur(40px)'
+                }}
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  ease: 'easeInOut'
+                }}
+              />
 
-        <motion.div
-          className="absolute bottom-32 left-16 w-64 h-64 rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%)',
-            filter: 'blur(30px)'
-          }}
-          animate={{
-            scale: [1.1, 1, 1.1],
-            opacity: [0.2, 0.5, 0.2]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 2
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 px-6 sm:px-10 lg:px-20 xl:px-40 py-12">
-        <div className="max-w-5xl mx-auto">
-          {/* Hero Section */}
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mb-6">
-              <span className="text-5xl">🧠</span>
+              <motion.div
+                className="absolute bottom-32 left-16 w-64 h-64 rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%)',
+                  filter: 'blur(30px)'
+                }}
+                animate={{
+                  scale: [1.1, 1, 1.1],
+                  opacity: [0.2, 0.5, 0.2]
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 2
+                }}
+              />
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">
-              Mental Health Assessments
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Understand your emotional well-being with our curated assessments. Each is designed to provide insights into different aspects of your mental health, helping you identify areas for growth and support.
-            </p>
-          </motion.div>
 
-          {/* Assessment Categories */}
-          <div className="space-y-16">
+            <div className="relative z-10 px-6 sm:px-10 lg:px-20 xl:px-40 py-12">
+              <div className="max-w-5xl mx-auto">
+                {/* Hero Section */}
+                <motion.div
+                  className="text-center mb-16"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div className="mb-6">
+                    <span className="text-5xl">🧠</span>
+                  </div>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">
+                    Mental Health Assessments
+                  </h2>
+                  <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Understand your emotional well-being with our curated assessments. Each is designed to provide insights into different aspects of your mental health, helping you identify areas for growth and support.
+                  </p>
+                </motion.div>
+
+                {/* Assessment Categories */}
+                <div className="space-y-16">
             {/* Mood & Emotional Well-being */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -450,7 +450,9 @@ export default function AssessmentsPage() {
                 ← Back to Dashboard
               </motion.button>
             </div>
-          </motion.div>
+                </motion.div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
