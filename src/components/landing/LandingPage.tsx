@@ -95,17 +95,17 @@ const HealingJourneySection = () => {
           <div className="grid md:grid-cols-3 gap-8 mb-16">
             {[
               {
-                svg: '/assets/Mental health-bro (2).svg',
+                svg: '/assets/Mental_health-bro_2.svg',
                 title: 'Share Your Heart',
                 description: 'Pour out your feelings in a sacred space where every emotion is welcomed with understanding and grace.'
               },
               {
-                svg: '/assets/Peace of mind-bro (2).svg',
+                svg: '/assets/Peace_of_mind-bro_2.svg',
                 title: 'Find Your Calm',
                 description: 'Discover gentle pathways to inner peace through personalized wisdom that honors your unique story.'
               },
               {
-                svg: '/assets/personal growth-bro (1).svg',
+                svg: '/assets/personal_growth-bro_1.svg',
                 title: 'Grow With Love',
                 description: 'Embrace your journey of healing with compassionate guidance that celebrates your courage and strength.'
               }
@@ -173,17 +173,17 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {[
             {
-              svg: '/assets/Psychologist-rafiki (1).svg',
+              svg: '/assets/Psychologist-rafiki_1.svg',
               title: 'Created With Love',
               description: 'Developed by caring mental health professionals who understand the sacred nature of emotional healing.'
             },
             {
-              svg: '/assets/Thinking face-bro (1).svg',
+              svg: '/assets/Thinking_face-bro_1.svg',
               title: 'Gentle Understanding',
               description: 'Each assessment is crafted with deep empathy, offering insights that honor your unique emotional journey.'
             },
             {
-              svg: '/assets/Contemplating-bro (1).svg',
+              svg: '/assets/Contemplating-bro_1.svg',
               title: 'Personalized Wisdom',
               description: 'Receive gentle guidance and compassionate strategies tailored specifically to your heart\'s needs.'
             }
@@ -349,7 +349,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             <img
               alt="Gentle therapy and healing illustration"
               className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl"
-              src="/assets/Psychologist-rafiki (1).svg"
+              src="/assets/Psychologist-rafiki_1.svg"
             />
           </motion.div>
         </div>
