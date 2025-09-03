@@ -2,8 +2,7 @@
 
 import { useAuth } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
-import { ProgressDashboardScreen } from '@/components/screens/ProgressDashboardScreen'
-import { BackButton } from '@/components/ui/BackButton'
+import { Dashboard as UnifiedDashboard } from '@/components/dashboard/Dashboard'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -30,16 +29,12 @@ export default function DashboardPage() {
     return null
   }
 
+  // Unified, centralized dashboard regardless of query params
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="pt-16 pb-20 md:pb-0">
-        <div className="container mx-auto px-4 py-6">
-          <div className="mb-6">
-            <BackButton fallbackPath="/" />
-          </div>
-          <ProgressDashboardScreen />
-        </div>
+        <UnifiedDashboard />
       </div>
     </div>
   )

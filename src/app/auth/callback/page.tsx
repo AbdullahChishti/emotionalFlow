@@ -50,7 +50,7 @@ export default function AuthCallback() {
             }
           }
 
-          router.push('/')
+          router.push('/dashboard')
         } else {
           router.push('/?error=no_session')
         }

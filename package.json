@@ -6,7 +6,13 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:setup": "tsx scripts/setup-test-data-simple.ts",
+    "test:cleanup": "tsx scripts/setup-test-data-simple.ts cleanup",
+    "clear-assessments": "tsx scripts/clear-assessment-data.ts",
+    "check-assessments": "tsx scripts/check-assessment-data.ts",
+    "create-realistic-data": "tsx scripts/create-realistic-test-data.ts",
+    "inspect-assessments": "tsx scripts/inspect-assessment-data.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.4",
@@ -43,10 +49,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.2",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "supabase": "^2.39.2",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

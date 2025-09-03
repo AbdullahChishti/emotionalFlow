@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { AuthModal } from '@/components/auth/AuthModal'
 import { useRouter } from 'next/navigation'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
 // Modern Header with Glassmorphic Design
-const ModernHeader = ({ showAuthModal }: { showAuthModal: () => void }) => {
+const ModernHeader = () => {
+  const router = useRouter()
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
@@ -33,7 +33,7 @@ const ModernHeader = ({ showAuthModal }: { showAuthModal: () => void }) => {
 
           <div className="flex items-center gap-4">
           <motion.button
-            onClick={showAuthModal}
+            onClick={() => router.push('/login')}
               className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 text-white text-sm font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
               style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.2)' }}
             whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
@@ -290,7 +290,8 @@ const HealingJourneySection = () => {
 
 
 // Professional Assessments Section Component
-const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
+const ProfessionalAssessmentsSection = () => {
+  const router = useRouter()
   return (
     <section className="py-16 bg-gradient-to-r from-brand-green-50 to-brand-green-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -384,7 +385,7 @@ const ProfessionalAssessmentsSection = ({ showAuthModal }: { showAuthModal: () =
           transition={{ delay: 0.8, duration: 0.6 }}
         >
           <motion.button
-            onClick={showAuthModal}
+            onClick={() => router.push('/login')}
             className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
             style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
             whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
@@ -464,7 +465,7 @@ const Footer = () => {
 }
 
 // Hero Section Component
-const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
+const HeroSection = () => {
   const router = useRouter()
   
   return (
@@ -662,7 +663,7 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
               <motion.button
-                onClick={showAuthModal}
+                onClick={() => router.push('/login')}
                 className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
                 style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
                 whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
@@ -716,42 +717,24 @@ const HeroSection = ({ showAuthModal }: { showAuthModal: () => void }) => {
 }
 
 export function LandingPage() {
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signup')
-
-  const handleShowAuthModal = () => {
-    setAuthMode('signup')
-    setShowAuthModal(true)
-  }
 
   return (
     <div className="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
 
       {/* Header */}
-      <ModernHeader showAuthModal={handleShowAuthModal} />
+      <ModernHeader />
 
       {/* Main Content */}
       <main className="flex-1">
         {/* Hero Section */}
-        <HeroSection showAuthModal={handleShowAuthModal} />
+        <HeroSection />
 
         {/* Healing Journey Section */}
         <HealingJourneySection />
 
         {/* Professional Assessments Section */}
-        <ProfessionalAssessmentsSection showAuthModal={handleShowAuthModal} />
+        <ProfessionalAssessmentsSection />
       </main>
-
-
-
-      {/* Authentication Modal */}
-      {showAuthModal && (
-        <AuthModal
-          mode={authMode}
-          onClose={() => setShowAuthModal(false)}
-          onSwitchMode={(mode) => setAuthMode(mode)}
-        />
-      )}
     </div>
   )
 }

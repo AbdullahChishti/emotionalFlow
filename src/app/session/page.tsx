@@ -23,18 +23,13 @@ export default function SessionPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Navigation />
-      <div className="pt-16 pb-20 md:pb-0">
-        <div className="container mx-auto px-4 py-6">
-          <div className="mb-6">
-            <BackButton />
-          </div>
-          <ModernSessionScreen
-            onNavigate={handleNavigate}
-            matchedUser={matchedUser}
-          />
-        </div>
+      <div className="pt-16">
+        <ModernSessionScreen
+          onNavigate={handleNavigate}
+          matchedUser={matchedUser}
+        />
       </div>
     </div>
   )

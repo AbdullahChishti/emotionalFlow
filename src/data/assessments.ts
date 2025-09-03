@@ -6,7 +6,7 @@
 export interface AssessmentQuestion {
   id: string
   text: string
-  type: 'likert-5' | 'likert-7' | 'yes-no' | 'multiple-choice' | 'frequency'
+  type: 'likert-5' | 'likert-7' | 'yes-no' | 'multiple-choice' | 'frequency' | 'scale'
   options?: string[]
   category?: string
 }
@@ -44,6 +44,7 @@ export interface AssessmentResult {
   recommendations: string[]
   insights: string[]
   nextSteps: string[]
+  manifestations: string[]
 }
 
 // ACE Questionnaire (Childhood Trauma)
@@ -286,6 +287,36 @@ export const PHQ9_ASSESSMENT: Assessment = {
         'Continue building resilience',
         'Help others in your community',
         'Stay informed about mental health'
+      ],
+      manifestations: score >= 15 ? [
+        'Difficulty getting out of bed or completing daily tasks',
+        'Loss of interest in previously enjoyable activities',
+        'Social withdrawal and isolation from friends and family',
+        'Changes in appetite leading to weight loss or gain',
+        'Sleep disturbances affecting daily functioning',
+        'Difficulty concentrating at work or school',
+        'Feelings of hopelessness about the future',
+        'Physical symptoms like fatigue, headaches, or body aches'
+      ] : score >= 10 ? [
+        'Occasional difficulty with daily routines',
+        'Reduced interest in some activities',
+        'Tendency to avoid social situations',
+        'Changes in sleep patterns',
+        'Mild concentration difficulties',
+        'Occasional feelings of sadness or emptiness',
+        'Some physical symptoms like low energy'
+      ] : score >= 5 ? [
+        'Occasional low mood or sadness',
+        'Mild changes in sleep or appetite',
+        'Some difficulty with motivation',
+        'Occasional social withdrawal',
+        'Mild fatigue or low energy'
+      ] : [
+        'Normal mood fluctuations',
+        'Healthy sleep and appetite patterns',
+        'Good social engagement',
+        'Normal energy levels',
+        'Effective daily functioning'
       ]
     }),
 

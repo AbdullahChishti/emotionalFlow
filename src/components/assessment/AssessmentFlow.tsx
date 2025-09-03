@@ -18,6 +18,11 @@ import { AssessmentQuestionComponent } from './AssessmentQuestion'
 import AssessmentResults from './AssessmentResults'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
 import { ASSESSMENT_ICONS } from '@/data/assessment-icons'
+import AssessmentService from '@/lib/assessment-service'
+import { useAuth } from '@/components/providers/AuthProvider'
+
+// Material Symbols icons import
+import 'material-symbols/outlined.css'
 
 interface AssessmentFlowProps {
   assessmentIds: string[]
@@ -34,14 +39,78 @@ export function AssessmentFlow({
   onExit,
   userProfile
 }: AssessmentFlowProps) {
+  const { user } = useAuth()
   const [currentState, setCurrentState] = useState<AssessmentState>('selection')
   const [currentAssessmentIndex, setCurrentAssessmentIndex] = useState(0)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [responses, setResponses] = useState<Record<string, number | string>>({})
+  const [allResponses, setAllResponses] = useState<Record<string, Record<string, number | string>>>({})
   const [results, setResults] = useState<Record<string, AssessmentResult>>({})
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const [savingResults, setSavingResults] = useState(false)
 
   const currentAssessment = ASSESSMENTS[assessmentIds[currentAssessmentIndex]]
   const currentQuestion = currentAssessment?.questions[currentQuestionIndex]
+
+  // Function to save assessment data to database
+  const saveAssessmentDataToDatabase = async (userProfile: UserProfile, results: Record<string, AssessmentResult>) => {
+    if (!user) return
+
+    try {
+      // Create or update assessment session
+      let sessionId = currentSessionId
+      if (!sessionId) {
+        const session = await AssessmentService.createSession(user.id, {
+          sessionType: assessmentIds.length === 1 ? 'single' : 'comprehensive',
+          sessionName: assessmentIds.length === 1 
+            ? `${ASSESSMENTS[assessmentIds[0]]?.shortTitle} Assessment`
+            : 'Comprehensive Assessment',
+          assessmentIds
+        })
+        sessionId = session?.id || null
+        setCurrentSessionId(sessionId)
+      }
+
+      // Save individual assessment results
+      for (const [assessmentId, result] of Object.entries(results)) {
+        const assessment = ASSESSMENTS[assessmentId]
+        if (assessment) {
+          await AssessmentService.saveAssessmentResult(
+            user.id,
+            sessionId,
+            assessmentId,
+            assessment.title,
+            result,
+            allResponses[assessmentId] || {}, // Use stored responses
+            result.insights?.[0] // Use first insight as friendly explanation
+          )
+        }
+      }
+
+      // Save user profile
+      await AssessmentService.saveUserProfile(
+        user.id,
+        sessionId,
+        userProfile,
+        {
+          therapy: userProfile.preferences?.therapyApproach || [],
+          content: userProfile.preferences?.contentTypes || [],
+          community: userProfile.preferences?.copingStrategies || [],
+          wellness: userProfile.preferences?.copingStrategies || [],
+          crisis: userProfile.riskFactors
+        }
+      )
+
+      // Mark session as completed
+      if (sessionId) {
+        await AssessmentService.updateSessionStatus(sessionId, 'completed')
+      }
+
+      console.log('Assessment data saved to database successfully')
+    } catch (error) {
+      console.error('Error saving assessment data to database:', error)
+    }
+  }
 
   // Debug logging
   console.log('Current Assessment Index:', currentAssessmentIndex)
@@ -112,6 +181,12 @@ export function AssessmentFlow({
       }
       setResults(newResults)
 
+      // Store responses for this assessment
+      setAllResponses(prev => ({
+        ...prev,
+        [currentAssessment.id]: newResponses
+      }))
+
       // Show results for this assessment first
       setCurrentState('results')
     }
@@ -158,9 +233,17 @@ export function AssessmentFlow({
       setCurrentState('taking')
     } else {
       setCurrentState('completed')
+      setSavingResults(true)
+      
       // Process all results when all assessments are completed
       try {
         const userProfile = await AssessmentIntegrator.processResults(results)
+        
+        // Save to database if user is authenticated
+        if (user) {
+          await saveAssessmentDataToDatabase(userProfile, results)
+        }
+        
         onComplete(results, userProfile)
       } catch (error) {
         console.error('Error processing assessment results:', error)
@@ -181,7 +264,15 @@ export function AssessmentFlow({
           preferences: AssessmentIntegrator.generatePreferences(results),
           lastAssessed: new Date()
         }
+        
+        // Save to database if user is authenticated
+        if (user) {
+          await saveAssessmentDataToDatabase(basicProfile, results)
+        }
+        
         onComplete(results, basicProfile)
+      } finally {
+        setSavingResults(false)
       }
     }
   }
@@ -316,77 +407,40 @@ export function AssessmentFlow({
   )
 
   const renderTaking = () => (
-    <div className="max-w-4xl mx-auto">
-      {/* Back Button */}
+    <div className="relative">
+      {/* Exit Button - Positioned absolutely */}
       <motion.div
-        className="mb-6"
+        className="absolute top-4 left-4 z-50"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <button
+        <motion.button
           onClick={() => {
             setCurrentState('selection')
             setCurrentAssessmentIndex(0)
             setCurrentQuestionIndex(0)
             setResponses({})
           }}
-          className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+          className="group flex items-center gap-2 glassmorphic px-4 py-2 rounded-xl text-zinc-700 hover:text-zinc-900 transition-colors duration-200 shadow-lg border border-white/30"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Assessment Selection
-        </button>
+          <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform duration-200">
+            arrow_back
+          </span>
+          <span className="font-semibold">Exit</span>
+        </motion.button>
       </motion.div>
 
-      {/* Enhanced Progress Bar */}
-      <motion.div
-        className="bg-white rounded-2xl p-6 mb-8 border border-gray-200 shadow-lg"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-brand-green-100 to-emerald-100 rounded-xl flex items-center justify-center">
-              <span className="text-brand-green-600 text-lg">📊</span>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">{currentAssessment.shortTitle}</h2>
-              <p className="text-sm text-gray-600">Assessment in Progress</p>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-2xl font-bold text-brand-green-600">{Math.round(progress)}%</div>
-            <div className="text-sm text-gray-600">Complete</div>
-          </div>
-        </div>
-        
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-brand-green-500 to-emerald-600 rounded-full shadow-sm"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
-        </div>
-        
-        <div className="flex justify-between text-sm text-gray-600 mt-2">
-          <span>Question {currentQuestionIndex + 1} of {currentAssessment.questions.length}</span>
-          <span>{Math.round(progress)}% Complete</span>
-        </div>
-      </motion.div>
-
-      {/* Current Question */}
-      <AnimatePresence mode="wait">
-        <AssessmentQuestionComponent
-          key={`${currentAssessment.id}-${currentQuestionIndex}`}
-          question={currentQuestion}
-          value={responses[currentQuestion.id] || null}
-          onChange={handleAnswer}
-          questionNumber={currentQuestionIndex + 1}
-          totalQuestions={currentAssessment.questions.length}
-        />
-      </AnimatePresence>
+      {/* Current Question - Full Screen */}
+      <AssessmentQuestionComponent
+        question={currentQuestion}
+        value={responses[currentQuestion.id] || null}
+        onChange={handleAnswer}
+        questionNumber={currentQuestionIndex + 1}
+        totalQuestions={currentAssessment.questions.length}
+      />
     </div>
   )
 
@@ -433,9 +487,17 @@ export function AssessmentFlow({
           Assessment Complete!
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Thank you for completing these assessments. Your results provide valuable insights
-          into your mental health and well-being. We're generating your personalized analysis now.
+          {savingResults 
+            ? 'Saving your results and generating your personalized analysis...'
+            : 'Thank you for completing these assessments. Your results provide valuable insights into your mental health and well-being.'
+          }
         </p>
+        
+        {savingResults && (
+          <div className="flex justify-center mb-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green-500"></div>
+          </div>
+        )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <motion.button

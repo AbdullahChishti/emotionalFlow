@@ -23,7 +23,7 @@ export function Navigation({ className = '' }: NavigationProps) {
   const navigationItems = [
     {
       name: 'Dashboard',
-      href: '/',
+      href: '/dashboard',
       icon: 'dashboard'
     },
     {

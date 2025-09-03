@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types'
@@ -27,7 +27,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [needsOnboarding, setNeedsOnboarding] = useState(false)
 
-  const fetchProfile = async (userId: string) => {
+  // Refs to prevent race conditions and duplicate operations
+  const initializingRef = useRef(false)
+  const profileCreationRef = useRef<Set<string>>(new Set())
+
+  const fetchProfile = async (userId: string): Promise<Profile | null> => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -51,197 +55,267 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const refreshProfile = async () => {
-    if (user) {
-      const profileData = await fetchProfile(user.id)
-      setProfile(profileData)
+  const createProfile = async (user: User): Promise<Profile | null> => {
+    // Prevent duplicate profile creation
+    if (profileCreationRef.current.has(user.id)) {
+      console.log('Profile creation already in progress for user:', user.id)
+      return null
+    }
 
-      // Check if user needs onboarding
-      if (profileData) {
-        // Check for test flag first
-        const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
-        if (testOnboarding) {
-          localStorage.removeItem('testOnboarding')
-          setNeedsOnboarding(true)
-          return
-        }
+    profileCreationRef.current.add(user.id)
 
-        // Check if they have any mood entries (indicating they've completed onboarding)
-        const { data: moodEntries } = await supabase
-          .from('mood_entries')
-          .select('id')
-          .eq('user_id', user.id)
-          .limit(1)
-
-        // User needs onboarding if they have no mood entries (haven't completed onboarding)
-        setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
-      } else {
-        // No profile means new user - needs onboarding
-        setNeedsOnboarding(true)
+    try {
+      const newProfileData = {
+        id: user.id,
+        display_name: user.user_metadata?.display_name ||
+                     user.user_metadata?.full_name ||
+                     user.user_metadata?.name ||
+                     user.email?.split('@')[0] ||
+                     'User',
+        username: null,
+        avatar_url: user.user_metadata?.avatar_url || null,
+        bio: null,
+        empathy_credits: 10,
+        total_credits_earned: 10,
+        total_credits_spent: 0,
+        emotional_capacity: 'medium',
+        preferred_mode: 'both',
+        is_anonymous: false,
+        last_active: new Date().toISOString()
       }
+
+      const { data: createdProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert(newProfileData)
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Profile creation failed:', createError)
+        return null
+      }
+
+      console.log('Profile created successfully for user:', user.id)
+      return createdProfile
+    } catch (error) {
+      console.error('Profile creation exception:', error)
+      return null
+    } finally {
+      profileCreationRef.current.delete(user.id)
+    }
+  }
+
+  const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
+    try {
+      // Check for test flag first
+      const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
+      if (testOnboarding) {
+        localStorage.removeItem('testOnboarding')
+        return true
+      }
+
+      // Check if they have any mood entries
+      const { data: moodEntries } = await supabase
+        .from('mood_entries')
+        .select('id')
+        .eq('user_id', userId)
+        .limit(1)
+
+      return !moodEntries || moodEntries.length === 0
+    } catch (error) {
+      console.error('Onboarding check error:', error)
+      return false
+    }
+  }
+
+  const setupUserProfile = async (user: User): Promise<{ profile: Profile | null; needsOnboarding: boolean }> => {
+    try {
+      let profileData = await fetchProfile(user.id)
+
+      if (!profileData) {
+        profileData = await createProfile(user)
+      }
+
+      const needsOnboarding = profileData ? await checkOnboardingStatus(user.id) : true
+
+      return { profile: profileData, needsOnboarding }
+    } catch (error) {
+      console.error('User profile setup error:', error)
+      return { profile: null, needsOnboarding: true }
+    }
+  }
+
+  const refreshProfile = async () => {
+    if (!user) return
+
+    try {
+      const { profile: profileData, needsOnboarding } = await setupUserProfile(user)
+      setProfile(profileData)
+      setNeedsOnboarding(needsOnboarding)
+    } catch (error) {
+      console.error('Profile refresh error:', error)
     }
   }
 
   useEffect(() => {
     let isMounted = true
+    let timeoutId: NodeJS.Timeout
 
     const initializeAuth = async () => {
+      // Prevent multiple initializations
+      if (initializingRef.current) {
+        console.log('Auth initialization already in progress')
+        return
+      }
+
+      initializingRef.current = true
+
       try {
-        // Get initial session with timeout
-        const sessionPromise = supabase.auth.getSession()
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session timeout')), 10000)
-        )
+        console.log('Initializing auth...')
         
-        const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any
+        // Check if we should skip auth entirely in development
+        if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SKIP_AUTH === 'true') {
+          console.log('Development mode: Skipping authentication entirely')
+          setUser(null)
+          setProfile(null)
+          setNeedsOnboarding(false)
+          setLoading(false)
+          initializingRef.current = false
+          return
+        }
+        
+        // Set a maximum timeout for the entire initialization
+        const timeoutDuration = process.env.NODE_ENV === 'development' ? 5000 : 35000
+        timeoutId = setTimeout(() => {
+          if (isMounted) {
+            console.warn(`Auth initialization timeout (${timeoutDuration}ms) - setting loading to false`)
+            setUser(null)
+            setProfile(null)
+            setNeedsOnboarding(false)
+            setLoading(false)
+            initializingRef.current = false
+          }
+        }, timeoutDuration)
+
+        // Get initial session - in development, don't use timeout to avoid blocking
+        let session, error
+        try {
+          const result = await supabase.auth.getSession()
+          session = result.data.session
+          error = result.error
+        } catch (err) {
+          console.warn('Session retrieval failed, continuing without auth:', err)
+          session = null
+          error = err
+        }
 
         if (!isMounted) return
 
         if (error) {
-          console.error('Session error:', error)
+          console.warn('Session error (continuing without auth):', error.message)
+          // In development, continue without auth rather than failing completely
+          setUser(null)
+          setProfile(null)
+          setNeedsOnboarding(false)
           setLoading(false)
+          initializingRef.current = false
+          
+          // Clear any pending timeout
+          if (timeoutId) {
+            clearTimeout(timeoutId)
+          }
           return
         }
 
+        console.log('Session retrieved:', !!session, 'User ID:', session?.user?.id)
         setUser(session?.user ?? null)
 
         if (session?.user) {
-          // Fetch profile with timeout
-          try {
-            const profileData = await fetchProfile(session.user.id)
-            if (!isMounted) return
+          console.log('Setting up user profile for:', session.user.id)
+          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
 
-            if (!profileData) {
-              // Create profile if it doesn't exist
-              const newProfileData = {
-                id: session.user.id,
-                display_name: session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'User',
-                username: null,
-                avatar_url: null,
-                bio: null,
-                empathy_credits: 10,
-                total_credits_earned: 10,
-                total_credits_spent: 0,
-                emotional_capacity: 'medium',
-                preferred_mode: 'both',
-                is_anonymous: false,
-                last_active: new Date().toISOString()
-              }
+          if (!isMounted) return
 
-              const { data: createdProfile, error: createError } = await supabase
-                .from('profiles')
-                .insert(newProfileData)
-                .select()
-
-              if (!isMounted) return
-
-              if (createError) {
-                console.error('Profile creation failed:', createError)
-              } else {
-                setProfile(createdProfile?.[0] || createdProfile)
-              }
-            } else {
-              setProfile(profileData)
-            }
-
-            // Check onboarding status
-            await checkOnboardingStatus(session.user.id)
-          } catch (profileError) {
-            console.error('Profile fetch error:', profileError)
-          }
+          setProfile(profileData)
+          setNeedsOnboarding(needsOnboarding)
+          console.log('User profile setup complete. Profile:', !!profileData, 'Needs onboarding:', needsOnboarding)
+        } else {
+          console.log('No session user found, clearing profile')
+          setProfile(null)
+          setNeedsOnboarding(false)
         }
 
         if (isMounted) {
           setLoading(false)
+          console.log('Auth initialization complete')
         }
       } catch (error) {
         console.error('Auth initialization error:', error)
         if (isMounted) {
+          setUser(null)
+          setProfile(null)
+          setNeedsOnboarding(false)
           setLoading(false)
         }
-      }
-    }
-
-    const checkOnboardingStatus = async (userId: string) => {
-      try {
-        // Check for test flag first
-        const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
-        if (testOnboarding) {
-          localStorage.removeItem('testOnboarding')
-          setNeedsOnboarding(true)
-          return
+      } finally {
+        initializingRef.current = false
+        if (timeoutId) {
+          clearTimeout(timeoutId)
         }
-
-        // Check if they have any mood entries
-        const { data: moodEntries } = await supabase
-          .from('mood_entries')
-          .select('id')
-          .eq('user_id', userId)
-          .limit(1)
-
-        setNeedsOnboarding(!moodEntries || moodEntries.length === 0)
-      } catch (error) {
-        console.error('Onboarding check error:', error)
-        setNeedsOnboarding(false)
       }
     }
 
-    // Listen for auth changes
+    // Listen for auth changes (simplified to prevent conflicts)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return
+      if (!isMounted || initializingRef.current) {
+        console.log('Skipping auth state change - component unmounted or initializing')
+        return
+      }
 
-      setUser(session?.user ?? null)
+      console.log('Auth state change:', event, !!session)
 
-      if (session?.user) {
+      // Only handle sign out events here to avoid conflicts with initialization
+      if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setProfile(null)
+        setNeedsOnboarding(false)
+        setLoading(false)
+        return
+      }
+
+      // For other events, handle sign in
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('User signed in, updating auth state:', session.user.id)
+        setUser(session.user)
+
         try {
-          const profileData = await fetchProfile(session.user.id)
-          if (!isMounted) return
+          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
 
-          if (!profileData) {
-            // Create profile if it doesn't exist
-            const newProfileData = {
-              id: session.user.id,
-              display_name: session.user.user_metadata?.display_name || session.user.email?.split('@')[0] || 'User',
-              username: null,
-              avatar_url: null,
-              bio: null,
-              empathy_credits: 10,
-              total_credits_earned: 10,
-              total_credits_spent: 0,
-              emotional_capacity: 'medium',
-              preferred_mode: 'both',
-              is_anonymous: false,
-              last_active: new Date().toISOString()
-            }
-
-            const { data: createdProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert(newProfileData)
-              .select()
-
-            if (!isMounted) return
-
-            if (createError) {
-              console.error('Profile creation failed:', createError)
-            } else {
-              setProfile(createdProfile?.[0] || createdProfile)
-            }
-          } else {
+          if (isMounted) {
             setProfile(profileData)
+            setNeedsOnboarding(needsOnboarding)
+            console.log('Auth state updated after sign in')
           }
-
-          // Check onboarding status
-          await checkOnboardingStatus(session.user.id)
         } catch (error) {
           console.error('Auth state change error:', error)
         }
-      } else {
-        setProfile(null)
-        setNeedsOnboarding(false)
       }
 
-      if (isMounted) {
-        setLoading(false)
+      // For other events, only update if we're not currently loading
+      else if (!loading && session?.user && session.user.id !== user?.id) {
+        console.log('Handling auth state change for new user')
+        setUser(session.user)
+
+        try {
+          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
+
+          if (isMounted) {
+            setProfile(profileData)
+            setNeedsOnboarding(needsOnboarding)
+          }
+        } catch (error) {
+          console.error('Auth state change error:', error)
+        }
       }
     })
 
@@ -249,19 +323,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth()
 
     return () => {
+      console.log('Cleaning up AuthProvider')
       isMounted = false
+      initializingRef.current = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       subscription.unsubscribe()
     }
   }, [])
 
   const signOut = async () => {
-    console.log('Signing out...')
-    await supabase.auth.signOut()
-    console.log('Signed out successfully')
-    setUser(null)
-    setProfile(null)
-    // Force reload to clear any cached data
-    window.location.reload()
+    try {
+      console.log('Signing out...')
+      setLoading(true)
+
+      // Clear state immediately
+      setUser(null)
+      setProfile(null)
+      setNeedsOnboarding(false)
+
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut()
+
+      if (error) {
+        console.error('Sign out error:', error)
+      } else {
+        console.log('Signed out successfully')
+      }
+
+      // Force reload to clear any cached data and reset app state
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Sign out exception:', error)
+      // Force reload even if there's an error
+      window.location.href = '/'
+    }
   }
 
   const value = {

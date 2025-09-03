@@ -5,9 +5,9 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useRouter } from 'next/navigation'
+import AssessmentHistory from '@/components/assessment/AssessmentHistory'
 import 'material-symbols/outlined.css'
 
 export function ProfileScreen() {
@@ -18,15 +18,20 @@ export function ProfileScreen() {
 
   // Form state
   const [displayName, setDisplayName] = useState('')
-  const [preferredMode, setPreferredMode] = useState<'therapist' | 'friend' | 'both'>('both')
-  const [emotionalCapacity, setEmotionalCapacity] = useState<'low' | 'medium' | 'high'>('medium')
+
   const [isAnonymous, setIsAnonymous] = useState(false)
+
+  // Notification preferences
+  const [emailNotifications, setEmailNotifications] = useState(true)
+  const [pushNotifications, setPushNotifications] = useState(true)
+  const [sessionReminders, setSessionReminders] = useState(true)
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'profile' | 'history'>('profile')
 
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || '')
-      setPreferredMode(profile.preferred_mode || 'both')
-      setEmotionalCapacity(profile.emotional_capacity || 'medium')
       setIsAnonymous(profile.is_anonymous || false)
     }
   }, [profile])
@@ -40,8 +45,6 @@ export function ProfileScreen() {
         .from('profiles')
         .update({
           display_name: displayName,
-          preferred_mode: preferredMode,
-          emotional_capacity: emotionalCapacity,
           is_anonymous: isAnonymous,
         })
         .eq('id', user.id)
@@ -72,7 +75,7 @@ export function ProfileScreen() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -80,9 +83,10 @@ export function ProfileScreen() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
         <div className="text-center">
-          <h2 className="text-2xl font-light text-slate-700 mb-4">Loading your profile...</h2>
+          <h2 className="text-2xl font-semibold text-secondary-900 mb-4">Loading your profile...</h2>
+          <p className="text-secondary-600 mb-6">Setting up your personalized experience</p>
           <LoadingSpinner size="lg" />
         </div>
       </div>
@@ -90,328 +94,287 @@ export function ProfileScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {/* Modern Header Section */}
-      <motion.div
-        className="relative bg-white border-b border-slate-200"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex items-center gap-6">
-            {/* Profile Avatar */}
-            <motion.div
-              className="relative"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              <div className="w-24 h-24 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-lg">
-                <span className="material-symbols-outlined text-4xl text-white">person</span>
-              </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-brand-green-500 rounded-full border-4 border-white flex items-center justify-center">
-                <span className="material-symbols-outlined text-sm text-white">edit</span>
-              </div>
-            </motion.div>
+    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto">
 
-            {/* Profile Info */}
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-slate-800 mb-2">
-                {profile.display_name || 'Your Profile'}
-              </h1>
-              <p className="text-slate-600 text-lg">
-                Welcome back to your wellness journey
-              </p>
-              <div className="flex items-center gap-6 mt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-brand-green-500 rounded-full"></div>
-                  <span className="text-sm text-slate-600">Active</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-slate-400 text-sm">schedule</span>
-                  <span className="text-sm text-slate-600">
-                    Last active {new Date(profile.last_active).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
+          {/* Header */}
+          <motion.div
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-4xl font-bold text-secondary-900 mb-2">Profile Settings</h1>
+            <p className="text-secondary-600">Manage your account and preferences</p>
+          </motion.div>
+
+          {/* Tabs */}
+          <motion.div
+            className="flex justify-center mb-8"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <div className="flex space-x-1 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-white/50 shadow-lg">
+              <button
+                onClick={() => setActiveTab('profile')}
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                  activeTab === 'profile'
+                    ? 'text-white shadow-md'
+                    : 'text-secondary-600 hover:text-secondary-900 hover:bg-white/50'
+                }`}
+                style={activeTab === 'profile' ? { backgroundColor: '#335f64' } : { border: '2px solid #335f64' }}
+              >
+                Profile Settings
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                  activeTab === 'history'
+                    ? 'text-white shadow-md'
+                    : 'text-secondary-600 hover:text-secondary-900 hover:bg-white/50'
+                }`}
+                style={activeTab === 'history' ? { backgroundColor: '#335f64' } : { border: '2px solid #335f64' }}
+              >
+                Assessment History
+              </button>
             </div>
-          </div>
-        </div>
-      </motion.div>
+          </motion.div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* Left Column - Stats & Quick Actions */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Stats Cards */}
+          {/* Main Content */}
+          {activeTab === 'profile' ? (
+            /* Main Grid Layout */
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            {/* Sidebar - 1/3 width */}
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              className="lg:col-span-1"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-brand-green-100 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-brand-green-600 text-xl">account_balance_wallet</span>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">{profile.empathy_credits}</div>
-                    <div className="text-sm text-slate-600">Empathy Credits</div>
-                  </div>
-                </div>
-              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg sticky top-8">
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-emerald-600 text-xl">trending_up</span>
+                {/* Profile Avatar */}
+                <div className="text-center mb-6">
+                  <div className="relative mx-auto w-24 h-24 mb-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-lg">
+                      <span className="material-symbols-outlined text-3xl text-white">person</span>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">{profile.total_credits_earned}</div>
-                    <div className="text-sm text-slate-600">Total Earned</div>
-                  </div>
+                  <h3 className="text-xl font-semibold text-secondary-900">{profile.display_name || 'User'}</h3>
+                  <p className="text-sm text-secondary-600">{user?.email}</p>
                 </div>
-              </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-blue-600 text-xl">payments</span>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-800">{profile.total_credits_spent}</div>
-                    <div className="text-sm text-slate-600">Total Spent</div>
+                {/* Navigation Menu */}
+                <nav className="space-y-2">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-brand-green-50 text-brand-green-700 font-medium border-2 border-brand-green-200">
+                    <span className="material-symbols-outlined text-xl">person</span>
+                    Personal Information
+                  </button>
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl hover:bg-slate-50 text-secondary-600 transition-colors border-2 border-transparent hover:border-brand-green-200">
+                    <span className="material-symbols-outlined text-xl">notifications</span>
+                    Notifications
+                  </button>
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl hover:bg-slate-50 text-secondary-600 transition-colors border-2 border-transparent hover:border-brand-green-200">
+                    <span className="material-symbols-outlined text-xl">settings</span>
+                    Account
+                  </button>
+                </nav>
+
+                {/* Quick Stats */}
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-secondary-600">Sessions</span>
+                      <span className="font-medium text-secondary-900">{Math.floor((profile?.total_credits_earned || 0) / 5)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Quick Actions Grid */}
+            {/* Main Content - 2/3 width */}
             <motion.div
-              className="space-y-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <h3 className="text-xl font-semibold text-slate-800">Quick Actions</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <motion.button
-                  onClick={() => router.push('/wallet')}
-                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 group"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-12 h-12 bg-brand-green-100 rounded-xl flex items-center justify-center group-hover:bg-brand-green-200 transition-colors">
-                    <span className="material-symbols-outlined text-brand-green-600 text-xl">account_balance_wallet</span>
-                  </div>
-                  <div className="text-left flex-1">
-                    <div className="font-semibold text-slate-800 group-hover:text-brand-green-700 transition-colors">Wallet</div>
-                    <div className="text-sm text-slate-600">View credits & transactions</div>
-                  </div>
-                  <span className="material-symbols-outlined text-slate-400 group-hover:text-brand-green-600 transition-colors">arrow_forward</span>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => router.push('/community')}
-                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex items-center gap-4 group"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-12 h-12 bg-brand-green-100 rounded-xl flex items-center justify-center group-hover:bg-brand-green-200 transition-colors">
-                    <span className="material-symbols-outlined text-brand-green-600 text-xl">people</span>
-                  </div>
-                  <div className="text-left flex-1">
-                    <div className="font-semibold text-slate-800 group-hover:text-brand-green-700 transition-colors">Community</div>
-                    <div className="text-sm text-slate-600">Connect with others</div>
-                  </div>
-                  <span className="material-symbols-outlined text-slate-400 group-hover:text-brand-green-600 transition-colors">arrow_forward</span>
-                </motion.button>
-              </div>
-            </motion.div>
-
-            {/* Wellness Tools */}
-            <motion.div
-              className="space-y-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <h3 className="text-xl font-semibold text-slate-800">Wellness Tools</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <motion.button
-                  onClick={() => router.push('/check-in')}
-                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-brand-green-400 to-brand-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-white text-2xl">sentiment_satisfied</span>
-                  </div>
-                  <div className="font-semibold text-slate-800 group-hover:text-brand-green-700 transition-colors mb-2">Daily Check-in</div>
-                  <div className="text-sm text-slate-600">Track your mood</div>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => router.push('/meditation')}
-                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-white text-2xl">self_improvement</span>
-                  </div>
-                  <div className="font-semibold text-slate-800 group-hover:text-brand-green-700 transition-colors mb-2">Meditation</div>
-                  <div className="text-sm text-slate-600">Find peace & clarity</div>
-                </motion.button>
-
-                <motion.button
-                  onClick={() => router.push('/session')}
-                  className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col items-center text-center group"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-brand-green-600 to-brand-green-800 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                    <span className="material-symbols-outlined text-white text-2xl">chat</span>
-                  </div>
-                  <div className="font-semibold text-slate-800 group-hover:text-brand-green-700 transition-colors mb-2">Therapy Sessions</div>
-                  <div className="text-sm text-slate-600">Connect with listeners</div>
-                </motion.button>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right Column - Settings */}
-          <div className="space-y-6">
-            
-            {/* Settings Card */}
-            <motion.div
-              className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm"
+              className="lg:col-span-2 space-y-8"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <h3 className="text-xl font-semibold text-slate-800 mb-6">Account Settings</h3>
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    Display Name
-                  </label>
-                  <Input
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Your display name"
-                    className="w-full border-slate-200 focus:border-brand-green-500 focus:ring-brand-green-500"
-                  />
+
+              {/* Personal Information Section */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">person</span>
+                  <h2 className="text-2xl font-semibold text-secondary-900">Personal Information</h2>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    Preferred Support Mode
-                  </label>
-                  <div className="space-y-3">
-                    {[
-                      { value: 'therapist', label: 'Therapist', icon: 'psychology' },
-                      { value: 'friend', label: 'Friend', icon: 'group' },
-                      { value: 'both', label: 'Both', icon: 'balance' }
-                    ].map((mode) => (
-                      <button
-                        key={mode.value}
-                        onClick={() => setPreferredMode(mode.value as any)}
-                        className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                          preferredMode === mode.value
-                            ? 'border-brand-green-500 bg-brand-green-50'
-                            : 'border-slate-200 hover:border-brand-green-300 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="material-symbols-outlined text-xl text-slate-600">
-                            {mode.icon}
-                          </span>
-                          <span className="font-medium text-slate-800">{mode.label}</span>
-                        </div>
-                      </button>
-                    ))}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Display Name
+                    </label>
+                    <Input
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Enter your display name"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Email Address
+                    </label>
+                    <Input
+                      value={user?.email || ''}
+                      disabled
+                      className="w-full bg-slate-50"
+                    />
+                  </div>
+
+
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="anonymous"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                      className="w-5 h-5 text-brand-green-600 border-slate-300 rounded focus:ring-brand-green-500"
+                    />
+                    <label htmlFor="anonymous" className="text-sm font-medium text-secondary-700">
+                      Remain anonymous in sessions
+                    </label>
                   </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-3">
-                    Emotional Capacity
-                  </label>
-                  <div className="space-y-3">
-                    {[
-                      { value: 'low', label: 'Low', color: 'text-red-500', icon: 'battery_1_bar' },
-                      { value: 'medium', label: 'Medium', color: 'text-yellow-500', icon: 'battery_3_bar' },
-                      { value: 'high', label: 'High', color: 'text-green-500', icon: 'battery_full' }
-                    ].map((capacity) => (
-                      <button
-                        key={capacity.value}
-                        onClick={() => setEmotionalCapacity(capacity.value as any)}
-                        className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
-                          emotionalCapacity === capacity.value
-                            ? 'border-brand-green-500 bg-brand-green-50'
-                            : 'border-slate-200 hover:border-brand-green-300 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className={`material-symbols-outlined text-xl ${capacity.color}`}>
-                            {capacity.icon}
-                          </span>
-                          <span className="font-medium text-slate-800">{capacity.label}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+              {/* Notifications Section */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">notifications</span>
+                  <h2 className="text-2xl font-semibold text-secondary-900">Notifications</h2>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl">
-                  <input
-                    type="checkbox"
-                    id="anonymous"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="w-5 h-5 text-brand-green-600 border-slate-300 rounded focus:ring-brand-green-500"
-                  />
-                  <label htmlFor="anonymous" className="text-sm font-medium text-slate-700">
-                    Remain anonymous in sessions
-                  </label>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-secondary-900">Email Notifications</div>
+                      <div className="text-sm text-secondary-600">Receive updates via email</div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={emailNotifications}
+                        onChange={(e) => setEmailNotifications(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-secondary-900">Push Notifications</div>
+                      <div className="text-sm text-secondary-600">Receive push notifications on your device</div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={pushNotifications}
+                        onChange={(e) => setPushNotifications(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
+                    </label>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-secondary-900">Session Reminders</div>
+                      <div className="text-sm text-secondary-600">Get reminded about upcoming sessions</div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={sessionReminders}
+                        onChange={(e) => setSessionReminders(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Section */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">settings</span>
+                  <h2 className="text-2xl font-semibold text-secondary-900">Account</h2>
+                </div>
+
+                <div className="space-y-4">
+
+
+                  <button className="w-full flex items-center justify-between p-4 rounded-2xl border-2 border-brand-green-200 hover:border-brand-green-400 hover:bg-brand-green-50 transition-all">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-brand-green-600">help</span>
+                      <span className="font-medium text-secondary-900">Help & Support</span>
+                    </div>
+                    <span className="material-symbols-outlined text-secondary-400">arrow_forward</span>
+                  </button>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3 mt-8">
-                <Button
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full bg-brand-green-600 hover:bg-brand-green-700 border-0"
+                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-medium transition-all border-2"
+                  style={{
+                    backgroundColor: '#335f64',
+                    color: 'white',
+                    opacity: saving ? 0.7 : 1,
+                    borderColor: '#335f64'
+                  }}
                 >
                   {saving ? (
-                    <>
-                      <LoadingSpinner size="sm" className="mr-2" />
-                      Saving Changes...
-                    </>
+                    <LoadingSpinner size="sm" className="text-white" />
                   ) : (
-                    'Save Changes'
+                    <span className="material-symbols-outlined">save</span>
                   )}
-                </Button>
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
 
-                <Button
+                <button
                   onClick={handleSignOut}
-                  variant="outline"
-                  className="w-full border-slate-300 text-slate-700 hover:bg-slate-50"
+                  disabled={loading}
+                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-red-600 text-white rounded-2xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50 border-2 border-red-600 hover:border-red-700"
                 >
+                  <span className="material-symbols-outlined">logout</span>
                   Sign Out
-                </Button>
+                </button>
               </div>
             </motion.div>
           </div>
+          ) : (
+            /* Assessment History Tab */
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <AssessmentHistory />
+            </motion.div>
+          )}
         </div>
-      </div>
+      </main>
     </div>
   )
 }

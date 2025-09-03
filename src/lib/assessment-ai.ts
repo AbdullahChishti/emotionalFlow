@@ -16,6 +16,7 @@ export interface AssessmentData {
 export interface AIExplanation {
   summary: string
   whatItMeans: string
+  manifestations: string[]
   unconsciousManifestations: string[]
   recommendations: string[]
   nextSteps: string
@@ -39,12 +40,20 @@ export async function getAIAssessmentExplanation(
       throw error
     }
 
-    return data
+    // Log exactly what we received from the Edge Function (ChatGPT-backed)
+    console.groupCollapsed('[AI] Explanation: edge function response')
+    console.log('assessmentData sent:', assessmentData)
+    console.log('raw data received:', data)
+    console.groupEnd()
+
+    return data as AIExplanation
   } catch (error) {
     console.error('Error getting AI explanation:', error)
-    
+
     // Fallback to a basic explanation
-    return generateFallbackExplanation(assessmentData)
+    const fallback = generateFallbackExplanation(assessmentData)
+    console.warn('[AI] Using fallback explanation (edge function failed). Fallback payload:', fallback)
+    return fallback
   }
 }
 

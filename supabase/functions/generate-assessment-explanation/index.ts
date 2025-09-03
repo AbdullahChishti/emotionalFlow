@@ -24,6 +24,7 @@ interface UserProfile {
 interface AIExplanation {
   summary: string
   whatItMeans: string
+  manifestations: string[]
   unconsciousManifestations: string[]
   recommendations: string[]
   nextSteps: string
@@ -147,6 +148,7 @@ Always respond with a JSON object containing: summary, whatItMeans, unconsciousM
         return {
           summary: parsed.summary || '',
           whatItMeans: parsed.whatItMeans || '',
+          manifestations: Array.isArray(parsed.manifestations) ? parsed.manifestations : [],
           unconsciousManifestations: Array.isArray(parsed.unconsciousManifestations) ? parsed.unconsciousManifestations : [],
           recommendations: Array.isArray(parsed.recommendations) ? parsed.recommendations : [],
           nextSteps: parsed.nextSteps || '',
@@ -197,13 +199,19 @@ REQUIRED JSON RESPONSE FORMAT:
 {
   "summary": "Brief overview of what the score means",
   "whatItMeans": "Detailed explanation in everyday language",
+  "manifestations": ["How symptom 1 shows up in daily life", "How symptom 2 affects relationships", "How symptom 3 impacts work/school"],
   "unconsciousManifestations": ["Behavior pattern 1", "Behavior pattern 2", "Behavior pattern 3"],
   "recommendations": ["Actionable suggestion 1", "Actionable suggestion 2", "Actionable suggestion 3"],
   "nextSteps": "What the user should do next",
   "supportiveMessage": "Encouraging and validating message"
 }
 
-⚠️ CRITICAL: You MUST include ALL fields, especially unconsciousManifestations. Do not skip any field.
+⚠️ CRITICAL: You MUST include ALL fields, especially manifestations and unconsciousManifestations. Do not skip any field.
+
+EXAMPLES OF MANIFESTATIONS (how symptoms show up in daily life):
+- Depression: "Difficulty getting out of bed in the morning", "Loss of interest in hobbies you used to enjoy", "Avoiding social gatherings with friends", "Changes in appetite affecting your eating habits"
+- Anxiety: "Constant worry about work deadlines affecting sleep", "Avoiding driving on highways due to fear", "Physical tension causing headaches or muscle pain", "Difficulty making decisions due to overthinking"
+- Trauma: "Feeling triggered by certain sounds or situations", "Difficulty trusting new people in relationships", "Hypervigilance in public spaces", "Emotional numbness during stressful situations"
 
 EXAMPLES OF UNCONSCIOUS MANIFESTATIONS:
 - Depression: "You might be avoiding social situations without realizing it", "You could be more irritable with loved ones than usual"
@@ -217,6 +225,13 @@ INSTRUCTIONS:
 - Keep it conversational, like you're chatting over coffee
 - Include encouraging phrases and positive vibes
 - Make the user feel like they're talking to someone who really gets it
+
+SPECIFICALLY FOR MANIFESTATIONS:
+- Think about how the specific symptoms from their assessment might show up in their daily life
+- Consider their actual responses and how those symptoms would manifest in real situations
+- Focus on concrete, observable ways their mental health affects their day-to-day experiences
+- Include how symptoms impact work, relationships, self-care, and daily routines
+- Make it personal and relatable to their specific situation
 
 SPECIFICALLY FOR UNCONSCIOUS MANIFESTATIONS:
 - Think about how these symptoms might be showing up in their daily life without them realizing it
@@ -233,7 +248,8 @@ Think of yourself as that supportive friend who's always there to listen and giv
 
 VALIDATION: Before responding, ensure your JSON includes ALL required fields:
 - summary ✓
-- whatItMeans ✓  
+- whatItMeans ✓
+- manifestations ✓ (3-4 specific ways symptoms show up in daily life)
 - unconsciousManifestations ✓ (3-4 specific patterns)
 - recommendations ✓ (3-4 actionable suggestions)
 - nextSteps ✓
@@ -251,6 +267,7 @@ function generateStructuredExplanation(
   
   let summary = ''
   let whatItMeans = ''
+  let manifestations: string[] = []
   let unconsciousManifestations: string[] = []
   let recommendations: string[] = []
   let nextSteps = ''
@@ -260,6 +277,12 @@ function generateStructuredExplanation(
     if (score <= 4) {
       summary = 'Hey, great news! Your assessment shows you\'re doing pretty well overall.'
       whatItMeans = 'This is awesome! You\'re experiencing the normal ups and downs that everyone goes through - totally normal stuff. Think of it like having a few cloudy days mixed in with the sunny ones.'
+      manifestations = [
+        'Normal mood fluctuations throughout the day',
+        'Healthy sleep and appetite patterns',
+        'Good social engagement with friends and family',
+        'Effective daily functioning at work or school'
+      ]
       unconsciousManifestations = [
         'You might be more resilient than you realize',
         'Your natural coping mechanisms are working well',
@@ -275,6 +298,12 @@ function generateStructuredExplanation(
     } else if (score <= 9) {
       summary = 'So, your assessment shows you\'re going through a bit of a rough patch.'
       whatItMeans = 'Look, it sounds like you\'re dealing with some low mood stuff, but honestly? It\'s totally manageable and super common when life gets stressful. Think of it like having a few bad weather days - they pass.'
+      manifestations = [
+        'Occasional difficulty getting motivated to start the day',
+        'Some loss of interest in activities you usually enjoy',
+        'Mild changes in sleep patterns or appetite',
+        'Occasional social withdrawal or avoiding plans'
+      ]
       unconsciousManifestations = [
         'You might be avoiding social situations without realizing it',
         'You could be more irritable with loved ones than usual',
@@ -290,6 +319,14 @@ function generateStructuredExplanation(
     } else {
       summary = 'Your assessment shows moderate to severe symptoms of depression.'
       whatItMeans = 'You\'re experiencing significant emotional distress that deserves professional attention and support.'
+      manifestations = [
+        'Difficulty getting out of bed or completing basic daily tasks',
+        'Significant loss of interest in previously enjoyable activities',
+        'Major changes in sleep patterns affecting daily functioning',
+        'Noticeable changes in appetite leading to weight changes',
+        'Difficulty concentrating at work or school',
+        'Social isolation and avoiding friends and family'
+      ]
       unconsciousManifestations = [
         'You might be isolating yourself from friends and family',
         'You could be neglecting basic self-care without noticing',
@@ -351,6 +388,7 @@ function generateStructuredExplanation(
   return {
     summary,
     whatItMeans,
+    manifestations,
     unconsciousManifestations,
     recommendations,
     nextSteps,

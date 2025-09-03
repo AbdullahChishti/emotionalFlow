@@ -176,6 +176,138 @@ export interface Database {
           burnout_risk_score?: number
         }
       }
+      assessment_results: {
+        Row: {
+          id: string
+          user_id: string
+          assessment_id: string
+          assessment_title: string
+          score: number
+          level: string
+          severity: string
+          responses: Json
+          result_data: Json
+          friendly_explanation: string | null
+          taken_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          assessment_id: string
+          assessment_title: string
+          score: number
+          level: string
+          severity: string
+          responses: Json
+          result_data: Json
+          friendly_explanation?: string | null
+          taken_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          assessment_id?: string
+          assessment_title?: string
+          score?: number
+          level?: string
+          severity?: string
+          responses?: Json
+          result_data?: Json
+          friendly_explanation?: string | null
+          taken_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      assessment_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          session_type: string
+          session_name: string | null
+          assessment_ids: string[]
+          status: string
+          started_at: string
+          completed_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          session_type: string
+          session_name?: string | null
+          assessment_ids: string[]
+          status?: string
+          started_at?: string
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          session_type?: string
+          session_name?: string | null
+          assessment_ids?: string[]
+          status?: string
+          started_at?: string
+          completed_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      user_assessment_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          session_id: string | null
+          profile_data: Json
+          trauma_history: Json | null
+          current_symptoms: Json | null
+          resilience_data: Json | null
+          risk_factors: Json | null
+          preferences: Json | null
+          personalization_data: Json | null
+          last_assessed: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          session_id?: string | null
+          profile_data: Json
+          trauma_history?: Json | null
+          current_symptoms?: Json | null
+          resilience_data?: Json | null
+          risk_factors?: Json | null
+          preferences?: Json | null
+          personalization_data?: Json | null
+          last_assessed?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          session_id?: string | null
+          profile_data?: Json
+          trauma_history?: Json | null
+          current_symptoms?: Json | null
+          resilience_data?: Json | null
+          risk_factors?: Json | null
+          preferences?: Json | null
+          personalization_data?: Json | null
+          last_assessed?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

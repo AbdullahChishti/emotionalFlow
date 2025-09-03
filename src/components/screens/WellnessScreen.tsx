@@ -10,7 +10,7 @@ const wellnessOptions = [
     title: 'Daily Check-in',
     description: 'Track your mood and get personalized recommendations',
     icon: 'sentiment_satisfied',
-    href: '/check-in',
+    href: '/dashboard',
     color: 'from-brand-green-400 to-brand-green-600',
     bgColor: 'bg-brand-green-50'
   },
