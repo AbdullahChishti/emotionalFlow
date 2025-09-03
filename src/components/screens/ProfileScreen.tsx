@@ -154,12 +154,12 @@ export function ProfileScreen() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg sticky top-8">
+              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-brand-green-200/80 shadow-lg sticky top-8 transition-all duration-300 hover:border-brand-green-300/80 hover:shadow-xl">
 
                 {/* Profile Avatar */}
                 <div className="text-center mb-6">
                   <div className="relative mx-auto w-24 h-24 mb-4">
-                    <div className="w-24 h-24 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-24 h-24 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-lg border-2 border-white/30">
                       <span className="material-symbols-outlined text-3xl text-white">person</span>
                     </div>
                   </div>
@@ -168,16 +168,16 @@ export function ProfileScreen() {
                 </div>
 
                 {/* Navigation Menu */}
-                <nav className="space-y-2">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-brand-green-50 text-brand-green-700 font-medium border-2 border-brand-green-200">
+                <nav className="space-y-3">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-brand-green-50/80 text-brand-green-700 font-medium border-2 border-brand-green-200 hover:border-brand-green-300 transition-all duration-200 hover:shadow-md">
                     <span className="material-symbols-outlined text-xl">person</span>
                     Personal Information
                   </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl hover:bg-slate-50 text-secondary-600 transition-colors border-2 border-transparent hover:border-brand-green-200">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-white/80 hover:bg-brand-green-50/60 text-secondary-600 transition-all duration-200 border-2 border-slate-100 hover:border-brand-green-200 hover:shadow-md">
                     <span className="material-symbols-outlined text-xl">notifications</span>
                     Notifications
                   </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl hover:bg-slate-50 text-secondary-600 transition-colors border-2 border-transparent hover:border-brand-green-200">
+                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-white/80 hover:bg-brand-green-50/60 text-secondary-600 transition-all duration-200 border-2 border-slate-100 hover:border-brand-green-200 hover:shadow-md">
                     <span className="material-symbols-outlined text-xl">settings</span>
                     Account
                   </button>
@@ -186,9 +186,14 @@ export function ProfileScreen() {
                 {/* Quick Stats */}
                 <div className="mt-6 pt-6 border-t border-slate-200">
                   <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-secondary-600">Sessions</span>
-                      <span className="font-medium text-secondary-900">{Math.floor((profile?.total_credits_earned || 0) / 5)}</span>
+                    <div className="flex justify-between items-center text-sm bg-slate-50/60 p-3 rounded-xl border-2 border-slate-100">
+                      <div className="flex items-center gap-2">
+                        <span className="material-symbols-outlined text-brand-green-600" style={{fontSize: '18px'}}>emoji_people</span>
+                        <span className="text-secondary-600 font-medium">Sessions</span>
+                      </div>
+                      <span className="font-semibold text-brand-green-700 bg-white/80 px-3 py-1 rounded-lg border border-slate-200">
+                        {Math.floor((profile?.total_credits_earned || 0) / 5)} completed
+                      </span>
                     </div>
                   </div>
                 </div>

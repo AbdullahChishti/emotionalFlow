@@ -465,39 +465,31 @@ export default function AssessmentsPage() {
             </div>
           </motion.div>
 
-          {/* Important Information */}
+          {/* Important Information Pill */}
           <motion.div
-            className="text-center mt-16 pt-8 border-t border-gray-200"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.0 }}
+            className="flex justify-center mt-8 mb-6"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 max-w-2xl mx-auto border border-white/20">
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">Important Information</h3>
-              <div className="text-sm text-gray-600 space-y-3">
-                <p>
-                  These assessments are for informational purposes and are not a substitute for professional medical advice, diagnosis, or treatment.
-                </p>
-                <p>
-                  All assessments included here are scientifically validated and freely available in the public domain.
-                </p>
-                <p>
-                  If you're experiencing a mental health crisis, please contact emergency services or a crisis hotline immediately.
-                </p>
-              </div>
+            <div className="bg-amber-50/80 backdrop-blur-sm text-amber-800 text-sm px-4 py-2.5 rounded-full border border-amber-200 shadow-sm inline-flex items-center">
+              <svg className="w-4 h-4 mr-2 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <span>For informational purposes only • Not a substitute for professional medical advice</span>
             </div>
+          </motion.div>
 
-            <div className="mt-8">
-              <motion.button
-                onClick={handleBackToDashboard}
-                className="px-6 py-3 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20 text-gray-700 hover:bg-white/20 transition-all duration-300"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                ← Back to Dashboard
-              </motion.button>
-            </div>
-                </motion.div>
+          <div className="mt-8 text-center">
+            <motion.button
+              onClick={handleBackToDashboard}
+              className="px-6 py-3 rounded-xl backdrop-blur-xl bg-white/10 border border-white/20 text-gray-700 hover:bg-white/20 transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              ← Back to Dashboard
+            </motion.button>
+          </div>
               </div>
             </div>
           </div>
