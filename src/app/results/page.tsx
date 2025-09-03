@@ -32,10 +32,13 @@ export default function ResultsPage() {
         const storedResults = localStorage.getItem('assessmentResults')
         const storedProfile = localStorage.getItem('userProfile')
 
-        if (storedResults && storedProfile) {
+        if (storedResults) {
           try {
             setResults(JSON.parse(storedResults))
-            setUserProfile(JSON.parse(storedProfile))
+            // Try to load user profile, but don't require it for single assessment viewing
+            if (storedProfile) {
+              setUserProfile(JSON.parse(storedProfile))
+            }
           } catch (error) {
             console.error('Error parsing stored results:', error)
             router.push('/assessments')
@@ -113,16 +116,104 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 flex items-center justify-center">
-        <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-green-600 mx-auto mb-4"></div>
-          <p className="text-zinc-700 font-medium">Loading your results...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          {/* Animated Results Icon */}
+          <motion.div
+            className="relative mb-8"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="w-24 h-24 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
+              <motion.span
+                className="material-symbols-outlined text-4xl text-brand-green-700"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ 
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                analytics
+              </motion.span>
+            </div>
+            
+            {/* Floating Elements */}
+            <motion.div
+              className="absolute -top-2 -right-2 w-4 h-4 bg-brand-green-500 rounded-full"
+              animate={{
+                y: [0, -12, 0],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                delay: 0.3
+              }}
+            />
+            <motion.div
+              className="absolute -bottom-2 -left-2 w-3 h-3 bg-brand-green-400 rounded-full"
+              animate={{
+                y: [0, -10, 0],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: 0.7
+              }}
+            />
+          </motion.div>
+
+          {/* Main Text */}
+          <motion.h2
+            className="text-2xl font-bold text-slate-900 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            Loading your results...
+          </motion.h2>
+
+          {/* Subtitle */}
+          <motion.p
+            className="text-slate-600 mb-8 leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            Preparing your personalized assessment insights and recommendations.
+          </motion.p>
+
+          {/* Loading Bar */}
+          <motion.div
+            className="bg-slate-200 rounded-full h-2 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-brand-green-500 to-brand-green-600 rounded-full"
+              animate={{
+                width: ["0%", "30%", "60%", "90%", "100%"]
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
         </div>
       </div>
     )
   }
 
-  if (!results || !userProfile) {
+  if (!results) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 flex items-center justify-center">
         <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center max-w-md">
@@ -151,14 +242,14 @@ export default function ResultsPage() {
   const resultEntries = Object.entries(results)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <div className="glassmorphic border-b border-white/20 px-6 py-6 shadow-sm">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
+      <div className="bg-white border-b border-slate-200 shadow-sm">
+        <div className="flex items-center justify-between max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center gap-4">
             <motion.button
               onClick={() => router.push('/assessments')}
-              className="group flex items-center gap-2 text-zinc-700 hover:text-zinc-900 transition-colors duration-200"
+              className="group flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors duration-200"
               whileHover={{ x: -2 }}
             >
               <span
@@ -169,10 +260,10 @@ export default function ResultsPage() {
               <span className="font-semibold">Back to Assessments</span>
             </motion.button>
             <div>
-              <h1 className="text-2xl font-semibold text-zinc-900">
+              <h1 className="text-3xl font-bold text-slate-900">
                 Your Assessment Results
               </h1>
-              <p className="text-sm text-zinc-600 font-medium">
+              <p className="text-slate-600 font-medium">
                 Completed {resultEntries.length} assessment{resultEntries.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -181,25 +272,24 @@ export default function ResultsPage() {
       </div>
 
       {/* Results Summary */}
-      <div className="px-6 py-8">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="px-6 py-12">
+        <div className="max-w-7xl mx-auto space-y-8">
           {/* Overview Card */}
           <motion.div
-            className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20"
+            className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex items-center gap-3 mb-6">
-              <span
-                className="material-symbols-outlined text-2xl"
-                style={{ color: '#1f3d42' }}
-              >
-                summarize
-              </span>
-              <h2 className="text-xl font-semibold text-zinc-900">Assessment Summary</h2>
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+                <span className="material-symbols-outlined text-xl text-brand-green-700">
+                  summarize
+                </span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900">Assessment Summary</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {resultEntries.map(([assessmentId, result]) => {
                 const assessment = ASSESSMENTS[assessmentId]
                 if (!assessment) return null
@@ -220,7 +310,7 @@ export default function ResultsPage() {
           </motion.div>
 
           {/* Individual Results */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             {resultEntries.map(([assessmentId, result], index) => {
               const assessment = ASSESSMENTS[assessmentId]
               if (!assessment) return null
@@ -228,6 +318,7 @@ export default function ResultsPage() {
               return (
                 <motion.div
                   key={assessmentId}
+                  className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -250,26 +341,24 @@ export default function ResultsPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.0 }}
           >
-            <div className="glassmorphic rounded-3xl p-8 border border-white/20 shadow-2xl">
-              <div className="mb-6">
-                <span
-                  className="material-symbols-outlined text-5xl"
-                  style={{ color: '#1f3d42' }}
-                >
-                  dashboard
-                </span>
+            <div className="bg-white rounded-2xl p-12 border border-slate-200 shadow-lg">
+              <div className="mb-8">
+                <div className="w-16 h-16 bg-brand-green-100 rounded-2xl flex items-center justify-center mx-auto">
+                  <span className="material-symbols-outlined text-3xl text-brand-green-700">
+                    dashboard
+                  </span>
+                </div>
               </div>
-              <h2 className="text-2xl font-semibold text-zinc-900 mb-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-6">
                 Ready for Personalized Support?
               </h2>
-              <p className="text-zinc-700 mb-6 max-w-md mx-auto font-medium">
+              <p className="text-slate-600 mb-8 max-w-lg mx-auto text-lg leading-relaxed">
                 Based on your results, we've personalized your dashboard with tailored recommendations,
                 content, and support options to help you on your journey.
               </p>
               <motion.button
                 onClick={handleContinueToDashboard}
-                className="bg-brand-green-700 hover:bg-brand-green-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                style={{ backgroundColor: '#1f3d42' }}
+                className="bg-brand-green-700 hover:bg-brand-green-800 text-white px-10 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

@@ -223,49 +223,11 @@ export interface Database {
           updated_at?: string
         }
       }
-      assessment_sessions: {
-        Row: {
-          id: string
-          user_id: string
-          session_type: string
-          session_name: string | null
-          assessment_ids: string[]
-          status: string
-          started_at: string
-          completed_at: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          session_type: string
-          session_name?: string | null
-          assessment_ids: string[]
-          status?: string
-          started_at?: string
-          completed_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          session_type?: string
-          session_name?: string | null
-          assessment_ids?: string[]
-          status?: string
-          started_at?: string
-          completed_at?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
+
       user_assessment_profiles: {
         Row: {
           id: string
           user_id: string
-          session_id: string | null
           profile_data: Json
           trauma_history: Json | null
           current_symptoms: Json | null
@@ -280,7 +242,6 @@ export interface Database {
         Insert: {
           id?: string
           user_id: string
-          session_id?: string | null
           profile_data: Json
           trauma_history?: Json | null
           current_symptoms?: Json | null
@@ -295,7 +256,6 @@ export interface Database {
         Update: {
           id?: string
           user_id?: string
-          session_id?: string | null
           profile_data?: Json
           trauma_history?: Json | null
           current_symptoms?: Json | null

@@ -63,7 +63,7 @@ export function Navigation({ className = '' }: NavigationProps) {
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
               <span className="material-symbols-outlined text-2xl text-brand-green-600">psychology</span>
-              <span className="text-lg font-bold bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
+              <span className="text-lg font-bold text-brand-green-700">
                 MindWell
               </span>
             </motion.div>

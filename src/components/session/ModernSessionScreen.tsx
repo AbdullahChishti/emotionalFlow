@@ -20,27 +20,27 @@ interface ModernSessionScreenProps {
   matchedUser: { name: string }
 }
 
-// Enhanced therapeutic color palette with improved contrast
+// Enhanced therapeutic color palette using brand-green colors
 const therapeuticPalette = {
   backgrounds: {
-    calm: 'bg-emerald-50',
+    calm: 'bg-brand-green-50',
     anxious: 'bg-orange-50',
     sad: 'bg-blue-50',
-    hopeful: 'bg-green-50',
+    hopeful: 'bg-brand-green-100',
     neutral: 'bg-slate-50'
   },
   messages: {
-    calm: 'bg-white border-emerald-200 shadow-sm',
+    calm: 'bg-white border-brand-green-200 shadow-sm',
     anxious: 'bg-white border-orange-200 shadow-sm',
     sad: 'bg-white border-blue-200 shadow-sm',
-    hopeful: 'bg-white border-green-200 shadow-sm',
+    hopeful: 'bg-white border-brand-green-300 shadow-sm',
     neutral: 'bg-white border-slate-200 shadow-sm'
   },
   accents: {
-    calm: 'text-emerald-700',
+    calm: 'text-brand-green-700',
     anxious: 'text-orange-700',
     sad: 'text-blue-700',
-    hopeful: 'text-green-700',
+    hopeful: 'text-brand-green-800',
     neutral: 'text-slate-700'
   }
 }
@@ -84,8 +84,8 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
       {/* Therapist Avatar */}
       {!isUser && (
         <div className="flex-shrink-0 mr-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-sm">
-            <span className="material-symbols-outlined text-emerald-600 text-xl">psychology</span>
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-green-100 to-brand-green-200 flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-brand-green-600 text-xl">psychology</span>
           </div>
         </div>
       )}
@@ -110,7 +110,11 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
             <span className={`text-xs font-medium ${
               isUser ? 'text-slate-300' : 'text-slate-500'
             }`}>
-              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              {message.timestamp.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              })}
             </span>
           </div>
         </div>
@@ -131,11 +135,11 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
 // Enhanced Comfort Zone Component
 const ComfortZone = ({ currentAffirmation }: { currentAffirmation: number }) => {
   return (
-    <div className="h-full bg-gradient-to-br from-slate-50 to-emerald-50 border-r border-slate-200 flex flex-col justify-center items-center p-8">
+    <div className="h-full bg-gradient-to-br from-slate-50 to-brand-green-50 border-r border-slate-200 flex flex-col justify-center items-center p-8">
       <div className="text-center max-w-sm">
         {/* Comforting icon */}
-        <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
-          <span className="material-symbols-outlined text-emerald-600 text-3xl">favorite</span>
+        <div className="w-20 h-20 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
+          <span className="material-symbols-outlined text-brand-green-600 text-3xl">favorite</span>
         </div>
 
         {/* Rotating affirmations */}
@@ -157,9 +161,9 @@ const ComfortZone = ({ currentAffirmation }: { currentAffirmation: number }) => 
         {/* Gentle breathing indicator */}
         <div className="mt-8 flex justify-center">
           <div className="flex items-center gap-3 text-slate-600">
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-brand-green-400 rounded-full animate-pulse" />
             <span className="text-sm font-medium">Breathe gently</span>
-            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="w-2 h-2 bg-brand-green-400 rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
         </div>
       </div>
@@ -223,11 +227,11 @@ const BreathingExercise = () => {
         {/* Enhanced breathing circle */}
         <div className="relative w-32 h-32 mx-auto mb-8">
           <motion.div
-            className="w-full h-full rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-sm"
+            className="w-full h-full rounded-full bg-gradient-to-br from-brand-green-100 to-brand-green-200 flex items-center justify-center shadow-sm"
             animate={{ scale: currentPhase.scale }}
             transition={{ duration: 1, ease: "easeInOut" }}
           >
-            <span className="text-3xl font-bold text-emerald-700">
+            <span className="text-3xl font-bold text-brand-green-700">
               {count}
             </span>
           </motion.div>
@@ -249,7 +253,7 @@ const BreathingExercise = () => {
           className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
             isActive
               ? 'bg-red-100 text-red-700 hover:bg-red-200 shadow-sm'
-              : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 shadow-sm'
+              : 'bg-brand-green-100 text-brand-green-700 hover:bg-brand-green-200 shadow-sm'
           }`}
         >
           {isActive ? 'Pause' : 'Resume'}
@@ -521,15 +525,15 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
                       exit={{ opacity: 0, y: -10 }}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-sm">
-                          <span className="material-symbols-outlined text-emerald-600 text-xl">psychology</span>
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-green-100 to-brand-green-200 flex items-center justify-center shadow-sm">
+                          <span className="material-symbols-outlined text-brand-green-600 text-xl">psychology</span>
                         </div>
                         <div className="bg-white px-5 py-4 rounded-3xl border border-slate-200 shadow-sm">
                           <div className="flex items-center gap-2">
                             {[0, 1, 2].map((i) => (
                               <div
                                 key={i}
-                                className="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"
+                                className="w-2.5 h-2.5 bg-brand-green-400 rounded-full animate-pulse"
                                 style={{ animationDelay: `${i * 0.2}s` }}
                               />
                             ))}
@@ -559,7 +563,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
                           setInputValue(currentSuggestion + ' ')
                           setShowSuggestion(false)
                         }}
-                        className="inline-flex items-center gap-2 text-sm text-slate-700 hover:text-slate-900 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 rounded-full transition-colors font-medium"
+                        className="inline-flex items-center gap-2 text-sm text-slate-700 hover:text-slate-900 px-4 py-2 bg-brand-green-50 hover:bg-brand-green-100 rounded-full transition-colors font-medium"
                       >
                         <span>💭</span>
                         <span>{currentSuggestion}</span>
@@ -578,7 +582,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
                         placeholder="Share what's on your mind..."
-                        className="w-full border border-slate-300 rounded-3xl px-6 py-4 resize-none focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all duration-200 outline-none bg-white text-slate-900 placeholder:text-slate-500 font-medium text-base"
+                        className="w-full border border-slate-300 rounded-3xl px-6 py-4 resize-none focus:ring-2 focus:ring-brand-green-400 focus:border-brand-green-500 transition-all duration-200 outline-none bg-white text-slate-900 placeholder:text-slate-500 font-medium text-base"
                         rows={1}
                         style={{ minHeight: '56px', maxHeight: '120px' }}
                         disabled={isTyping}
@@ -620,7 +624,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
                       onClick={() => setShowBreathing(!showBreathing)}
                       className={`w-full flex items-center gap-4 p-4 rounded-xl text-base font-medium transition-all duration-200 ${
                         showBreathing
-                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm'
+                          ? 'bg-gradient-to-r from-brand-green-500 to-brand-green-600 text-white shadow-sm'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
@@ -669,8 +673,8 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
               transition={{ duration: 0.3 }}
               className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl border border-slate-200"
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <span className="material-symbols-outlined text-emerald-600 text-3xl">psychology</span>
+              <div className="w-20 h-20 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-brand-green-600 text-3xl">psychology</span>
               </div>
 
               <h2 className="text-2xl font-bold text-slate-900 mb-3">Complete Your Session?</h2>

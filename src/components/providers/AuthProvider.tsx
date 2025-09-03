@@ -160,6 +160,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true
     let timeoutId: NodeJS.Timeout
+    let safetyTimeout: NodeJS.Timeout
 
     const initializeAuth = async () => {
       // Prevent multiple initializations
@@ -169,6 +170,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       initializingRef.current = true
+      
+      // Add a safety timeout to prevent infinite loading
+      safetyTimeout = setTimeout(() => {
+        if (isMounted && loading) {
+          console.warn('Auth initialization taking too long, forcing completion')
+          setLoading(false)
+          initializingRef.current = false
+        }
+      }, 15000) // 15 second safety timeout
 
       try {
         console.log('Initializing auth...')
@@ -181,11 +191,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setNeedsOnboarding(false)
           setLoading(false)
           initializingRef.current = false
+          if (safetyTimeout) clearTimeout(safetyTimeout)
+          return
+        }
+
+        // Check if Supabase credentials are missing
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+          console.warn('Supabase credentials missing - running in demo mode')
+          setUser(null)
+          setProfile(null)
+          setNeedsOnboarding(false)
+          setLoading(false)
+          initializingRef.current = false
+          if (safetyTimeout) clearTimeout(safetyTimeout)
           return
         }
         
         // Set a maximum timeout for the entire initialization
-        const timeoutDuration = process.env.NODE_ENV === 'development' ? 5000 : 35000
+        const timeoutDuration = process.env.NODE_ENV === 'development' ? 10000 : 35000
         timeoutId = setTimeout(() => {
           if (isMounted) {
             console.warn(`Auth initialization timeout (${timeoutDuration}ms) - setting loading to false`)
@@ -200,9 +223,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Get initial session - in development, don't use timeout to avoid blocking
         let session, error
         try {
+          console.log('Fetching initial session...')
           const result = await supabase.auth.getSession()
           session = result.data.session
           error = result.error
+          console.log('Session fetch result:', { hasSession: !!session, error })
         } catch (err) {
           console.warn('Session retrieval failed, continuing without auth:', err)
           session = null
@@ -328,6 +353,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       initializingRef.current = false
       if (timeoutId) {
         clearTimeout(timeoutId)
+      }
+      if (safetyTimeout) {
+        clearTimeout(safetyTimeout)
       }
       subscription.unsubscribe()
     }

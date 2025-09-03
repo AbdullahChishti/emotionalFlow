@@ -33,6 +33,10 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
     return 'high'
   }
 
+  const getMoodLabel = (mood: number): string => {
+    return moodLabels[mood - 1] || 'Unknown'
+  }
+
   const handleSubmit = async () => {
     if (!user) return
 
@@ -45,6 +49,7 @@ export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
         .insert({
           user_id: user.id,
           mood_score: moodScore,
+          mood_label: getMoodLabel(moodScore),
           emotional_capacity: emotionalCapacity,
           seeking_support: seekingSupport,
           willing_to_listen: willingToListen,

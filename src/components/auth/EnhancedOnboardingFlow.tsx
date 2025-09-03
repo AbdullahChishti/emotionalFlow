@@ -53,27 +53,43 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
         })
         .eq('id', user.id)
 
-      if (profileError) throw profileError
+      if (profileError) {
+        console.error('Profile update error:', profileError)
+        // Continue with onboarding even if profile update fails
+      }
 
-      // Create initial mood entry
+      // Create initial mood entry (handle missing table gracefully)
       if (currentMood) {
-        const { error: moodError } = await supabase
-          .from('mood_entries')
-          .insert({
-            user_id: user.id,
-            mood_score: currentMood,
-            emotional_capacity: emotionalCapacity,
-            seeking_support: supportPreference === 'receive' || supportPreference === 'both',
-            willing_to_listen: supportPreference === 'give' || supportPreference === 'both',
-          })
+        try {
+          const selectedMood = moods.find(m => m.value === currentMood)
+          const { error: moodError } = await supabase
+            .from('mood_entries')
+            .insert({
+              user_id: user.id,
+              mood_score: currentMood,
+              mood_label: selectedMood?.label || 'Unknown',
+              emotional_capacity: emotionalCapacity, // Use the state value from onboarding
+              seeking_support: supportPreference === 'receive' || supportPreference === 'both',
+              willing_to_listen: supportPreference === 'give' || supportPreference === 'both',
+              notes: `Initial mood entry from onboarding - ${selectedMood?.label || 'Unknown'}`,
+            })
 
-        if (moodError) throw moodError
+          if (moodError) {
+            console.warn('Mood entry creation failed:', moodError)
+            // Continue with onboarding even if mood entry fails
+          }
+        } catch (moodError: any) {
+          console.warn('Mood entries table not available:', moodError?.message || moodError)
+          // Continue with onboarding even if mood entries table doesn't exist
+        }
       }
 
       await refreshProfile()
       onComplete() // Complete onboarding directly
     } catch (error) {
       console.error('Enhanced onboarding error:', error)
+      // Still complete onboarding even if there are errors
+      onComplete()
     } finally {
       setLoading(false)
     }

@@ -8,6 +8,10 @@ import { EnhancedOnboardingFlow } from '@/components/auth/EnhancedOnboardingFlow
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { LoadingTimeout } from '@/components/ui/LoadingTimeout'
 import { Navigation } from '@/components/ui/Navigation'
+// Debug components (only in development)
+import { AuthDebugger } from '@/components/debug/AuthDebugger'
+import { EnvChecker } from '@/components/debug/EnvChecker'
+import { SupabaseTest } from '@/components/debug/SupabaseTest'
 
 
 export default function Home() {
@@ -58,5 +62,12 @@ export default function Home() {
     )
   }
 
-  return <LandingPage />
+  return (
+    <>
+      <LandingPage />
+      <AuthDebugger />
+      <EnvChecker />
+      <SupabaseTest />
+    </>
+  )
 }

@@ -122,21 +122,21 @@ ScoreCard.displayName = 'ScoreCard'
 
 // Compact Summary Card Component for overview displays
 const CompactSummaryCard = memo(({ assessment, result }: { assessment: any, result: any }) => (
-  <div className="bg-white/70 rounded-xl p-4 border border-white/50 hover:bg-white/80 transition-all duration-300">
-    <div className="flex items-center gap-3 mb-2">
-      <div className="w-8 h-8 rounded-full bg-brand-green-100 flex items-center justify-center">
+  <div className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-all duration-300">
+    <div className="flex items-center gap-4 mb-4">
+      <div className="w-10 h-10 rounded-lg bg-brand-green-100 flex items-center justify-center">
         <span className="text-sm font-semibold text-brand-green-700">
           {assessment?.shortTitle?.charAt(0) || '?'}
         </span>
       </div>
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-zinc-900 truncate">{assessment?.shortTitle || 'Unknown'}</h3>
-        <p className="text-sm text-zinc-600 font-medium">{result.level}</p>
+        <h3 className="font-semibold text-slate-900 truncate">{assessment?.shortTitle || 'Unknown'}</h3>
+        <p className="text-sm text-slate-600 font-medium">{result.level}</p>
       </div>
     </div>
-    <div className="text-2xl font-bold text-brand-green-700" style={{ color: '#1f3d42' }}>
+    <div className="text-3xl font-bold text-brand-green-700">
       {result.score}
-      <span className="text-sm font-normal text-zinc-500 ml-1">
+      <span className="text-sm font-normal text-slate-500 ml-1">
         / {assessment?.scoring?.ranges?.[assessment.scoring.ranges.length - 1]?.max || '?'}
       </span>
     </div>
@@ -149,14 +149,14 @@ CompactSummaryCard.displayName = 'CompactSummaryCard'
 const AIInsights = memo(({ aiExplanation, isLoading }: { aiExplanation: any | null, isLoading: boolean }) => {
   if (isLoading) {
     return (
-      <div className="bg-white/70 rounded-xl p-6 border border-white/50 shadow-sm mb-6">
+      <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-brand-green-100/80 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-green-600"></div>
           </div>
-          <h3 className="text-lg font-semibold text-zinc-900">Preparing your personalized guidance...</h3>
+          <h3 className="text-lg font-semibold text-slate-900">Preparing your personalized guidance...</h3>
         </div>
-        <p className="text-zinc-600 text-sm">Please wait while we generate tailored recommendations.</p>
+        <p className="text-slate-600 text-sm">Please wait while we generate tailored recommendations.</p>
       </div>
     )
   }
@@ -168,20 +168,20 @@ const AIInsights = memo(({ aiExplanation, isLoading }: { aiExplanation: any | nu
     <div className="space-y-6 mb-8">
       {/* Recommendations */}
       {Array.isArray(e.recommendations) && e.recommendations.length > 0 && (
-        <div className="bg-white/70 rounded-xl p-6 border border-white/50 shadow-sm">
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-brand-green-100/80 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-lg" style={{ color: '#1f3d42' }}>recommend</span>
+            <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg text-brand-green-700">recommend</span>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-900">Recommendations</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Recommendations</h3>
           </div>
           <div className="space-y-3">
             {e.recommendations.map((recommendation: string, index: number) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-brand-green-50/50 rounded-lg">
+              <div key={index} className="flex items-start gap-3 p-4 bg-white rounded-lg border border-slate-200">
                 <div className="w-6 h-6 bg-brand-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                   {index + 1}
                 </div>
-                <p className="text-zinc-700 text-sm leading-relaxed">{recommendation}</p>
+                <p className="text-slate-700 text-sm leading-relaxed">{recommendation}</p>
               </div>
             ))}
           </div>
@@ -190,27 +190,27 @@ const AIInsights = memo(({ aiExplanation, isLoading }: { aiExplanation: any | nu
 
       {/* Next Steps */}
       {e.nextSteps && (
-        <div className="bg-white/70 rounded-xl p-6 border border-white/50 shadow-sm">
+        <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-brand-green-100/80 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-lg" style={{ color: '#1f3d42' }}>flag</span>
+            <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg text-brand-green-700">flag</span>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-900">Next Steps</h3>
+            <h3 className="text-lg font-semibold text-slate-900">Next Steps</h3>
           </div>
-          <p className="text-zinc-700 text-sm leading-relaxed">{e.nextSteps}</p>
+          <p className="text-slate-700 text-sm leading-relaxed">{e.nextSteps}</p>
         </div>
       )}
 
       {/* Supportive Message */}
       {e.supportiveMessage && (
-        <div className="bg-brand-green-50/70 rounded-xl p-6 border border-brand-green-200/60 shadow-sm">
+        <div className="bg-brand-green-50 rounded-xl p-6 border border-brand-green-200">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-brand-green-100/80 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-lg" style={{ color: '#1f3d42' }}>favorite</span>
+            <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
+              <span className="material-symbols-outlined text-lg text-brand-green-700">favorite</span>
             </div>
-            <h3 className="text-lg font-semibold text-zinc-900">A Caring Note</h3>
+            <h3 className="text-lg font-semibold text-slate-900">A Caring Note</h3>
           </div>
-          <p className="text-zinc-700 italic leading-relaxed">“{e.supportiveMessage}”</p>
+          <p className="text-slate-700 italic leading-relaxed">"{e.supportiveMessage}"</p>
         </div>
       )}
     </div>
@@ -258,15 +258,41 @@ export default function AssessmentResults({
 }: AssessmentResultsProps) {
   const { user } = useAuth()
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false) // Start with false since we have result data
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let isMounted = true
+    let timeoutId: NodeJS.Timeout
+
     const generateAIExplanation = async () => {
-      if (!user || !assessment || !result) return
+      if (!assessment || !result) {
+        if (isMounted) setIsLoading(false)
+        return
+      }
+
+      // If user is not authenticated, skip AI explanation but still show results
+      if (!user) {
+        if (isMounted) setIsLoading(false)
+        return
+      }
+
+      // Only show loading if we don't have result data with manifestations
+      const hasResultData = result.manifestations && result.manifestations.length > 0
+      if (!hasResultData && isMounted) {
+        setIsLoading(true)
+      }
 
       try {
-        setIsLoading(true)
+        
+        // Set a timeout to prevent infinite loading
+        timeoutId = setTimeout(() => {
+          if (isMounted) {
+            console.warn('AI explanation timeout - forcing loading to complete')
+            setIsLoading(false)
+          }
+        }, 30000) // 30 second timeout
+
         const assessmentData: AssessmentData = {
           assessmentName: assessment.title,
           score: result.score,
@@ -283,6 +309,9 @@ export default function AssessmentResults({
 
         const explanation = await getAIAssessmentExplanation(assessmentData, user)
 
+        // Clear the timeout since we got a response
+        if (timeoutId) clearTimeout(timeoutId)
+
         // Log a completeness check so we can verify every field is present
         if (explanation) {
           const completeness = {
@@ -297,19 +326,33 @@ export default function AssessmentResults({
           console.groupCollapsed('[AI] Explanation received (completeness check)')
           console.table(completeness)
           console.log('full explanation:', explanation)
+          console.log('manifestations array:', explanation.manifestations)
+          console.log('unconsciousManifestations array:', explanation.unconsciousManifestations)
           console.groupEnd()
         }
 
-        setAiExplanation(explanation)
+        if (isMounted) {
+          console.log('[AI] Setting explanation and stopping loading...')
+          setAiExplanation(explanation)
+          setIsLoading(false)
+          console.log('[AI] Loading state set to false')
+        }
       } catch (err) {
         console.error('Error generating AI explanation:', err)
-        setError('Failed to generate explanation')
-      } finally {
-        setIsLoading(false)
+        if (timeoutId) clearTimeout(timeoutId)
+        if (isMounted) {
+          setError('Failed to generate explanation')
+          setIsLoading(false)
+        }
       }
     }
 
     generateAIExplanation()
+
+    return () => {
+      isMounted = false
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [user, assessment, result])
 
   // Memoized header content with category and severity chips
@@ -412,10 +455,148 @@ export default function AssessmentResults({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gray-200 border-t-brand-green-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Analyzing your results...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          {/* Animated Brain Icon */}
+          <motion.div
+            className="relative mb-8"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="w-24 h-24 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
+              <motion.span
+                className="material-symbols-outlined text-4xl text-brand-green-700"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                psychology
+              </motion.span>
+            </div>
+            
+            {/* Floating Dots */}
+            <motion.div
+              className="absolute -top-2 -right-2 w-4 h-4 bg-brand-green-500 rounded-full"
+              animate={{
+                y: [0, -10, 0],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.2
+              }}
+            />
+            <motion.div
+              className="absolute -bottom-2 -left-2 w-3 h-3 bg-brand-green-400 rounded-full"
+              animate={{
+                y: [0, -8, 0],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                delay: 0.5
+              }}
+            />
+          </motion.div>
+
+          {/* Main Text */}
+          <motion.h2
+            className="text-2xl font-bold text-slate-900 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
+            Analyzing your results...
+          </motion.h2>
+
+          {/* Subtitle */}
+          <motion.p
+            className="text-slate-600 mb-8 leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+          >
+            Our AI is processing your responses and generating personalized insights just for you.
+          </motion.p>
+
+          {/* Progress Steps */}
+          <motion.div
+            className="space-y-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+          >
+            {[
+              { text: "Processing your responses", delay: 0 },
+              { text: "Analyzing patterns", delay: 1 },
+              { text: "Generating insights", delay: 2 },
+              { text: "Creating recommendations", delay: 3 }
+            ].map((step, index) => (
+              <motion.div
+                key={index}
+                className="flex items-center gap-3 text-sm text-slate-600"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.8 + step.delay * 0.3, duration: 0.5 }}
+              >
+                <motion.div
+                  className="w-2 h-2 bg-brand-green-500 rounded-full"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: step.delay * 0.3
+                  }}
+                />
+                <span>{step.text}</span>
+                <motion.div
+                  className="ml-auto"
+                  animate={{ opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 1,
+                    repeat: Infinity,
+                    delay: step.delay * 0.3 + 0.5
+                  }}
+                >
+                  <span className="material-symbols-outlined text-brand-green-600 text-sm">
+                    check_circle
+                  </span>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Loading Bar */}
+          <motion.div
+            className="mt-8 bg-slate-200 rounded-full h-2 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1, duration: 0.6 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-brand-green-500 to-brand-green-600 rounded-full"
+              animate={{
+                width: ["0%", "25%", "50%", "75%", "100%"]
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
         </div>
       </div>
     )
@@ -442,8 +623,8 @@ export default function AssessmentResults({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <div className="bg-white">
+      <div className="container mx-auto px-6 py-12">
         {/* Section 1: Card on the left, content on the right */}
         <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
           {/* Left: Score Card as a featured card */}
@@ -453,8 +634,7 @@ export default function AssessmentResults({
             transition={{ duration: 0.6 }}
             className="relative h-full"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-brand-green-200 to-brand-green-400 rounded-3xl transform rotate-3 shadow-2xl"></div>
-            <div className="relative glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
               <ScoreCard assessment={assessment} result={result} />
             </div>
           </motion.div>
@@ -467,12 +647,14 @@ export default function AssessmentResults({
             className="flex flex-col gap-6"
           >
             {headerContent}
-            <div className="bg-white/70 rounded-xl p-6 border border-white/50 shadow-sm">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="material-symbols-outlined" style={{ color: '#1f3d42' }}>verified</span>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-brand-green-100 rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined text-sm text-brand-green-700">verified</span>
+                </div>
                 <span className="text-sm font-semibold text-brand-green-700 uppercase tracking-wide">{result.level}</span>
               </div>
-              <p className="text-zinc-700 leading-relaxed">
+              <p className="text-slate-700 leading-relaxed">
                 {(aiExplanation && aiExplanation.summary) || result.description}
               </p>
             </div>
@@ -489,15 +671,15 @@ export default function AssessmentResults({
             className="space-y-6"
           >
             {/* Original Assessment Data */}
-            <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-2">Assessment Description</h3>
-              <p className="text-zinc-700 leading-relaxed">{result.description}</p>
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-900 mb-3">Assessment Description</h3>
+              <p className="text-slate-700 leading-relaxed">{result.description}</p>
             </div>
 
             {result.recommendations && result.recommendations.length > 0 && (
-              <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                <h3 className="text-lg font-semibold text-zinc-900 mb-3">Clinical Recommendations</h3>
-                <ul className="list-disc pl-5 space-y-2 text-zinc-700">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Clinical Recommendations</h3>
+                <ul className="list-disc pl-5 space-y-2 text-slate-700">
                   {result.recommendations.map((recommendation: string, idx: number) => (
                     <li key={idx}>{recommendation}</li>
                   ))}
@@ -506,9 +688,9 @@ export default function AssessmentResults({
             )}
 
             {result.insights && result.insights.length > 0 && (
-              <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                <h3 className="text-lg font-semibold text-zinc-900 mb-3">Key Insights</h3>
-                <ul className="list-disc pl-5 space-y-2 text-zinc-700">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Key Insights</h3>
+                <ul className="list-disc pl-5 space-y-2 text-slate-700">
                   {result.insights.map((insight: string, idx: number) => (
                     <li key={idx}>{insight}</li>
                   ))}
@@ -517,9 +699,9 @@ export default function AssessmentResults({
             )}
 
             {result.nextSteps && result.nextSteps.length > 0 && (
-              <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                <h3 className="text-lg font-semibold text-zinc-900 mb-3">Next Steps</h3>
-                <ul className="list-disc pl-5 space-y-2 text-zinc-700">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">Next Steps</h3>
+                <ul className="list-disc pl-5 space-y-2 text-slate-700">
                   {result.nextSteps.map((step: string, idx: number) => (
                     <li key={idx}>{step}</li>
                   ))}
@@ -529,9 +711,9 @@ export default function AssessmentResults({
 
             {/* User Responses (Collapsible) */}
             {result.responses && Object.keys(result.responses).length > 0 && (
-              <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
+              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
                 <details className="group">
-                  <summary className="text-lg font-semibold text-zinc-900 mb-3 cursor-pointer list-none flex items-center gap-2">
+                  <summary className="text-lg font-semibold text-slate-900 mb-4 cursor-pointer list-none flex items-center gap-2">
                     <span className="material-symbols-outlined text-xl group-open:rotate-90 transition-transform duration-200">chevron_right</span>
                     Your Responses
                   </summary>
@@ -539,11 +721,11 @@ export default function AssessmentResults({
                     {Object.entries(result.responses).map(([questionId, response]) => {
                       const question = assessment.questions.find((q: any) => q.id === questionId)
                       return (
-                        <div key={questionId} className="p-3 bg-zinc-50 rounded-lg">
-                          <p className="text-sm font-medium text-zinc-700 mb-1">
+                        <div key={questionId} className="p-4 bg-white rounded-lg border border-slate-200">
+                          <p className="text-sm font-medium text-slate-700 mb-2">
                             {question?.text || `Question ${questionId}`}
                           </p>
-                          <p className="text-zinc-600">
+                          <p className="text-slate-600">
                             {typeof response === 'number' ? `Score: ${response}` : String(response)}
                           </p>
                         </div>
@@ -555,29 +737,33 @@ export default function AssessmentResults({
             )}
 
             {/* AI-Generated Explanation */}
-            {aiExplanation && (
+            {(aiExplanation || result.description) && (
               <>
-                <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                  <h3 className="text-lg font-semibold text-zinc-900 mb-2">AI-Generated Explanation</h3>
-                  <p className="text-zinc-700 leading-relaxed">{aiExplanation.whatItMeans}</p>
+                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
+                    {aiExplanation ? 'AI-Generated Explanation' : 'Assessment Explanation'}
+                  </h3>
+                  <p className="text-slate-700 leading-relaxed">
+                    {aiExplanation?.whatItMeans || result.description}
+                  </p>
                 </div>
 
-                {aiExplanation.manifestations?.length > 0 && (
-                  <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                    <h3 className="text-lg font-semibold text-zinc-900 mb-3">How these symptoms might show up in your daily life</h3>
-                    <ul className="list-disc pl-5 space-y-2 text-zinc-700">
-                      {aiExplanation.manifestations.map((item: string, idx: number) => (
+                {((aiExplanation?.manifestations && aiExplanation.manifestations.length > 0) || (result.manifestations && result.manifestations.length > 0)) && (
+                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">How these symptoms might show up in your daily life</h3>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                      {(aiExplanation?.manifestations || result.manifestations || []).map((item: string, idx: number) => (
                         <li key={idx}>{item}</li>
                       ))}
                     </ul>
                   </div>
                 )}
 
-                {aiExplanation.unconsciousManifestations?.length > 0 && (
-                  <div className="bg-white/80 rounded-2xl p-6 border border-white/50 shadow-sm">
-                    <h3 className="text-lg font-semibold text-zinc-900 mb-3">Unconscious patterns that may show up</h3>
-                    <ul className="list-disc pl-5 space-y-2 text-zinc-700">
-                      {aiExplanation.unconsciousManifestations.map((item: string, idx: number) => (
+                {((aiExplanation?.unconsciousManifestations && aiExplanation.unconsciousManifestations.length > 0) || (result.unconsciousManifestations && result.unconsciousManifestations.length > 0)) && (
+                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Unconscious patterns that may show up</h3>
+                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                      {(aiExplanation?.unconsciousManifestations || result.unconsciousManifestations || []).map((item: string, idx: number) => (
                         <li key={idx}>{item}</li>
                       ))}
                     </ul>
@@ -594,12 +780,12 @@ export default function AssessmentResults({
             transition={{ duration: 0.6, delay: 0.1 }}
             className="relative"
           >
-            <div className="relative glassmorphic rounded-3xl p-6 shadow-2xl border border-white/20">
+            <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
               <AIInsights aiExplanation={aiExplanation} isLoading={isLoading} />
               {aiExplanation && aiExplanation.recommendations?.length > 0 && (
-                <div className="bg-white/70 rounded-xl p-4 border border-white/50 shadow-sm">
-                  <h4 className="text-base font-semibold text-zinc-900 mb-2">Recommended next steps</h4>
-                  <ul className="list-disc pl-5 space-y-1 text-zinc-700">
+                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 mt-4">
+                  <h4 className="text-base font-semibold text-slate-900 mb-3">Recommended next steps</h4>
+                  <ul className="list-disc pl-5 space-y-2 text-slate-700">
                     {aiExplanation.recommendations.map((rec: string, idx: number) => (
                       <li key={idx}>{rec}</li>
                     ))}
@@ -607,7 +793,7 @@ export default function AssessmentResults({
                 </div>
               )}
               {showActions && (
-                <div className="pt-4">
+                <div className="pt-6">
                   <ActionButtons onRetake={onRetake} onContinue={onContinue} />
                 </div>
               )}

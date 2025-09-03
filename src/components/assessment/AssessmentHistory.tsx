@@ -5,12 +5,13 @@
 
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
-import AssessmentService, { AssessmentHistoryEntry, AssessmentSessionHistory } from '@/lib/assessment-service'
+import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
 import { ASSESSMENTS } from '@/data/assessments'
 import { glassVariants } from '@/styles/glassmorphic-design-system'
+import { useRouter } from 'next/navigation'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -21,47 +22,75 @@ interface AssessmentHistoryProps {
 
 export default function AssessmentHistory({ className = '' }: AssessmentHistoryProps) {
   const { user } = useAuth()
+  const router = useRouter()
   const [assessmentHistory, setAssessmentHistory] = useState<AssessmentHistoryEntry[]>([])
-  const [sessionHistory, setSessionHistory] = useState<AssessmentSessionHistory[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'assessments' | 'sessions'>('assessments')
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
-  useEffect(() => {
-    const loadHistory = async () => {
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
-      try {
-        const [history, sessions] = await Promise.all([
-          AssessmentService.getAssessmentHistory(user.id),
-          AssessmentService.getSessionHistory(user.id)
-        ])
-
-        setAssessmentHistory(history)
-        setSessionHistory(sessions)
-      } catch (error) {
-        console.error('Error loading assessment history:', error)
-      } finally {
-        setLoading(false)
-      }
+  const loadHistory = useCallback(async () => {
+    if (!user) {
+      setLoading(false)
+      return
     }
 
+    setLoading(true)
+    setError(null)
+
+    try {
+      // Check cache first
+      const cacheKey = `assessment-history-${user.id}`
+      const cachedData = localStorage.getItem(cacheKey)
+      
+      if (cachedData) {
+        const parsedData = JSON.parse(cachedData)
+        // If cache is less than 5 minutes old, use it
+        if (Date.now() - parsedData.timestamp < 5 * 60 * 1000) {
+          setAssessmentHistory(parsedData.data)
+          setLoading(false)
+          return
+        }
+      }
+
+      // Fetch fresh data
+      const history = await AssessmentService.getAssessmentHistory(user.id)
+      
+      // Update cache
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: history,
+        timestamp: Date.now()
+      }))
+      
+      setAssessmentHistory(history)
+    } catch (error) {
+      console.error('Error loading assessment history:', error)
+      setError('Failed to load assessment history. Please try again.')
+      // Auto-retry up to 3 times
+      if (retryCount < 3) {
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1)
+        }, 2000) // Retry after 2 seconds
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [user, retryCount])
+
+  useEffect(() => {
     loadHistory()
-  }, [user])
+  }, [loadHistory])
 
   const getAssessmentIcon = (assessmentId: string) => {
     const assessment = ASSESSMENTS[assessmentId]
-    if (!assessment) return '📋'
+    if (!assessment) return 'assessment'
     
     switch (assessment.category) {
-      case 'depression': return '😢'
-      case 'anxiety': return '😰'
-      case 'trauma': return '🩹'
-      case 'resilience': return '💪'
-      case 'wellbeing': return '✨'
-      default: return '📋'
+      case 'depression': return 'mood'
+      case 'anxiety': return 'psychology'
+      case 'trauma': return 'healing'
+      case 'resilience': return 'fitness_center'
+      case 'wellbeing': return 'self_improvement'
+      default: return 'assessment'
     }
   }
 
@@ -86,11 +115,67 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     })
   }
 
+  const handleAssessmentClick = (entry: AssessmentHistoryEntry) => {
+    // Store the specific assessment result in localStorage for the results page
+    const assessmentResult = {
+      [entry.assessmentId]: {
+        score: entry.score,
+        level: entry.level,
+        severity: entry.severity,
+        insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
+        responses: {}, // We don't have the raw responses in the history entry
+        assessment: ASSESSMENTS[entry.assessmentId]
+      }
+    }
+
+    // Store in localStorage for the results page to access
+    localStorage.setItem('assessmentResults', JSON.stringify(assessmentResult))
+    
+    // Navigate to results page
+    router.push('/results')
+  }
+
+  // Loading skeleton
+  const renderSkeleton = () => (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="animate-pulse bg-gray-100 rounded-lg p-6 h-32">
+          <div className="h-4 bg-gray-200 rounded w-1/3 mb-3"></div>
+          <div className="h-3 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="flex space-x-4">
+            <div className="h-6 bg-gray-200 rounded w-16"></div>
+            <div className="h-6 bg-gray-200 rounded-full w-24"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+
   if (loading) {
     return (
       <div className={`${className}`}>
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#335f64' }}></div>
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Assessment History</h2>
+          <p className="text-gray-600">Loading your assessment history...</p>
+        </div>
+        {renderSkeleton()}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={`${className}`}>
+        <div className="text-center py-12 bg-red-50 rounded-lg">
+          <span className="material-symbols-outlined text-red-500 text-4xl mb-3">error</span>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={loadHistory}
+            className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+            disabled={loading}
+          >
+            {loading ? 'Retrying...' : 'Retry'}
+          </button>
         </div>
       </div>
     )
@@ -121,42 +206,18 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
         </p>
       </motion.div>
 
-      {/* Tabs */}
-      <div className="flex space-x-1 mb-6">
-        <button
-          onClick={() => setActiveTab('assessments')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-            activeTab === 'assessments'
-              ? 'text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-          style={activeTab === 'assessments' ? { backgroundColor: '#335f64' } : {}}
-        >
-          Individual Assessments
-        </button>
-        <button
-          onClick={() => setActiveTab('sessions')}
-          className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-            activeTab === 'sessions'
-              ? 'text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-          style={activeTab === 'sessions' ? { backgroundColor: '#335f64' } : {}}
-        >
-          Assessment Sessions
-        </button>
-      </div>
-
-      {/* Assessment History Tab */}
-      {activeTab === 'assessments' && (
+      {/* Assessment History */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
+          className="mt-6"
         >
           {assessmentHistory.length === 0 ? (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">📋</div>
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <span className="material-symbols-outlined text-2xl text-gray-400">assessment</span>
+              </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No Assessments Yet</h3>
               <p className="text-gray-600 mb-6">
                 Complete your first assessment to start tracking your mental health journey.
@@ -176,31 +237,35 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
               {assessmentHistory.map((entry, index) => (
                 <motion.div
                   key={entry.id}
-                  className={`${glassVariants.panelSizes.medium} p-6`}
-                  style={{
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
+                  className="group bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md hover:border-brand-green-300 cursor-pointer transition-all duration-200"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  onClick={() => handleAssessmentClick(entry)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
-                      <div className="text-3xl">{getAssessmentIcon(entry.assessmentId)}</div>
-                      <div>
+                      <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200 group-hover:bg-brand-green-50 group-hover:border-brand-green-200 transition-colors duration-200">
+                        <span className="material-symbols-outlined text-xl text-gray-600 group-hover:text-brand-green-600 transition-colors duration-200">
+                          {getAssessmentIcon(entry.assessmentId)}
+                        </span>
+                      </div>
+                      <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
                           {entry.assessmentTitle}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-sm text-gray-600 mb-3">
                           Completed on {formatDate(entry.takenAt)}
                         </p>
                         <div className="flex items-center space-x-4">
-                          <span className="text-2xl font-bold text-gray-900">
-                            {entry.score}
-                          </span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-bold text-gray-900">
+                              {entry.score}
+                            </span>
+                            <span className="text-sm text-gray-500">/ 10</span>
+                          </div>
                           <span className={`px-3 py-1 rounded-full text-sm font-medium ${getSeverityColor(entry.severity)}`}>
                             {entry.level}
                           </span>
@@ -208,15 +273,19 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-500 font-medium mb-2">
                         {entry.severity.charAt(0).toUpperCase() + entry.severity.slice(1)} Severity
+                      </div>
+                      <div className="flex items-center text-brand-green-600 text-sm font-medium">
+                        <span className="material-symbols-outlined text-lg mr-1">visibility</span>
+                        View Details
                       </div>
                     </div>
                   </div>
                   
                   {entry.friendlyExplanation && (
-                    <div className="mt-4 p-4 bg-white/20 rounded-lg">
-                      <p className="text-sm text-gray-700">{entry.friendlyExplanation}</p>
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <p className="text-sm text-gray-700 leading-relaxed">{entry.friendlyExplanation}</p>
                     </div>
                   )}
                 </motion.div>
@@ -224,78 +293,6 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
             </div>
           )}
         </motion.div>
-      )}
-
-      {/* Session History Tab */}
-      {activeTab === 'sessions' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-        >
-          {sessionHistory.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">📊</div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Sessions Yet</h3>
-              <p className="text-gray-600 mb-6">
-                Complete an assessment session to see your session history here.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {sessionHistory.map((session, index) => (
-                <motion.div
-                  key={session.id}
-                  className={`${glassVariants.panelSizes.medium} p-6`}
-                  style={{
-                    backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                        {session.sessionName || `${session.sessionType.charAt(0).toUpperCase() + session.sessionType.slice(1)} Assessment`}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2">
-                        Started on {formatDate(session.startedAt)}
-                        {session.completedAt && (
-                          <span> • Completed on {formatDate(session.completedAt)}</span>
-                        )}
-                      </p>
-                      <div className="flex items-center space-x-4">
-                        <span className="text-sm text-gray-600">
-                          {session.assessmentCount} assessment{session.assessmentCount !== 1 ? 's' : ''}
-                        </span>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          session.status === 'completed' 
-                            ? 'text-green-600 bg-green-100'
-                            : session.status === 'in_progress'
-                            ? 'text-blue-600 bg-blue-100'
-                            : 'text-gray-600 bg-gray-100'
-                        }`}>
-                          {session.status.charAt(0).toUpperCase() + session.status.slice(1)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl">
-                        {session.status === 'completed' ? '✅' : 
-                         session.status === 'in_progress' ? '⏳' : '❌'}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
     </div>
   )
 }

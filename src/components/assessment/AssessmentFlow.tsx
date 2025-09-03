@@ -46,7 +46,7 @@ export function AssessmentFlow({
   const [responses, setResponses] = useState<Record<string, number | string>>({})
   const [allResponses, setAllResponses] = useState<Record<string, Record<string, number | string>>>({})
   const [results, setResults] = useState<Record<string, AssessmentResult>>({})
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+
   const [savingResults, setSavingResults] = useState(false)
 
   const currentAssessment = ASSESSMENTS[assessmentIds[currentAssessmentIndex]]
@@ -57,19 +57,7 @@ export function AssessmentFlow({
     if (!user) return
 
     try {
-      // Create or update assessment session
-      let sessionId = currentSessionId
-      if (!sessionId) {
-        const session = await AssessmentService.createSession(user.id, {
-          sessionType: assessmentIds.length === 1 ? 'single' : 'comprehensive',
-          sessionName: assessmentIds.length === 1 
-            ? `${ASSESSMENTS[assessmentIds[0]]?.shortTitle} Assessment`
-            : 'Comprehensive Assessment',
-          assessmentIds
-        })
-        sessionId = session?.id || null
-        setCurrentSessionId(sessionId)
-      }
+
 
       // Save individual assessment results
       for (const [assessmentId, result] of Object.entries(results)) {
@@ -77,7 +65,6 @@ export function AssessmentFlow({
         if (assessment) {
           await AssessmentService.saveAssessmentResult(
             user.id,
-            sessionId,
             assessmentId,
             assessment.title,
             result,
@@ -90,7 +77,6 @@ export function AssessmentFlow({
       // Save user profile
       await AssessmentService.saveUserProfile(
         user.id,
-        sessionId,
         userProfile,
         {
           therapy: userProfile.preferences?.therapyApproach || [],
@@ -100,11 +86,6 @@ export function AssessmentFlow({
           crisis: userProfile.riskFactors
         }
       )
-
-      // Mark session as completed
-      if (sessionId) {
-        await AssessmentService.updateSessionStatus(sessionId, 'completed')
-      }
 
       console.log('Assessment data saved to database successfully')
     } catch (error) {
@@ -147,6 +128,26 @@ export function AssessmentFlow({
       return ASSESSMENT_ICONS.emotional
     }
     return ASSESSMENT_ICONS.general
+  }
+
+  const getAssessmentIconName = (assessmentId: string) => {
+    // Map assessment IDs to Material Symbols icon names
+    if (assessmentId.includes('depression') || assessmentId.includes('phq')) {
+      return 'mood'
+    } else if (assessmentId.includes('anxiety') || assessmentId.includes('gad')) {
+      return 'psychology'
+    } else if (assessmentId.includes('stress') || assessmentId.includes('pss')) {
+      return 'stress_management'
+    } else if (assessmentId.includes('resilience') || assessmentId.includes('cd-risc')) {
+      return 'fitness_center'
+    } else if (assessmentId.includes('wellness') || assessmentId.includes('mental')) {
+      return 'self_improvement'
+    } else if (assessmentId.includes('cognitive') || assessmentId.includes('thinking')) {
+      return 'psychology'
+    } else if (assessmentId.includes('emotional') || assessmentId.includes('mood')) {
+      return 'sentiment_satisfied'
+    }
+    return 'assessment'
   }
 
   const handleAnswer = async (answer: number | string) => {
@@ -279,35 +280,46 @@ export function AssessmentFlow({
 
   const renderSelection = () => (
     <motion.div
-      className="max-w-4xl mx-auto space-y-6"
+      className="max-w-6xl mx-auto space-y-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
     >
       {/* Header */}
       <motion.div
-        className={`${glassVariants.panelSizes.large} text-center`}
-        style={{
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          background: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
-        }}
+        className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200 text-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h1 className="text-3xl font-light text-gray-800 mb-4">
+        <div className="mb-6">
+          <div className="w-16 h-16 bg-brand-green-100 rounded-2xl flex items-center justify-center mx-auto">
+            <span className="material-symbols-outlined text-2xl text-brand-green-700">psychology</span>
+          </div>
+        </div>
+        <h1 className="text-4xl font-bold text-slate-900 mb-4">
           Mental Health Assessments
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-slate-600 max-w-3xl mx-auto mb-6">
           These scientifically validated assessments can help you understand your mental health
           and identify areas for growth. Take your time and answer honestly.
         </p>
+        
+        {/* Professional Grade Info Pill */}
+        <motion.div
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-full text-sm font-medium text-blue-800 shadow-sm"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <span className="material-symbols-outlined text-base">verified</span>
+          <span>Professional-grade assessments used by world's top psychologists</span>
+          <span className="material-symbols-outlined text-base">psychology</span>
+        </motion.div>
       </motion.div>
 
       {/* Assessment List */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-8">
         {assessmentIds.map((assessmentId, index) => {
           const assessment = ASSESSMENTS[assessmentId]
           const category = ASSESSMENT_CATEGORIES[assessment.category]
@@ -317,19 +329,9 @@ export function AssessmentFlow({
           return (
             <motion.div
               key={assessmentId}
-              className={`${glassVariants.panelSizes.medium} cursor-pointer group ${
+              className={`bg-white rounded-2xl p-6 shadow-lg border border-slate-200 cursor-pointer group hover:shadow-xl transition-all duration-300 ${
                 isSelected ? 'ring-2 ring-brand-green-500 ring-offset-2' : ''
               }`}
-              style={{
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                background: isSelected 
-                  ? `linear-gradient(135deg, ${category.color}, rgba(255, 255, 255, 0.2))`
-                  : `linear-gradient(135deg, ${category.color}, rgba(255, 255, 255, 0.1))`,
-                border: isSelected 
-                  ? '2px solid rgba(34, 197, 94, 0.5)'
-                  : '1px solid rgba(255, 255, 255, 0.2)'
-              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 + index * 0.1 }}
@@ -341,42 +343,46 @@ export function AssessmentFlow({
                 setCurrentState('taking')
               }}
             >
-              <div className="flex items-start gap-4 p-4">
-                {/* SVG Icon */}
+              <div className="flex items-start gap-6">
+                {/* Icon */}
                 <div className="flex-shrink-0">
-                  <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-300">
-                    <img 
-                      src={AssessmentIcon} 
-                      alt="Assessment Icon" 
-                      className="w-10 h-10"
-                    />
+                  <div className="w-16 h-16 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-2xl flex items-center justify-center group-hover:from-brand-green-200 group-hover:to-brand-green-300 transition-all duration-300">
+                    <span className="material-symbols-outlined text-2xl text-brand-green-700">
+                      {getAssessmentIconName(assessmentId)}
+                    </span>
                   </div>
                 </div>
                 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-medium text-gray-800 mb-2 group-hover:text-gray-900 transition-colors">
-                    {assessment.shortTitle}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3 group-hover:text-gray-700 transition-colors">
-                    {assessment.description}
-                  </p>
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-brand-green-500 rounded-full"></span>
-                      {assessment.estimatedTime} min
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-brand-green-400 rounded-full"></span>
-                      {assessment.questions.length} questions
-                    </span>
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-brand-green-700 transition-colors">
+                        {assessment.shortTitle}
+                      </h3>
+                      <p className="text-slate-600 leading-relaxed">
+                        {assessment.description}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Stats */}
+                  <div className="flex items-center gap-6 text-sm text-slate-500">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-brand-green-500 rounded-full"></div>
+                      <span className="font-medium">{assessment.estimatedTime} min</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-brand-green-400 rounded-full"></div>
+                      <span className="font-medium">{assessment.questions.length} questions</span>
+                    </div>
                   </div>
                 </div>
                 
                 {/* Arrow indicator */}
                 <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-8 h-8 bg-brand-green-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-brand-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-brand-green-100 rounded-full flex items-center justify-center group-hover:bg-brand-green-200 transition-colors duration-300">
+                    <svg className="w-5 h-5 text-brand-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -389,17 +395,18 @@ export function AssessmentFlow({
 
       {/* Start Button */}
       <motion.div
-        className="text-center pt-6"
+        className="text-center pt-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
         <motion.button
           onClick={() => setCurrentState('taking')}
-          className="px-8 py-4 rounded-2xl backdrop-blur-xl bg-brand-green-500/20 border border-brand-green-400/30 text-brand-green-700 hover:bg-brand-green-500/30 transition-all duration-300 text-lg font-medium"
+          className="px-10 py-4 bg-white border-2 border-brand-green-600 text-brand-green-600 rounded-xl hover:bg-brand-green-50 hover:border-brand-green-700 hover:text-brand-green-700 transition-all duration-300 text-lg font-semibold shadow-lg hover:shadow-xl flex items-center gap-3 mx-auto"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
+          <span className="material-symbols-outlined">play_arrow</span>
           Begin Assessments
         </motion.button>
       </motion.div>

@@ -23,17 +23,7 @@ import { BackButton } from '@/components/ui/BackButton'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useEffect } from 'react'
 
-// SVG asset paths (from public folder)
-const SVG_ASSETS = {
-  contemplatingBro: '/assets/Contemplating-bro_1.svg',
-  mentalHealthBro: '/assets/Mental_health-bro_2.svg',
-  mentalHealthPana: '/assets/Mental_health-pana_1.svg',
-  overwhelmedBro: '/assets/Overwhelmed-bro_1.svg',
-  peaceOfMindBro: '/assets/Peace_of_mind-bro_2.svg',
-  personalGrowthBro: '/assets/personal_growth-bro_1.svg',
-  psychologistRafiki: '/assets/Psychologist-rafiki_1.svg',
-  thinkingFaceBro: '/assets/Thinking_face-bro_1.svg'
-}
+
 
 export default function AssessmentsPage() {
   const [selectedFlow, setSelectedFlow] = useState<string | null>(null)
@@ -168,8 +158,8 @@ export default function AssessmentsPage() {
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       <div className="pt-16 pb-20 md:pb-0">
-        <div className="container mx-auto px-4 py-6">
-          <div className="mb-6">
+        <div className="container mx-auto px-4 py-4">
+          <div className="mb-4">
             <BackButton />
           </div>
           <div className="bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 rounded-lg p-6 relative overflow-hidden">
@@ -211,34 +201,37 @@ export default function AssessmentsPage() {
               />
             </div>
 
-            <div className="relative z-10 px-6 sm:px-10 lg:px-20 xl:px-40 py-12">
+            <div className="relative z-10 px-6 sm:px-10 lg:px-20 xl:px-40 py-6">
               <div className="max-w-5xl mx-auto">
                 {/* Hero Section */}
                 <motion.div
-                  className="text-center mb-16"
+                  className="text-center mb-8"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                 >
-                  <div className="mb-6">
-                    <div className="w-32 h-32 mx-auto">
-                      <img 
-                        src={SVG_ASSETS.psychologistRafiki} 
-                        alt="Professional Support" 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
-                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">
+                  <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-4">
                     Mental Health Assessments
                   </h2>
-                  <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                  <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
                     Understand your emotional well-being with our curated assessments. Each is designed to provide insights into different aspects of your mental health, helping you identify areas for growth and support.
                   </p>
+                  
+                  {/* Professional Grade Info Pill */}
+                  <motion.div
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-200 rounded-full text-sm font-medium text-blue-800 shadow-sm"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.3, duration: 0.5 }}
+                  >
+                    <span className="material-symbols-outlined text-base">verified</span>
+                    <span>Professional-grade assessments used by world's top psychologists</span>
+                    <span className="material-symbols-outlined text-base">psychology</span>
+                  </motion.div>
                 </motion.div>
 
                 {/* Assessment Categories */}
-                <div className="space-y-16">
+                <div className="space-y-12">
             {/* Mood & Emotional Well-being */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -273,14 +266,7 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Mental Wellness SVG */}
-                <div className="bg-gradient-to-br from-blue-100 to-emerald-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
-                  <img 
-                    src={SVG_ASSETS.peaceOfMindBro} 
-                    alt="Mental Wellness" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+
 
                 {/* CD-RISC Resilience Assessment */}
                 <motion.div
@@ -306,14 +292,7 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Building Strength SVG */}
-                <div className="bg-gradient-to-br from-emerald-100 to-teal-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
-                  <img 
-                    src={SVG_ASSETS.personalGrowthBro} 
-                    alt="Building Strength" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+
               </div>
             </motion.div>
 
@@ -351,14 +330,7 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Finding Calm SVG */}
-                <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
-                  <img 
-                    src={SVG_ASSETS.mentalHealthPana} 
-                    alt="Finding Calm" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+
               </div>
             </motion.div>
 
@@ -396,21 +368,14 @@ export default function AssessmentsPage() {
                   </motion.a>
                 </motion.div>
 
-                {/* Path to Healing SVG */}
-                <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-lg min-h-[200px] flex items-center justify-center p-6 relative overflow-hidden">
-                  <img 
-                    src={SVG_ASSETS.psychologistRafiki} 
-                    alt="Path to Healing" 
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                </div>
+
               </div>
             </motion.div>
           </div>
 
           {/* Assessment Flows Section */}
           <motion.div
-            className="mt-16 pt-8 border-t border-gray-200"
+            className="mt-12 pt-6 border-t border-gray-200"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
