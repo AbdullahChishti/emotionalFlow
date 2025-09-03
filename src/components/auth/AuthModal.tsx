@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import SketchbookBackground from '@/components/ui/SketchbookBackground'
-import { DoodleHeart } from '@/components/landing/DoodleIcons'
+
 
 interface AuthModalProps {
   mode: 'signin' | 'signup'
@@ -272,7 +271,6 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
   return (
     <AnimatePresence>
       <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <SketchbookBackground />
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -289,7 +287,7 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
 
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-green-100/80 mx-auto mb-5 border border-brand-green-200/50">
-              <DoodleHeart className="w-9 h-9 text-brand-green-500" />
+              <span className="material-symbols-outlined text-3xl text-brand-green-500">psychology</span>
             </div>
             <h2 className="text-3xl font-light text-zinc-800">
               {mode === 'signin' ? 'Welcome Back' : 'Create Your Sketchbook'}

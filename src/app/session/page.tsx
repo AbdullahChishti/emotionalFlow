@@ -17,25 +17,10 @@ export default function SessionPage() {
   }
 
   const matchedUser = {
-    user: {
-      id: 'listener_1',
-      name: 'Alex',
-      role: 'listener' as const,
-      isOnline: true,
-      joinedAt: new Date()
-    },
-    joinedAt: new Date(),
-    lastActivity: new Date(),
-    emotionalState: 'calm' as const
+    name: 'Alex'
   }
 
-  const currentUser = {
-    id: 'guest_user',
-    name: 'You',
-    role: 'seeker' as const,
-    isOnline: true,
-    joinedAt: new Date()
-  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">

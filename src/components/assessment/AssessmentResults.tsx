@@ -25,21 +25,15 @@ export default function AssessmentResults({ assessment, result, onRetake, onCont
       try {
         setIsLoading(true)
         const assessmentData: AssessmentData = {
-          assessmentType: assessment.id,
           assessmentName: assessment.title,
           score: result.score,
           maxScore: assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max,
-          severity: result.severity,
-          level: result.level,
-          responses: result.responses || {}
+          responses: result.responses || {},
+          category: assessment.category
         }
 
-        const response = await getAIAssessmentExplanation(assessmentData, user)
-        if (response.success) {
-          setAiExplanation(response.explanation)
-        } else {
-          setError('Unable to generate AI explanation')
-        }
+        const explanation = await getAIAssessmentExplanation(assessmentData, user)
+        setAiExplanation(explanation)
       } catch (err) {
         console.error('Error generating AI explanation:', err)
         setError('Failed to generate explanation')

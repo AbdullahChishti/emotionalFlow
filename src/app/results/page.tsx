@@ -10,7 +10,7 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { AssessmentResult } from '@/data/assessments'
 import { UserProfile } from '@/data/assessment-integration'
-import { AssessmentResults } from '@/components/assessment/AssessmentResults'
+import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { ASSESSMENTS } from '@/data/assessments'
 
 export default function ResultsPage() {
@@ -154,7 +154,6 @@ export default function ResultsPage() {
                   <AssessmentResults
                     assessment={assessment}
                     result={result}
-                    userProfile={userProfile}
                     onRetake={() => router.push('/assessments')}
                     onContinue={handleContinueToDashboard}
                   />

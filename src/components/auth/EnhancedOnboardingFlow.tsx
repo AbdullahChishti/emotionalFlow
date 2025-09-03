@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Heart, Shield, Users, Sparkles, ArrowRight, ArrowLeft, CheckCircle, Star } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/providers/AuthProvider'
-import { EnhancedWelcomeTutorial } from '@/components/ui/EnhancedWelcomeTutorial'
+
 
 interface EnhancedOnboardingFlowProps {
   onComplete: () => void
@@ -15,7 +15,7 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
   const { user, refreshProfile } = useAuth()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [showTutorial, setShowTutorial] = useState(false)
+
   
   // Enhanced onboarding data
   const [userName, setUserName] = useState('')
@@ -71,7 +71,7 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
       }
 
       await refreshProfile()
-      setShowTutorial(true) // Show enhanced tutorial before completing
+      onComplete() // Complete onboarding directly
     } catch (error) {
       console.error('Enhanced onboarding error:', error)
     } finally {
@@ -79,10 +79,7 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
     }
   }
 
-  const handleTutorialComplete = () => {
-    setShowTutorial(false)
-    onComplete()
-  }
+
 
   const nextStep = () => {
     if (currentStep < 6) {
@@ -511,12 +508,7 @@ export function EnhancedOnboardingFlow({ onComplete }: EnhancedOnboardingFlowPro
         </div>
       </div>
 
-      {/* Enhanced Welcome Tutorial */}
-      <EnhancedWelcomeTutorial
-        isOpen={showTutorial}
-        onClose={() => setShowTutorial(false)}
-        onComplete={handleTutorialComplete}
-      />
+
     </div>
   )
 }
