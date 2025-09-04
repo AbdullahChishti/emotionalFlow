@@ -10,7 +10,6 @@ import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
 import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
 import { ASSESSMENTS } from '@/data/assessments'
-import { glassVariants } from '@/styles/glassmorphic-design-system'
 import { useRouter } from 'next/navigation'
 
 // Material Symbols icons import
@@ -21,7 +20,7 @@ interface AssessmentHistoryProps {
 }
 
 export default function AssessmentHistory({ className = '' }: AssessmentHistoryProps) {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [assessmentHistory, setAssessmentHistory] = useState<AssessmentHistoryEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,10 +28,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   const [retryCount, setRetryCount] = useState(0)
 
   const loadHistory = useCallback(async () => {
-    if (!user) {
-      setLoading(false)
-      return
-    }
+    if (!user) return
 
     setLoading(true)
     setError(null)
@@ -77,8 +73,15 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   }, [user, retryCount])
 
   useEffect(() => {
+    if (authLoading) return
+
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     loadHistory()
-  }, [loadHistory])
+  }, [user, authLoading, loadHistory])
 
   const getAssessmentIcon = (assessmentId: string) => {
     const assessment = ASSESSMENTS[assessmentId]
