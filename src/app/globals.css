@@ -48,6 +48,16 @@
   --color-input: #e2e8f0;
   --color-ring: #0ea5e9;
   --radius: 0.75rem;
+
+  /* MindWell brand tokens */
+  --brand-50: #ECF6F4;
+  --brand-500: #2E7D74;
+  --brand-600: #24685F;
+  --ink-900: #0F172A;
+  --ink-600: #475569;
+  --ink-400: #94A3B8;
+  --error-600: #B91C1C;
+  --success-600: #177245;
 }
 
 /* Dark theme overrides for Purple Sparkle */
