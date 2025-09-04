@@ -52,7 +52,9 @@ export function Navigation({ className = '' }: NavigationProps) {
   ]
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-40 glassmorphic ${className}`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-40 glassmorphic border-b border-white/20 shadow-sm backdrop-blur-md ${className}`}
+    >
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -77,13 +79,13 @@ export function Navigation({ className = '' }: NavigationProps) {
               return (
                 <Link key={item.href} href={item.href}>
                   <motion.button
-                    className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
+                    className={`relative flex items-center gap-2 px-3 py-2 text-sm font-medium transition-all duration-300 rounded-lg ${
                       isCrisis
                         ? isActive
-                          ? 'text-red-600 bg-red-50 shadow-sm border border-red-200'
+                          ? 'text-red-600 bg-red-50/70 border-b-2 border-red-400'
                           : 'text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-200 hover:border-red-300'
                         : isActive
-                        ? 'text-brand-green-600 bg-brand-green-50 shadow-sm'
+                        ? 'text-brand-green-700 bg-white/60 border-b-2 border-brand-green-600'
                         : 'text-secondary-600 hover:text-brand-green-600 hover:bg-white/50'
                     }`}
                     whileHover={{ scale: 1.05 }}
