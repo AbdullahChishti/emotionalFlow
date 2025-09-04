@@ -102,9 +102,11 @@ export default function AssessmentsPage() {
       console.warn('🚨 CRISIS DETECTED - Immediate intervention needed!')
       router.push('/crisis-support')
     } else {
-      // All assessments completed - redirect to results page to show comprehensive results
+      // All assessments completed - redirect to results page for the last assessment
       console.log('All assessments completed - showing final results')
-      router.push('/results')
+      const assessmentIds = Object.keys(results)
+      const lastAssessmentId = assessmentIds[assessmentIds.length - 1]
+      router.push(`/results?assessment=${lastAssessmentId}`)
     }
   }
 

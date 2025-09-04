@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { AssessmentResult } from '@/data/assessments'
 import { UserProfile } from '@/data/assessment-integration'
 import AssessmentResults from '@/components/assessment/AssessmentResults'
@@ -24,6 +24,7 @@ export default function ResultsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const loadResults = async () => {
@@ -239,7 +240,8 @@ export default function ResultsPage() {
     )
   }
 
-  const resultEntries = Object.entries(results)
+  const filterId = searchParams.get('assessment')
+  const resultEntries = Object.entries(results).filter(([id]) => !filterId || id === filterId)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
