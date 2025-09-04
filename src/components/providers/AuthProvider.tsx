@@ -178,14 +178,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false)
           initializingRef.current = false
         }
-      }, 15000) // 15 second safety timeout
+      }, 5000) // Reduced to 5 second safety timeout
 
       try {
         console.log('Initializing auth...')
         
         // Check if we should skip auth entirely in development
-        if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SKIP_AUTH === 'true') {
-          console.log('Development mode: Skipping authentication entirely')
+        const skipAuth = (typeof window !== 'undefined' && window.location.search.includes('skip_auth=true'))
+        
+        if (skipAuth) {
+          console.log('Skipping authentication due to skip_auth parameter')
           setUser(null)
           setProfile(null)
           setNeedsOnboarding(false)

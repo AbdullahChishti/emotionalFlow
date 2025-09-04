@@ -118,7 +118,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     })
   }
 
-  const handleAssessmentClick = (entry: AssessmentHistoryEntry) => {
+  const handleAssessmentClick = async (entry: AssessmentHistoryEntry) => {
     // Store the specific assessment result in localStorage for the results page
     const assessmentResult = {
       [entry.assessmentId]: {
@@ -131,11 +131,26 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       }
     }
 
-    // Store in localStorage for the results page to access
-    localStorage.setItem('assessmentResults', JSON.stringify(assessmentResult))
-    
-    // Navigate to results page
-    router.push('/results')
+    try {
+      localStorage.setItem('assessmentResults', JSON.stringify(assessmentResult))
+      // Persist latest profile for reliable fallback on Results page
+      if (user?.id) {
+        const latest = await AssessmentService.getLatestUserProfile(user.id)
+        if (latest?.profile_data) {
+          localStorage.setItem('userProfile', JSON.stringify(latest.profile_data))
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to cache assessment data for results page', err)
+    }
+
+    // Navigate to results page, scoping to this assessment
+    const target = `/results?assessment=${encodeURIComponent(entry.assessmentId)}`
+    try {
+      router.push(target)
+    } catch {
+      window.location.href = target
+    }
   }
 
   // Loading skeleton

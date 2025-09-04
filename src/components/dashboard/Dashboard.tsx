@@ -7,6 +7,9 @@ import { supabase } from '@/lib/supabase'
 import { Profile, MoodEntry, ListeningSession } from '@/types'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
+import { UserProfile } from '@/data/assessment-integration'
+import { AssessmentResult } from '@/data/assessments'
+import { ASSESSMENTS } from '@/data/assessments'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -176,6 +179,10 @@ export function Dashboard() {
   const [recentSessions, setRecentSessions] = useState<ListeningSession[]>([])
   const [recentMoods, setRecentMoods] = useState<MoodEntry[]>([])
   const [currentMood, setCurrentMood] = useState<MoodEntry | null>(null)
+  const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult> | null>(null)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [personalizationData, setPersonalizationData] = useState<any>(null)
+  const [hasAssessmentData, setHasAssessmentData] = useState(false)
 
   useEffect(() => {
     if (user && profile) {
@@ -187,6 +194,60 @@ export function Dashboard() {
     if (!user) return
 
     try {
+      // Load assessment data from localStorage first
+      const storedResults = localStorage.getItem('assessmentResults')
+      const storedProfile = localStorage.getItem('userProfile')
+      const storedPersonalization = localStorage.getItem('personalizationData')
+
+      if (storedResults && storedProfile) {
+        try {
+          setAssessmentResults(JSON.parse(storedResults))
+          setUserProfile(JSON.parse(storedProfile))
+          setHasAssessmentData(true)
+          
+          if (storedPersonalization) {
+            setPersonalizationData(JSON.parse(storedPersonalization))
+          }
+        } catch (error) {
+          console.error('Error parsing stored assessment data:', error)
+        }
+      }
+
+      // Try to load from database if authenticated
+      if (user) {
+        try {
+          const { data: assessmentHistory, error: assessmentError } = await supabase
+            .from('assessment_history')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+
+          if (!assessmentError && assessmentHistory && assessmentHistory.length > 0) {
+            // Convert database results to the format expected by the UI
+            const resultsMap: Record<string, AssessmentResult> = {}
+            
+            for (const entry of assessmentHistory) {
+              if (!resultsMap[entry.assessmentId]) {
+                resultsMap[entry.assessmentId] = {
+                  score: entry.score,
+                  level: entry.level,
+                  description: '',
+                  severity: entry.severity as any,
+                  recommendations: [],
+                  insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
+                  nextSteps: []
+                }
+              }
+            }
+            
+            setAssessmentResults(resultsMap)
+            setHasAssessmentData(true)
+          }
+        } catch (error) {
+          console.warn('Error fetching assessment data from database:', error)
+        }
+      }
+
       // Fetch recent sessions (handle missing table gracefully)
       try {
         const { data: sessions, error: sessionsError } = await supabase
@@ -272,6 +333,141 @@ export function Dashboard() {
     return '😢'
   }
 
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'normal': return 'text-green-600 bg-green-100'
+      case 'mild': return 'text-emerald-600 bg-emerald-100'
+      case 'moderate': return 'text-amber-600 bg-amber-100'
+      case 'severe': return 'text-orange-600 bg-orange-100'
+      case 'critical': return 'text-red-600 bg-red-100'
+      default: return 'text-slate-600 bg-slate-100'
+    }
+  }
+
+  const renderAssessmentSummary = () => {
+    if (!assessmentResults || !hasAssessmentData) return null
+
+    const resultEntries = Object.entries(assessmentResults)
+
+    return (
+      <motion.div
+        className="space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-secondary-900 mb-2">Your Assessment Results</h2>
+          <p className="text-secondary-600">Based on your recent assessments</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {resultEntries.map(([assessmentId, result]) => {
+            const assessment = ASSESSMENTS[assessmentId]
+            if (!assessment) return null
+
+            return (
+              <motion.div
+                key={assessmentId}
+                className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-brand-green-100 rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-brand-green-600">analytics</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-secondary-900">{assessment.shortTitle}</h3>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(result.severity)}`}>
+                      {result.level}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-brand-green-700 mb-2">
+                  {result.score}
+                  <span className="text-sm font-normal text-secondary-500 ml-1">
+                    / {assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max}
+                  </span>
+                </div>
+                {result.insights && result.insights.length > 0 && (
+                  <p className="text-sm text-secondary-600 leading-relaxed">
+                    {result.insights[0].substring(0, 100)}...
+                  </p>
+                )}
+              </motion.div>
+            )
+          })}
+        </div>
+      </motion.div>
+    )
+  }
+
+  const renderPersonalizedRecommendations = () => {
+    if (!personalizationData || !hasAssessmentData) return null
+
+    const { wellness, content, therapy } = personalizationData
+
+    return (
+      <motion.div
+        className="space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+      >
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-secondary-900 mb-2">Personalized for You</h2>
+          <p className="text-secondary-600">Recommendations based on your assessment results</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Daily Goals */}
+          {wellness?.dailyGoals && (
+            <SectionCard
+              title="Today's Goals"
+              icon="flag"
+              action={{ label: 'View All', onClick: () => handleNavigate('/wellness') }}
+            >
+              <div className="space-y-3">
+                {wellness.dailyGoals.slice(0, 3).map((goal: string, index: number) => (
+                  <div key={index} className="flex items-center gap-3 p-3 bg-brand-green-50 rounded-xl">
+                    <div className="w-6 h-6 bg-brand-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
+                    <span className="text-sm text-secondary-700 capitalize">
+                      {goal.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+
+          {/* Content Recommendations */}
+          {content?.meditationThemes && (
+            <SectionCard
+              title="Recommended Content"
+              icon="recommend"
+              action={{ label: 'Explore', onClick: () => handleNavigate('/meditation') }}
+            >
+              <div className="space-y-3">
+                {content.meditationThemes.slice(0, 3).map((theme: string, index: number) => (
+                  <div key={index} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                    <span className="material-symbols-outlined text-brand-green-600 text-sm">self_improvement</span>
+                    <span className="text-sm text-secondary-700 capitalize">
+                      {theme.replace(/_/g, ' ')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+        </div>
+      </motion.div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
@@ -308,7 +504,7 @@ export function Dashboard() {
               {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
             </h1>
             <p className="text-xs sm:text-sm md:text-base text-secondary-600 max-w-2xl mx-auto px-4">
-              {getFormattedDate()} • You're doing your best today.
+              {getFormattedDate()} • {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
             </p>
           </motion.div>
 
@@ -329,34 +525,96 @@ export function Dashboard() {
               />
               <ActionPill
                 icon="psychology"
-                label="Take Assessment"
-                description="Complete a personalized mental health assessment"
-                onClick={() => handleNavigate('/assessments')}
+                label={hasAssessmentData ? "View Results" : "Take Assessment"}
+                description={hasAssessmentData ? "Review your assessment results" : "Complete a personalized mental health assessment"}
+                onClick={() => handleNavigate(hasAssessmentData ? '/results' : '/assessments')}
                 variant="secondary"
               />
             </div>
           </motion.div>
 
-          {/* Main Content - Centered SVG */}
-          <motion.div
-            className="max-w-7xl mx-auto px-4 -mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
+          {/* Assessment Results Section */}
+          {hasAssessmentData && (
+            <div className="max-w-7xl mx-auto px-4">
+              {renderAssessmentSummary()}
+            </div>
+          )}
+
+          {/* Personalized Recommendations Section */}
+          {hasAssessmentData && (
+            <div className="max-w-7xl mx-auto px-4">
+              {renderPersonalizedRecommendations()}
+            </div>
+          )}
+
+          {/* Main Content - Centered SVG (only show if no assessment data) */}
+          {!hasAssessmentData && (
             <motion.div
-              className="h-[31rem] flex items-start justify-center pt-4"
-              initial={{ opacity: 0, y: 12 }}
+              className="max-w-7xl mx-auto px-4 -mt-12"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.6 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <img
-                src="/assets/Mental_health-bro_2.svg"
-                alt="Mental wellness illustration"
-                className="w-full h-full max-h-[31rem] object-contain"
-              />
+              <motion.div
+                className="h-[31rem] flex items-start justify-center pt-4"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
+              >
+                <img
+                  src="/assets/Mental_health-bro_2.svg"
+                  alt="Mental wellness illustration"
+                  className="w-full h-full max-h-[31rem] object-contain"
+                />
+              </motion.div>
             </motion.div>
-          </motion.div>
+          )}
+
+          {/* Quick Actions for Assessment Users */}
+          {hasAssessmentData && (
+            <motion.div
+              className="max-w-7xl mx-auto px-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold text-secondary-900 mb-2">Continue Your Journey</h2>
+                <p className="text-secondary-600">Explore personalized resources and support</p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <ActionPill
+                  icon="wellness"
+                  label="Wellness Plan"
+                  description="Your personalized wellness activities"
+                  onClick={() => handleNavigate('/wellness')}
+                  variant="secondary"
+                />
+                <ActionPill
+                  icon="self_improvement"
+                  label="Meditation"
+                  description="Guided sessions for your needs"
+                  onClick={() => handleNavigate('/meditation')}
+                  variant="secondary"
+                />
+                <ActionPill
+                  icon="groups"
+                  label="Community"
+                  description="Connect with supportive peers"
+                  onClick={() => handleNavigate('/community')}
+                  variant="secondary"
+                />
+                <ActionPill
+                  icon="support"
+                  label="Crisis Support"
+                  description="24/7 mental health resources"
+                  onClick={() => handleNavigate('/crisis-support')}
+                  variant="secondary"
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>
