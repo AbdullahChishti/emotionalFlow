@@ -55,7 +55,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
-        <div className="pt-16 pb-20 md:pb-0">
+        <div className="pt-20 pb-20 md:pb-0">
           <Dashboard />
         </div>
       </div>

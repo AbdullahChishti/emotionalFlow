@@ -25,7 +25,7 @@ export default function SessionPage() {
   return (
     <div className="min-h-screen">
       <Navigation />
-      <div className="pt-16">
+      <div className="pt-20">
         <ModernSessionScreen
           onNavigate={handleNavigate}
           matchedUser={matchedUser}

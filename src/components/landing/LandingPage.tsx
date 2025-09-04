@@ -1,55 +1,12 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import React from 'react'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Navigation } from '@/components/ui/Navigation'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
-
-// Modern Header with Glassmorphic Design
-const ModernHeader = () => {
-  const router = useRouter()
-  return (
-    <motion.header
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="sticky top-0 z-50"
-    >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="flex items-center justify-between whitespace-nowrap glassmorphic rounded-full px-6 py-3">
-          <motion.a
-            className="flex items-center gap-2 text-brand-green-700"
-            href="#"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <span className="material-symbols-outlined text-3xl">psychology</span>
-            <h2 className="text-xl font-bold">MindWell</h2>
-          </motion.a>
-
-
-
-          <div className="flex items-center gap-4">
-          <motion.button
-            onClick={() => router.push('/login')}
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-5 text-white text-sm font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
-              style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.2)' }}
-            whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
-            whileTap={{ scale: 0.95 }}
-          >
-              <span className="truncate">Find Peace</span>
-          </motion.button>
-            <button className="md:hidden">
-              <span className="material-symbols-outlined text-3xl text-secondary-700">menu</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </motion.header>
-  )
-}
 
 
 
@@ -717,15 +674,13 @@ const HeroSection = () => {
 }
 
 export function LandingPage() {
-
   return (
     <div className="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-
-      {/* Header */}
-      <ModernHeader />
+      {/* Unified Header */}
+      <Navigation />
 
       {/* Main Content */}
-      <main className="flex-1">
+      <main className="flex-1 pt-20">
         {/* Hero Section */}
         <HeroSection />
 
