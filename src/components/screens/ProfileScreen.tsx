@@ -7,7 +7,18 @@ import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Input } from '@/components/ui/Input'
 import { useRouter } from 'next/navigation'
-import AssessmentHistory from '@/components/assessment/AssessmentHistory'
+import dynamic from 'next/dynamic'
+const AssessmentHistory = dynamic(() => import('@/components/assessment/AssessmentHistory'), {
+  ssr: false,
+  loading: () => (
+    <div className="py-12 text-center">
+      <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/80 border border-white/50 shadow">
+        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 18 }}>progress_activity</span>
+        <span className="text-sm text-secondary-700">Loading assessment history…</span>
+      </div>
+    </div>
+  )
+})
 import 'material-symbols/outlined.css'
 
 export function ProfileScreen() {
