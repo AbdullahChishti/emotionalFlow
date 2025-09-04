@@ -127,7 +127,7 @@ interface ActionPillProps {
 }
 
 function ActionPill({ icon, label, description, onClick, variant = 'primary', disabled }: ActionPillProps) {
-  const baseClasses = "flex items-center gap-3 sm:gap-4 p-4 sm:p-6 rounded-full transition-all duration-300 transform w-full"
+  const baseClasses = "flex items-start gap-3 sm:gap-4 p-4 sm:p-6 rounded-full transition-all duration-300 transform w-full min-h-[100px]"
   const variantClasses = variant === 'primary'
     ? "text-white shadow-lg hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-900"
     : "bg-white/80 backdrop-blur-sm border-2 border-brand-green-300 text-secondary-900 shadow-lg hover:shadow-xl hover:scale-105 hover:border-brand-green-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600"
@@ -161,9 +161,9 @@ function ActionPill({ icon, label, description, onClick, variant = 'primary', di
             variant === 'primary' ? 'text-white' : 'text-brand-green-600'
           }`}>{icon}</span>
         </div>
-        <div className="text-left flex-1 min-w-0">
-          <div className="font-bold text-sm sm:text-base truncate">{label}</div>
-          <div className={`text-xs sm:text-sm ${variant === 'primary' ? 'text-white/80' : 'text-secondary-600'} leading-relaxed`}>
+        <div className="text-left flex-1 min-w-0 py-1">
+          <div className="font-bold text-sm sm:text-base leading-tight break-words">{label}</div>
+          <div className={`text-xs sm:text-sm ${variant === 'primary' ? 'text-white/80' : 'text-secondary-600'} leading-relaxed mt-1 break-words`}>
             {description}
           </div>
         </div>
@@ -191,19 +191,33 @@ export function Dashboard() {
     }
   }, [user, profile])
 
+  // Add a safety timeout to prevent infinite loading
+  useEffect(() => {
+    const safetyTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn('Dashboard loading taking too long, forcing completion')
+        setLoading(false)
+      }
+    }, 10000) // 10 second safety timeout
+
+    return () => clearTimeout(safetyTimeout)
+  }, [loading])
+
   const fetchDashboardData = async () => {
     if (!user) return
 
     try {
-      // Load assessment data from localStorage first
-      const storedResults = localStorage.getItem('assessmentResults')
-      const storedProfile = localStorage.getItem('userProfile')
-
-      if (storedResults && storedProfile) {
+      // Load assessment data from localStorage first (only if available)
+      if (typeof window !== 'undefined') {
         try {
-          setAssessmentResults(JSON.parse(storedResults))
-          setUserProfile(JSON.parse(storedProfile))
-          setHasAssessmentData(true)
+          const storedResults = localStorage.getItem('assessmentResults')
+          const storedProfile = localStorage.getItem('userProfile')
+
+          if (storedResults && storedProfile) {
+            setAssessmentResults(JSON.parse(storedResults))
+            setUserProfile(JSON.parse(storedProfile))
+            setHasAssessmentData(true)
+          }
         } catch (error) {
           console.error('Error parsing stored assessment data:', error)
         }
@@ -212,7 +226,13 @@ export function Dashboard() {
       // Try to load from database if authenticated
       if (user) {
         try {
-          const assessmentHistory = await AssessmentService.getAssessmentHistory(user.id)
+          // Add timeout for assessment history fetch
+          const assessmentPromise = AssessmentService.getAssessmentHistory(user.id)
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Assessment fetch timeout')), 5000)
+          )
+          
+          const assessmentHistory = await Promise.race([assessmentPromise, timeoutPromise]) as any
 
           if (assessmentHistory && assessmentHistory.length > 0) {
             // Convert database results to the format expected by the UI
@@ -237,12 +257,13 @@ export function Dashboard() {
           }
         } catch (error) {
           console.warn('Error fetching assessment data from database:', error)
+          // Don't let this block the rest of the loading
         }
       }
 
       // Fetch recent sessions (handle missing table gracefully)
       try {
-        const { data: sessions, error: sessionsError } = await supabase
+        const sessionsPromise = supabase
           .from('listening_sessions')
           .select(`
             *,
@@ -252,6 +273,12 @@ export function Dashboard() {
           .or(`listener_id.eq.${user.id},speaker_id.eq.${user.id}`)
           .order('created_at', { ascending: false })
           .limit(3)
+        
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Sessions fetch timeout')), 3000)
+        )
+        
+        const { data: sessions, error: sessionsError } = await Promise.race([sessionsPromise, timeoutPromise]) as any
 
         if (sessionsError) {
           console.warn('Listening sessions table not available:', sessionsError.message)
@@ -266,12 +293,18 @@ export function Dashboard() {
 
       // Fetch recent mood entries (handle missing table gracefully)
       try {
-        const { data: moods, error: moodsError } = await supabase
+        const moodsPromise = supabase
           .from('mood_entries')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(7)
+        
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Moods fetch timeout')), 3000)
+        )
+        
+        const { data: moods, error: moodsError } = await Promise.race([moodsPromise, timeoutPromise]) as any
 
         if (moodsError) {
           console.warn('Mood entries table not available:', moodsError.message)
