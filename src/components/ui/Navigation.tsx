@@ -118,20 +118,23 @@ export function Navigation({ className = '' }: NavigationProps) {
                   whileHover={{ rotate: 5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <span className="material-symbols-outlined text-2xl text-brand-green-600 transition-all duration-300 group-hover:text-brand-green-500">
+                  <span className="material-symbols-outlined text-2xl transition-all duration-300" style={{ color: '#335f64' }}>
                     psychology
                   </span>
                 </motion.div>
-                <motion.div 
-                  className="absolute -inset-1 bg-gradient-to-r from-brand-green-400/20 to-emerald-400/20 rounded-xl blur opacity-0 group-hover:opacity-100"
+                <motion.div
+                  className="absolute -inset-1 rounded-xl blur opacity-0 group-hover:opacity-100"
+                  style={{
+                    background: 'linear-gradient(to right, rgba(51, 95, 100, 0.2), rgba(51, 95, 100, 0.1))'
+                  }}
                   transition={{ duration: 0.4 }}
                 />
               </div>
               <div className="flex flex-col relative z-10">
-                <span className="text-lg font-bold text-green-800 drop-shadow-md">
+                <span className="text-lg font-bold drop-shadow-md" style={{ color: '#335f64' }}>
                   MindWell
                 </span>
-                <span className="text-xs text-green-700 font-medium -mt-1 drop-shadow-md">
+                <span className="text-xs font-medium -mt-1 drop-shadow-md" style={{ color: '#2a4f52' }}>
                   Mental Wellness
                 </span>
               </div>
@@ -163,8 +166,8 @@ export function Navigation({ className = '' }: NavigationProps) {
                               ? 'text-red-600 bg-red-50/30 border border-red-200/50'
                               : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30 hover:border-red-300/50'
                             : isActive
-                            ? 'text-brand-green-700 bg-white/20'
-                            : 'text-secondary-600 hover:text-brand-green-600 hover:bg-white/10'
+                            ? 'text-slate-700 bg-white/20'
+                            : 'text-secondary-600 hover:text-slate-600 hover:bg-white/10'
                         }`}
                         whileHover={{ y: -2, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -176,11 +179,14 @@ export function Navigation({ className = '' }: NavigationProps) {
                         <span>{item.name}</span>
                         {isActive && !isCrisis && (
                           <motion.div
-                            className="absolute -bottom-1 left-1/2 w-6 h-1 bg-gradient-to-r from-brand-green-500 to-emerald-500 rounded-full"
+                            className="absolute -bottom-1 left-1/2 w-6 h-1 rounded-full"
+                            style={{
+                              background: 'linear-gradient(to right, #335f64, #2a4f52)',
+                              x: '-50%'
+                            }}
                             layoutId="activeIndicator"
                             initial={false}
                             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                            style={{ x: '-50%' }}
                           />
                         )}
                         {isActive && isCrisis && (
@@ -294,8 +300,8 @@ export function Navigation({ className = '' }: NavigationProps) {
                                   ? 'text-red-600 bg-red-50/30 border border-red-200/50'
                                   : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30'
                                 : isActive
-                                ? 'text-brand-green-700 bg-white/30'
-                                : 'text-secondary-600 hover:text-brand-green-600 hover:bg-white/20'
+                                ? 'text-slate-700 bg-white/30'
+                                : 'text-secondary-600 hover:text-slate-600 hover:bg-white/20'
                             }`}
                             whileHover={{ x: 5 }}
                             whileTap={{ scale: 0.98 }}

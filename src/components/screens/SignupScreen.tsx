@@ -4,11 +4,19 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
+
+// Remove unused LoadingSpinner import - now handled by AuthButton
+// import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
+
+// Import new reusable components
+import { FormField } from '@/components/ui/FormField'
+import { PasswordInput } from '@/components/ui/PasswordInput'
+import { AuthButton } from '@/components/ui/AuthButton'
+import { ErrorMessage } from '@/components/ui/ErrorMessage'
 
 export function SignupScreen() {
   const [email, setEmail] = useState('')
@@ -16,111 +24,222 @@ export function SignupScreen() {
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
+  const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const router = useRouter()
+
+  // Validation functions
+  const validateField = (name: string, value: string) => {
+    const errors: {[key: string]: string} = {}
+
+    switch (name) {
+      case 'displayName':
+        if (!value.trim()) {
+          errors.displayName = 'Full name is required'
+        } else if (value.trim().length < 2) {
+          errors.displayName = 'Full name must be at least 2 characters'
+        }
+        break
+
+      case 'email':
+        if (!value.trim()) {
+          errors.email = 'Email is required'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          errors.email = 'Please enter a valid email address'
+        }
+        break
+
+      case 'password':
+        if (!value) {
+          errors.password = 'Password is required'
+        } else if (value.length < 6) {
+          errors.password = 'Password must be at least 6 characters'
+        } else if (!/(?=.*[a-z])(?=.*[A-Z])/.test(value)) {
+          errors.password = 'Password must contain both uppercase and lowercase letters'
+        } else if (!/(?=.*\d)/.test(value)) {
+          errors.password = 'Password must contain at least one number'
+        }
+        break
+    }
+
+    return errors
+  }
+
+  const validateForm = () => {
+    const errors: {[key: string]: string} = {}
+
+    Object.assign(errors, validateField('displayName', displayName))
+    Object.assign(errors, validateField('email', email))
+    Object.assign(errors, validateField('password', password))
+
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  // Handle field changes with validation
+  const handleFieldChange = (field: string, value: string) => {
+    const setter = {
+      displayName: setDisplayName,
+      email: setEmail,
+      password: setPassword
+    }[field]
+
+    if (setter) {
+      setter(value)
+    }
+
+    // Clear field error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors(prev => ({ ...prev, [field]: '' }))
+    }
+  }
+
+  const handleFieldBlur = (field: string, value: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }))
+    const errors = validateField(field, value)
+    setFieldErrors(prev => ({ ...prev, ...errors }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password || !displayName) {
-      setError('Please fill in all fields')
-      return
-    }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    // Mark all fields as touched for validation display
+    setTouched({
+      displayName: true,
+      email: true,
+      password: true
+    })
+
+    // Validate entire form
+    if (!validateForm()) {
+      setError('Please correct the errors below')
       return
     }
 
     setLoading(true)
     setError('')
+    setFieldErrors({})
 
     try {
       const { error } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           data: {
-            display_name: displayName,
+            display_name: displayName.trim(),
           }
         }
       })
 
       if (error) {
-        setError(error.message)
+        // Handle specific Supabase errors
+        if (error.message.includes('already registered')) {
+          setFieldErrors({ email: 'This email is already registered' })
+        } else {
+          setError(error.message)
+        }
       } else {
         router.push('/')
       }
     } catch (err) {
-      setError('An unexpected error occurred')
+      setError('An unexpected error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleGoogleSignUp = async () => {
-    setLoading(true)
-    setError('')
 
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      })
-
-      if (error) throw error
-    } catch (error: any) {
-      setError(error.message)
-      setLoading(false)
-    }
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100 flex">
-      {/* Left Side - Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Glassmorphic Background Elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-green-100/50 to-brand-green-200/30"></div>
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-green-300/15 rounded-full blur-3xl"></div>
+    <>
+      {/* Skip Link for Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 bg-slate-900 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
 
-        {/* SVG Illustration */}
-        <div className="relative z-10 flex items-center justify-center w-full p-12">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex flex-col lg:flex-row">
+      {/* Mobile Header with Illustration */}
+      <div className="lg:hidden flex items-center justify-center py-8 px-4 order-1">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.6,
+            ease: "easeOut",
+            type: "spring",
+            stiffness: 100,
+            damping: 15
+          }}
+          style={{ willChange: 'transform, opacity' }}
+          className="w-32 h-32 sm:w-40 sm:h-40"
+        >
+          <img
+            src="/assets/Mental_health-bro_2.svg"
+            alt="Mental health and wellness illustration"
+            className="w-full h-full object-contain drop-shadow-xl"
+          />
+        </motion.div>
+      </div>
+
+      {/* Left Side - Illustration */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden order-1 lg:order-1">
+        {/* Redesigned soothing background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100" />
+        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_10%_10%,rgba(51,95,100,0.12),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(40%_40%_at_90%_60%,rgba(51,95,100,0.10),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] bg-center opacity-[0.035]" style={{ backgroundSize: '320px' }} />
+        <div className="absolute -top-16 -left-10 w-[28rem] h-[28rem] bg-slate-200/20 rounded-[3rem] blur-3xl rotate-6" />
+        <div className="absolute -bottom-20 -right-10 w-[24rem] h-[24rem] bg-slate-300/20 rounded-[4rem] blur-3xl -rotate-6" />
+
+        {/* Illustration */}
+        <div className="relative z-10 flex items-center justify-center w-full p-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-lg"
+            className="w-full max-w-md"
           >
             <img
               src="/assets/Mental_health-bro_2.svg"
               alt="Mental health and wellness illustration"
-              className="w-full h-auto drop-shadow-2xl"
+              className="w-full h-auto drop-shadow-xl"
             />
           </motion.div>
         </div>
-
-        {/* Inspirational Text Overlay */}
-        <div className="absolute bottom-12 left-12 right-12 z-20">
+        {/* Compact benefits card */}
+        <div className="absolute bottom-10 left-10 right-10 z-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="glassmorphic rounded-2xl p-6 text-center"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="glassmorphic rounded-2xl p-4"
           >
-            <h3 className="text-xl font-semibold text-brand-green-800 mb-2">
-              Begin Your Healing Journey
-            </h3>
-            <p className="text-brand-green-700/80 text-sm leading-relaxed">
-              Join a supportive community dedicated to mental wellness and personal growth.
-              Your transformation starts here.
-            </p>
+            <div className="flex items-center justify-center gap-4 text-sm text-slate-900/90 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base">shield_lock</span>
+                <span>Private & secure</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base">ecg_heart</span>
+                <span>Evidence-based</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-base">spa</span>
+                <span>Gentle by design</span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Right Side - Signup Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12 relative order-2 lg:order-2">
+        {/* Subtle gradient texture behind form */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/60 via-slate-50/40 to-white/60" />
+        <div className="absolute inset-0 -z-10 bg-[url('/images/pattern.svg')] bg-center opacity-[0.03]" style={{ backgroundSize: '300px' }} />
         {/* Back to Home Button */}
         <Link 
           href="/" 
@@ -129,7 +248,14 @@ export function SignupScreen() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full border border-white/20 shadow-lg transition-all duration-300 text-zinc-700 hover:text-zinc-900"
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 30,
+              duration: 0.15
+            }}
+            style={{ willChange: 'transform' }}
+            className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full border border-white/20 shadow-lg transition-all duration-300 text-slate-700 hover:text-slate-900"
           >
             <span className="material-symbols-outlined text-lg">arrow_back</span>
             <span className="text-sm font-medium">Back to Home</span>
@@ -138,201 +264,125 @@ export function SignupScreen() {
 
         {/* Mobile Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-green-300/15 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-md mx-auto px-4 sm:px-6">
           <motion.div
+            id="main-content"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20"
+            transition={{
+              duration: 0.5,
+              ease: "easeOut",
+              type: "spring",
+              stiffness: 120,
+              damping: 20
+            }}
+            style={{ willChange: 'transform, opacity' }}
+            className="glassmorphic rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl border border-white/20"
+            role="main"
+            aria-labelledby="signup-heading"
           >
             {/* Header */}
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
               <Link href="/" className="inline-block">
                 <motion.div
-                  className="flex items-center justify-center gap-3 mb-6"
+                  className="flex items-center justify-center gap-3 mb-5"
                   whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 25,
+                    duration: 0.2
+                  }}
+                  style={{ willChange: 'transform' }}
                 >
-                  <span
-                    className="material-symbols-outlined text-4xl"
-                    style={{ color: '#1f3d42' }}
-                  >
-                    psychology
+                  <span className="material-symbols-outlined text-4xl text-slate-700">
+                    psychology_alt
                   </span>
-                  <h1
-                    className="text-3xl font-bold"
-                    style={{ color: '#1f3d42' }}
-                  >
+                  <h1 className="text-heading-1 text-slate-900">
                     MindWell
                   </h1>
                 </motion.div>
               </Link>
-              <h2 className="text-2xl font-semibold text-zinc-900 mb-2">Join your wellness community</h2>
-              <p className="text-zinc-700 font-medium">Start your journey to better mental health</p>
+              <h1 id="signup-heading" className="text-heading-2 text-slate-900 mb-3">Join your wellness community</h1>
+              <p className="text-body text-slate-600">Start your journey to better mental health</p>
             </div>
 
             {/* Error Message */}
             {error && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
-              >
-                {error}
-              </motion.div>
+              <ErrorMessage
+                message={error}
+                className="mb-6"
+              />
             )}
 
             {/* Signup Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="displayName" className="block text-sm font-semibold text-zinc-800 mb-2">
-                  Full name
-                </label>
-                <input
-                  id="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-4 bg-white/90 border border-zinc-300 rounded-xl text-zinc-900 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-green-600 focus:border-brand-green-600 transition-all duration-300 font-medium"
-                  placeholder="Enter your full name"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    color: '#111827'
-                  }}
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              <fieldset className="space-y-6">
+                <legend className="sr-only">Account Information</legend>
+              <FormField
+                label="Full name"
+                type="text"
+                value={displayName}
+                onChange={(e) => handleFieldChange('displayName', e.target.value)}
+                onBlur={(e) => handleFieldBlur('displayName', e.target.value)}
+                placeholder="Enter your full name"
+                required
+                disabled={loading}
+                error={touched.displayName ? fieldErrors.displayName : undefined}
+              />
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-zinc-800 mb-2">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-4 bg-white/90 border border-zinc-300 rounded-xl text-zinc-900 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-green-600 focus:border-brand-green-600 transition-all duration-300 font-medium"
-                  placeholder="Enter your email"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    color: '#111827'
-                  }}
-                />
-              </div>
+              <FormField
+                label="Email address"
+                type="email"
+                value={email}
+                onChange={(e) => handleFieldChange('email', e.target.value)}
+                onBlur={(e) => handleFieldBlur('email', e.target.value)}
+                placeholder="Enter your email"
+                required
+                disabled={loading}
+                error={touched.email ? fieldErrors.email : undefined}
+              />
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-semibold text-zinc-800 mb-2">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                  className="w-full px-4 py-4 bg-white/90 border border-zinc-300 rounded-xl text-zinc-900 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand-green-600 focus:border-brand-green-600 transition-all duration-300 font-medium"
-                  placeholder="Create a password (min. 6 characters)"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    color: '#111827'
-                  }}
-                />
-              </div>
+              <PasswordInput
+                label="Password"
+                value={password}
+                onChange={(e) => handleFieldChange('password', e.target.value)}
+                onBlur={(e) => handleFieldBlur('password', e.target.value)}
+                placeholder="Create a password"
+                required
+                disabled={loading}
+                error={touched.password ? fieldErrors.password : undefined}
+                showStrengthIndicator
+              />
 
-              <div className="text-xs text-zinc-600 bg-zinc-50/50 rounded-lg p-3">
-                <p className="mb-1 font-medium">By creating an account, you agree to our:</p>
-                <div className="flex flex-wrap gap-1">
-                  <Link
-                    href="/terms"
-                    className="text-brand-green-700 hover:text-brand-green-800 transition-colors font-semibold"
-                    style={{ color: '#1f3d42' }}
-                  >
-                    Terms of Service
-                  </Link>
-                  <span className="font-medium">and</span>
-                  <Link
-                    href="/privacy"
-                    className="text-brand-green-700 hover:text-brand-green-800 transition-colors font-semibold"
-                    style={{ color: '#1f3d42' }}
-                  >
-                    Privacy Policy
-                  </Link>
-                </div>
-              </div>
 
-              <div className="space-y-4">
-                <motion.button
+              <div className="space-y-6">
+                <AuthButton
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-brand-green-700 hover:bg-brand-green-800 text-white font-semibold py-4 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-0"
-                  style={{
-                    backgroundColor: loading ? '#1f3d42' : '#1f3d42',
-                    color: '#ffffff',
-                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
-                  }}
-                  whileHover={{ scale: loading ? 1 : 1.02 }}
-                  whileTap={{ scale: loading ? 1 : 0.98 }}
+                  variant="primary"
+                  size="lg"
+                  loading={loading}
+                  fullWidth
+                  disabled={loading || Object.keys(fieldErrors).length > 0}
+                  icon={<span className="material-symbols-outlined text-xl">rocket_launch</span>}
                 >
-                  {loading ? (
-                    <>
-                      <LoadingSpinner size="sm" />
-                      <span style={{ color: '#ffffff' }}>Creating account...</span>
-                    </>
-                  ) : (
-                    <span style={{ color: '#ffffff' }}>Create account</span>
-                  )}
-                </motion.button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-zinc-300/50"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white/80 text-zinc-500 font-medium">or continue with</span>
-                  </div>
-                </div>
-
-                <motion.button
-                  type="button"
-                  onClick={handleGoogleSignUp}
-                  disabled={loading}
-                  className="w-full bg-white hover:bg-gray-50 border border-zinc-300 text-zinc-700 font-semibold py-4 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-                  style={{
-                    backgroundColor: '#ffffff',
-                    color: '#374151',
-                    textShadow: 'none'
-                  }}
-                  whileHover={{ scale: loading ? 1 : 1.02 }}
-                  whileTap={{ scale: loading ? 1 : 0.98 }}
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  <span style={{ color: '#374151' }}>Continue with Google</span>
-                </motion.button>
+                  {loading ? 'Creating account...' : 'Create account'}
+                </AuthButton>
               </div>
+              </fieldset>
             </form>
 
             {/* Footer */}
-            <div className="text-center pt-6 border-t border-zinc-200/50 mt-8">
-              <p className="text-zinc-700 text-sm font-medium">
+            <div className="text-center pt-5 border-t border-slate-200/50 mt-6">
+              <p className="text-body text-slate-700">
                 Already have an account?{' '}
                 <Link
                   href="/login"
-                  className="text-brand-green-700 hover:text-brand-green-800 font-semibold transition-colors"
-                  style={{ color: '#1f3d42' }}
+                  className="text-slate-700 hover:text-slate-900 font-semibold transition-colors"
                 >
                   Sign in
                 </Link>
@@ -342,5 +392,6 @@ export function SignupScreen() {
         </div>
       </div>
     </div>
+    </>
   )
 }

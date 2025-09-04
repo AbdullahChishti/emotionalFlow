@@ -124,9 +124,9 @@ export function ProfileScreen() {
                     ? 'text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={activeTab === 'profile' ? { 
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                style={activeTab === 'profile' ? {
+                  background: 'linear-gradient(135deg, #335f64 0%, #2a4f52 100%)',
+                  boxShadow: '0 4px 12px rgba(51, 95, 100, 0.3)'
                 } : {}}
               >
                 <span className="flex items-center gap-2">
@@ -141,9 +141,9 @@ export function ProfileScreen() {
                     ? 'text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={activeTab === 'history' ? { 
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                style={activeTab === 'history' ? {
+                  background: 'linear-gradient(135deg, #335f64 0%, #2a4f52 100%)',
+                  boxShadow: '0 4px 12px rgba(51, 95, 100, 0.3)'
                 } : {}}
               >
                 <span className="flex items-center gap-2">
@@ -247,7 +247,12 @@ export function ProfileScreen() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                  style={{
+                    backgroundColor: '#335f64'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2a4f52'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#335f64'}
                 >
                   {saving ? (
                     <LoadingSpinner size="sm" className="text-white" />

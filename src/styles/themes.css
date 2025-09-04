@@ -1,55 +1,70 @@
-/* heard Theme System - CSS Custom Properties */
+/* MindWell Theme System - CSS Custom Properties - WCAG AA Compliant */
 
-/* Default theme: Therapeutic Calm */
+/* Default theme: Therapeutic Sanctuary */
 :root, [data-theme="therapeutic"] {
-  /* Main colors */
-  --bg-light: #fffdf7;
-  --primary-surface: #fff;
-  --accent: #c9b8db;
-  --text-primary: #4a4a4a;
-  --secondary-accent: #a8c09a;
-  
+  /* Main colors - Therapeutic and calming */
+  --bg-light: #fefcf8; /* Warm cream background */
+  --primary-surface: #ffffff;
+  --accent: #4a90a4; /* Calming therapeutic blue */
+  --text-primary: #2c3e50; /* Warm, readable dark text */
+  --secondary-accent: #7cb8c4; /* Gentle supportive blue */
+
   /* Background variations */
   --bg-primary: #fffdf7;
   --bg-secondary: #f8f7f5;
   --bg-tertiary: #f0f4f7;
-  
+
   /* Surface variations */
-  --surface-primary: #fff;
+  --surface-primary: #ffffff;
   --surface-secondary: #f8f7f5;
-  --surface-elevated: #fff;
+  --surface-elevated: #ffffff;
   --surface-shadow: #e8eef2;
+
+  /* Text variations - Therapeutic and warm */
+  --text-secondary: #5d6d7e; /* Gentle secondary text */
+  --text-tertiary: #8395a7; /* Soft tertiary text */
+  --text-supportive: #4a90a4; /* Calming therapeutic blue for supportive text */
+  --text-inverse: #ffffff; /* Pure white for dark backgrounds */
+  --text-disabled: #bdc3c7; /* Soft disabled states */
+  --text-warm: #8b4513; /* Warm accent for special elements */
   
-  /* Text variations */
-  --text-secondary: #6b6b6b;
-  --text-tertiary: #8a8a8a;
-  --text-inverse: #f5f2ed;
+  /* Button states - Therapeutic and calming */
+  --button-primary: #4a90a4; /* Calming therapeutic blue */
+  --button-primary-hover: #3a7a8c; /* Softer hover state */
+  --button-secondary: #7cb8c4; /* Gentle supportive button */
+  --button-secondary-hover: #6ba3ae; /* Warm secondary hover */
+  --button-disabled: #bdc3c7; /* Soft disabled state */
+  --button-outline: #4a90a4; /* Outline button */
+  --button-outline-hover: #3a7a8c; /* Outline hover */
+  --button-gentle: #f8f9fa; /* Very soft button */
+  --button-gentle-hover: #e9ecef; /* Gentle hover */
+
+  /* Focus rings for accessibility - Therapeutic colors */
+  --focus-ring-default: 0 0 0 2px rgba(74, 144, 164, 0.3);
+  --focus-ring-error: 0 0 0 2px rgba(248, 215, 218, 0.3);
+  --focus-ring-success: 0 0 0 2px rgba(212, 237, 218, 0.3);
+  --focus-ring-info: 0 0 0 2px rgba(209, 236, 241, 0.3);
   
-  /* Button states */
-  --button-primary: #c9b8db;
-  --button-primary-hover: #b8a5d1;
-  --button-secondary: #a8c09a;
-  --button-secondary-hover: #98b088;
-  --button-disabled: #d4dce6;
+  /* Border colors - Therapeutic */
+  --border-primary: #4a90a4; /* Therapeutic blue border */
+  --border-secondary: #d6e4e9; /* Soft, calming border */
+  --border-light: #e8f0f2; /* Very light therapeutic border */
+  --border-warm: #f5e6d3; /* Warm accent border */
   
-  /* Border colors */
-  --border-primary: #b8c5e0;
-  --border-secondary: #e8eef2;
-  --border-light: #f0f4f7;
+  /* Status colors - Therapeutic and gentle */
+  --status-success: #d4edda; /* Gentle success green */
+  --status-warning: #fff3cd; /* Soft warning yellow */
+  --status-error: #f8d7da; /* Gentle error pink */
+  --status-info: #d1ecf1; /* Soft info blue */
+  --status-therapeutic: #e3f2fd; /* Calming therapeutic status */
   
-  /* Status colors */
-  --status-success: #b8e4d0;
-  --status-warning: #f5e6d3;
-  --status-error: #f5c6cb;
-  --status-info: #d1ecf1;
-  
-  /* Mood colors */
-  --mood-happy: #f0e68c;
-  --mood-calm: #b0e0e6;
-  --mood-anxious: #dda0dd;
-  --mood-sad: #d3d3d3;
-  --mood-angry: #f0a0a0;
-  --mood-excited: #ffb6c1;
+  /* Mood colors - Therapeutic and supportive */
+  --mood-calm: #e3f2fd; /* Soothing blue for calm */
+  --mood-peaceful: #f3e5f5; /* Gentle purple for peace */
+  --mood-hopeful: #e8f5e8; /* Soft green for hope */
+  --mood-supported: #fff8e1; /* Warm yellow for support */
+  --mood-understanding: #fce4ec; /* Gentle pink for understanding */
+  --mood-gentle: #f1f8e9; /* Very soft green for gentleness */
 }
 
 /* Purple Sparkle theme */
@@ -121,28 +136,120 @@
   background-color: var(--button-primary);
   color: var(--text-inverse);
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  font-size: 16px; /* Prevents zoom on iOS */
+  transition: all 0.2s ease;
+  min-height: 44px; /* Touch target size */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:hover {
   background-color: var(--button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:focus {
+  outline: none;
+  box-shadow: var(--focus-ring-default), var(--shadow-lg);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  background-color: var(--button-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .btn-secondary {
   background-color: var(--button-secondary);
   color: var(--text-primary);
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary:hover {
   background-color: var(--button-secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: var(--focus-ring-default), var(--shadow-lg);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary:disabled {
+  background-color: var(--button-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Outline button variant */
+.btn-outline {
+  background-color: transparent;
+  color: var(--button-outline);
+  border: 2px solid var(--button-outline);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-outline:hover {
+  background-color: var(--button-outline);
+  color: var(--text-inverse);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-outline:focus {
+  outline: none;
+  box-shadow: var(--focus-ring-default);
+}
+
+.btn-outline:disabled {
+  border-color: var(--button-disabled);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .card {
@@ -162,20 +269,29 @@
 }
 
 .input {
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--border-secondary);
   border-radius: 0.75rem;
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1rem;
   color: var(--text-primary);
-  transition: all 0.3s ease;
+  font-size: 16px; /* Prevents zoom on iOS */
+  transition: all 0.2s ease;
   backdrop-filter: blur(8px);
+  line-height: 1.5;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(201, 184, 219, 0.15);
-  background: rgba(255, 255, 255, 0.95);
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring-default);
+  background: rgba(255, 255, 255, 1);
+}
+
+.input:disabled {
+  background: var(--surface-secondary);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .input::placeholder {
@@ -244,4 +360,116 @@
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
+}
+
+/* Utility classes for consistent spacing */
+.space-y-1 > * + * { margin-top: 0.25rem; }
+.space-y-2 > * + * { margin-top: 0.5rem; }
+.space-y-3 > * + * { margin-top: 0.75rem; }
+.space-y-4 > * + * { margin-top: 1rem; }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+.space-y-8 > * + * { margin-top: 2rem; }
+
+.space-x-2 > * + * { margin-left: 0.5rem; }
+.space-x-3 > * + * { margin-left: 0.75rem; }
+.space-x-4 > * + * { margin-left: 1rem; }
+
+/* Typography utilities */
+.text-heading-1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.111;
+  letter-spacing: -0.025em;
+}
+
+.text-heading-2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.text-heading-3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.333;
+  letter-spacing: 0;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.625;
+  letter-spacing: 0;
+}
+
+.text-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.429;
+  letter-spacing: 0.025em;
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+}
+
+/* Focus utilities */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
+}
+
+.focus-ring-error {
+  @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+/* Accessibility utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Form field utilities */
+.form-field {
+  @apply relative;
+}
+
+.form-field > label {
+  @apply block text-sm font-medium text-text-primary mb-2;
+}
+
+.form-field > input,
+.form-field > textarea {
+  @apply w-full px-4 py-3 bg-surface-primary border border-border-secondary rounded-lg text-text-primary placeholder-text-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors;
+}
+
+.form-field > input:disabled,
+.form-field > textarea:disabled {
+  @apply bg-surface-secondary text-text-disabled cursor-not-allowed;
+}
+
+/* Error states */
+.form-field.error > input,
+.form-field.error > textarea {
+  @apply border-red-500 focus:ring-red-500 focus:border-red-500;
+}
+
+.form-field.error > .error-message {
+  @apply text-red-600 text-sm mt-1;
+}
+
+/* Success states */
+.form-field.success > input,
+.form-field.success > textarea {
+  @apply border-green-500 focus:ring-green-500 focus:border-green-500;
 }

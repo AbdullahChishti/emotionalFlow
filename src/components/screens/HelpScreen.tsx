@@ -177,9 +177,12 @@ export function HelpScreen() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 flex items-center gap-2 ${
                       activeTab === tab.id
-                        ? 'bg-primary-500 text-white shadow-lg'
+                        ? 'text-white shadow-lg'
                         : 'text-secondary-600 hover:bg-white/50'
                     }`}
+                    style={activeTab === tab.id ? {
+                      backgroundColor: '#335f64'
+                    } : {}}
                   >
                     <span className="material-symbols-outlined text-lg">{tab.icon}</span>
                     {tab.label}

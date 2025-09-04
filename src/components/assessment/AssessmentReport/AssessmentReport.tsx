@@ -150,7 +150,12 @@ export function AssessmentReport({
             </button>
             <button
               onClick={onContinue}
-              className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+              className="flex-1 px-6 py-3 text-white rounded-lg transition-colors"
+              style={{
+                backgroundColor: '#335f64'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2a4f52'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#335f64'}
             >
               Continue
             </button>

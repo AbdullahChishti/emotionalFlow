@@ -51,7 +51,7 @@ export function MeditationLibraryScreen() {
             <input 
               type="text"
               placeholder="Search for a meditation..."
-              className="w-full p-3 pl-12 bg-white/60 backdrop-blur-sm border border-brand-green-200/50 rounded-full focus:ring-2 focus:ring-brand-green-300 focus:outline-none transition-all duration-300"
+              className="w-full p-3 pl-12 bg-white/60 backdrop-blur-sm border border-slate-200/50 rounded-full focus:ring-2 focus:ring-slate-500 focus:outline-none transition-all duration-300"
             />
           </div>
           <div className="flex items-center justify-center gap-2 sm:gap-4">
@@ -59,7 +59,10 @@ export function MeditationLibraryScreen() {
               <motion.button
                 key={name}
                 onClick={() => setActiveCategory(name)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 ${activeCategory === name ? 'bg-brand-green-500 text-white shadow-md' : 'bg-white/70 text-zinc-600 hover:bg-white'}`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 ${activeCategory === name ? 'text-white shadow-md' : 'bg-white/70 text-zinc-600 hover:bg-white'}`}
+                style={activeCategory === name ? {
+                  backgroundColor: '#335f64'
+                } : {}}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >

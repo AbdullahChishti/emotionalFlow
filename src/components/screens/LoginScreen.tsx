@@ -84,14 +84,14 @@ export function LoginScreen() {
     <div className="relative min-h-screen isolate overflow-hidden flex">
       <div className="absolute inset-0 hero-radial" />
       <div aria-hidden className="pointer-events-none absolute -top-10 -left-10 h-48 w-48 rounded-full bg-accent-300/40 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute top-1/3 -right-8 h-36 w-36 rounded-full bg-brand-green-100/60 blur-2xl" />
+      <div aria-hidden className="pointer-events-none absolute top-1/3 -right-8 h-36 w-36 rounded-full bg-slate-100/60 blur-2xl" />
       {/* Left Side - Illustration */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Glassmorphic Background Elements */}
-        <div className="fixed inset-0 bg-gradient-to-br from-brand-green-50 via-white to-white z-0" />
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-white to-white z-0" />
         <div className="absolute inset-0 bg-[url('/images/pattern.svg')] bg-center opacity-[0.03] z-0" style={{ backgroundSize: '300px' }} />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-green-300/15 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
 
         {/* SVG Illustration */}
         <div className="relative z-10 flex items-center justify-center w-full p-12">
@@ -117,13 +117,44 @@ export function LoginScreen() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="glassmorphic rounded-2xl p-6 text-center"
           >
-            <h3 className="text-xl font-semibold text-brand-green-800 mb-2">
-              Find Your Inner Peace
-            </h3>
-            <p className="text-brand-green-700/80 text-sm leading-relaxed">
-              Welcome back to your journey of self-discovery and emotional wellness.
-              Your safe space awaits.
-            </p>
+            <div className="space-y-3 mb-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.6 }}
+                className="text-center"
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                  <span className="text-lg font-light text-slate-600 tracking-wide">
+                    Find <span className="text-emerald-600 font-medium">calm</span> in the chaos.
+                  </span>
+                  <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="flex items-center justify-center gap-1 text-xs text-slate-400"
+              >
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
+                  Safe
+                </span>
+                <span className="mx-1">•</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-300"></span>
+                  Compassionate
+                </span>
+                <span className="mx-1">•</span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-300"></span>
+                  Supportive
+                </span>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>
@@ -147,8 +178,8 @@ export function LoginScreen() {
 
         {/* Mobile Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-green-300/15 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative w-full max-w-md">
@@ -176,7 +207,7 @@ export function LoginScreen() {
                     psychology_alt
                   </span>
                   <h1
-                    className="text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-green-700 to-brand-green-900 bg-clip-text text-transparent"
+                    className="text-4xl font-bold tracking-tight bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent"
                     style={{
                       fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                       letterSpacing: '-0.025em',
@@ -187,16 +218,7 @@ export function LoginScreen() {
                   </h1>
                 </motion.div>
               </Link>
-              <motion.div
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <h2 className="text-2xl font-semibold text-gray-900 mb-2.5">Welcome back</h2>
-                <p className="text-gray-600 font-normal text-[15px] tracking-wide">
-                  Continue your journey to emotional wellness
-                </p>
-              </motion.div>
+              {/* Welcome text removed as per request */}
             </div>
 
             {/* Error Message */}
@@ -232,7 +254,7 @@ export function LoginScreen() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={loading}
-                    className="w-full px-4 py-3.5 text-[15px] bg-white border border-gray-200 rounded-xl text-ink-900 placeholder-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500/60 focus:border-brand-green-500 transition-all duration-200 font-normal"
+                    className="w-full px-4 py-3.5 text-[15px] bg-white border border-gray-200 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-600/60 focus:border-slate-600 transition-all duration-200 font-normal"
                     placeholder="your@email.com"
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.98)',
@@ -268,7 +290,7 @@ export function LoginScreen() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     disabled={loading}
-                    className="w-full px-4 py-3.5 text-[15px] bg-white border border-gray-200 rounded-xl text-ink-900 placeholder-ink-500 focus:outline-none focus:ring-2 focus:ring-brand-green-500/60 focus:border-brand-green-500 transition-all duration-200 font-normal"
+                    className="w-full px-4 py-3.5 text-[15px] bg-white border border-gray-200 rounded-xl text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-600/60 focus:border-slate-600 transition-all duration-200 font-normal"
                     placeholder="••••••••"
                     style={{
                       backgroundColor: 'rgba(255, 255, 255, 0.98)',
@@ -296,7 +318,7 @@ export function LoginScreen() {
                       type="checkbox" 
                       className="sr-only peer"
                     />
-                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-green-600"></div>
+                    <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-slate-700"></div>
                   </div>
                   <span className="ml-2 text-sm text-gray-600 font-medium group-hover:text-gray-700 transition-colors">
                     Remember me
@@ -304,7 +326,7 @@ export function LoginScreen() {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-brand-green-700 hover:text-brand-green-800 transition-colors font-medium text-sm"
+                  className="text-slate-700 hover:text-slate-800 transition-colors font-medium text-sm"
                   style={{ 
                     color: '#1f3d42',
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
@@ -334,12 +356,17 @@ export function LoginScreen() {
                 <motion.button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-brand-green-600 hover:bg-brand-green-700 text-white font-semibold py-3.5 rounded-xl transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  className="w-full text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   style={{
+                    backgroundColor: '#335f64',
+                    '--tw-ring-color': '#335f64',
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     letterSpacing: '0.01em'
                   }}
-                  whileHover={{ scale: loading ? 1 : 1.01 }}
+                  whileHover={{
+                    scale: loading ? 1 : 1.01,
+                    backgroundColor: '#2a4f52'
+                  }}
                   whileTap={{ scale: loading ? 1 : 0.99 }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
@@ -379,7 +406,7 @@ export function LoginScreen() {
                   type="button"
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="w-full bg-white hover:bg-brand-green-50 border border-gray-200 text-ink-700 font-semibold py-3.5 rounded-xl transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden group"
+                  className="w-full bg-white hover:bg-slate-50 border border-gray-200 text-slate-700 font-semibold py-3.5 rounded-xl transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden group"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     letterSpacing: '0.01em'
@@ -387,7 +414,7 @@ export function LoginScreen() {
                   whileHover={{ scale: loading ? 1 : 1.01 }}
                   whileTap={{ scale: loading ? 1 : 0.99 }}
                 >
-                  <span className="absolute inset-0 bg-brand-green-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative z-10 flex items-center justify-center gap-3">
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -405,8 +432,8 @@ export function LoginScreen() {
             <div className="mt-5 space-y-2 text-[13px] leading-[22px] text-ink-600/90" aria-label="Trust and privacy">
               <ul className="list-none p-0 m-0 space-y-1.5">
                 <li className="flex items-start gap-2">
-                  <span aria-hidden className="mt-0.5 inline-flex h-4 w-4 rounded-full bg-brand-green-500/10 text-brand-green-600 items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-brand-green-600">
+                  <span aria-hidden className="mt-0.5 inline-flex h-4 w-4 rounded-full bg-slate-500/10 text-slate-600 items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-slate-600">
                       <path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
                       <path d="M9.5 12.5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v1.5h-5v-1.5z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
                     </svg>
@@ -414,8 +441,8 @@ export function LoginScreen() {
                   <span className="font-normal">Private & secure — your data stays with you</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span aria-hidden className="mt-0.5 inline-flex h-4 w-4 rounded-full bg-brand-green-500/10 text-brand-green-600 items-center justify-center">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-brand-green-600">
+                  <span aria-hidden className="mt-0.5 inline-flex h-4 w-4 rounded-full bg-slate-500/10 text-slate-600 items-center justify-center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-slate-600">
                       <path d="M4 17l6-6 4 4 6-6" stroke="currentColor" strokeWidth="1.5" fill="none"/>
                     </svg>
                   </span>
@@ -435,7 +462,7 @@ export function LoginScreen() {
                 Don't have an account?{' '}
                 <Link
                   href="/signup"
-                  className="text-brand-green-700 hover:text-brand-green-800 font-medium transition-colors relative group"
+                  className="text-slate-700 hover:text-slate-800 font-medium transition-colors relative group"
                   style={{ 
                     color: '#1f3d42',
                     textUnderlineOffset: '2px',

@@ -42,7 +42,7 @@ export function Hero({ variant = 'B' }: Props) {
           <div className="order-2 md:order-1 space-y-8">
             <div className="space-y-6">
               <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tighter text-slate-700">
-                Find <span style={{ color: '#4a7c59' }}>calm</span> in the chaos.
+                Find <span className="text-brand-green-600 font-medium">calm</span> in the chaos.
               </h1>
               <p className="text-lg md:text-xl text-slate-500 max-w-[36rem] mx-auto md:mx-0 leading-loose font-light tracking-wide">
                 When life feels heavy, you deserve a gentle space to breathe. We listen with care and offer tools that help—always here, always free.
@@ -50,26 +50,28 @@ export function Hero({ variant = 'B' }: Props) {
             </div>
 
             {/* CTA Group */}
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-              <button
-                id="cta-chat"
-                aria-label="Chat with MindWell"
-                onClick={onChat}
-                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-white font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
-                style={{ backgroundColor: '#4a7c59', boxShadow: '0 4px 6px -1px rgba(74, 124, 89, 0.3)' }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#3d6b4a'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#4a7c59'}
-              >
-                Chat with MindWell
-              </button>
-
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              {/* Primary: Assessment */}
               <button
                 id="cta-assessment"
                 aria-label="Start free assessment"
                 onClick={onAssessment}
-                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-slate-700 font-semibold bg-white border border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
+                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-white font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
+                style={{ backgroundColor: '#4a7c59', boxShadow: '0 4px 6px -1px rgba(74, 124, 89, 0.3)' }}
+                onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#3d6b4a'}
+                onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#4a7c59'}
               >
                 Start free assessment
+              </button>
+
+              {/* Secondary: Chat */}
+              <button
+                id="cta-chat"
+                aria-label="Chat with MindWell"
+                onClick={onChat}
+                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-slate-700 font-semibold bg-white border border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
+              >
+                Chat with MindWell
               </button>
             </div>
             <p className="mt-3 text-[12px] leading-5 text-slate-500">Takes less than 2 minutes</p>
@@ -96,8 +98,11 @@ export function Hero({ variant = 'B' }: Props) {
                   <span className="font-normal">Evidence-based tools created with clinicians</span>
                 </li>
               </ul>
-              <figure className="mt-4 rounded-xl border border-slate-200 bg-white/80 p-4 shadow-sm">
-                <blockquote className="italic text-slate-600">"I felt heard and calmer in minutes." — Amina, 27</blockquote>
+              {/* Testimonial - lighter, quote-like styling */}
+              <figure className="mt-4">
+                <blockquote className="italic text-slate-600 pl-4 border-l-2 border-brand-green-200">
+                  “I felt heard and calmer in minutes.” — Amina, 27
+                </blockquote>
               </figure>
               <p className="text-[12px] leading-5 text-slate-500 mt-4">
                 MindWell is for support and self-help. It's not a substitute for emergency care.
