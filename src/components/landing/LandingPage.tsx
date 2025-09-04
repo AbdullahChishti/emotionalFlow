@@ -1,13 +1,9 @@
 'use client'
 
 import React from 'react'
-import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/ui/Navigation'
-
-// Material Symbols icons import
-import 'material-symbols/outlined.css'
-
+import Hero from '@/components/landing/Hero'
 
 
 
@@ -19,157 +15,107 @@ const HealingJourneySection = () => {
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Floating curved lines */}
-        <motion.div
-          className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-brand-green-300/30 rounded-tl-full"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.5 }}
-        />
-        <motion.div
-          className="absolute top-40 right-20 w-24 h-24 border-r-2 border-b-2 border-brand-green-400/40 rounded-br-full"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.7 }}
-        />
+        <div className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-brand-green-300/20 rounded-tl-full" />
+        <div className="absolute top-40 right-20 w-24 h-24 border-r-2 border-b-2 border-brand-green-400/25 rounded-br-full" />
         
         {/* Paint splash / organic shapes */}
-        <motion.div
-          className="absolute top-32 left-1/4 w-20 h-20"
-          initial={{ opacity: 0, scale: 0, rotate: -180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-        >
+        <div className="absolute top-32 left-1/4 w-20 h-20">
           <svg viewBox="0 0 80 80" fill="none" className="w-full h-full">
             <path
               d="M40 10 Q60 15 70 35 Q75 50 65 65 Q50 75 35 70 Q20 65 15 50 Q10 35 25 25 Q35 15 40 10 Z"
               fill="#335f64"
-              opacity="0.15"
+              opacity="0.08"
             />
             <path
               d="M35 20 Q45 18 50 25 Q52 35 48 45 Q42 52 35 50 Q28 48 25 40 Q22 32 28 25 Q32 20 35 20 Z"
               fill="#335f64"
-              opacity="0.2"
+              opacity="0.12"
             />
           </svg>
-        </motion.div>
+        </div>
         
         {/* Brain wave / neural connection */}
-        <motion.div
-          className="absolute bottom-40 right-1/3 w-24 h-24"
-          initial={{ opacity: 0, scale: 0, rotate: 180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-        >
+        <div className="absolute bottom-40 right-1/3 w-24 h-24">
           <svg viewBox="0 0 96 96" fill="none" className="w-full h-full">
             <path
               d="M10 48 Q24 32 38 48 T66 48 T94 48"
               stroke="#335f64"
-              strokeWidth="2"
+              strokeWidth="1.5"
               fill="none"
-              opacity="0.25"
+              opacity="0.15"
             />
             <path
               d="M10 56 Q24 40 38 56 T66 56 T94 56"
               stroke="#335f64"
-              strokeWidth="1.5"
+              strokeWidth="1"
               fill="none"
-              opacity="0.2"
+              opacity="0.12"
             />
-            <circle cx="38" cy="48" r="3" fill="#335f64" opacity="0.3" />
-            <circle cx="66" cy="48" r="3" fill="#335f64" opacity="0.3" />
+            <circle cx="38" cy="48" r="2" fill="#335f64" opacity="0.18" />
+            <circle cx="66" cy="48" r="2" fill="#335f64" opacity="0.18" />
           </svg>
-        </motion.div>
+        </div>
         
         {/* Organic therapy symbols - leaf shapes */}
-        <motion.div
-          className="absolute top-16 right-1/4 w-16 h-16"
-          initial={{ opacity: 0, y: -10, rotate: -45 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-        >
+        <div className="absolute top-16 right-1/4 w-16 h-16">
           <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
             <path
               d="M32 8 Q48 16 56 32 Q48 48 32 56 Q16 48 8 32 Q16 16 32 8 Z"
               fill="#335f64"
-              opacity="0.15"
+              opacity="0.08"
             />
             <path
               d="M32 12 Q44 18 50 32 Q44 46 32 52 Q20 46 14 32 Q20 18 32 12 Z"
               fill="#335f64"
-              opacity="0.2"
+              opacity="0.12"
             />
           </svg>
-        </motion.div>
+        </div>
         
         {/* Flowing emotional healing waves */}
-        <motion.div
-          className="absolute bottom-20 left-1/3 w-40 h-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.6 }}
-        >
+        <div className="absolute bottom-20 left-1/3 w-40 h-20">
           <svg viewBox="0 0 160 80" fill="none" className="w-full h-full">
             <path
               d="M0 40 Q20 20 40 40 T80 40 T120 40 T160 40"
               stroke="#335f64"
-              strokeWidth="1.5"
+              strokeWidth="1"
               fill="none"
-              opacity="0.2"
+              opacity="0.12"
             />
             <path
               d="M0 50 Q20 30 40 50 T80 50 T120 50 T160 50"
               stroke="#335f64"
-              strokeWidth="1"
+              strokeWidth="0.8"
               fill="none"
-              opacity="0.15"
+              opacity="0.08"
             />
           </svg>
-        </motion.div>
+        </div>
         
         {/* Paint splash / emotional expression */}
-        <motion.div
-          className="absolute top-1/2 right-10 w-16 h-16"
-          initial={{ opacity: 0, scale: 0, rotate: 45 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1.2, delay: 1.8 }}
-        >
+        <div className="absolute top-1/2 right-10 w-16 h-16">
           <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
             <path
               d="M32 8 Q44 12 52 24 Q56 36 48 48 Q40 56 32 52 Q24 48 16 40 Q12 28 20 20 Q28 12 32 8 Z"
               fill="#335f64"
-              opacity="0.12"
+              opacity="0.06"
             />
             <path
               d="M28 16 Q36 18 40 26 Q42 34 38 42 Q34 48 28 46 Q22 44 18 36 Q16 28 22 22 Q26 18 28 16 Z"
               fill="#335f64"
-              opacity="0.18"
+              opacity="0.10"
             />
           </svg>
-        </motion.div>
+        </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 relative z-10">
         <div className="grid md:grid-cols-2 gap-16 items-center">
           {/* Left Side - Main Illustration Card */}
-          <motion.div
-            className="relative h-80 w-full order-2 md:order-1"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+          <div className="relative h-80 w-full order-2 md:order-1">
             {/* Decorative elements around the image */}
-            <motion.div
-              className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-brand-green-400/50 rounded-tl-full"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 1.8 }}
-            />
-            <motion.div
-              className="absolute -bottom-4 -right-4 w-6 h-6 border-r-2 border-b-2 border-brand-green-500/50 rounded-br-full"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 2 }}
-            />
+            <div className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-brand-green-400/30 rounded-tl-full" />
+            <div className="absolute -bottom-4 -right-4 w-6 h-6 border-r-2 border-b-2 border-brand-green-500/30 rounded-br-full" />
             
             <div className="absolute inset-0 bg-gradient-to-tr from-brand-green-200 to-brand-green-400 rounded-3xl transform rotate-3 shadow-2xl"></div>
             <img
@@ -177,22 +123,12 @@ const HealingJourneySection = () => {
               className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl"
               src="/assets/Mental_health-bro_2.svg"
             />
-          </motion.div>
+          </div>
 
           {/* Right Side - Text Content */}
-          <motion.div
-            className="flex flex-col gap-8 text-center md:text-left order-1 md:order-2"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          <div className="flex flex-col gap-8 text-center md:text-left order-1 md:order-2">
             {/* Decorative line above title */}
-            <motion.div
-              className="hidden md:block w-20 h-0.5 bg-gradient-to-r from-transparent via-brand-green-400 to-transparent mb-4"
-              initial={{ width: 0 }}
-              animate={{ width: 80 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            />
+            <div className="hidden md:block w-20 h-0.5 bg-gradient-to-r from-transparent via-brand-green-400 to-transparent mb-4" />
             
             <h2 className="text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-secondary-900">
               A Gentle Companion for{' '}
@@ -202,12 +138,7 @@ const HealingJourneySection = () => {
             </h2>
             
             {/* Decorative therapy symbol - heart with flowing lines */}
-            <motion.div
-              className="hidden md:flex items-center gap-3 text-brand-green-600 opacity-60"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 0.6, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
+            <div className="hidden md:flex items-center gap-3 text-brand-green-600 opacity-60">
               <div className="w-8 h-0.5 bg-brand-green-400"></div>
               <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
                 <path
@@ -223,7 +154,7 @@ const HealingJourneySection = () => {
                   opacity="0.8"
                 />
               </svg>
-            </motion.div>
+            </div>
             
             <p className="text-base md:text-lg text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
               When your heart feels heavy and your mind won't rest, you deserve a safe harbor where your feelings are honored. 
@@ -231,13 +162,8 @@ const HealingJourneySection = () => {
             </p>
             
             {/* Decorative line below text */}
-            <motion.div
-              className="hidden md:block w-32 h-0.5 bg-gradient-to-r from-brand-green-400 via-brand-green-500 to-transparent mt-4"
-              initial={{ width: 0 }}
-              animate={{ width: 128 }}
-              transition={{ duration: 0.8, delay: 1 }}
-            />
-          </motion.div>
+            <div className="hidden md:block w-32 h-0.5 bg-gradient-to-r from-brand-green-400 via-brand-green-500 to-transparent mt-4" />
+          </div>
         </div>
       </div>
     </section>
@@ -253,46 +179,28 @@ const ProfessionalAssessmentsSection = () => {
     <section className="py-16 bg-gradient-to-r from-brand-green-50 to-brand-green-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="text-center mb-12">
-          <motion.h2
-            className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6 leading-tight"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-          >
+          <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6 leading-tight">
             Understanding Your Heart
             <br />
             <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
               Through Gentle Assessment
             </span>
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            className="text-base md:text-lg text-secondary-600 max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
+          <p className="text-base md:text-lg text-secondary-600 max-w-3xl mx-auto leading-relaxed">
             These aren't just simple quizzes—they're carefully crafted tools of understanding, created by compassionate mental health professionals who deeply care about your well-being. 
             Discover gentle insights about your emotional landscape, offered with love and complete privacy.
-          </motion.p>
+          </p>
           
           {/* Subtle value proposition */}
-          <motion.div
-            className="mt-6 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
+          <div className="mt-6 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-green-50/60 rounded-full border border-brand-green-200/40">
               <span className="text-brand-green-600 text-sm">💚</span>
               <span className="text-brand-green-700 text-sm font-medium">
                 Professional assessments worth hundreds, offered freely with love
               </span>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
@@ -313,13 +221,9 @@ const ProfessionalAssessmentsSection = () => {
               description: 'Receive gentle guidance and compassionate strategies tailored specifically to your heart\'s needs.'
             }
           ].map((feature, index) => (
-            <motion.div
+            <div
               key={feature.title}
               className="text-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6 + index * 0.2, duration: 0.6 }}
             >
               <div className="w-20 h-20 mx-auto mb-4 relative">
                 <img
@@ -330,28 +234,20 @@ const ProfessionalAssessmentsSection = () => {
               </div>
               <h3 className="text-xl font-semibold text-secondary-800 mb-3">{feature.title}</h3>
               <p className="text-secondary-600 leading-relaxed">{feature.description}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.div
-          className="text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-        >
-          <motion.button
+        <div className="text-center">
+          <button
             onClick={() => router.push('/login')}
             className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
             style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
-            whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
-            whileTap={{ scale: 0.95 }}
           >
-            <span className="truncate">Begin Your Gentle Assessment</span>
-          </motion.button>
+            <span className="truncate">Start free assessment</span>
+          </button>
           <p className="text-secondary-500 text-sm mt-4">Free • Private • Created With Love</p>
-        </motion.div>
+        </div>
       </div>
     </section>
   )
@@ -421,259 +317,9 @@ const Footer = () => {
   )
 }
 
-// Hero Section Component
-const HeroSection = () => {
-  const router = useRouter()
-  
-  return (
-    <section className="relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Floating curved lines */}
-        <motion.div
-          className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-brand-green-300/30 rounded-tl-full"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.5 }}
-        />
-        <motion.div
-          className="absolute top-40 right-20 w-24 h-24 border-r-2 border-b-2 border-brand-green-400/40 rounded-br-full"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, delay: 0.7 }}
-        />
-        
-        {/* Paint splash / organic shapes */}
-        <motion.div
-          className="absolute top-32 left-1/4 w-20 h-20"
-          initial={{ opacity: 0, scale: 0, rotate: -180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1, delay: 1 }}
-        >
-          <svg viewBox="0 0 80 80" fill="none" className="w-full h-full">
-            <path
-              d="M40 10 Q60 15 70 35 Q75 50 65 65 Q50 75 35 70 Q20 65 15 50 Q10 35 25 25 Q35 15 40 10 Z"
-              fill="#335f64"
-              opacity="0.15"
-            />
-            <path
-              d="M35 20 Q45 18 50 25 Q52 35 48 45 Q42 52 35 50 Q28 48 25 40 Q22 32 28 25 Q32 20 35 20 Z"
-              fill="#335f64"
-              opacity="0.2"
-            />
-          </svg>
-        </motion.div>
-        
-        {/* Brain wave / neural connection */}
-        <motion.div
-          className="absolute bottom-40 right-1/3 w-24 h-24"
-          initial={{ opacity: 0, scale: 0, rotate: 180 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-        >
-          <svg viewBox="0 0 96 96" fill="none" className="w-full h-full">
-            <path
-              d="M10 48 Q24 32 38 48 T66 48 T94 48"
-              stroke="#335f64"
-              strokeWidth="2"
-              fill="none"
-              opacity="0.25"
-            />
-            <path
-              d="M10 56 Q24 40 38 56 T66 56 T94 56"
-              stroke="#335f64"
-              strokeWidth="1.5"
-              fill="none"
-              opacity="0.2"
-            />
-            <circle cx="38" cy="48" r="3" fill="#335f64" opacity="0.3" />
-            <circle cx="66" cy="48" r="3" fill="#335f64" opacity="0.3" />
-          </svg>
-        </motion.div>
-        
-        {/* Organic therapy symbols - leaf shapes */}
-        <motion.div
-          className="absolute top-16 right-1/4 w-16 h-16"
-          initial={{ opacity: 0, y: -10, rotate: -45 }}
-          animate={{ opacity: 1, y: 0, rotate: 0 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-        >
-          <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-            <path
-              d="M32 8 Q48 16 56 32 Q48 48 32 56 Q16 48 8 32 Q16 16 32 8 Z"
-              fill="#335f64"
-              opacity="0.15"
-            />
-            <path
-              d="M32 12 Q44 18 50 32 Q44 46 32 52 Q20 46 14 32 Q20 18 32 12 Z"
-              fill="#335f64"
-              opacity="0.2"
-            />
-          </svg>
-        </motion.div>
-        
-        {/* Flowing emotional healing waves */}
-        <motion.div
-          className="absolute bottom-20 left-1/3 w-40 h-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.6 }}
-        >
-          <svg viewBox="0 0 160 80" fill="none" className="w-full h-full">
-            <path
-              d="M0 40 Q20 20 40 40 T80 40 T120 40 T160 40"
-              stroke="#335f64"
-              strokeWidth="1.5"
-              fill="none"
-              opacity="0.2"
-            />
-            <path
-              d="M0 50 Q20 30 40 50 T80 50 T120 50 T160 50"
-              stroke="#335f64"
-              strokeWidth="1"
-              fill="none"
-              opacity="0.15"
-            />
-          </svg>
-        </motion.div>
-        
-        {/* Paint splash / emotional expression */}
-        <motion.div
-          className="absolute top-1/2 right-10 w-16 h-16"
-          initial={{ opacity: 0, scale: 0, rotate: 45 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1.2, delay: 1.8 }}
-        >
-          <svg viewBox="0 0 64 64" fill="none" className="w-full h-full">
-            <path
-              d="M32 8 Q44 12 52 24 Q56 36 48 48 Q40 56 32 52 Q24 48 16 40 Q12 28 20 20 Q28 12 32 8 Z"
-              fill="#335f64"
-              opacity="0.12"
-            />
-            <path
-              d="M28 16 Q36 18 40 26 Q42 34 38 42 Q34 48 28 46 Q22 44 18 36 Q16 28 22 22 Q26 18 28 16 Z"
-              fill="#335f64"
-              opacity="0.18"
-            />
-          </svg>
-        </motion.div>
-      </div>
+// Old hero removed; replaced by spec-driven Hero component
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative z-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            className="flex flex-col gap-6 text-center md:text-left"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            {/* Decorative line above title */}
-            <motion.div
-              className="hidden md:block w-20 h-0.5 bg-gradient-to-r from-transparent via-brand-green-400 to-transparent mb-4"
-              initial={{ width: 0 }}
-              animate={{ width: 80 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            />
-            
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-secondary-900">
-              Your heart deserves{' '}
-              <span style={{ color: '#335f64' }}>
-                Peace
-              </span>
-            </h1>
-            
-            {/* Decorative therapy symbol - heart with flowing lines */}
-            <motion.div
-              className="hidden md:flex items-center gap-3 text-brand-green-600 opacity-60"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 0.6, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              <div className="w-8 h-0.5 bg-brand-green-400"></div>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 20 20">
-                <path
-                  d="M10 15.5C10 15.5 8.5 14 6 11.5C3.5 9 2.5 7 3 5.5C3.5 4 5 3.5 6.5 4C7.5 4.5 8.5 5.5 10 7.5C11.5 5.5 12.5 4.5 13.5 4C15 3.5 16.5 4 17 5.5C17.5 7 16.5 9 14 11.5C11.5 14 10 15.5 10 15.5Z"
-                  fill="#335f64"
-                  opacity="0.6"
-                />
-                <path
-                  d="M7 8 Q8 7 9 8 T11 8"
-                  stroke="#335f64"
-                  strokeWidth="1"
-                  fill="none"
-                  opacity="0.8"
-                />
-              </svg>
-            </motion.div>
-            
-            <p className="text-base md:text-lg text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
-              When life feels overwhelming, you deserve a gentle space where your heart can rest. Here, you'll find compassionate support that listens with love and offers wisdom from the heart—always here, always free.
-            </p>
-            
-            {/* Decorative line below text */}
-            <motion.div
-              className="hidden md:block w-32 h-0.5 bg-gradient-to-r from-brand-green-400 via-brand-green-500 to-transparent mt-4"
-              initial={{ width: 0 }}
-              animate={{ width: 128 }}
-              transition={{ duration: 0.8, delay: 1 }}
-            />
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mt-6">
-              <motion.button
-                onClick={() => router.push('/login')}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
-                style={{ backgroundColor: '#335f64', boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)' }}
-                whileHover={{ scale: 1.05, backgroundColor: '#2a4f54' }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="truncate text-white">Begin Your Healing Journey</span>
-              </motion.button>
-              <motion.button
-                onClick={() => router.push('/session')}
-                className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
-                style={{ backgroundColor: '#2a4f54', boxShadow: '0 10px 15px -3px rgba(42, 79, 84, 0.3)' }}
-                whileHover={{ scale: 1.05, backgroundColor: '#1f3d42' }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <span className="truncate text-white">💬 I Need Someone to Listen</span>
-              </motion.button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="relative h-80 w-full"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            {/* Decorative elements around the image */}
-            <motion.div
-              className="absolute -top-4 -left-4 w-8 h-8 border-l-2 border-t-2 border-brand-green-400/50 rounded-tl-full"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 1.8 }}
-            />
-            <motion.div
-              className="absolute -bottom-4 -right-4 w-6 h-6 border-r-2 border-b-2 border-brand-green-500/50 rounded-br-full"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 2 }}
-            />
-            
-            <div className="absolute inset-0 bg-gradient-to-tr from-brand-green-200 to-brand-green-400 rounded-3xl transform -rotate-3 shadow-2xl"></div>
-            <img
-              alt="Gentle therapy and healing illustration"
-              className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-2xl"
-              src="/assets/Psychologist-rafiki_1.svg"
-            />
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-export function LandingPage() {
+export default function LandingPage() {
   return (
     <div className="relative flex size-full min-h-screen flex-col group/design-root overflow-x-hidden bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
       {/* Unified Header */}
@@ -681,13 +327,8 @@ export function LandingPage() {
 
       {/* Main Content */}
       <main className="flex-1 pt-20">
-        {/* Hero Section */}
-        <HeroSection />
-
-        {/* Healing Journey Section */}
+        <Hero />
         <HealingJourneySection />
-
-        {/* Professional Assessments Section */}
         <ProfessionalAssessmentsSection />
       </main>
     </div>
