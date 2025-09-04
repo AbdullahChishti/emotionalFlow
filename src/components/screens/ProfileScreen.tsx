@@ -14,7 +14,7 @@ const AssessmentHistory = dynamic(() => import('@/components/assessment/Assessme
     <div className="py-12 text-center">
       <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/80 border border-white/50 shadow">
         <span className="material-symbols-outlined animate-spin" style={{ fontSize: 18 }}>progress_activity</span>
-        <span className="text-sm text-secondary-700">Loading assessment history…</span>
+        <span className="text-sm text-gray-600">Loading assessment history…</span>
       </div>
     </div>
   )
@@ -29,13 +29,7 @@ export function ProfileScreen() {
 
   // Form state
   const [displayName, setDisplayName] = useState('')
-
   const [isAnonymous, setIsAnonymous] = useState(false)
-
-  // Notification preferences
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const [pushNotifications, setPushNotifications] = useState(true)
-  const [sessionReminders, setSessionReminders] = useState(true)
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'profile' | 'history'>('profile')
@@ -61,12 +55,9 @@ export function ProfileScreen() {
         .eq('id', user.id)
 
       if (error) throw error
-
       await refreshProfile()
-      // Show success message or toast
     } catch (error) {
       console.error('Error updating profile:', error)
-      // Show error message
     } finally {
       setSaving(false)
     }
@@ -84,7 +75,7 @@ export function ProfileScreen() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoadingSpinner size="lg" />
       </div>
     )
@@ -92,10 +83,10 @@ export function ProfileScreen() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h2 className="text-2xl font-semibold text-secondary-900 mb-4">Loading your profile...</h2>
-          <p className="text-secondary-600 mb-6">Setting up your personalized experience</p>
+          <h2 className="text-2xl font-semibold text-gray-900 mb-4">Loading your profile...</h2>
+          <p className="text-gray-600 mb-6">Setting up your personalized experience</p>
           <LoadingSpinner size="lg" />
         </div>
       </div>
@@ -103,10 +94,10 @@ export function ProfileScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-7xl mx-auto">
-
+    <div className="min-h-screen bg-gray-50">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto">
+          
           {/* Header */}
           <motion.div
             className="text-center mb-8"
@@ -114,119 +105,107 @@ export function ProfileScreen() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-4xl font-bold text-secondary-900 mb-2">Profile Settings</h1>
-            <p className="text-secondary-600">Manage your account and preferences</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
+            <p className="text-gray-600">Manage your account settings and preferences</p>
           </motion.div>
 
-          {/* Tabs */}
+          {/* Tab Navigation - Aesthetic Pill Buttons */}
           <motion.div
             className="flex justify-center mb-8"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="flex space-x-1 bg-white/80 backdrop-blur-sm rounded-2xl p-2 border border-white/50 shadow-lg">
+            <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-full p-1.5 border border-gray-200 shadow-lg">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                className={`relative px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
                   activeTab === 'profile'
                     ? 'text-white shadow-md'
-                    : 'text-secondary-600 hover:text-secondary-900 hover:bg-white/50'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={activeTab === 'profile' ? { backgroundColor: '#335f64' } : { border: '2px solid #335f64' }}
+                style={activeTab === 'profile' ? { 
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                } : {}}
               >
-                Profile Settings
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">person</span>
+                  Profile Settings
+                </span>
               </button>
               <button
                 onClick={() => setActiveTab('history')}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
+                className={`relative px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
                   activeTab === 'history'
                     ? 'text-white shadow-md'
-                    : 'text-secondary-600 hover:text-secondary-900 hover:bg-white/50'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={activeTab === 'history' ? { backgroundColor: '#335f64' } : { border: '2px solid #335f64' }}
+                style={activeTab === 'history' ? { 
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
+                } : {}}
               >
-                Assessment History
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">assessment</span>
+                  Assessment History
+                </span>
               </button>
             </div>
           </motion.div>
 
           {/* Main Content */}
           {activeTab === 'profile' ? (
-            /* Main Grid Layout */
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* Sidebar - 1/3 width */}
             <motion.div
-              className="lg:col-span-1"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              className="space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 border-2 border-brand-green-200/80 shadow-lg sticky top-8 transition-all duration-300 hover:border-brand-green-300/80 hover:shadow-xl">
-
-                {/* Profile Avatar */}
-                <div className="text-center mb-6">
-                  <div className="relative mx-auto w-24 h-24 mb-4">
-                    <div className="w-24 h-24 bg-gradient-to-br from-brand-green-500 to-brand-green-700 rounded-2xl flex items-center justify-center shadow-lg border-2 border-white/30">
-                      <span className="material-symbols-outlined text-3xl text-white">person</span>
-                    </div>
+              {/* Profile Overview Card */}
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="material-symbols-outlined text-2xl text-white">person</span>
                   </div>
-                  <h3 className="text-xl font-semibold text-secondary-900">{profile.display_name || 'User'}</h3>
-                  <p className="text-sm text-secondary-600">{user?.email}</p>
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">{profile.display_name || 'User'}</h2>
+                    <p className="text-gray-600">{user?.email}</p>
+                  </div>
                 </div>
-
-                {/* Navigation Menu */}
-                <nav className="space-y-3">
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-brand-green-50/80 text-brand-green-700 font-medium border-2 border-brand-green-200 hover:border-brand-green-300 transition-all duration-200 hover:shadow-md">
-                    <span className="material-symbols-outlined text-xl">person</span>
-                    Personal Information
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-white/80 hover:bg-brand-green-50/60 text-secondary-600 transition-all duration-200 border-2 border-slate-100 hover:border-brand-green-200 hover:shadow-md">
-                    <span className="material-symbols-outlined text-xl">notifications</span>
-                    Notifications
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-2xl bg-white/80 hover:bg-brand-green-50/60 text-secondary-600 transition-all duration-200 border-2 border-slate-100 hover:border-brand-green-200 hover:shadow-md">
-                    <span className="material-symbols-outlined text-xl">settings</span>
-                    Account
-                  </button>
-                </nav>
-
-                {/* Quick Stats */}
-                <div className="mt-6 pt-6 border-t border-slate-200">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-sm bg-slate-50/60 p-3 rounded-xl border-2 border-slate-100">
-                      <div className="flex items-center gap-2">
-                        <span className="material-symbols-outlined text-brand-green-600" style={{fontSize: '18px'}}>emoji_people</span>
-                        <span className="text-secondary-600 font-medium">Sessions</span>
-                      </div>
-                      <span className="font-semibold text-brand-green-700 bg-white/80 px-3 py-1 rounded-lg border border-slate-200">
-                        {Math.floor((profile?.total_credits_earned || 0) / 5)} completed
-                      </span>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-emerald-600">
+                      {Math.floor((profile?.total_credits_earned || 0) / 5)}
                     </div>
+                    <div className="text-sm text-gray-600">Sessions Completed</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {profile?.total_credits_earned || 0}
+                    </div>
+                    <div className="text-sm text-gray-600">Credits Earned</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'N/A'}
+                    </div>
+                    <div className="text-sm text-gray-600">Member Since</div>
                   </div>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Main Content - 2/3 width */}
-            <motion.div
-              className="lg:col-span-2 space-y-8"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
 
               {/* Personal Information Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">person</span>
-                  <h2 className="text-2xl font-semibold text-secondary-900">Personal Information</h2>
+                  <span className="material-symbols-outlined text-emerald-600 text-xl">edit</span>
+                  <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Display Name
                     </label>
                     <Input
@@ -238,110 +217,28 @@ export function ProfileScreen() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Email Address
                     </label>
                     <Input
                       value={user?.email || ''}
                       disabled
-                      className="w-full bg-slate-50"
+                      className="w-full bg-gray-50"
                     />
                   </div>
 
-
-                </div>
-
-                <div className="mt-6 pt-6 border-t border-slate-200">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 pt-4">
                     <input
                       type="checkbox"
                       id="anonymous"
                       checked={isAnonymous}
                       onChange={(e) => setIsAnonymous(e.target.checked)}
-                      className="w-5 h-5 text-brand-green-600 border-slate-300 rounded focus:ring-brand-green-500"
+                      className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                     />
-                    <label htmlFor="anonymous" className="text-sm font-medium text-secondary-700">
-                      Remain anonymous in sessions
+                    <label htmlFor="anonymous" className="text-sm font-medium text-gray-700">
+                      Remain anonymous in therapy sessions
                     </label>
                   </div>
-                </div>
-              </div>
-
-              {/* Notifications Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">notifications</span>
-                  <h2 className="text-2xl font-semibold text-secondary-900">Notifications</h2>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-secondary-900">Email Notifications</div>
-                      <div className="text-sm text-secondary-600">Receive updates via email</div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={emailNotifications}
-                        onChange={(e) => setEmailNotifications(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-secondary-900">Push Notifications</div>
-                      <div className="text-sm text-secondary-600">Receive push notifications on your device</div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={pushNotifications}
-                        onChange={(e) => setPushNotifications(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
-                    </label>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-secondary-900">Session Reminders</div>
-                      <div className="text-sm text-secondary-600">Get reminded about upcoming sessions</div>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={sessionReminders}
-                        onChange={(e) => setSessionReminders(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#335f64]"></div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              {/* Account Section */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 shadow-lg">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="material-symbols-outlined text-brand-green-600 text-2xl">settings</span>
-                  <h2 className="text-2xl font-semibold text-secondary-900">Account</h2>
-                </div>
-
-                <div className="space-y-4">
-
-
-                  <button className="w-full flex items-center justify-between p-4 rounded-2xl border-2 border-brand-green-200 hover:border-brand-green-400 hover:bg-brand-green-50 transition-all">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-brand-green-600">help</span>
-                      <span className="font-medium text-secondary-900">Help & Support</span>
-                    </div>
-                    <span className="material-symbols-outlined text-secondary-400">arrow_forward</span>
-                  </button>
                 </div>
               </div>
 
@@ -350,18 +247,12 @@ export function ProfileScreen() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl font-medium transition-all border-2"
-                  style={{
-                    backgroundColor: '#335f64',
-                    color: 'white',
-                    opacity: saving ? 0.7 : 1,
-                    borderColor: '#335f64'
-                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50"
                 >
                   {saving ? (
                     <LoadingSpinner size="sm" className="text-white" />
                   ) : (
-                    <span className="material-symbols-outlined">save</span>
+                    <span className="material-symbols-outlined text-lg">save</span>
                   )}
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -369,14 +260,13 @@ export function ProfileScreen() {
                 <button
                   onClick={handleSignOut}
                   disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-red-600 text-white rounded-2xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50 border-2 border-red-600 hover:border-red-700"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
-                  <span className="material-symbols-outlined">logout</span>
+                  <span className="material-symbols-outlined text-lg">logout</span>
                   Sign Out
                 </button>
               </div>
             </motion.div>
-          </div>
           ) : (
             /* Assessment History Tab */
             <motion.div

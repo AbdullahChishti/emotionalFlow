@@ -1,46 +1,5 @@
-'use client'
-
-import { useAuth } from '@/components/providers/AuthProvider'
-import { Navigation } from '@/components/ui/Navigation'
-import { ProfileScreen } from '@/components/screens/ProfileScreen'
-import { BackButton } from '@/components/ui/BackButton'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-
+// This page is now handled by AppLayout component
+// The routing logic has been moved to AppLayout for SPA behavior
 export default function ProfilePage() {
-  const { user, loading } = useAuth()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/')
-    }
-  }, [user, loading, router])
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return null
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      <div className="pt-20 pb-20 md:pb-0">
-        <div className="container mx-auto px-4 py-6">
-          <div className="mb-6">
-            <BackButton />
-          </div>
-          <ProfileScreen />
-        </div>
-      </div>
-    </div>
-  )
+  return null
 }

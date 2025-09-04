@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @theme {
+  /* MindWell Landing Hero Tokens */
+  --brand-50: #ECF6F4;
+  --brand-500: #2E7D74;
+  --brand-600: #24685F;
+  --accent-300: #C8D6F0;
+  --ink-900: #0F172A;
+  --ink-600: #475569;
+
   /* MindWell Design System Colors */
   --color-background: #ffffff;
   --color-foreground: #0f172a;
@@ -101,5 +109,60 @@
 
   .bg-gradient-radial {
     background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+
+  /* Radial gradient helper for hero */
+  .hero-radial {
+    background:
+      radial-gradient(1600px 900px at 15% 15%, var(--brand-50, #ECF6F4) 0%, rgba(236,246,244,0.8) 25%, rgba(236,246,244,0.4) 50%, rgba(255,255,255,0.1) 80%, rgba(255,255,255,0) 100%),
+      linear-gradient(180deg, rgba(236,246,244,0.2) 0%, rgba(255,255,255,0) 70%);
+  }
+
+  @keyframes floaty {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-12px) translateX(8px); }
+    100% { transform: translateY(0) translateX(0); }
+  }
+  .animate-floaty-slow {
+    animation: floaty 14s ease-in-out infinite;
+  }
+  .animate-floaty-slower {
+    animation: floaty 18s ease-in-out infinite;
+  }
+
+  @keyframes chaos-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes chaos-subtle {
+    0% { 
+      transform: rotate(-1deg) translateX(0px);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: rotate(0.5deg) translateX(1px);
+      opacity: 0.6;
+    }
+    100% { 
+      transform: rotate(-1deg) translateX(0px);
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes chaos-drift {
+    0% { 
+      transform: translateX(1px) translateY(1px) rotate(0.5deg);
+      opacity: 0.3;
+    }
+    50% { 
+      transform: translateX(-0.5px) translateY(-0.5px) rotate(-0.3deg);
+      opacity: 0.2;
+    }
+    100% { 
+      transform: translateX(1px) translateY(1px) rotate(0.5deg);
+      opacity: 0.3;
+    }
   }
 }

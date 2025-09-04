@@ -327,6 +327,7 @@ export function Dashboard() {
   }
 
   const handleNavigate = (path: string) => {
+    console.log('Dashboard: Navigating to:', path)
     router.push(path)
   }
 
@@ -522,9 +523,9 @@ export function Dashboard() {
               />
               <ActionPill
                 icon="psychology"
-                label={hasAssessmentData ? "View Results" : "Take Assessment"}
-                description={hasAssessmentData ? "Review your assessment results" : "Complete a personalized mental health assessment"}
-                onClick={() => handleNavigate(hasAssessmentData ? '/results' : '/assessments')}
+                label="Take Assessments"
+                description="Complete personalized mental health assessments"
+                onClick={() => handleNavigate('/assessments')}
                 variant="secondary"
               />
             </div>

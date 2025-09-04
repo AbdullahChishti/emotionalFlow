@@ -2,15 +2,10 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
-import { useAuth } from '../../../providers/AuthProvider'
-import { getAIAssessmentExplanation } from '../../../lib/assessment-ai'
-import { AssessmentData, AIExplanation } from '../../../lib/assessment-ai'
+import { useAuth } from '@/components/providers/AuthProvider'
+import { getAIAssessmentExplanation } from '@/lib/assessment-ai'
+import { AssessmentData, AIExplanation } from '@/lib/assessment-ai'
 import { ReportHeader } from './ReportHeader'
-import { ScoreMeter } from './ScoreMeter'
-import { ReportInsights } from './ReportInsights'
-import { ReportActions } from './ReportActions'
-import { ReportSummary } from './ReportSummary'
-import { ReportLoading } from './ReportLoading'
 import 'material-symbols/outlined.css'
 
 interface AssessmentReportProps {
@@ -74,12 +69,24 @@ export function AssessmentReport({
 
   // Handle compact variant for summary displays
   if (variant === 'compact') {
-    return <ReportSummary assessment={assessment} result={result} className={className} />
+    return (
+      <div className={`bg-white/90 rounded-2xl p-6 shadow-sm ${className}`}>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">{assessment.title}</h3>
+        <p className="text-gray-600">Score: {result.score}</p>
+      </div>
+    )
   }
 
   // Handle loading state
   if (isLoading) {
-    return <ReportLoading className={className} />
+    return (
+      <div className={`bg-white/90 rounded-2xl p-8 shadow-sm ${className}`}>
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading assessment results...</p>
+        </div>
+      </div>
+    )
   }
 
   // Handle error state
@@ -113,27 +120,41 @@ export function AssessmentReport({
       />
 
       <div className="p-8">
-        {/* Score Meter */}
-        <ScoreMeter 
-          score={result.score}
-          maxScore={assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max}
-          severity={result.severity}
-          level={result.level}
-          className="mb-8"
-        />
+        {/* Score Display */}
+        <div className="mb-8">
+          <div className="text-center">
+            <div className="text-4xl font-bold text-emerald-600 mb-2">{result.score}</div>
+            <div className="text-lg text-gray-600 mb-1">{result.level}</div>
+            <div className="text-sm text-gray-500">{result.severity}</div>
+          </div>
+        </div>
 
         {/* Insights Section */}
-        <ReportInsights 
-          explanation={aiExplanation}
-          className="mb-8"
-        />
+        {aiExplanation && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Assessment Insights</h3>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-gray-700">{aiExplanation.summary}</p>
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         {showActions && (
-          <ReportActions 
-            onRetake={onRetake}
-            onContinue={onContinue}
-          />
+          <div className="flex gap-4">
+            <button
+              onClick={onRetake}
+              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Retake Assessment
+            </button>
+            <button
+              onClick={onContinue}
+              className="flex-1 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              Continue
+            </button>
+          </div>
         )}
       </div>
     </div>

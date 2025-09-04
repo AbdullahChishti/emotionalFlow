@@ -121,6 +121,21 @@ export function SignupScreen() {
 
       {/* Right Side - Signup Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12">
+        {/* Back to Home Button */}
+        <Link 
+          href="/" 
+          className="absolute top-6 left-6 z-10 group"
+        >
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full border border-white/20 shadow-lg transition-all duration-300 text-zinc-700 hover:text-zinc-900"
+          >
+            <span className="material-symbols-outlined text-lg">arrow_back</span>
+            <span className="text-sm font-medium">Back to Home</span>
+          </motion.button>
+        </Link>
+
         {/* Mobile Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>

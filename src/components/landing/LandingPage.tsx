@@ -130,10 +130,10 @@ const HealingJourneySection = () => {
             {/* Decorative line above title */}
             <div className="hidden md:block w-20 h-0.5 bg-gradient-to-r from-transparent via-brand-green-400 to-transparent mb-4" />
             
-            <h2 className="text-3xl md:text-4xl font-bold leading-tight tracking-tighter text-secondary-900">
-              A Gentle Companion for{' '}
-              <span style={{ color: '#335f64' }}>
-                Your Emotional Journey
+            <h2 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tighter text-slate-700">
+              Your Heart's Gentle{' '}
+              <span style={{ color: '#4a7c59' }}>
+                Safe Haven
               </span>
             </h2>
             
@@ -156,9 +156,9 @@ const HealingJourneySection = () => {
               </svg>
             </div>
             
-            <p className="text-base md:text-lg text-secondary-600 max-w-xl mx-auto md:mx-0 leading-relaxed">
-              When your heart feels heavy and your mind won't rest, you deserve a safe harbor where your feelings are honored. 
-              Our gentle AI companion offers the wisdom of countless therapeutic conversations—here to hold space for your healing, always with love.
+            <p className="text-lg md:text-xl text-slate-500 max-w-[36rem] mx-auto md:mx-0 leading-loose font-light tracking-wide">
+              In those moments when the world feels overwhelming and your thoughts race with worry, you deserve a place where your feelings are truly heard and held with compassion. 
+              Our gentle companion brings the warmth of human understanding—offering you a soft place to land, always here, always free.
             </p>
             
             {/* Decorative line below text */}
@@ -179,17 +179,16 @@ const ProfessionalAssessmentsSection = () => {
     <section className="py-16 bg-gradient-to-r from-brand-green-50 to-brand-green-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                   <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-secondary-900 mb-6 leading-tight">
-            Understanding Your Heart
-            <br />
-            <span className="bg-gradient-to-r from-brand-green-600 to-brand-green-700 bg-clip-text text-transparent">
-              Through Gentle Assessment
+          <h2 className="text-3xl md:text-4xl font-semibold text-slate-700 mb-6 leading-tight">
+            Discovering Your Inner{' '}
+            <span className="bg-gradient-to-r from-emerald-600 to-emerald-700 bg-clip-text text-transparent">
+              Wisdom
             </span>
           </h2>
 
-          <p className="text-base md:text-lg text-secondary-600 max-w-3xl mx-auto leading-relaxed">
-            These aren't just simple quizzes—they're carefully crafted tools of understanding, created by compassionate mental health professionals who deeply care about your well-being. 
-            Discover gentle insights about your emotional landscape, offered with love and complete privacy.
+          <p className="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto leading-loose font-light tracking-wide">
+            These gentle conversations are lovingly designed by caring mental health professionals who understand that healing begins with being truly seen and heard. 
+            Each question is crafted with deep empathy, offering you compassionate insights into your beautiful, complex emotional world—all held in complete privacy and love.
           </p>
           
           {/* Subtle value proposition */}
@@ -197,7 +196,7 @@ const ProfessionalAssessmentsSection = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-green-50/60 rounded-full border border-brand-green-200/40">
               <span className="text-brand-green-600 text-sm">💚</span>
               <span className="text-brand-green-700 text-sm font-medium">
-                Professional assessments worth hundreds, offered freely with love
+                Professional care worth hundreds, offered freely with love
               </span>
             </div>
           </div>
@@ -207,18 +206,18 @@ const ProfessionalAssessmentsSection = () => {
           {[
             {
               svg: '/assets/Psychologist-rafiki_1.svg',
-              title: 'Created With Love',
-              description: 'Developed by caring mental health professionals who understand the sacred nature of emotional healing.'
+              title: 'Crafted With Compassion',
+              description: 'Created by caring mental health professionals who deeply understand the tender nature of emotional healing and growth.'
             },
             {
               svg: '/assets/Thinking_face-bro_1.svg',
-              title: 'Gentle Understanding',
-              description: 'Each assessment is crafted with deep empathy, offering insights that honor your unique emotional journey.'
+              title: 'Gentle Self-Discovery',
+              description: 'Each conversation is designed with loving care, helping you uncover insights that honor your unique emotional landscape.'
             },
             {
               svg: '/assets/Contemplating-bro_1.svg',
-              title: 'Personalized Wisdom',
-              description: 'Receive gentle guidance and compassionate strategies tailored specifically to your heart\'s needs.'
+              title: 'Personalized Support',
+              description: 'Receive warm guidance and compassionate strategies that are lovingly tailored to your heart\'s specific needs and journey.'
             }
           ].map((feature, index) => (
             <div
@@ -232,8 +231,8 @@ const ProfessionalAssessmentsSection = () => {
                   className="w-full h-full object-contain opacity-75 hover:opacity-100 transition-opacity duration-300"
                 />
               </div>
-              <h3 className="text-xl font-semibold text-secondary-800 mb-3">{feature.title}</h3>
-              <p className="text-secondary-600 leading-relaxed">{feature.description}</p>
+              <h3 className="text-xl font-medium text-slate-700 mb-3">{feature.title}</h3>
+              <p className="text-slate-500 leading-loose font-light tracking-wide">{feature.description}</p>
             </div>
           ))}
         </div>
@@ -246,7 +245,7 @@ const ProfessionalAssessmentsSection = () => {
           >
             <span className="truncate">Start free assessment</span>
           </button>
-          <p className="text-secondary-500 text-sm mt-4">Free • Private • Created With Love</p>
+          <p className="text-slate-500 text-sm mt-4">Free • Private • Offered With Love</p>
         </div>
       </div>
     </section>

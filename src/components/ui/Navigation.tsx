@@ -8,6 +8,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
+interface NavigationItem {
+  name: string
+  href: string
+  icon: string
+  exact?: boolean
+  isCrisis?: boolean
+}
+
 interface NavigationProps {
   className?: string
 }
@@ -18,6 +26,12 @@ export function Navigation({ className = '' }: NavigationProps) {
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Set isClient to true after component mounts
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Handle scroll effect
   useEffect(() => {
@@ -29,11 +43,12 @@ export function Navigation({ className = '' }: NavigationProps) {
   }, [])
 
   // Navigation items for authenticated users
-  const authenticatedNavigationItems = [
+  const authenticatedNavigationItems: NavigationItem[] = [
     {
       name: 'Dashboard',
       href: '/dashboard',
-      icon: 'dashboard'
+      icon: 'dashboard',
+      exact: true
     },
     {
       name: 'Assessments',
@@ -59,8 +74,8 @@ export function Navigation({ className = '' }: NavigationProps) {
   ]
 
   // Navigation items for non-authenticated users (landing page)
-  const landingNavigationItems = [
-    { name: 'Home', href: '#', active: pathname === '/', icon: 'home' },
+  const landingNavigationItems: NavigationItem[] = [
+    { name: 'Home', href: '/', icon: 'home', exact: true },
     { name: 'Features', href: '#features', icon: 'star' },
     { name: 'About', href: '#about', icon: 'info' },
     { name: 'Contact', href: '#contact', icon: 'mail' }
@@ -127,7 +142,11 @@ export function Navigation({ className = '' }: NavigationProps) {
           {user && (
             <div className="hidden lg:flex items-center space-x-2">
               {navigationItems.map((item, index) => {
-                const isActive = pathname === item.href
+                const isActive = isClient && (
+                  item.exact 
+                    ? pathname === item.href 
+                    : pathname?.startsWith(item.href)
+                )
                 const isCrisis = item.isCrisis
                 return (
                   <motion.div
@@ -145,7 +164,7 @@ export function Navigation({ className = '' }: NavigationProps) {
                               : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30 hover:border-red-300/50'
                             : isActive
                             ? 'text-brand-green-700 bg-white/20'
-                            : 'text-secondary-600 hover:text-brand-green-600'
+                            : 'text-secondary-600 hover:text-brand-green-600 hover:bg-white/10'
                         }`}
                         whileHover={{ y: -2, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -254,7 +273,11 @@ export function Navigation({ className = '' }: NavigationProps) {
                 {user ? (
                   // Show navigation items for authenticated users
                   navigationItems.map((item, index) => {
-                    const isActive = pathname === item.href
+                    const isActive = isClient && (
+                      item.exact 
+                        ? pathname === item.href 
+                        : pathname?.startsWith(item.href)
+                    )
                     const isCrisis = item.isCrisis
                     return (
                       <motion.div

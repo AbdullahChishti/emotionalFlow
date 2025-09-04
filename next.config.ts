@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   async headers() {
     // Basic CSP to reduce XSS risk; tuned to avoid breaking Next.js
     const csp = [

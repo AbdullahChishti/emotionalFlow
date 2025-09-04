@@ -1,17 +1,70 @@
-export type AnalyticsEvent =
+'use client'
+
+type AnalyticsEvent =
   | 'signin_view'
   | 'signin_submit'
   | 'signin_error'
   | 'sso_click'
   | 'signin_success'
+  | 'hero_view'
+  | 'cta_click'
+  | 'assessment_start'
+  | 'chat_open'
 
-export interface AnalyticsProps {
-  [key: string]: any
+type Device = 'mobile' | 'desktop'
+
+export interface EventProps {
+  [key: string]: unknown
 }
 
-export function track(event: AnalyticsEvent, props: AnalyticsProps = {}): void {
-  if (process.env.NODE_ENV !== 'test') {
-    // Placeholder for real analytics integration
-    console.log('analytics event', event, props)
+function getDevice(): Device {
+  if (typeof window === 'undefined') return 'desktop'
+  const w = window.innerWidth || 1024
+  return w < 768 ? 'mobile' : 'desktop'
+}
+
+export function getOrAssignABBuck(): string {
+  if (typeof window === 'undefined') return 'B'
+  const key = 'hero_ab_bucket'
+  let v = window.localStorage.getItem(key)
+  if (!v) {
+    v = Math.random() < 0.5 ? 'A' : 'B'
+    window.localStorage.setItem(key, v)
   }
+  return v
+}
+
+export function track(event: AnalyticsEvent, props: EventProps = {}): void {
+  if (typeof window === 'undefined') return
+  const payload = {
+    ts: Date.now(),
+    device: getDevice(),
+    ...props,
+  }
+
+  // Console log for dev visibility
+  // eslint-disable-next-line no-console
+  console.log(`[analytics] ${event}`, payload)
+
+  // Dispatch a CustomEvent for any listeners
+  try {
+    window.dispatchEvent(new CustomEvent('analytics', { detail: { event, ...payload } }))
+  } catch {}
+
+  // Optional integrations if present
+  // Google Analytics gtag
+  try {
+    // @ts-ignore
+    if (window.gtag) window.gtag('event', event, payload)
+  } catch {}
+  // Plausible
+  try {
+    // @ts-ignore
+    if (window.plausible) window.plausible(event, { props: payload })
+  } catch {}
+  // Mixpanel
+  try {
+    // @ts-ignore
+    if (window.mixpanel) window.mixpanel.track(event, payload)
+  } catch {}
 }
