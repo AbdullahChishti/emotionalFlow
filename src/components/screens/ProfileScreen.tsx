@@ -22,7 +22,7 @@ const AssessmentHistory = dynamic(() => import('@/components/assessment/Assessme
 import 'material-symbols/outlined.css'
 
 export function ProfileScreen() {
-  const { user, profile, refreshProfile } = useAuth()
+  const { user, profile, refreshProfile, signOut } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -75,11 +75,9 @@ export function ProfileScreen() {
   const handleSignOut = async () => {
     setLoading(true)
     try {
-      await supabase.auth.signOut()
-      router.push('/')
+      await signOut()
     } catch (error) {
       console.error('Error signing out:', error)
-    } finally {
       setLoading(false)
     }
   }

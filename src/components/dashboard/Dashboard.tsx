@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult } from '@/data/assessments'
 import { ASSESSMENTS } from '@/data/assessments'
+import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -128,8 +129,8 @@ interface ActionPillProps {
 function ActionPill({ icon, label, description, onClick, variant = 'primary', disabled }: ActionPillProps) {
   const baseClasses = "flex items-center gap-3 sm:gap-4 p-4 sm:p-6 rounded-full transition-all duration-300 transform w-full"
   const variantClasses = variant === 'primary'
-    ? "text-white shadow-lg hover:scale-105"
-    : "bg-white/80 backdrop-blur-sm border-2 border-brand-green-300 text-secondary-900 shadow-lg hover:shadow-xl hover:scale-105 hover:border-brand-green-400"
+    ? "text-white shadow-lg hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-900"
+    : "bg-white/80 backdrop-blur-sm border-2 border-brand-green-300 text-secondary-900 shadow-lg hover:shadow-xl hover:scale-105 hover:border-brand-green-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600"
 
   const primaryStyle = variant === 'primary' ? {
     backgroundColor: '#335f64',
@@ -151,6 +152,7 @@ function ActionPill({ icon, label, description, onClick, variant = 'primary', di
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      aria-label={label}
     >
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
           variant === 'primary' ? 'bg-white/20' : 'bg-brand-green-100'
@@ -181,7 +183,6 @@ export function Dashboard() {
   const [currentMood, setCurrentMood] = useState<MoodEntry | null>(null)
   const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult> | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [personalizationData, setPersonalizationData] = useState<any>(null)
   const [hasAssessmentData, setHasAssessmentData] = useState(false)
 
   useEffect(() => {
@@ -197,17 +198,12 @@ export function Dashboard() {
       // Load assessment data from localStorage first
       const storedResults = localStorage.getItem('assessmentResults')
       const storedProfile = localStorage.getItem('userProfile')
-      const storedPersonalization = localStorage.getItem('personalizationData')
 
       if (storedResults && storedProfile) {
         try {
           setAssessmentResults(JSON.parse(storedResults))
           setUserProfile(JSON.parse(storedProfile))
           setHasAssessmentData(true)
-          
-          if (storedPersonalization) {
-            setPersonalizationData(JSON.parse(storedPersonalization))
-          }
         } catch (error) {
           console.error('Error parsing stored assessment data:', error)
         }
@@ -216,13 +212,9 @@ export function Dashboard() {
       // Try to load from database if authenticated
       if (user) {
         try {
-          const { data: assessmentHistory, error: assessmentError } = await supabase
-            .from('assessment_history')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
+          const assessmentHistory = await AssessmentService.getAssessmentHistory(user.id)
 
-          if (!assessmentError && assessmentHistory && assessmentHistory.length > 0) {
+          if (assessmentHistory && assessmentHistory.length > 0) {
             // Convert database results to the format expected by the UI
             const resultsMap: Record<string, AssessmentResult> = {}
             
@@ -348,6 +340,12 @@ export function Dashboard() {
     if (!assessmentResults || !hasAssessmentData) return null
 
     const resultEntries = Object.entries(assessmentResults)
+    const getMaxScore = (assessmentId: string) => {
+      const assessment = ASSESSMENTS[assessmentId]
+      if (!assessment) return 100
+      const last = assessment.scoring.ranges[assessment.scoring.ranges.length - 1]
+      return last?.max ?? 100
+    }
 
     return (
       <motion.div
@@ -356,9 +354,17 @@ export function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
       >
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-secondary-900 mb-2">Your Assessment Results</h2>
-          <p className="text-secondary-600">Based on your recent assessments</p>
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-secondary-900">Your Assessment Results</h2>
+            <p className="text-secondary-600">Based on your recent assessments</p>
+          </div>
+          <button
+            onClick={() => handleNavigate('/results')}
+            className="text-sm font-medium text-brand-green-700 hover:text-brand-green-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600 rounded"
+          >
+            View all
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -367,36 +373,41 @@ export function Dashboard() {
             if (!assessment) return null
 
             return (
-              <motion.div
+              <motion.button
                 key={assessmentId}
-                className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg"
-                initial={{ opacity: 0, scale: 0.9 }}
+                onClick={() => handleNavigate(`/results?assessment=${assessmentId}`)}
+                className="text-left bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-xl transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600"
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-brand-green-100 rounded-2xl flex items-center justify-center">
-                    <span className="material-symbols-outlined text-brand-green-600">analytics</span>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                      <span className="material-symbols-outlined text-slate-600">analytics</span>
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-secondary-900">{assessment.shortTitle}</div>
+                      <div className={`inline-flex items-center gap-2 text-[11px] mt-1 px-2 py-0.5 rounded-full ${getSeverityColor(result.severity)}`}>{result.level}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-secondary-900">{assessment.shortTitle}</h3>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(result.severity)}`}>
-                      {result.level}
-                    </span>
-                  </div>
+                  <span className="material-symbols-outlined text-slate-400">chevron_right</span>
                 </div>
-                <div className="text-3xl font-bold text-brand-green-700 mb-2">
-                  {result.score}
-                  <span className="text-sm font-normal text-secondary-500 ml-1">
-                    / {assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max}
-                  </span>
+                <div className="flex items-end gap-2">
+                  <div className="text-3xl font-bold text-secondary-900">{result.score}</div>
+                  <div className="text-sm text-secondary-600">/ {getMaxScore(assessmentId)}</div>
+                </div>
+                <div className="mt-3">
+                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="h-2 rounded-full bg-gradient-to-r from-brand-green-500 to-brand-green-600" style={{ width: `${Math.min(100, (result.score / getMaxScore(assessmentId)) * 100)}%` }} />
+                  </div>
                 </div>
                 {result.insights && result.insights.length > 0 && (
-                  <p className="text-sm text-secondary-600 leading-relaxed">
-                    {result.insights[0].substring(0, 100)}...
+                  <p className="text-sm text-secondary-600 leading-relaxed mt-3 line-clamp-2">
+                    {result.insights[0]}
                   </p>
                 )}
-              </motion.div>
+              </motion.button>
             )
           })}
         </div>
@@ -404,74 +415,27 @@ export function Dashboard() {
     )
   }
 
-  const renderPersonalizedRecommendations = () => {
-    if (!personalizationData || !hasAssessmentData) return null
-
-    const { wellness, content, therapy } = personalizationData
-
-    return (
-      <motion.div
-        className="space-y-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-      >
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-secondary-900 mb-2">Personalized for You</h2>
-          <p className="text-secondary-600">Recommendations based on your assessment results</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Daily Goals */}
-          {wellness?.dailyGoals && (
-            <SectionCard
-              title="Today's Goals"
-              icon="flag"
-              action={{ label: 'View All', onClick: () => handleNavigate('/wellness') }}
-            >
-              <div className="space-y-3">
-                {wellness.dailyGoals.slice(0, 3).map((goal: string, index: number) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-brand-green-50 rounded-xl">
-                    <div className="w-6 h-6 bg-brand-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
-                      {index + 1}
-                    </div>
-                    <span className="text-sm text-secondary-700 capitalize">
-                      {goal.replace(/_/g, ' ')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-          )}
-
-          {/* Content Recommendations */}
-          {content?.meditationThemes && (
-            <SectionCard
-              title="Recommended Content"
-              icon="recommend"
-              action={{ label: 'Explore', onClick: () => handleNavigate('/meditation') }}
-            >
-              <div className="space-y-3">
-                {content.meditationThemes.slice(0, 3).map((theme: string, index: number) => (
-                  <div key={index} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                    <span className="material-symbols-outlined text-brand-green-600 text-sm">self_improvement</span>
-                    <span className="text-sm text-secondary-700 capitalize">
-                      {theme.replace(/_/g, ' ')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-          )}
-        </div>
-      </motion.div>
-    )
-  }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="animate-pulse space-y-8">
+              <div className="h-8 w-2/3 bg-slate-200 rounded" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="h-20 bg-slate-200 rounded-full" />
+                <div className="h-20 bg-slate-200 rounded-full" />
+              </div>
+              <div className="h-6 w-40 bg-slate-200 rounded" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-40 bg-slate-200 rounded-3xl" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -499,7 +463,7 @@ export function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="hidden md:block w-16 h-0.5 bg-gradient-to-r from-transparent via-brand-green-400 to-transparent mx-auto mb-3 md:mb-5"></div>
+            {/* Decorative divider removed for a cleaner hero */}
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-secondary-900 leading-tight px-4">
               {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
             </h1>
@@ -540,12 +504,6 @@ export function Dashboard() {
             </div>
           )}
 
-          {/* Personalized Recommendations Section */}
-          {hasAssessmentData && (
-            <div className="max-w-7xl mx-auto px-4">
-              {renderPersonalizedRecommendations()}
-            </div>
-          )}
 
           {/* Main Content - Centered SVG (only show if no assessment data) */}
           {!hasAssessmentData && (
