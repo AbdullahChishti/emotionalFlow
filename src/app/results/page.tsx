@@ -81,9 +81,11 @@ export default function ResultsPage() {
             const storedResults = localStorage.getItem('assessmentResults')
             const storedProfile = localStorage.getItem('userProfile')
 
-            if (storedResults && storedProfile) {
+            if (storedResults) {
               setResults(JSON.parse(storedResults))
-              setUserProfile(JSON.parse(storedProfile))
+              if (storedProfile) {
+                setUserProfile(JSON.parse(storedProfile))
+              }
             } else {
               router.push('/assessments')
               return
@@ -95,9 +97,11 @@ export default function ResultsPage() {
           const storedResults = localStorage.getItem('assessmentResults')
           const storedProfile = localStorage.getItem('userProfile')
 
-          if (storedResults && storedProfile) {
+          if (storedResults) {
             setResults(JSON.parse(storedResults))
-            setUserProfile(JSON.parse(storedProfile))
+            if (storedProfile) {
+              setUserProfile(JSON.parse(storedProfile))
+            }
           } else {
             router.push('/assessments')
             return
