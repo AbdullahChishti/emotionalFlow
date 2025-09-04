@@ -5,12 +5,13 @@
 
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
 import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -26,46 +27,53 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
+  const mountedRef = useRef(false)
 
   const loadHistory = useCallback(async () => {
-    if (!user) return
-
     setLoading(true)
     setError(null)
 
     try {
+      // Resolve userId from context or Supabase as a fallback
+      const ctxUserId = user?.id
+      const authUserId = ctxUserId || (await supabase.auth.getUser()).data.user?.id
+
+      if (!authUserId) {
+        setLoading(false)
+        return
+      }
+
       // Check cache first
-      const cacheKey = `assessment-history-${user.id}`
-      const cachedData = localStorage.getItem(cacheKey)
+      const cacheKey = `assessment-history-${authUserId}`
+      const cachedData = typeof window !== 'undefined' ? localStorage.getItem(cacheKey) : null
       
       if (cachedData) {
-        const parsedData = JSON.parse(cachedData)
-        // If cache is less than 5 minutes old, use it
-        if (Date.now() - parsedData.timestamp < 5 * 60 * 1000) {
-          setAssessmentHistory(parsedData.data)
-          setLoading(false)
-          return
+        try {
+          const parsedData = JSON.parse(cachedData)
+          if (Date.now() - parsedData.timestamp < 5 * 60 * 1000) {
+            setAssessmentHistory(parsedData.data)
+            setLoading(false)
+            return
+          }
+        } catch (_) {
+          // Ignore cache parse errors
         }
       }
 
       // Fetch fresh data
-      const history = await AssessmentService.getAssessmentHistory(user.id)
-      
+      const history = await AssessmentService.getAssessmentHistory(authUserId)
+
       // Update cache
-      localStorage.setItem(cacheKey, JSON.stringify({
-        data: history,
-        timestamp: Date.now()
-      }))
-      
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(cacheKey, JSON.stringify({ data: history, timestamp: Date.now() }))
+      }
+
       setAssessmentHistory(history)
     } catch (error) {
       console.error('Error loading assessment history:', error)
       setError('Failed to load assessment history. Please try again.')
-      // Auto-retry up to 3 times
       if (retryCount < 3) {
-        setTimeout(() => {
-          setRetryCount(prev => prev + 1)
-        }, 2000) // Retry after 2 seconds
+        setTimeout(() => setRetryCount(prev => prev + 1), 2000)
       }
     } finally {
       setLoading(false)
@@ -73,15 +81,19 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   }, [user, retryCount])
 
   useEffect(() => {
-    if (authLoading) return
-
-    if (!user) {
-      setLoading(false)
-      return
-    }
-
+    mountedRef.current = true
+    // Try to load regardless of authLoading, we have an internal fallback
     loadHistory()
-  }, [user, authLoading, loadHistory])
+    return () => { mountedRef.current = false }
+  }, [])
+
+  // Re-run when user resolves or retry requested
+  useEffect(() => {
+    if (!mountedRef.current) return
+    if (!authLoading) {
+      loadHistory()
+    }
+  }, [authLoading, user?.id, retryCount, loadHistory])
 
   const getAssessmentIcon = (assessmentId: string) => {
     const assessment = ASSESSMENTS[assessmentId]
