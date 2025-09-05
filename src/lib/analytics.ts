@@ -10,6 +10,11 @@ type AnalyticsEvent =
   | 'cta_click'
   | 'assessment_start'
   | 'chat_open'
+  | 'tools_toggle'
+  | 'session_end_click'
+  | 'tool_open'
+  | 'voice_stop'
+  | 'voice_start'
 
 type Device = 'mobile' | 'desktop'
 

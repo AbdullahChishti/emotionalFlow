@@ -1,5 +1,6 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+// Main landing page for the application
+import LandingPage from '@/components/landing/LandingPage'
+
 export default function Home() {
-  return null
+  return <LandingPage />
 }

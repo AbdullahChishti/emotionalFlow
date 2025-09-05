@@ -32,7 +32,7 @@ const wellnessOptions = [
   }
 ]
 
-export function WellnessScreen() {
+export default function WellnessScreen() {
   const router = useRouter()
 
   return (

@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import CheckInScreen from '@/components/screens/CheckInScreen'
+
 export default function CheckInPage() {
-  return null
+  return <CheckInScreen />
 }

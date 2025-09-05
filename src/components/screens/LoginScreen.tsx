@@ -12,13 +12,13 @@ import { track } from '@/lib/analytics'
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
-export function LoginScreen() {
+export default function LoginScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   // Analytics + redirect when authenticated
   useEffect(() => {
@@ -51,6 +51,7 @@ export function LoginScreen() {
       } else {
         track('signin_success', { method: 'password' })
         // Navigation will be handled by useEffect when user state updates
+        // The AuthProvider will update the user state, triggering the redirect
       }
     } catch (err) {
       setError('An unexpected error occurred')

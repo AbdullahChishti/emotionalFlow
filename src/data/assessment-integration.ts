@@ -26,18 +26,29 @@ export interface UserProfile {
       needsIntervention: boolean
       friendlyExplanation?: string
     }
-    stress: number
+    stress: {
+      level: 'normal' | 'mild' | 'moderate' | 'severe' | 'critical'
+      score: number
+      needsIntervention: boolean
+      friendlyExplanation?: string
+    }
+    wellbeing: {
+      level: 'normal' | 'mild' | 'moderate' | 'severe' | 'critical'
+      score: number
+      needsEnhancement: boolean
+      friendlyExplanation?: string
+    }
+  }
+  currentTrauma?: {
+    level: 'normal' | 'mild' | 'moderate' | 'severe' | 'critical'
+    score: number
+    needsTraumaInformedCare: boolean
+    friendlyExplanation?: string
   }
   resilience: {
     level: 'low' | 'moderate' | 'high' | 'very_high'
     score: number
     strengths: string[]
-    friendlyExplanation?: string
-  }
-  trauma?: {
-    level: 'normal' | 'mild' | 'moderate' | 'severe' | 'critical'
-    score: number
-    needsTraumaInformedCare: boolean
     friendlyExplanation?: string
   }
   riskFactors: {
@@ -164,16 +175,9 @@ function generateFallbackExplanation(assessmentName: string, clinicalResult: Ass
 
 export class AssessmentIntegrator {
   /**
-   * Process assessment results and update user profile
+   * Process assessment results immediately with local scoring only
    */
-  static async processResults(results: Record<string, AssessmentResult>): Promise<UserProfile> {
-    // Generate AI explanations for each assessment
-    const [depressionExplanation, anxietyExplanation, resilienceExplanation] = await Promise.all([
-      results['phq9'] ? generateFriendlyExplanation('phq9', 'PHQ-9 Depression Assessment', results['phq9']) : Promise.resolve(''),
-      results['gad7'] ? generateFriendlyExplanation('gad7', 'GAD-7 Anxiety Assessment', results['gad7']) : Promise.resolve(''),
-      results['cd-risc'] ? generateFriendlyExplanation('cd-risc', 'CD-RISC Resilience Scale', results['cd-risc']) : Promise.resolve('')
-    ])
-
+  static processResultsImmediate(results: Record<string, AssessmentResult>): UserProfile {
     const symptomData = this.extractSymptomData(results)
     const resilienceData = this.extractResilienceData(results)
 
@@ -183,21 +187,186 @@ export class AssessmentIntegrator {
       currentSymptoms: {
         depression: {
           ...symptomData.depression,
-          friendlyExplanation: depressionExplanation
+          friendlyExplanation: '' // Will be enhanced by AI later
         },
         anxiety: {
           ...symptomData.anxiety,
-          friendlyExplanation: anxietyExplanation
+          friendlyExplanation: '' // Will be enhanced by AI later
         },
-        stress: symptomData.stress
+        stress: {
+          ...symptomData.stress,
+          friendlyExplanation: '' // Will be enhanced by AI later
+        },
+        wellbeing: {
+          ...symptomData.wellbeing,
+          friendlyExplanation: '' // Will be enhanced by AI later
+        }
       },
+      currentTrauma: results['pcl5'] ? {
+        ...this.extractCurrentTraumaData(results),
+        friendlyExplanation: '' // Will be enhanced by AI later
+      } : undefined,
       resilience: {
         ...resilienceData,
-        friendlyExplanation: resilienceExplanation
+        friendlyExplanation: '' // Will be enhanced by AI later
       },
       riskFactors: this.assessRiskFactors(results),
       preferences: this.generatePreferences(results),
       lastAssessed: new Date()
+    }
+  }
+
+  /**
+   * Process assessment results and update user profile (legacy - now async with AI)
+   */
+  static async processResults(results: Record<string, AssessmentResult>): Promise<UserProfile> {
+    // Start with immediate local results
+    const userProfile = this.processResultsImmediate(results)
+
+    try {
+      // Generate AI explanations in parallel (non-blocking)
+      const aiExplanations = await Promise.allSettled([
+        results['phq9'] ? generateFriendlyExplanation('phq9', 'PHQ-9 Depression Assessment', results['phq9']) : Promise.resolve(''),
+        results['gad7'] ? generateFriendlyExplanation('gad7', 'GAD-7 Anxiety Assessment', results['gad7']) : Promise.resolve(''),
+        results['pss10'] ? generateFriendlyExplanation('pss10', 'PSS-10 Perceived Stress Scale', results['pss10']) : Promise.resolve(''),
+        results['who5'] ? generateFriendlyExplanation('who5', 'WHO-5 Well-Being Index', results['who5']) : Promise.resolve(''),
+        results['pcl5'] ? generateFriendlyExplanation('pcl5', 'PCL-5 PTSD Checklist', results['pcl5']) : Promise.resolve(''),
+        results['cd-risc'] ? generateFriendlyExplanation('cd-risc', 'CD-RISC Resilience Scale', results['cd-risc']) : Promise.resolve('')
+      ])
+
+      // Extract successful AI explanations
+      const [
+        depressionExplanation,
+        anxietyExplanation,
+        stressExplanation,
+        wellbeingExplanation,
+        traumaExplanation,
+        resilienceExplanation
+      ] = aiExplanations.map(result =>
+        result.status === 'fulfilled' ? result.value : ''
+      )
+
+      // Return enhanced profile with AI explanations
+      return {
+        ...userProfile,
+        currentSymptoms: {
+          depression: {
+            ...userProfile.currentSymptoms.depression,
+            friendlyExplanation: depressionExplanation
+          },
+          anxiety: {
+            ...userProfile.currentSymptoms.anxiety,
+            friendlyExplanation: anxietyExplanation
+          },
+          stress: {
+            ...userProfile.currentSymptoms.stress,
+            friendlyExplanation: stressExplanation
+          },
+          wellbeing: {
+            ...userProfile.currentSymptoms.wellbeing,
+            friendlyExplanation: wellbeingExplanation
+          }
+        },
+        currentTrauma: userProfile.currentTrauma ? {
+          ...userProfile.currentTrauma,
+          friendlyExplanation: traumaExplanation
+        } : undefined,
+        resilience: {
+          ...userProfile.resilience,
+          friendlyExplanation: resilienceExplanation
+        }
+      }
+    } catch (error) {
+      console.error('Error generating AI explanations:', error)
+      // Return basic profile without AI enhancements
+      return userProfile
+    }
+  }
+
+  /**
+   * Generate AI explanations for an existing profile (for progressive enhancement)
+   */
+  static async enhanceProfileWithAI(
+    results: Record<string, AssessmentResult>,
+    userProfile: UserProfile,
+    onProgress?: (assessmentId: string, explanation: string) => void
+  ): Promise<UserProfile> {
+    try {
+      // Generate AI explanations in parallel
+      const aiPromises = [
+        results['phq9'] ? generateFriendlyExplanation('phq9', 'PHQ-9 Depression Assessment', results['phq9']).then(exp => {
+          onProgress?.('phq9', exp)
+          return exp
+        }) : Promise.resolve(''),
+        results['gad7'] ? generateFriendlyExplanation('gad7', 'GAD-7 Anxiety Assessment', results['gad7']).then(exp => {
+          onProgress?.('gad7', exp)
+          return exp
+        }) : Promise.resolve(''),
+        results['pss10'] ? generateFriendlyExplanation('pss10', 'PSS-10 Perceived Stress Scale', results['pss10']).then(exp => {
+          onProgress?.('pss10', exp)
+          return exp
+        }) : Promise.resolve(''),
+        results['who5'] ? generateFriendlyExplanation('who5', 'WHO-5 Well-Being Index', results['who5']).then(exp => {
+          onProgress?.('who5', exp)
+          return exp
+        }) : Promise.resolve(''),
+        results['pcl5'] ? generateFriendlyExplanation('pcl5', 'PCL-5 PTSD Checklist', results['pcl5']).then(exp => {
+          onProgress?.('pcl5', exp)
+          return exp
+        }) : Promise.resolve(''),
+        results['cd-risc'] ? generateFriendlyExplanation('cd-risc', 'CD-RISC Resilience Scale', results['cd-risc']).then(exp => {
+          onProgress?.('cd-risc', exp)
+          return exp
+        }) : Promise.resolve('')
+      ]
+
+      const aiExplanations = await Promise.allSettled(aiPromises)
+
+      // Extract successful AI explanations
+      const [
+        depressionExplanation,
+        anxietyExplanation,
+        stressExplanation,
+        wellbeingExplanation,
+        traumaExplanation,
+        resilienceExplanation
+      ] = aiExplanations.map(result =>
+        result.status === 'fulfilled' ? result.value : ''
+      )
+
+      // Return enhanced profile
+      return {
+        ...userProfile,
+        currentSymptoms: {
+          depression: {
+            ...userProfile.currentSymptoms.depression,
+            friendlyExplanation: depressionExplanation
+          },
+          anxiety: {
+            ...userProfile.currentSymptoms.anxiety,
+            friendlyExplanation: anxietyExplanation
+          },
+          stress: {
+            ...userProfile.currentSymptoms.stress,
+            friendlyExplanation: stressExplanation
+          },
+          wellbeing: {
+            ...userProfile.currentSymptoms.wellbeing,
+            friendlyExplanation: wellbeingExplanation
+          }
+        },
+        currentTrauma: userProfile.currentTrauma ? {
+          ...userProfile.currentTrauma,
+          friendlyExplanation: traumaExplanation
+        } : undefined,
+        resilience: {
+          ...userProfile.resilience,
+          friendlyExplanation: resilienceExplanation
+        }
+      }
+    } catch (error) {
+      console.error('Error enhancing profile with AI:', error)
+      return userProfile
     }
   }
 
@@ -228,11 +397,31 @@ export class AssessmentIntegrator {
   static extractSymptomData(results: Record<string, AssessmentResult>) {
     const phq9 = results['phq9']
     const gad7 = results['gad7']
+    const pss10 = results['pss10']
+    const who5 = results['who5']
 
     // Map severity levels to match UserProfile interface
     const mapSeverity = (severity: string): 'normal' | 'mild' | 'moderate' | 'severe' | 'critical' => {
       switch (severity) {
         case 'minimal':
+        case 'normal':
+          return 'normal'
+        case 'mild':
+          return 'mild'
+        case 'moderate':
+          return 'moderate'
+        case 'severe':
+          return 'severe'
+        case 'critical':
+          return 'critical'
+        default:
+          return 'normal'
+      }
+    }
+
+    // Map wellbeing severity (reverse scored since higher is better)
+    const mapWellbeingSeverity = (severity: string): 'normal' | 'mild' | 'moderate' | 'severe' | 'critical' => {
+      switch (severity) {
         case 'normal':
           return 'normal'
         case 'mild':
@@ -259,7 +448,48 @@ export class AssessmentIntegrator {
         score: gad7?.score || 0,
         needsIntervention: (gad7?.score || 0) >= 10
       },
-      stress: Math.max(phq9?.score || 0, gad7?.score || 0)
+      stress: {
+        level: pss10 ? mapSeverity(pss10.severity) : 'normal',
+        score: pss10?.score || 0,
+        needsIntervention: (pss10?.score || 0) >= 27
+      },
+      wellbeing: {
+        level: who5 ? mapWellbeingSeverity(who5.severity) : 'normal',
+        score: who5?.score || 0,
+        needsEnhancement: (who5?.score || 25) < 13 // WHO-5 score below 13 indicates need for enhancement
+      }
+    }
+  }
+
+  /**
+   * Extract current trauma data from PCL-5
+   */
+  static extractCurrentTraumaData(results: Record<string, AssessmentResult>) {
+    const pcl5 = results['pcl5']
+
+    // Map severity levels to match UserProfile interface
+    const mapSeverity = (severity: string): 'normal' | 'mild' | 'moderate' | 'severe' | 'critical' => {
+      switch (severity) {
+        case 'minimal':
+        case 'normal':
+          return 'normal'
+        case 'mild':
+          return 'mild'
+        case 'moderate':
+          return 'moderate'
+        case 'severe':
+          return 'severe'
+        case 'critical':
+          return 'critical'
+        default:
+          return 'normal'
+      }
+    }
+
+    return {
+      level: pcl5 ? mapSeverity(pcl5.severity) : 'normal',
+      score: pcl5?.score || 0,
+      needsTraumaInformedCare: (pcl5?.score || 0) >= 34
     }
   }
 
@@ -335,6 +565,9 @@ export class AssessmentIntegrator {
 
     const phq9 = results['phq9']
     const gad7 = results['gad7']
+    const pss10 = results['pss10']
+    const who5 = results['who5']
+    const pcl5 = results['pcl5']
     const resilience = results['cd-risc']
     const ace = results['ace']
 
@@ -344,6 +577,15 @@ export class AssessmentIntegrator {
     }
     if (gad7?.score >= 10) {
       preferences.therapyApproach.push('exposure_therapy', 'mindfulness')
+    }
+    if (pss10?.score >= 27) {
+      preferences.therapyApproach.push('stress_management', 'relaxation_training')
+    }
+    if (who5?.score < 13) {
+      preferences.therapyApproach.push('positive_psychology', 'wellbeing_coaching')
+    }
+    if (pcl5?.score >= 34) {
+      preferences.therapyApproach.push('trauma_focused', 'emdr', 'prolonged_exposure')
     }
     if (ace?.score >= 4) {
       preferences.therapyApproach.push('trauma_focused', 'emdr')
@@ -359,6 +601,15 @@ export class AssessmentIntegrator {
     if (gad7?.score >= 10) {
       preferences.copingStrategies.push('relaxation_techniques', 'worry_journaling')
     }
+    if (pss10?.score >= 27) {
+      preferences.copingStrategies.push('stress_reduction', 'time_management', 'deep_breathing')
+    }
+    if (who5?.score < 13) {
+      preferences.copingStrategies.push('gratitude_practice', 'positive_affirmations', 'meaningful_activities')
+    }
+    if (pcl5?.score >= 34) {
+      preferences.copingStrategies.push('grounding_techniques', 'trauma_processing')
+    }
 
     // Content type preferences
     if (phq9?.score >= 10) {
@@ -366,6 +617,15 @@ export class AssessmentIntegrator {
     }
     if (gad7?.score >= 10) {
       preferences.contentTypes.push('anxiety_management', 'mindfulness_exercises')
+    }
+    if (pss10?.score >= 27) {
+      preferences.contentTypes.push('stress_management', 'relaxation_audio')
+    }
+    if (who5?.score < 13) {
+      preferences.contentTypes.push('wellbeing_exercises', 'positive_psychology', 'happiness_hacks')
+    }
+    if (pcl5?.score >= 34) {
+      preferences.contentTypes.push('trauma_recovery', 'grounding_techniques', 'ptsd_resources')
     }
     if (ace?.score >= 4) {
       preferences.contentTypes.push('trauma_recovery', 'grounding_techniques')

@@ -178,6 +178,8 @@ export function Dashboard() {
   const { user, profile } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(true)
+  const [hydratingAssessments, setHydratingAssessments] = useState(false)
+  const [assessmentRetryAttempts, setAssessmentRetryAttempts] = useState(0)
   const [recentSessions, setRecentSessions] = useState<ListeningSession[]>([])
   const [recentMoods, setRecentMoods] = useState<MoodEntry[]>([])
   const [currentMood, setCurrentMood] = useState<MoodEntry | null>(null)
@@ -190,6 +192,60 @@ export function Dashboard() {
       fetchDashboardData()
     }
   }, [user, profile])
+
+  // Check for personalized parameter (when coming back from assessment completion)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+    if (urlParams.get('personalized') === 'true') {
+      console.log('Personalized dashboard requested, ensuring fresh data...')
+      // Clean URL
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+      // Force refresh
+      if (user && profile) {
+        fetchDashboardData()
+      }
+    }
+  }, [user, profile])
+
+  // Check for fresh data indicators (when navigating back from assessments)
+  useEffect(() => {
+    if (user && profile) {
+      // Check for assessment completion flags
+      const assessmentCompleted = localStorage.getItem('assessmentCompleted')
+      const storedResults = localStorage.getItem('assessmentResults')
+      const storedProfile = localStorage.getItem('userProfile')
+
+      // If recent completion and we have results, refresh immediately (profile optional)
+      if (assessmentCompleted === 'true' && storedResults) {
+        try {
+          console.log('Assessment completion detected, refreshing dashboard data...')
+          localStorage.removeItem('assessmentCompleted') // Clear the flag
+          fetchDashboardData()
+          return
+        } catch (error) {
+          console.error('Error handling assessment completion:', error)
+        }
+      }
+
+      // Fallback: Check if we have fresh assessment data that wasn't loaded yet
+      if (storedResults && storedProfile) {
+        try {
+          const parsedResults = JSON.parse(storedResults)
+
+          // If we don't have assessment data yet, or if the stored data is different/newer
+          if (!assessmentResults || Object.keys(assessmentResults).length === 0 ||
+              Object.keys(parsedResults).length > Object.keys(assessmentResults).length) {
+            console.log('Detected fresh assessment data, reloading dashboard...')
+            fetchDashboardData()
+          }
+        } catch (error) {
+          console.error('Error checking for fresh assessment data:', error)
+        }
+      }
+    }
+  }, [user, profile, assessmentResults])
 
   // Add a safety timeout to prevent infinite loading
   useEffect(() => {
@@ -207,40 +263,51 @@ export function Dashboard() {
     if (!user) return
 
     try {
-      // Load assessment data from localStorage first (only if available)
+      // Load assessment data from localStorage immediately (quick display), then hydrate with DB.
+      // We'll merge by freshness using a per-assessment takenAt map.
       if (typeof window !== 'undefined') {
         try {
           const storedResults = localStorage.getItem('assessmentResults')
           const storedProfile = localStorage.getItem('userProfile')
+          const storedTakenAt = localStorage.getItem('assessmentResultsTakenAt')
 
-          if (storedResults && storedProfile) {
-            setAssessmentResults(JSON.parse(storedResults))
-            setUserProfile(JSON.parse(storedProfile))
-            setHasAssessmentData(true)
+          if (storedResults) {
+            const parsedResults = JSON.parse(storedResults)
+            const takenAtMap: Record<string, string> = storedTakenAt ? JSON.parse(storedTakenAt) : {}
+            console.log('📱 Using local assessment cache for immediate display', { ids: Object.keys(parsedResults) })
+            setAssessmentResults(parsedResults)
+            setHasAssessmentData(Object.keys(parsedResults).length > 0)
+            if (storedProfile) {
+              try { setUserProfile(JSON.parse(storedProfile)) } catch {}
+            }
           }
         } catch (error) {
           console.error('Error parsing stored assessment data:', error)
         }
       }
 
-      // Try to load from database if authenticated
+      // DATABASE FIRST: Load from database if authenticated (takes precedence over localStorage)
       if (user) {
         try {
+          console.log('🗄️ DATABASE FIRST: Fetching assessment history from database...')
+          setHydratingAssessments(true)
           // Add timeout for assessment history fetch
           const assessmentPromise = AssessmentService.getAssessmentHistory(user.id)
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Assessment fetch timeout')), 5000)
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Assessment fetch timeout')), 8000) // Increased timeout
           )
-          
+
           const assessmentHistory = await Promise.race([assessmentPromise, timeoutPromise]) as any
+          console.log('Database assessment history result:', assessmentHistory)
 
           if (assessmentHistory && assessmentHistory.length > 0) {
-            // Convert database results to the format expected by the UI
-            const resultsMap: Record<string, AssessmentResult> = {}
-            
+            // Convert database results to the format expected by the UI (+ map of times)
+            const dbMap: Record<string, any> = {}
+            const dbTimes: Record<string, string> = {}
             for (const entry of assessmentHistory) {
-              if (!resultsMap[entry.assessmentId]) {
-                resultsMap[entry.assessmentId] = {
+              const prev = dbTimes[entry.assessmentId]
+              if (!prev || new Date(entry.takenAt) > new Date(prev)) {
+                dbMap[entry.assessmentId] = {
                   score: entry.score,
                   level: entry.level,
                   description: '',
@@ -249,15 +316,90 @@ export function Dashboard() {
                   insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
                   nextSteps: []
                 }
+                dbTimes[entry.assessmentId] = entry.takenAt
               }
             }
-            
-            setAssessmentResults(resultsMap)
-            setHasAssessmentData(true)
+
+            // Merge with any local cache by freshness
+            let localMap: Record<string, any> = {}
+            let localTimes: Record<string, string> = {}
+            try {
+              const storedResults = localStorage.getItem('assessmentResults')
+              const storedTakenAt = localStorage.getItem('assessmentResultsTakenAt')
+              localMap = storedResults ? JSON.parse(storedResults) : {}
+              localTimes = storedTakenAt ? JSON.parse(storedTakenAt) : {}
+            } catch {}
+
+            const merged: Record<string, any> = {}
+            const mergedTimes: Record<string, string> = {}
+            const ids = new Set([...Object.keys(dbMap), ...Object.keys(localMap)])
+            ids.forEach((id) => {
+              const dbTime = dbTimes[id] ? new Date(dbTimes[id]).getTime() : -1
+              const lcTime = localTimes[id] ? new Date(localTimes[id]).getTime() : -1
+              if (dbTime >= lcTime) {
+                if (dbMap[id]) {
+                  merged[id] = dbMap[id]
+                  if (dbTimes[id]) mergedTimes[id] = dbTimes[id]
+                }
+              } else {
+                merged[id] = localMap[id]
+                if (localTimes[id]) mergedTimes[id] = localTimes[id]
+              }
+            })
+
+            console.log('✅ DATABASE SUCCESS: Merged assessment results from DB+local:', merged)
+            setAssessmentResults(merged)
+            setHasAssessmentData(Object.keys(merged).length > 0)
+
+            // Update localStorage with merged data
+            localStorage.setItem('assessmentResults', JSON.stringify(merged))
+            localStorage.setItem('assessmentResultsTakenAt', JSON.stringify(mergedTimes))
+
+          } else {
+            console.log('No assessment history found in database')
+            // If no database data, keep localStorage data if it exists
+            const storedResults = localStorage.getItem('assessmentResults')
+            if (storedResults) {
+              try {
+                const parsedResults = JSON.parse(storedResults)
+                setAssessmentResults(parsedResults)
+                setHasAssessmentData(Object.keys(parsedResults).length > 0)
+              } catch (error) {
+                console.error('Error parsing stored results:', error)
+              }
+            }
+
+            // If we recently completed an assessment, retry DB fetch briefly to catch late writes
+            try {
+              const completedAt = localStorage.getItem('assessmentCompletedAt')
+              const recent = completedAt ? (Date.now() - new Date(completedAt).getTime() < 2 * 60 * 1000) : false
+              if (recent && assessmentRetryAttempts < 2) {
+                const nextAttempt = assessmentRetryAttempts + 1
+                setAssessmentRetryAttempts(nextAttempt)
+                console.log(`⏳ No DB results yet; scheduling retry ${nextAttempt}/2`)
+                setTimeout(() => {
+                  // Only retry if still mounted and user present
+                  fetchDashboardData().catch(() => {})
+                }, nextAttempt === 1 ? 1200 : 2500)
+              }
+            } catch {}
           }
+          setHydratingAssessments(false)
         } catch (error) {
           console.warn('Error fetching assessment data from database:', error)
-          // Don't let this block the rest of the loading
+          // Fallback: try to use localStorage data if database fails
+          const storedResults = localStorage.getItem('assessmentResults')
+          if (storedResults) {
+            try {
+              console.log('💾 DATABASE FAILED: Falling back to localStorage data')
+              const parsedResults = JSON.parse(storedResults)
+              setAssessmentResults(parsedResults)
+              setHasAssessmentData(Object.keys(parsedResults).length > 0)
+            } catch (parseError) {
+              console.error('❌ Error parsing localStorage fallback:', parseError)
+            }
+          }
+          setHydratingAssessments(false)
         }
       }
 
@@ -393,12 +535,20 @@ export function Dashboard() {
             <h2 className="text-2xl font-bold text-secondary-900">Your Assessment Results</h2>
             <p className="text-secondary-600">Based on your recent assessments</p>
           </div>
-          <button
-            onClick={() => handleNavigate('/results')}
-            className="text-sm font-medium text-brand-green-700 hover:text-brand-green-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600 rounded"
-          >
-            View all
-          </button>
+          <div className="flex items-center gap-3">
+            {hydratingAssessments && (
+              <div className="flex items-center gap-2 text-secondary-600 text-xs">
+                <LoadingSpinner size="sm" />
+                <span>Refreshing</span>
+              </div>
+            )}
+            <button
+              onClick={() => handleNavigate('/results')}
+              className="text-sm font-medium text-brand-green-700 hover:text-brand-green-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600 rounded"
+            >
+              View all
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

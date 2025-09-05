@@ -13,12 +13,14 @@ import {
   Assessment,
   AssessmentResult
 } from '@/data/assessments'
-import { AssessmentIntegrator, UserProfile } from '@/data/assessment-integration'
+import { AssessmentManager } from '@/lib/services/AssessmentManager'
+import { FlowManager } from '@/lib/services/FlowManager'
 import { AssessmentQuestionComponent } from './AssessmentQuestion'
 import AssessmentResults from './AssessmentResults'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
 import { ASSESSMENT_ICONS } from '@/data/assessment-icons'
-import AssessmentService from '@/lib/assessment-service'
+// Legacy import - now handled by AssessmentManager
+// import AssessmentService from '@/lib/assessment-service'
 import { useAuth } from '@/components/providers/AuthProvider'
 
 // Material Symbols icons import
@@ -29,6 +31,7 @@ interface AssessmentFlowProps {
   onComplete: (results: Record<string, AssessmentResult>, userProfile: UserProfile) => void
   onExit: () => void
   userProfile?: UserProfile
+  onProfileEnhancement?: (enhancedProfile: UserProfile) => void
 }
 
 type AssessmentState = 'selection' | 'taking' | 'results' | 'completed'
@@ -37,7 +40,8 @@ export function AssessmentFlow({
   assessmentIds,
   onComplete,
   onExit,
-  userProfile
+  userProfile,
+  onProfileEnhancement
 }: AssessmentFlowProps) {
   const { user } = useAuth()
   const [currentState, setCurrentState] = useState<AssessmentState>('selection')
@@ -49,55 +53,141 @@ export function AssessmentFlow({
 
   const [savingResults, setSavingResults] = useState(false)
 
-  const currentAssessment = ASSESSMENTS[assessmentIds[currentAssessmentIndex]]
+  // Validate assessmentIds and currentAssessmentIndex
+  if (!assessmentIds || assessmentIds.length === 0) {
+    console.error('AssessmentFlow: No assessment IDs provided')
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40">
+        <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-2xl text-red-600">error</span>
+          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            No Assessments Found
+          </h1>
+          <p className="text-lg text-slate-600 max-w-md mx-auto mb-6">
+            No assessments were provided to display. Please go back and select an assessment.
+          </p>
+          <button
+            onClick={onExit}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (currentAssessmentIndex < 0 || currentAssessmentIndex >= assessmentIds.length) {
+    console.error('AssessmentFlow: Invalid currentAssessmentIndex', {
+      currentAssessmentIndex,
+      assessmentIdsLength: assessmentIds.length,
+      assessmentIds
+    })
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40">
+        <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-2xl text-red-600">error</span>
+          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            Invalid Assessment Index
+          </h1>
+          <p className="text-lg text-slate-600 max-w-md mx-auto mb-6">
+            There was an issue with the assessment flow. Please try again.
+          </p>
+          <button
+            onClick={onExit}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const currentAssessmentId = assessmentIds[currentAssessmentIndex]
+  if (!currentAssessmentId) {
+    console.error('AssessmentFlow: Current assessment ID is undefined', {
+      currentAssessmentIndex,
+      currentAssessmentId,
+      assessmentIds
+    })
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40">
+        <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-2xl text-red-600">error</span>
+          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            Assessment ID Not Found
+          </h1>
+          <p className="text-lg text-slate-600 max-w-md mx-auto mb-6">
+            The assessment ID could not be found. Please try selecting a different assessment.
+          </p>
+          <button
+            onClick={onExit}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const currentAssessment = ASSESSMENTS[currentAssessmentId]
+  if (!currentAssessment) {
+    console.error('AssessmentFlow: Current assessment not found in ASSESSMENTS', {
+      currentAssessmentId,
+      availableAssessments: Object.keys(ASSESSMENTS),
+      assessmentIds
+    })
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40">
+        <div className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="material-symbols-outlined text-2xl text-red-600">error</span>
+          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            Assessment Not Available
+          </h1>
+          <p className="text-lg text-slate-600 max-w-md mx-auto mb-6">
+            The requested assessment is not available. Please try selecting a different assessment.
+          </p>
+          <button
+            onClick={onExit}
+            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            Return to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   const currentQuestion = currentAssessment?.questions[currentQuestionIndex]
 
-  // Function to save assessment data to database
-  const saveAssessmentDataToDatabase = async (userProfile: UserProfile, results: Record<string, AssessmentResult>) => {
-    if (!user) return
-
-    try {
-
-
-      // Save individual assessment results
-      for (const [assessmentId, result] of Object.entries(results)) {
-        const assessment = ASSESSMENTS[assessmentId]
-        if (assessment) {
-          await AssessmentService.saveAssessmentResult(
-            user.id,
-            assessmentId,
-            assessment.title,
-            result,
-            allResponses[assessmentId] || {}, // Use stored responses
-            result.insights?.[0] // Use first insight as friendly explanation
-          )
-        }
-      }
-
-      // Save user profile
-      await AssessmentService.saveUserProfile(
-        user.id,
-        userProfile,
-        {
-          therapy: userProfile.preferences?.therapyApproach || [],
-          content: userProfile.preferences?.contentTypes || [],
-          community: userProfile.preferences?.copingStrategies || [],
-          wellness: userProfile.preferences?.copingStrategies || [],
-          crisis: userProfile.riskFactors
-        }
-      )
-
-      console.log('Assessment data saved to database successfully')
-    } catch (error) {
-      console.error('Error saving assessment data to database:', error)
-    }
+  // Legacy function - now handled by FlowManager
+  const saveAssessmentDataToDatabase = async (userProfile: any, results: Record<string, AssessmentResult>) => {
+    console.log('⚠️ Legacy saveAssessmentDataToDatabase called - this should now be handled by FlowManager')
+    // This function is kept for backward compatibility but should not be used
+    // Assessment saving is now handled by FlowManager.completeAssessmentFlow()
+    return Promise.resolve()
   }
 
   // Debug logging
-  console.log('Current Assessment Index:', currentAssessmentIndex)
-  console.log('Current Assessment ID:', assessmentIds[currentAssessmentIndex])
-  console.log('Current Assessment:', currentAssessment?.title)
-  console.log('Current Question:', currentQuestion?.text)
+  console.log('AssessmentFlow Debug:', {
+    currentAssessmentIndex,
+    currentAssessmentId,
+    assessmentIds,
+    currentAssessmentTitle: currentAssessment?.title,
+    currentQuestionIndex,
+    currentQuestionText: currentQuestion?.text,
+    totalQuestions: currentAssessment?.questions?.length
+  })
 
   // Calculate progress
   const totalQuestions = assessmentIds.reduce((total, id) => {
@@ -151,6 +241,12 @@ export function AssessmentFlow({
   }
 
   const handleAnswer = async (answer: number | string) => {
+    // Guard against undefined currentAssessment or currentQuestion
+    if (!currentAssessment || !currentQuestion) {
+      console.error('Current assessment or question is undefined')
+      return
+    }
+
     const newResponses = {
       ...responses,
       [currentQuestion.id]: answer
@@ -227,51 +323,41 @@ export function AssessmentFlow({
   }
 
   const handleContinue = async () => {
+    // Prevent multiple submissions
+    if (savingResults) {
+      console.log('⏳ Already processing results, ignoring duplicate call')
+      return
+    }
+
+    // Guard against undefined currentAssessment
+    if (!currentAssessment) {
+      console.error('Current assessment is undefined in handleContinue')
+      return
+    }
+
     if (currentAssessmentIndex < assessmentIds.length - 1) {
       setCurrentAssessmentIndex(currentAssessmentIndex + 1)
       setCurrentQuestionIndex(0)
       setResponses({})
       setCurrentState('taking')
     } else {
-      setCurrentState('completed')
+      // Final assessment: skip redundant completion screen and go straight to dashboard
       setSavingResults(true)
-      
-      // Process all results when all assessments are completed
       try {
-        const userProfile = await AssessmentIntegrator.processResults(results)
-        
-        // Save to database if user is authenticated
+        // Use FlowManager for complete assessment flow
         if (user) {
-          await saveAssessmentDataToDatabase(userProfile, results)
+          console.log('🎯 Starting complete assessment flow with FlowManager')
+          await FlowManager.completeAssessmentFlow(results, user.id)
+          console.log('✅ Assessment flow completed successfully')
         }
-        
-        onComplete(results, userProfile)
-      } catch (error) {
-        console.error('Error processing assessment results:', error)
-        // Fallback to basic processing without AI explanations
-        const symptomData = AssessmentIntegrator.extractSymptomData(results)
-        const resilienceData = AssessmentIntegrator.extractResilienceData(results)
 
-        const basicProfile = {
-          id: 'user_' + Date.now(),
-          traumaHistory: AssessmentIntegrator.extractTraumaData(results),
-          currentSymptoms: {
-            depression: symptomData.depression,
-            anxiety: symptomData.anxiety,
-            stress: symptomData.stress
-          },
-          resilience: resilienceData,
-          riskFactors: AssessmentIntegrator.assessRiskFactors(results),
-          preferences: AssessmentIntegrator.generatePreferences(results),
-          lastAssessed: new Date()
-        }
-        
-        // Save to database if user is authenticated
-        if (user) {
-          await saveAssessmentDataToDatabase(basicProfile, results)
-        }
-        
-        onComplete(results, basicProfile)
+        // Trigger completion callback
+        onComplete(results)
+      } catch (error) {
+        console.error('💥 Critical error in assessment processing:', error)
+        // Fallback to basic processing
+        console.log('⚠️ Using fallback processing due to error')
+        onComplete(results)
       } finally {
         setSavingResults(false)
       }
@@ -441,17 +527,32 @@ export function AssessmentFlow({
       </motion.div>
 
       {/* Current Question - Full Screen */}
-      <AssessmentQuestionComponent
-        question={currentQuestion}
-        value={responses[currentQuestion.id] || null}
-        onChange={handleAnswer}
-        questionNumber={currentQuestionIndex + 1}
-        totalQuestions={currentAssessment.questions.length}
-      />
+      {currentAssessment && currentQuestion ? (
+        <AssessmentQuestionComponent
+          question={currentQuestion}
+          value={responses[currentQuestion.id] || null}
+          onChange={handleAnswer}
+          questionNumber={currentQuestionIndex + 1}
+          totalQuestions={currentAssessment.questions.length}
+        />
+      ) : (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading assessment...</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 
   const renderResults = () => {
+    // Guard against undefined currentAssessment
+    if (!currentAssessment) {
+      console.error('Current assessment is undefined')
+      return null
+    }
+
     const currentResult = results[currentAssessment.id]
 
     if (!currentResult) return null
@@ -462,6 +563,7 @@ export function AssessmentFlow({
         result={currentResult}
         onRetake={handleRetake}
         onContinue={handleContinue}
+        aiExplanation={null} // Disable internal AI loading since we handle it elsewhere
       />
     )
   }

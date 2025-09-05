@@ -134,6 +134,72 @@ const DynamicQuestionForm = memo(({
           </div>
         )
 
+      case 'likert-6':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between text-sm text-zinc-700 mb-6">
+              <span className="font-semibold">At no time</span>
+              <span className="font-semibold">All of the time</span>
+            </div>
+            <div className="grid grid-cols-6 gap-3">
+              {[0, 1, 2, 3, 4, 5].map((optionValue) => (
+                <motion.button
+                  key={optionValue}
+                  onClick={() => handleOptionChange(optionValue)}
+                  className={`h-16 rounded-xl border-2 transition-all duration-300 font-semibold text-lg ${
+                    value === optionValue
+                      ? 'bg-gradient-to-br from-brand-green-600 to-brand-green-700 border-brand-green-500 text-white shadow-lg'
+                      : 'bg-white/80 border-zinc-300 text-zinc-700 hover:border-brand-green-400 hover:bg-brand-green-50 hover:text-brand-green-800'
+                  }`}
+                  style={value === optionValue ? {
+                    backgroundColor: '#1f3d42',
+                    borderColor: '#1f3d42',
+                    color: '#ffffff',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+                  } : {}}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {optionValue + 1}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )
+
+      case 'likert-7':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between text-sm text-zinc-700 mb-6">
+              <span className="font-semibold">Strongly Disagree</span>
+              <span className="font-semibold">Strongly Agree</span>
+            </div>
+            <div className="grid grid-cols-7 gap-2">
+              {[0, 1, 2, 3, 4, 5, 6].map((optionValue) => (
+                <motion.button
+                  key={optionValue}
+                  onClick={() => handleOptionChange(optionValue)}
+                  className={`h-14 rounded-lg border-2 transition-all duration-300 font-semibold ${
+                    value === optionValue
+                      ? 'bg-gradient-to-br from-brand-green-600 to-brand-green-700 border-brand-green-500 text-white shadow-lg'
+                      : 'bg-white/80 border-zinc-300 text-zinc-700 hover:border-brand-green-400 hover:bg-brand-green-50 hover:text-brand-green-800'
+                  }`}
+                  style={value === optionValue ? {
+                    backgroundColor: '#1f3d42',
+                    borderColor: '#1f3d42',
+                    color: '#ffffff',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'
+                  } : {}}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {optionValue + 1}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        )
+
       case 'frequency':
         const frequencyOptions = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always']
         return (

@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import { CrisisSupportScreen } from '@/components/screens/CrisisSupportScreen'
+
 export default function CrisisSupportPage() {
-  return null
+  return <CrisisSupportScreen />
 }

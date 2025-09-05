@@ -145,6 +145,10 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
 
     try {
       localStorage.setItem('assessmentResults', JSON.stringify(assessmentResult))
+      // Record the takenAt timestamp for freshness merging
+      const takenAtMap: Record<string, string> = {}
+      takenAtMap[entry.assessmentId] = entry.takenAt
+      localStorage.setItem('assessmentResultsTakenAt', JSON.stringify(takenAtMap))
       // Persist latest profile for reliable fallback on Results page
       if (user?.id) {
         const latest = await AssessmentService.getLatestUserProfile(user.id)
@@ -326,3 +330,5 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     </div>
   )
 }
+
+export { AssessmentHistory }

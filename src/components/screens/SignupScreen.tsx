@@ -18,7 +18,7 @@ import { PasswordInput } from '@/components/ui/PasswordInput'
 import { AuthButton } from '@/components/ui/AuthButton'
 import { ErrorMessage } from '@/components/ui/ErrorMessage'
 
-export function SignupScreen() {
+export default function SignupScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')

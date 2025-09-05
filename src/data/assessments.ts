@@ -566,21 +566,453 @@ export const CDRISC_ASSESSMENT: Assessment = {
   }
 }
 
+// PSS-10 (Perceived Stress Scale)
+export const PSS10_ASSESSMENT: Assessment = {
+  id: 'pss10',
+  title: 'Perceived Stress Scale (PSS-10)',
+  shortTitle: 'PSS-10',
+  description: 'A 10-item questionnaire that measures the degree to which situations in life are appraised as stressful.',
+  instructions: 'The questions in this scale ask you about your feelings and thoughts during the last month. In each case, please indicate how often you felt or thought a certain way.',
+  category: 'wellbeing',
+  estimatedTime: 3,
+  isValid: true,
+  source: 'Cohen et al., 1983',
+  citations: ['Cohen et al., 1983'],
+
+  questions: [
+    {
+      id: 'pss10_1',
+      text: 'In the last month, how often have you been upset because of something that happened unexpectedly?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_2',
+      text: 'In the last month, how often have you felt that you were unable to control the important things in your life?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_3',
+      text: 'In the last month, how often have you felt nervous and "stressed"?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_4',
+      text: 'In the last month, how often have you felt confident about your ability to handle your personal problems?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_5',
+      text: 'In the last month, how often have you felt that things were going your way?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_6',
+      text: 'In the last month, how often have you found that you could not cope with all the things that you had to do?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_7',
+      text: 'In the last month, how often have you been able to control irritations in your life?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_8',
+      text: 'In the last month, how often have you felt that you were on top of things?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_9',
+      text: 'In the last month, how often have you been angered because of things that were outside of your control?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    },
+    {
+      id: 'pss10_10',
+      text: 'In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?',
+      type: 'frequency',
+      options: ['Never', 'Almost never', 'Sometimes', 'Fairly often', 'Very often']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score < 14 ? 'Low stress' :
+             score < 27 ? 'Moderate stress' :
+             score < 37 ? 'High stress' : 'Very high stress',
+      description: `Your PSS-10 score is ${score} out of 40. This indicates ${score < 14 ? 'low perceived stress' : score < 27 ? 'moderate perceived stress' : score < 37 ? 'high perceived stress' : 'very high perceived stress'}.`,
+      severity: score < 14 ? 'normal' :
+                score < 27 ? 'mild' :
+                score < 37 ? 'moderate' : 'severe',
+      recommendations: score >= 27 ? [
+        'Consider stress management techniques like mindfulness or meditation',
+        'Practice regular exercise and maintain healthy sleep habits',
+        'Consider speaking with a healthcare provider about stress management',
+        'Build social support networks'
+      ] : score >= 14 ? [
+        'Practice daily relaxation techniques',
+        'Maintain work-life balance',
+        'Engage in regular physical activity'
+      ] : [
+        'Continue healthy stress management habits',
+        'Share effective coping strategies with others',
+        'Consider volunteering or helping others manage stress'
+      ],
+      insights: [
+        'Perceived stress is subjective and can be managed through coping strategies',
+        'Chronic high stress can impact physical and mental health',
+        'Everyone experiences stress differently, and what feels stressful to one person may not to another'
+      ],
+      nextSteps: score >= 27 ? [
+        'Schedule a consultation with a healthcare provider',
+        'Learn specific stress management techniques',
+        'Consider therapy approaches like CBT for stress management',
+        'Build a daily relaxation routine'
+      ] : score >= 14 ? [
+        'Track your stress levels daily',
+        'Practice mindfulness exercises',
+        'Establish healthy boundaries'
+      ] : [
+        'Continue effective stress management practices',
+        'Help others who may be experiencing high stress',
+        'Share your coping strategies'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 13, label: 'Low Perceived Stress', description: 'Minimal perceived stress', severity: 'normal', recommendations: ['Maintain healthy habits'] },
+      { min: 14, max: 26, label: 'Moderate Perceived Stress', description: 'Moderate levels of perceived stress', severity: 'mild', recommendations: ['Practice relaxation techniques', 'Maintain balance'] },
+      { min: 27, max: 36, label: 'High Perceived Stress', description: 'High levels of perceived stress', severity: 'moderate', recommendations: ['Consider professional consultation', 'Learn stress management'] },
+      { min: 37, max: 40, label: 'Very High Perceived Stress', description: 'Very high levels of perceived stress', severity: 'severe', recommendations: ['Seek immediate professional help'] }
+    ]
+  }
+}
+
+// WHO-5 (World Health Organization Well-Being Index)
+export const WHO5_ASSESSMENT: Assessment = {
+  id: 'who5',
+  title: 'WHO-5 Well-Being Index',
+  shortTitle: 'WHO-5',
+  description: 'A 5-item questionnaire that measures current mental wellbeing and positive psychological functioning.',
+  instructions: 'Please indicate for each of the five statements which is closest to how you have been feeling over the last two weeks. Notice that higher numbers mean better wellbeing.',
+  category: 'wellbeing',
+  estimatedTime: 2,
+  isValid: true,
+  source: 'World Health Organization',
+  citations: ['Bech, 2004'],
+
+  questions: [
+    {
+      id: 'who5_1',
+      text: 'I have felt cheerful and in good spirits',
+      type: 'likert-6',
+      options: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time']
+    },
+    {
+      id: 'who5_2',
+      text: 'I have felt calm and relaxed',
+      type: 'likert-6',
+      options: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time']
+    },
+    {
+      id: 'who5_3',
+      text: 'I have felt active and vigorous',
+      type: 'likert-6',
+      options: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time']
+    },
+    {
+      id: 'who5_4',
+      text: 'I woke up feeling fresh and rested',
+      type: 'likert-6',
+      options: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time']
+    },
+    {
+      id: 'who5_5',
+      text: 'My daily life has been filled with things that interest me',
+      type: 'likert-6',
+      options: ['At no time', 'Some of the time', 'Less than half of the time', 'More than half of the time', 'Most of the time', 'All of the time']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score < 8 ? 'Poor wellbeing' :
+             score < 13 ? 'Moderate wellbeing' :
+             score < 18 ? 'Good wellbeing' : 'Excellent wellbeing',
+      description: `Your WHO-5 score is ${score} out of 25. This indicates ${score < 8 ? 'poor subjective wellbeing' : score < 13 ? 'moderate subjective wellbeing' : score < 18 ? 'good subjective wellbeing' : 'excellent subjective wellbeing'}.`,
+      severity: score < 8 ? 'severe' :
+                score < 13 ? 'moderate' :
+                score < 18 ? 'mild' : 'normal',
+      recommendations: score < 13 ? [
+        'Consider activities that bring joy and meaning to your daily life',
+        'Practice gratitude exercises and positive psychology techniques',
+        'Consider speaking with a healthcare provider about wellbeing enhancement',
+        'Build social connections and engage in meaningful activities'
+      ] : score < 18 ? [
+        'Continue nurturing activities that bring you joy',
+        'Practice mindfulness to enhance present-moment awareness',
+        'Maintain healthy relationships and social engagement'
+      ] : [
+        'Continue the positive habits that support your wellbeing',
+        'Consider how you can help others improve their wellbeing',
+        'Share your strategies for maintaining good mental health'
+      ],
+      insights: [
+        'Wellbeing encompasses positive emotions, engagement, relationships, meaning, and accomplishment',
+        'The WHO-5 provides balance to symptom-focused assessments',
+        'High wellbeing is associated with better physical health outcomes',
+        'Wellbeing can be cultivated through intentional positive psychology practices'
+      ],
+      nextSteps: score < 13 ? [
+        'Identify activities that bring you genuine joy and meaning',
+        'Consider positive psychology interventions or coaching',
+        'Build a daily routine that includes positive experiences',
+        'Connect with supportive relationships'
+      ] : score < 18 ? [
+        'Track what activities most enhance your wellbeing',
+        'Practice positive psychology exercises regularly',
+        'Cultivate gratitude and positive thinking patterns'
+      ] : [
+        'Continue wellbeing-enhancing practices',
+        'Mentor others in cultivating wellbeing',
+        'Contribute to community wellbeing initiatives'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 7, label: 'Poor Wellbeing', description: 'Indicative of poor subjective wellbeing', severity: 'severe', recommendations: ['Seek professional support', 'Focus on wellbeing enhancement'] },
+      { min: 8, max: 12, label: 'Moderate Wellbeing', description: 'Moderate levels of subjective wellbeing', severity: 'moderate', recommendations: ['Build positive routines', 'Consider wellbeing coaching'] },
+      { min: 13, max: 17, label: 'Good Wellbeing', description: 'Good levels of subjective wellbeing', severity: 'mild', recommendations: ['Maintain positive habits', 'Enhance wellbeing practices'] },
+      { min: 18, max: 25, label: 'Excellent Wellbeing', description: 'Excellent subjective wellbeing', severity: 'normal', recommendations: ['Continue healthy practices', 'Share wellbeing strategies'] }
+    ]
+  }
+}
+
+// PCL-5 (PTSD Checklist for DSM-5)
+export const PCL5_ASSESSMENT: Assessment = {
+  id: 'pcl5',
+  title: 'PTSD Checklist for DSM-5 (PCL-5)',
+  shortTitle: 'PCL-5',
+  description: 'A 20-item self-report measure that assesses PTSD symptoms in accordance with DSM-5 criteria.',
+  instructions: 'Below is a list of problems and complaints that people sometimes have in response to stressful life experiences. Please read each one carefully, and indicate how much you have been bothered by that problem in the past month.',
+  category: 'trauma',
+  estimatedTime: 5,
+  isValid: true,
+  source: 'National Center for PTSD',
+  citations: ['Weathers et al., 2013'],
+
+  questions: [
+    {
+      id: 'pcl5_1',
+      text: 'Repeated, disturbing, and unwanted memories of the stressful experience?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_2',
+      text: 'Repeated, disturbing dreams of the stressful experience?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_3',
+      text: 'Suddenly feeling or acting as if the stressful experience were actually happening again (as if you were actually back there reliving it)?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_4',
+      text: 'Feeling very upset when something reminded you of the stressful experience?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_5',
+      text: 'Having strong physical reactions when something reminded you of the stressful experience (for example, heart pounding, trouble breathing, sweating)?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_6',
+      text: 'Avoiding memories, thoughts, or feelings related to the stressful experience?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_7',
+      text: 'Avoiding external reminders of the stressful experience (for example, people, places, conversations, activities, objects, or situations)?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_8',
+      text: 'Trouble remembering important parts of the stressful experience?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_9',
+      text: 'Having strong negative beliefs about yourself, other people, or the world (for example, having thoughts such as: I am bad, there is something seriously wrong with me, no one can be trusted, the world is completely dangerous)?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_10',
+      text: 'Blaming yourself or someone else for the stressful experience or what happened after it?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_11',
+      text: 'Having strong negative feelings such as fear, horror, anger, guilt, or shame?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_12',
+      text: 'Loss of interest in activities that you used to enjoy?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_13',
+      text: 'Feeling distant or cut off from other people?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_14',
+      text: 'Trouble experiencing positive feelings (for example, being unable to feel happiness, satisfaction, or loving feelings)?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_15',
+      text: 'Irritable behavior, angry outbursts, or acting aggressively?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_16',
+      text: 'Taking too many risks or doing things that could cause you harm?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_17',
+      text: 'Being "superalert" or watchful or on guard?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_18',
+      text: 'Feeling jumpy or easily startled?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_19',
+      text: 'Having difficulty concentrating?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    },
+    {
+      id: 'pcl5_20',
+      text: 'Trouble falling or staying asleep?',
+      type: 'frequency',
+      options: ['Not at all', 'A little bit', 'Moderately', 'Quite a bit', 'Extremely']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score < 19 ? 'Minimal PTSD symptoms' :
+             score < 34 ? 'Mild PTSD symptoms' :
+             score < 49 ? 'Moderate PTSD symptoms' :
+             score < 65 ? 'Severe PTSD symptoms' : 'Extreme PTSD symptoms',
+      description: `Your PCL-5 score is ${score} out of 80. This indicates ${score < 19 ? 'minimal PTSD symptoms' : score < 34 ? 'mild PTSD symptoms' : score < 49 ? 'moderate PTSD symptoms' : score < 65 ? 'severe PTSD symptoms' : 'extreme PTSD symptoms'}.`,
+      severity: score < 19 ? 'normal' :
+                score < 34 ? 'mild' :
+                score < 49 ? 'moderate' :
+                score < 65 ? 'severe' : 'critical',
+      recommendations: score >= 34 ? [
+        'Consider speaking with a mental health professional experienced in trauma',
+        'Consider trauma-focused therapy approaches like EMDR or TF-CBT',
+        'Practice grounding techniques and self-care',
+        'Consider joining trauma support groups'
+      ] : score >= 19 ? [
+        'Monitor your symptoms and consider professional consultation if they persist',
+        'Practice stress management and relaxation techniques',
+        'Consider talking with trusted friends or family about your experiences'
+      ] : [
+        'Continue healthy coping strategies',
+        'If trauma experiences emerge, seek appropriate support',
+        'Consider preventive mental health care'
+      ],
+      insights: [
+        'PTSD symptoms can improve with appropriate treatment and support',
+        'Many people experience trauma symptoms that resolve over time',
+        'Professional help can significantly reduce PTSD symptoms',
+        'Early intervention is often most effective'
+      ],
+      nextSteps: score >= 34 ? [
+        'Schedule an appointment with a trauma-informed therapist',
+        'Consider evidence-based treatments for PTSD',
+        'Build a strong support network',
+        'Learn about trauma and recovery'
+      ] : score >= 19 ? [
+        'Track your symptoms over time',
+        'Consider professional consultation',
+        'Practice self-care and stress management'
+      ] : [
+        'Continue building resilience',
+        'Learn about trauma-informed care',
+        'Support others who may be experiencing trauma'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 18, label: 'Minimal Symptoms', description: 'Minimal or no PTSD symptoms', severity: 'normal', recommendations: ['Continue healthy habits'] },
+      { min: 19, max: 33, label: 'Mild Symptoms', description: 'Some PTSD symptoms present', severity: 'mild', recommendations: ['Monitor symptoms', 'Consider professional consultation'] },
+      { min: 34, max: 48, label: 'Moderate Symptoms', description: 'Moderate PTSD symptoms', severity: 'moderate', recommendations: ['Seek professional help', 'Consider trauma therapy'] },
+      { min: 49, max: 64, label: 'Severe Symptoms', description: 'Severe PTSD symptoms', severity: 'severe', recommendations: ['Immediate professional intervention needed'] },
+      { min: 65, max: 80, label: 'Extreme Symptoms', description: 'Extreme PTSD symptoms', severity: 'critical', recommendations: ['Urgent professional intervention required'] }
+    ]
+  }
+}
+
 // Export all assessments
 export const ASSESSMENTS: Record<string, Assessment> = {
   ace: ACE_QUESTIONNAIRE,
   phq9: PHQ9_ASSESSMENT,
   gad7: GAD7_ASSESSMENT,
-  'cd-risc': CDRISC_ASSESSMENT
+  'cd-risc': CDRISC_ASSESSMENT,
+  pss10: PSS10_ASSESSMENT,
+  who5: WHO5_ASSESSMENT,
+  pcl5: PCL5_ASSESSMENT
 }
 
 // Assessment flow configuration
 export const ASSESSMENT_FLOW = {
+  // Initial trauma history assessment
   onboarding: ['ace'],
-  screening: ['phq9', 'gad7'],
-  personality: [], // Add personality assessments later
-  resilience: ['cd-risc'],
-  comprehensive: ['ace', 'phq9', 'gad7', 'cd-risc']
+  // Core screening battery (recommended for all users)
+  screening: ['phq9', 'gad7', 'pss10', 'who5'],
+  // Add-on assessments for specific conditions
+  trauma_followup: ['pcl5'], // Triggered if ACE score >= 4 or PCL-5 if trauma indicated
+  resilience: ['cd-risc'], // Optional resilience assessment
+  // Comprehensive assessment (all assessments)
+  comprehensive: ['ace', 'phq9', 'gad7', 'pss10', 'who5', 'pcl5', 'cd-risc']
 }
 
 // Category information

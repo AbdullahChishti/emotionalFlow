@@ -17,12 +17,6 @@ export function Hero({ variant = 'B' }: Props) {
     track('hero_view', { variant, abBucket })
   }, [variant])
 
-  const onAssessment = () => {
-    track('cta_click', { id: 'assessment' })
-    // For unauthenticated users, drive to signup for highest conversion
-    router.push('/signup?next=assessments')
-  }
-
   const onChat = () => {
     track('cta_click', { id: 'chat' })
     // Gate via login, pass intent
@@ -50,31 +44,19 @@ export function Hero({ variant = 'B' }: Props) {
             </div>
 
             {/* CTA Group */}
-            <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-              {/* Primary: Assessment */}
-              <button
-                id="cta-assessment"
-                aria-label="Start free assessment"
-                onClick={onAssessment}
-                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-white font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
-                style={{ backgroundColor: '#4a7c59', boxShadow: '0 4px 6px -1px rgba(74, 124, 89, 0.3)' }}
-                onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#3d6b4a'}
-                onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#4a7c59'}
-              >
-                Start free assessment
-              </button>
-
-              {/* Secondary: Chat */}
+            <div className="mt-8">
               <button
                 id="cta-chat"
                 aria-label="Chat with MindWell"
                 onClick={onChat}
-                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-6 text-slate-700 font-semibold bg-white border border-slate-300 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
+                className="inline-flex h-12 min-h-[44px] items-center justify-center rounded-full px-8 text-white font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white shadow-sm transition-colors"
+                style={{ backgroundColor: '#4a7c59', boxShadow: '0 4px 6px -1px rgba(74, 124, 89, 0.3)' }}
+                onMouseEnter={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#3d6b4a'}
+                onMouseLeave={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#4a7c59'}
               >
-                Chat with MindWell
+                Start Chatting with MindWell
               </button>
             </div>
-            <p className="mt-3 text-[12px] leading-5 text-slate-500">Takes less than 2 minutes</p>
 
             {/* Trust Cluster */}
             <div className="mt-8 space-y-4 text-[14px] leading-[24px] text-slate-600" aria-label="Trust and privacy">

@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { AuthProvider } from '@/components/providers/AuthProvider'
+import { GlobalErrorBoundary } from '@/components/common/GlobalErrorBoundary'
 import { ColorThemeProvider } from '@/components/providers/ColorThemeProvider'
-import { AppLayout } from '@/components/layout/AppLayout'
 
 // Setup the Inter font
 const inter = Inter({ subsets: ['latin'] })
@@ -27,11 +26,11 @@ export default function RootLayout({
       </head>
       {/* Apply the Inter font className to the body */}
       <body className={inter.className}>
-        <ColorThemeProvider>
-          <AuthProvider>
-            <AppLayout />
-          </AuthProvider>
-        </ColorThemeProvider>
+        <GlobalErrorBoundary>
+          <ColorThemeProvider>
+            {children}
+          </ColorThemeProvider>
+        </GlobalErrorBoundary>
       </body>
     </html>
   )

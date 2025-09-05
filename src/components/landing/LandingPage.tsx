@@ -172,31 +172,28 @@ const HealingJourneySection = () => {
 
 
 
-// Professional Assessments Section Component
-const ProfessionalAssessmentsSection = () => {
+// Chat Experience Section Component
+const ChatExperienceSection = () => {
   const router = useRouter()
   return (
     <section className="py-16 bg-gradient-to-r from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="text-center mb-12">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-semibold text-slate-700 mb-6 leading-tight">
-            Discovering Your Inner{' '}
-            <span style={{ color: '#335f64' }}>
-              Wisdom
-            </span>
+            A Safe Space for Your{' '}
+            <span style={{ color: '#335f64' }}>Thoughts</span>
           </h2>
 
           <p className="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto leading-loose font-light tracking-wide">
-            These gentle conversations are lovingly designed by caring mental health professionals who understand that healing begins with being truly seen and heard. 
-            Each question is crafted with deep empathy, offering you compassionate insights into your beautiful, complex emotional world—all held in complete privacy and love.
+            Connect with a compassionate listener who understands. Our chat is designed to provide support, understanding, 
+            and a judgment-free space to share what's on your mind—whenever you need it.
           </p>
           
-          {/* Subtle value proposition */}
           <div className="mt-6 text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50/60 rounded-full border border-slate-200/40">
-              <span style={{ color: '#335f64' }} className="text-sm">💚</span>
+              <span style={{ color: '#335f64' }} className="text-sm">💬</span>
               <span style={{ color: '#335f64' }} className="text-sm font-medium">
-                Professional care worth hundreds, offered freely with love
+                Real people. Real support. Always here for you.
               </span>
             </div>
           </div>
@@ -206,18 +203,18 @@ const ProfessionalAssessmentsSection = () => {
           {[
             {
               svg: '/assets/Psychologist-rafiki_1.svg',
-              title: 'Crafted With Compassion',
-              description: 'Created by caring mental health professionals who deeply understand the tender nature of emotional healing and growth.'
+              title: 'Always Available',
+              description: 'Reach out whenever you need someone to talk to, day or night. Our support is here for you 24/7.'
             },
             {
               svg: '/assets/Thinking_face-bro_1.svg',
-              title: 'Gentle Self-Discovery',
-              description: 'Each conversation is designed with loving care, helping you uncover insights that honor your unique emotional landscape.'
+              title: 'Judgment-Free Zone',
+              description: 'Share your thoughts freely in a safe, confidential space where you can be your authentic self.'
             },
             {
               svg: '/assets/Contemplating-bro_1.svg',
-              title: 'Personalized Support',
-              description: 'Receive warm guidance and compassionate strategies that are lovingly tailored to your heart\'s specific needs and journey.'
+              title: 'Emotional Support',
+              description: 'Receive compassionate responses that help you process your feelings and find clarity.'
             }
           ].map((feature, index) => (
             <div
@@ -253,9 +250,9 @@ const ProfessionalAssessmentsSection = () => {
               e.currentTarget.style.backgroundColor = '#335f64';
             }}
           >
-            <span className="truncate">Start free assessment</span>
+            <span className="truncate">Start Chatting Now</span>
           </button>
-          <p className="text-slate-500 text-sm mt-4">Free • Private • Offered With Love</p>
+          <p className="text-slate-500 text-sm mt-4">Free • Private • No Judgement</p>
         </div>
       </div>
     </section>
@@ -338,7 +335,7 @@ export default function LandingPage() {
       <main className="flex-1 pt-20">
         <Hero />
         <HealingJourneySection />
-        <ProfessionalAssessmentsSection />
+        <ChatExperienceSection />
       </main>
     </div>
   )

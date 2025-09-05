@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import MeditationScreen from '@/components/screens/MeditationScreen'
+
 export default function MeditationPage() {
-  return null
+  return <MeditationScreen />
 }

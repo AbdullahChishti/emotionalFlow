@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { Profile } from '@/types'
+import { FlowManager } from '@/lib/services/FlowManager'
 
 // Expose supabase for debugging only in development
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
@@ -14,7 +15,6 @@ interface AuthContextType {
   user: User | null
   profile: Profile | null
   loading: boolean
-  needsOnboarding: boolean
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
 }
@@ -25,7 +25,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
-  const [needsOnboarding, setNeedsOnboarding] = useState(false)
 
   // Refs to prevent race conditions and duplicate operations
   const initializingRef = useRef(false)
@@ -56,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const createProfile = async (user: User): Promise<Profile | null> => {
-    // Prevent duplicate profile creation
+    // Prevent duplicate profile creation with atomic check
     if (profileCreationRef.current.has(user.id)) {
       console.log('Profile creation already in progress for user:', user.id)
       return null
@@ -65,6 +64,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profileCreationRef.current.add(user.id)
 
     try {
+      // First check if profile already exists (double-check)
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      if (existingProfile) {
+        console.log('Profile already exists for user:', user.id)
+        return existingProfile
+      }
+
+      // Create new profile with comprehensive data
       const newProfileData = {
         id: user.id,
         display_name: user.user_metadata?.display_name ||
@@ -78,8 +90,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         empathy_credits: 10,
         total_credits_earned: 10,
         total_credits_spent: 0,
-        emotional_capacity: 'medium',
-        preferred_mode: 'both',
+        emotional_capacity: 'medium' as const,
+        preferred_mode: 'both' as const,
         is_anonymous: false,
         last_active: new Date().toISOString()
       }
@@ -91,6 +103,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (createError) {
+        // Handle unique constraint violation (profile already exists)
+        if (createError.code === '23505') {
+          console.log('Profile already exists (constraint violation), fetching existing:', user.id)
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+          return existingProfile || null
+        }
+
         console.error('Profile creation failed:', createError)
         return null
       }
@@ -105,30 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const checkOnboardingStatus = async (userId: string): Promise<boolean> => {
-    try {
-      // Check for test flag first
-      const testOnboarding = typeof window !== 'undefined' && localStorage.getItem('testOnboarding') === 'true'
-      if (testOnboarding) {
-        localStorage.removeItem('testOnboarding')
-        return true
-      }
-
-      // Check if they have any mood entries
-      const { data: moodEntries } = await supabase
-        .from('mood_entries')
-        .select('id')
-        .eq('user_id', userId)
-        .limit(1)
-
-      return !moodEntries || moodEntries.length === 0
-    } catch (error) {
-      console.error('Onboarding check error:', error)
-      return false
-    }
-  }
-
-  const setupUserProfile = async (user: User): Promise<{ profile: Profile | null; needsOnboarding: boolean }> => {
+  const setupUserProfile = async (user: User): Promise<Profile | null> => {
     try {
       let profileData = await fetchProfile(user.id)
 
@@ -136,12 +136,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profileData = await createProfile(user)
       }
 
-      const needsOnboarding = profileData ? await checkOnboardingStatus(user.id) : true
-
-      return { profile: profileData, needsOnboarding }
+      return profileData
     } catch (error) {
       console.error('User profile setup error:', error)
-      return { profile: null, needsOnboarding: true }
+      return null
     }
   }
 
@@ -149,9 +147,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!user) return
 
     try {
-      const { profile: profileData, needsOnboarding } = await setupUserProfile(user)
+      const profileData = await setupUserProfile(user)
       setProfile(profileData)
-      setNeedsOnboarding(needsOnboarding)
     } catch (error) {
       console.error('Profile refresh error:', error)
     }
@@ -259,17 +256,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (session?.user) {
           console.log('Setting up user profile for:', session.user.id)
-          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
+          const profileData = await setupUserProfile(session.user)
 
           if (!isMounted) return
 
           setProfile(profileData)
-          setNeedsOnboarding(needsOnboarding)
-          console.log('User profile setup complete. Profile:', !!profileData, 'Needs onboarding:', needsOnboarding)
+          console.log('User profile setup complete. Profile:', !!profileData)
         } else {
           console.log('No session user found, clearing profile')
           setProfile(null)
-          setNeedsOnboarding(false)
         }
 
         if (isMounted) {
@@ -305,26 +300,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event === 'SIGNED_OUT') {
         setUser(null)
         setProfile(null)
-        setNeedsOnboarding(false)
         setLoading(false)
         return
       }
 
       // For other events, handle sign in
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('User signed in, updating auth state:', session.user.id)
+        console.log('User signed in, starting login flow:', session.user.id)
         setUser(session.user)
 
         try {
-          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
+          const profileData = await setupUserProfile(session.user)
 
           if (isMounted) {
-            setProfile(profileData)
-            setNeedsOnboarding(needsOnboarding)
-            console.log('Auth state updated after sign in')
+            // Use FlowManager for complete login flow
+            await FlowManager.handleLogin(session.user, profileData)
+            console.log('Login flow completed successfully')
           }
         } catch (error) {
-          console.error('Auth state change error:', error)
+          console.error('Login flow failed:', error)
+          if (isMounted) {
+            setProfile(null)
+          }
         }
       }
 
@@ -334,11 +331,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session.user)
 
         try {
-          const { profile: profileData, needsOnboarding } = await setupUserProfile(session.user)
+          const profileData = await setupUserProfile(session.user)
 
           if (isMounted) {
             setProfile(profileData)
-            setNeedsOnboarding(needsOnboarding)
           }
         } catch (error) {
           console.error('Auth state change error:', error)
@@ -365,29 +361,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      console.log('Signing out...')
+      console.log('Starting logout flow...')
       setLoading(true)
 
-      // Clear state immediately
-      setUser(null)
-      setProfile(null)
-      setNeedsOnboarding(false)
+      // Use FlowManager for complete logout flow
+      await FlowManager.handleLogout()
 
       // Sign out from Supabase
       const { error } = await supabase.auth.signOut()
 
       if (error) {
-        console.error('Sign out error:', error)
+        console.error('Supabase sign out error:', error)
+        // Continue with logout even if Supabase fails
       } else {
-        console.log('Signed out successfully')
+        console.log('Supabase signed out successfully')
       }
 
-      // Force reload to clear any cached data and reset app state
-      window.location.href = '/'
+      // Clear local state
+      setUser(null)
+      setProfile(null)
+      setNeedsOnboarding(false)
+      setLoading(false)
+
+      // Small delay to ensure state is cleared before redirect
+      setTimeout(() => {
+        // Force reload to clear any cached data and reset app state
+        window.location.href = '/'
+      }, 100)
     } catch (error) {
-      console.error('Sign out exception:', error)
-      // Force reload even if there's an error
-      window.location.href = '/'
+      console.error('Logout flow exception:', error)
+      // Even if there's an exception, force logout
+      setUser(null)
+      setProfile(null)
+      setNeedsOnboarding(false)
+      setLoading(false)
+
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 100)
     }
   }
 
@@ -395,7 +406,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     profile,
     loading,
-    needsOnboarding,
     signOut,
     refreshProfile,
   }

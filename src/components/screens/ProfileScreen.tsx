@@ -22,9 +22,8 @@ const AssessmentHistory = dynamic(() => import('@/components/assessment/Assessme
 import 'material-symbols/outlined.css'
 
 export function ProfileScreen() {
-  const { user, profile, refreshProfile, signOut } = useAuth()
+  const { user, profile, refreshProfile, signOut, loading: authLoading } = useAuth()
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
 
   // Form state
@@ -64,16 +63,14 @@ export function ProfileScreen() {
   }
 
   const handleSignOut = async () => {
-    setLoading(true)
     try {
       await signOut()
     } catch (error) {
       console.error('Error signing out:', error)
-      setLoading(false)
     }
   }
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoadingSpinner size="lg" />
@@ -264,7 +261,7 @@ export function ProfileScreen() {
 
                 <button
                   onClick={handleSignOut}
-                  disabled={loading}
+                  disabled={authLoading}
                   className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-lg">logout</span>

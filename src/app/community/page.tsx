@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import CommunityScreen from '@/components/screens/CommunityScreen'
+
 export default function CommunityPage() {
-  return null
+  return <CommunityScreen />
 }

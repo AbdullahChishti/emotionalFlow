@@ -8,4 +8,6 @@ export const ASSESSMENT_ICONS = {
   'general': '/assets/Psychologist-rafiki_1.svg',
   'cognitive': '/assets/Thinking_face-bro_1.svg',
   'emotional': '/assets/Mental_health-pana_1.svg',
+  'trauma': '/assets/Mental_health-bro_2.svg', // Reusing existing icon for trauma
+  'wellbeing': '/assets/Peace_of_mind-bro_2.svg', // Reusing existing icon for wellbeing
 }

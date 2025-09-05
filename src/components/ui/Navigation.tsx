@@ -21,7 +21,13 @@ interface NavigationProps {
 }
 
 export function Navigation({ className = '' }: NavigationProps) {
-  const { user } = useAuth()
+  let user = null
+  try {
+    const auth = useAuth()
+    user = auth.user
+  } catch (error) {
+    // AuthProvider not available, user stays null
+  }
   const pathname = usePathname()
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)

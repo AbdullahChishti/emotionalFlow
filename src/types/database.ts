@@ -116,32 +116,62 @@ export interface Database {
         Row: {
           id: string
           created_at: string
+          updated_at: string
           user_id: string
           mood_score: number
+          mood_label: string | null
           emotional_capacity: 'low' | 'medium' | 'high'
           seeking_support: boolean
           willing_to_listen: boolean
           notes: string | null
+          energy_level: number | null
+          stress_level: number | null
+          sleep_quality: number | null
+          social_activity: string | null
+          physical_activity: string | null
+          triggers: string[] | null
+          coping_strategies: string[] | null
+          metadata: Json | null
         }
         Insert: {
           id?: string
           created_at?: string
+          updated_at?: string
           user_id: string
           mood_score: number
-          emotional_capacity: 'low' | 'medium' | 'high'
-          seeking_support?: boolean
-          willing_to_listen?: boolean
-          notes?: string | null
-        }
-        Update: {
-          id?: string
-          created_at?: string
-          user_id?: string
-          mood_score?: number
+          mood_label?: string | null
           emotional_capacity?: 'low' | 'medium' | 'high'
           seeking_support?: boolean
           willing_to_listen?: boolean
           notes?: string | null
+          energy_level?: number | null
+          stress_level?: number | null
+          sleep_quality?: number | null
+          social_activity?: string | null
+          physical_activity?: string | null
+          triggers?: string[] | null
+          coping_strategies?: string[] | null
+          metadata?: Json | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+          mood_score?: number
+          mood_label?: string | null
+          emotional_capacity?: 'low' | 'medium' | 'high'
+          seeking_support?: boolean
+          willing_to_listen?: boolean
+          notes?: string | null
+          energy_level?: number | null
+          stress_level?: number | null
+          sleep_quality?: number | null
+          social_activity?: string | null
+          physical_activity?: string | null
+          triggers?: string[] | null
+          coping_strategies?: string[] | null
+          metadata?: Json | null
         }
       }
       emotional_labor_logs: {
@@ -264,6 +294,51 @@ export interface Database {
           preferences?: Json | null
           personalization_data?: Json | null
           last_assessed?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+
+      conversation_progress: {
+        Row: {
+          id: string
+          user_id: string
+          session_id: string
+          timestamp: string
+          message_count: number
+          average_sentiment: number | null
+          emotional_tone: string | null
+          crisis_indicators: string[] | null
+          therapeutic_themes: string[] | null
+          user_engagement: 'low' | 'medium' | 'high' | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          session_id: string
+          timestamp: string
+          message_count?: number
+          average_sentiment?: number | null
+          emotional_tone?: string | null
+          crisis_indicators?: string[] | null
+          therapeutic_themes?: string[] | null
+          user_engagement?: 'low' | 'medium' | 'high' | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          session_id?: string
+          timestamp?: string
+          message_count?: number
+          average_sentiment?: number | null
+          emotional_tone?: string | null
+          crisis_indicators?: string[] | null
+          therapeutic_themes?: string[] | null
+          user_engagement?: 'low' | 'medium' | 'high' | null
           created_at?: string
           updated_at?: string
         }

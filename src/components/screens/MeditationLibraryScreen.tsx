@@ -27,7 +27,7 @@ const categories = [
   { name: 'Focus', icon: Brain },
 ]
 
-export function MeditationLibraryScreen() {
+export default function MeditationLibraryScreen() {
   const [activeCategory, setActiveCategory] = useState('Anxiety')
 
   return (

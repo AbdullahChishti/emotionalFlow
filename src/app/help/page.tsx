@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import { HelpScreen } from '@/components/screens/HelpScreen'
+
 export default function HelpPage() {
-  return null
+  return <HelpScreen />
 }

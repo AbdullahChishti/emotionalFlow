@@ -61,7 +61,7 @@ const chartOptions = {
   },
 };
 
-export function ProgressDashboardScreen() {
+export default function ProgressDashboardScreen() {
   const streak = 7;
 
   return (

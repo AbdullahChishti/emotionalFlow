@@ -1,5 +1,5 @@
-// This page is now handled by AppLayout component
-// The routing logic has been moved to AppLayout for SPA behavior
+import WalletScreen from '@/components/screens/WalletScreen'
+
 export default function WalletPage() {
-  return null
+  return <WalletScreen />
 }
