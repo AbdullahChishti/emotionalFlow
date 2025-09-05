@@ -305,6 +305,33 @@ export class AssessmentManager {
 
       console.log('✅ AI enhancement completed')
 
+      // Save individual assessment results to database
+      console.log('💾 Saving individual assessment results...')
+      await Promise.allSettled(
+        Object.entries(results).map(async ([assessmentId, result]) => {
+          const assessment = await import('@/data/assessments').then(m => m.ASSESSMENTS[assessmentId])
+          if (assessment) {
+            const explanationMap: Record<string, string> = {
+              'phq9': depressionExplanation,
+              'gad7': anxietyExplanation,
+              'pss10': stressExplanation,
+              'who5': wellbeingExplanation,
+              'pcl5': traumaExplanation,
+              'cd-risc': resilienceExplanation
+            }
+            
+            return this.saveAssessmentResult(
+              userId,
+              assessmentId,
+              assessment.title,
+              result,
+              result.responses || {},
+              explanationMap[assessmentId]
+            )
+          }
+        })
+      )
+
       // Save to database
       const databaseResult = await this.saveUserProfile(userId, enhancedProfile)
 
@@ -314,6 +341,23 @@ export class AssessmentManager {
       }
     } catch (error) {
       console.error('❌ Error during AI enhancement:', error)
+
+      // Save individual assessment results to database (without AI explanations)
+      console.log('💾 Saving individual assessment results (fallback)...')
+      await Promise.allSettled(
+        Object.entries(results).map(async ([assessmentId, result]) => {
+          const assessment = await import('@/data/assessments').then(m => m.ASSESSMENTS[assessmentId])
+          if (assessment) {
+            return this.saveAssessmentResult(
+              userId,
+              assessmentId,
+              assessment.title,
+              result,
+              result.responses || {}
+            )
+          }
+        })
+      )
 
       // Return basic profile without AI enhancements
       const databaseResult = await this.saveUserProfile(userId, userProfile)

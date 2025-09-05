@@ -137,35 +137,45 @@ export class FlowManager {
     console.log('🎯 FlowManager: Completing assessment flow', { resultCount: Object.keys(results).length })
 
     try {
-      const assessmentStore = useAssessmentStore.getState()
-      const profileStore = useProfileStore.getState()
-      const chatStore = useChatStore.getState()
-
-      // Step 1: Set processing state
-      assessmentStore.setProcessingResults(true)
-
-      // Step 2: Process results with AssessmentManager
+      // Step 1: Process results with AssessmentManager (handles database saves)
       const { profile: processedProfile, databaseResult } = await AssessmentManager.processAssessmentResults(results, userId)
 
-      // Step 3: Update stores with processed data
-      assessmentStore.completeAssessmentFlow(results, processedProfile)
-      profileStore.setAssessmentProfile(processedProfile)
+      // Step 2: Update stores with processed data (try-catch for client-side only)
+      try {
+        const assessmentStore = useAssessmentStore.getState()
+        assessmentStore.setProcessingResults(true)
+        assessmentStore.completeAssessmentFlow(results, processedProfile)
+        assessmentStore.setProcessingResults(false)
+        
+        const profileStore = useProfileStore.getState()
+        profileStore.setAssessmentProfile(processedProfile)
 
-      // Step 4: Update chat context with new assessment data
-      const context = await AssessmentManager.getAssessmentContext(userId)
-      chatStore.setAssessmentContext(context)
-
-      // Step 5: Complete processing
-      assessmentStore.setProcessingResults(false)
+        // Step 3: Update chat context with new assessment data
+        const context = await AssessmentManager.getAssessmentContext(userId)
+        const chatStore = useChatStore.getState()
+        chatStore.setAssessmentContext(context)
+        
+        console.log('✅ FlowManager: Stores updated successfully')
+      } catch (storeError) {
+        console.warn('⚠️ FlowManager: Store updates failed (possibly server-side context):', storeError)
+        // Continue execution - database operations succeeded
+      }
 
       console.log('✅ FlowManager: Assessment flow completed successfully')
 
     } catch (error) {
       console.error('❌ FlowManager: Assessment completion failed', error)
       logAssessmentError(error as Error, 'assessment_completion', userId)
-      const assessmentStore = useAssessmentStore.getState()
-      assessmentStore.setProcessingResults(false)
-      assessmentStore.setError('Failed to process assessment results. Please try again.')
+      
+      // Try to update store error state if possible
+      try {
+        const assessmentStore = useAssessmentStore.getState()
+        assessmentStore.setProcessingResults(false)
+        assessmentStore.setError('Failed to process assessment results. Please try again.')
+      } catch (storeError) {
+        console.warn('⚠️ Could not update store error state:', storeError)
+      }
+      
       throw error
     }
   }
