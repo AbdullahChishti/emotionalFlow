@@ -16,7 +16,7 @@ import {
 import { AssessmentManager } from '@/lib/services/AssessmentManager'
 import { FlowManager } from '@/lib/services/FlowManager'
 import { AssessmentQuestionComponent } from './AssessmentQuestion'
-import AssessmentResults from './AssessmentResults'
+// AssessmentResults import removed - now handled by /results page
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
 import { ASSESSMENT_ICONS } from '@/data/assessment-icons'
 // Assessment operations handled by AssessmentManager
@@ -284,8 +284,17 @@ export function AssessmentFlow({
         [currentAssessment.id]: newResponses
       }))
 
-      // Show results for this assessment first
-      setCurrentState('results')
+      // Skip individual results - go to next assessment or completion
+      if (currentAssessmentIndex < assessmentIds.length - 1) {
+        // Move to next assessment
+        setCurrentAssessmentIndex(currentAssessmentIndex + 1)
+        setCurrentQuestionIndex(0)
+        setResponses({})
+        setCurrentState('taking')
+      } else {
+        // All assessments complete - go to completion
+        setCurrentState('completed')
+      }
     }
   }
 
@@ -314,12 +323,6 @@ export function AssessmentFlow({
     })
 
     return score
-  }
-
-  const handleRetake = () => {
-    setCurrentQuestionIndex(0)
-    setResponses({})
-    setCurrentState('taking')
   }
 
   const handleContinue = async () => {
@@ -550,27 +553,7 @@ export function AssessmentFlow({
     </div>
   )
 
-  const renderResults = () => {
-    // Guard against undefined currentAssessment
-    if (!currentAssessment) {
-      console.error('Current assessment is undefined')
-      return null
-    }
-
-    const currentResult = results[currentAssessment.id]
-
-    if (!currentResult) return null
-
-    return (
-      <AssessmentResults
-        assessment={currentAssessment}
-        result={currentResult}
-        onRetake={handleRetake}
-        onContinue={handleContinue}
-        aiExplanation={null} // Disable internal AI loading since we handle it elsewhere
-      />
-    )
-  }
+  // renderResults function removed - results now shown on dedicated /results page
 
   const renderCompleted = () => (
     <motion.div
@@ -670,17 +653,6 @@ export function AssessmentFlow({
             exit={{ opacity: 0, x: -20 }}
           >
             {renderTaking()}
-          </motion.div>
-        )}
-
-        {currentState === 'results' && (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-          >
-            {renderResults()}
           </motion.div>
         )}
 

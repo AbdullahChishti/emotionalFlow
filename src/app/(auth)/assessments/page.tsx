@@ -3,33 +3,39 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AssessmentFlow } from '@/components/assessment/AssessmentFlow'
-import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { AssessmentHistory } from '@/components/assessment/AssessmentHistory'
+import { useRouter } from 'next/navigation'
 import { ASSESSMENTS, ASSESSMENT_CATEGORIES } from '@/data/assessments'
 import { AssessmentResult, UserProfile } from '@/types'
 
 export default function AssessmentsPage() {
+  const router = useRouter()
   const [selectedFlow, setSelectedFlow] = useState<string | null>(null)
-  const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult>>({})
-  const [showResults, setShowResults] = useState(false)
   const [currentAssessmentId, setCurrentAssessmentId] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const handleFlowSelect = (flowId: string) => {
     setSelectedFlow(flowId)
-    setShowResults(false)
   }
 
   const handleAssessmentComplete = (results: Record<string, AssessmentResult>, userProfile: UserProfile) => {
-    setAssessmentResults(results)
-    setShowResults(true)
-    setSelectedFlow(null)
+    // Store results in localStorage for the results page
+    try {
+      localStorage.setItem('assessmentResults', JSON.stringify(results))
+      if (userProfile) {
+        localStorage.setItem('userProfile', JSON.stringify(userProfile))
+      }
+    } catch (error) {
+      console.warn('Failed to cache assessment results:', error)
+    }
+
+    // Navigate to results page
+    router.push('/results')
   }
 
   const handleRetakeAssessment = (assessmentId: string) => {
     setCurrentAssessmentId(assessmentId)
     setSelectedFlow('single')
-    setShowResults(false)
   }
 
   // Group assessments by category
@@ -68,7 +74,7 @@ export default function AssessmentsPage() {
   }
 
   // Show assessment selection by default
-  if (!selectedFlow && !showResults) {
+  if (!selectedFlow) {
     return (
       <div className="min-h-screen bg-white">
         {/* Minimal Header */}
@@ -211,7 +217,7 @@ export default function AssessmentsPage() {
   }
 
   // Show assessment flow
-  if (selectedFlow && !showResults) {
+  if (selectedFlow) {
     const assessmentIds = selectedFlow === 'single' && currentAssessmentId
       ? [currentAssessmentId]
       : ['phq9', 'gad7', 'pss10', 'who5']
@@ -220,27 +226,7 @@ export default function AssessmentsPage() {
       <AssessmentFlow
         assessmentIds={assessmentIds}
         onComplete={handleAssessmentComplete}
-        onExit={() => {
-          setSelectedFlow(null)
-          setShowResults(false)
-        }}
-      />
-    )
-  }
-
-  // Show results
-  if (showResults && Object.keys(assessmentResults).length > 0) {
-    return (
-      <AssessmentResults
-        results={assessmentResults}
-        onRetake={() => {
-          setShowResults(false)
-          setSelectedFlow('single')
-        }}
-        onNewAssessment={() => {
-          setShowResults(false)
-          setSelectedFlow(null)
-        }}
+        onExit={() => setSelectedFlow(null)}
       />
     )
   }
