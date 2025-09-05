@@ -34,7 +34,7 @@ interface AssessmentFlowProps {
   onProfileEnhancement?: (enhancedProfile: UserProfile) => void
 }
 
-type AssessmentState = 'selection' | 'taking' | 'results' | 'completed'
+type AssessmentState = 'selection' | 'taking'
 
 export function AssessmentFlow({
   assessmentIds,
@@ -292,8 +292,8 @@ export function AssessmentFlow({
         setResponses({})
         setCurrentState('taking')
       } else {
-        // All assessments complete - go to completion
-        setCurrentState('completed')
+        // All assessments complete - process and navigate to results
+        handleContinue()
       }
     }
   }
@@ -553,69 +553,7 @@ export function AssessmentFlow({
     </div>
   )
 
-  // renderResults function removed - results now shown on dedicated /results page
-
-  const renderCompleted = () => (
-    <motion.div
-      className="max-w-4xl mx-auto text-center"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6 }}
-    >
-      <motion.div
-        className="bg-white rounded-2xl p-12 border border-gray-200 shadow-lg"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-      >
-        <div className="mb-8">
-          <motion.div
-            className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.4, duration: 0.6, type: "spring" }}
-          >
-            <span className="material-symbols-outlined text-4xl text-green-600">check_circle</span>
-          </motion.div>
-        </div>
-        
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Assessment Complete
-        </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-          {savingResults 
-            ? 'Saving your results and generating your personalized analysis...'
-            : 'Thank you for completing these assessments. Your results provide valuable insights into your mental health and well-being.'
-          }
-        </p>
-        
-        {savingResults && (
-          <div className="flex justify-center mb-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green-500"></div>
-          </div>
-        )}
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <motion.button
-            onClick={() => setCurrentState('selection')}
-            className="px-8 py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-200 font-medium hover:shadow-sm border border-gray-200"
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Take Another Assessment
-          </motion.button>
-                      <motion.button
-              onClick={onExit}
-              className="px-8 py-3 rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition-all duration-300 font-medium"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Return to Dashboard
-            </motion.button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )
+  // renderResults and renderCompleted functions removed - results now shown on dedicated /results page
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -656,16 +594,6 @@ export function AssessmentFlow({
           </motion.div>
         )}
 
-        {currentState === 'completed' && (
-          <motion.div
-            key="completed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {renderCompleted()}
-          </motion.div>
-        )}
       </AnimatePresence>
     </div>
   )
