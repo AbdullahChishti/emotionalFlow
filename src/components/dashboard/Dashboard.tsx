@@ -601,17 +601,21 @@ export function Dashboard() {
   // Loading state
   if (loading) {
     return (
-      <div className="animate-pulse space-y-8 pt-16 md:pt-20">
-        <div className="h-6 w-2/3 bg-slate-200/60 rounded-lg mx-auto" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl mx-auto">
-          <div className="h-16 bg-slate-200/60 rounded-2xl" />
-          <div className="h-16 bg-slate-200/60 rounded-2xl" />
-        </div>
-        <div className="h-4 w-32 bg-slate-200/60 rounded mx-auto" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
-          {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="h-32 bg-slate-200/60 rounded-2xl" />
-          ))}
+      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
+        <div className="container mx-auto px-6 py-16">
+          <div className="animate-pulse space-y-8 pt-16 md:pt-20">
+            <div className="h-6 w-2/3 bg-slate-200/60 rounded-lg mx-auto" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl mx-auto">
+              <div className="h-16 bg-slate-200/60 rounded-2xl" />
+              <div className="h-16 bg-slate-200/60 rounded-2xl" />
+            </div>
+            <div className="h-4 w-32 bg-slate-200/60 rounded mx-auto" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
+              {Array.from({ length: 3 }, (_, i) => (
+                <div key={i} className="h-32 bg-slate-200/60 rounded-2xl" />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -620,20 +624,24 @@ export function Dashboard() {
   // Error state
   if (error && !loading) {
     return (
-      <div className="text-center py-12 pt-28 md:pt-32">
-        <h2 className="text-2xl font-light text-slate-600 mb-4">Unable to load dashboard</h2>
-        <p className="text-slate-500 font-light mb-6 max-w-md mx-auto">{error}</p>
-        <button
-          onClick={() => {
-            setError(null)
-            setDataFetched(false)
-            setRetryCount(0)
-            setLoading(true)
-          }}
-          className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-700 text-white font-light hover:bg-slate-600 transition-colors duration-300"
-        >
-          Try again
-        </button>
+      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
+        <div className="container mx-auto px-6 py-16">
+          <div className="text-center py-12 pt-28 md:pt-32">
+            <h2 className="text-2xl font-light text-slate-600 mb-4">Unable to load dashboard</h2>
+            <p className="text-slate-500 font-light mb-6 max-w-md mx-auto">{error}</p>
+            <button
+              onClick={() => {
+                setError(null)
+                setDataFetched(false)
+                setRetryCount(0)
+                setLoading(true)
+              }}
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-slate-700 text-white font-light hover:bg-slate-600 transition-colors duration-300"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
       </div>
     )
   }
@@ -641,16 +649,22 @@ export function Dashboard() {
   // Profile not ready state
   if (!profile) {
     return (
-      <div className="text-center py-12 pt-28 md:pt-32">
-        <h2 className="text-2xl font-light text-slate-600 mb-4">Setting up your profile...</h2>
-        <p className="text-slate-500 font-light">This will only take a moment.</p>
-        <LoadingSpinner size="lg" className="mt-6" />
+      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
+        <div className="container mx-auto px-6 py-16">
+          <div className="text-center py-12 pt-28 md:pt-32">
+            <h2 className="text-2xl font-light text-slate-600 mb-4">Setting up your profile...</h2>
+            <p className="text-slate-500 font-light">This will only take a moment.</p>
+            <LoadingSpinner size="lg" className="mt-6" />
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 md:space-y-8 lg:space-y-10 pt-16 md:pt-20">
+    <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
+      <div className="container mx-auto px-6 py-16">
+        <div className="space-y-6 md:space-y-8 lg:space-y-10">
           {/* Header Section */}
           <motion.div
             className="text-center space-y-3 md:space-y-4"
@@ -658,10 +672,10 @@ export function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-slate-800 leading-relaxed px-4">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-slate-800 leading-relaxed px-4">
               {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
             </h1>
-            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto px-4 font-light">
+            <p className="text-base text-slate-500 max-w-2xl mx-auto px-4 font-light">
               {getFormattedDate()} • {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
             </p>
           </motion.div>
@@ -670,31 +684,31 @@ export function Dashboard() {
           {renderSnapshotHero()}
 
           {/* Row 2: Next actions (left) and Trends (right) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-7xl mx-auto">
             <div>{renderNextActions()}</div>
             <div>{renderTrends()}</div>
           </div>
 
           {/* Coverage row */}
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-4 shadow-sm">
-              <div className="text-sm font-light text-slate-700 mb-3">Coverage</div>
-              <div className="flex flex-wrap gap-2 text-xs">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
+              <div className="text-base font-light text-slate-700 mb-4">Coverage</div>
+              <div className="flex flex-wrap gap-3 text-sm">
                 {coverage.assessed.map(id => (
-                  <span key={`ok-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60">
-                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                  <span key={`ok-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60">
+                    <span className="material-symbols-outlined text-base">check_circle</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
                 {coverage.stale.map(id => (
-                  <span key={`stale-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60">
-                    <span className="material-symbols-outlined text-[14px]">error</span>
+                  <span key={`stale-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60">
+                    <span className="material-symbols-outlined text-base">error</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
                 {coverage.missing.map(id => (
-                  <span key={`miss-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60">
-                    <span className="material-symbols-outlined text-[14px]">check_box_outline_blank</span>
+                  <span key={`miss-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60">
+                    <span className="material-symbols-outlined text-base">check_box_outline_blank</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
@@ -706,29 +720,29 @@ export function Dashboard() {
           {/* Empty state if no assessments */}
           {!hasAssessmentData && (
             <motion.div
-              className="max-w-2xl mx-auto px-4 text-center"
+              className="max-w-2xl mx-auto text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
-                <h3 className="text-lg font-light text-slate-700">Complete a quick check-in to personalize your support.</h3>
-                <p className="text-slate-500 mt-2 text-sm font-light">It takes about 3 minutes.</p>
-                <div className="mt-4">
-                  <button
-                    onClick={() => handleNavigate('/assessments')}
-                    className="inline-flex items-center px-5 py-2.5 rounded-xl text-white font-light text-sm shadow-sm hover:shadow-md transition-all duration-300"
-                    style={{ backgroundColor: '#335f64' }}
-                  >
-                    Take a 3-min screener
-                  </button>
-                </div>
+              <div className="bg-white/60 border border-slate-200/40 rounded-3xl p-10 shadow-sm">
+                <h3 className="text-xl font-light text-slate-700 mb-3">Complete a quick check-in to personalize your support.</h3>
+                <p className="text-slate-500 text-base font-light mb-6">It takes about 3 minutes.</p>
+                <button
+                  onClick={() => handleNavigate('/assessments')}
+                  className="inline-flex items-center px-6 py-3 rounded-2xl text-white font-light shadow-sm hover:shadow-md transition-all duration-300"
+                  style={{ backgroundColor: '#335f64' }}
+                >
+                  Take a 3-min screener
+                </button>
               </div>
             </motion.div>
           )}
 
           {/* Recent assessments removed for declutter */}
 
+        </div>
+      </div>
     </div>
   )
 }
