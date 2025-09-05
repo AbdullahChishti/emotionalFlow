@@ -41,7 +41,7 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
   const max = assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max
   const score = result.score
   const pct = Math.max(0, Math.min(100, Math.round((score / max) * 100)))
-  const r = 56
+  const r = 60
   const c = 2 * Math.PI * r
 
   const severityColors: Record<string, string> = {
@@ -54,39 +54,45 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
   const stroke = severityColors[result?.severity || 'normal']
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
-      <div className="flex items-center gap-6">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+      className="bg-gradient-to-br from-white to-slate-50/50 rounded-3xl shadow-sm border border-slate-200/60 p-8"
+    >
+      <div className="text-center">
         {/* Circular progress meter */}
-        <div className="relative w-32 h-32">
-          <svg width="128" height="128" viewBox="0 0 128 128" className="rotate-[-90deg]">
-            <circle cx="64" cy="64" r={r} stroke="#e5e7eb" strokeWidth="10" fill="none" />
+        <div className="relative w-40 h-40 mx-auto mb-6">
+          <svg width="160" height="160" viewBox="0 0 160 160" className="rotate-[-90deg]">
+            <circle cx="80" cy="80" r={r} stroke="#e2e8f0" strokeWidth="8" fill="none" />
             <circle
-              cx="64" cy="64" r={r}
+              cx="80" cy="80" r={r}
               stroke={stroke}
-              strokeWidth="10"
+              strokeWidth="8"
               strokeLinecap="round"
               strokeDasharray={`${c} ${c}`}
               strokeDashoffset={`${c - (pct / 100) * c}`}
               fill="none"
+              className="transition-all duration-1000 ease-out"
             />
           </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center rotate-[90deg]">
-            <div className="text-2xl font-semibold" style={{ color: '#1f3d42' }}>{score}</div>
-            <div className="text-[11px] text-zinc-500">/ {max}</div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-3xl font-light text-slate-800">{score}</div>
+            <div className="text-sm text-slate-500 font-light">/ {max}</div>
           </div>
         </div>
 
         {/* Score details */}
-        <div className="flex-1">
-          <div className="text-xs text-zinc-600 mb-1">Overall Score</div>
-          <div className="text-xl font-semibold mb-2" style={{ color: '#1f3d42' }}>{pct}%</div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-700">
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stroke }} />
-            {result.level}
+        <div className="space-y-3">
+          <div className="text-sm text-slate-500 font-light">Overall Score</div>
+          <div className="text-4xl font-light text-slate-800">{pct}%</div>
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: stroke }} />
+            <span className="text-sm font-light text-slate-700">{result.level}</span>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 })
 
@@ -444,21 +450,21 @@ export default function AssessmentResults({
     const categoryLabel = assessment.category.charAt(0).toUpperCase() + assessment.category.slice(1)
 
     return (
-      <div className="mb-4">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-xl mb-3">
-          <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
+      <div className="mb-6">
+        <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-100 rounded-2xl mb-4">
+          <span className="material-symbols-outlined text-lg text-slate-700">analytics</span>
         </div>
-        <h1 className="text-xl md:text-2xl font-bold text-zinc-900 mb-2 text-center md:text-left">{assessment.title}</h1>
-        <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-slate-700 rounded-full text-xs font-medium border border-slate-200 capitalize">
-            <span className="material-symbols-outlined text-sm text-slate-600">category</span>
+        <h1 className="text-2xl md:text-3xl font-light text-slate-800 mb-3 text-center md:text-left">{assessment.title}</h1>
+        <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-2xl text-sm font-light border border-slate-200/50 shadow-sm">
+            <span className="material-symbols-outlined text-base text-slate-600">category</span>
             {categoryLabel}
           </span>
-          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-700`}>
-            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: dot }} />
+          <span className="inline-flex items-center gap-3 px-4 py-2 bg-white text-slate-700 rounded-2xl text-sm font-light border border-slate-200/50 shadow-sm">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: dot }} />
             {result?.severity || 'normal'}
           </span>
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-zinc-700 rounded-full text-xs font-medium border border-slate-200">
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-2xl text-sm font-light border border-slate-200/50 shadow-sm">
             Level: {result?.level}
           </span>
         </div>
@@ -551,20 +557,18 @@ export default function AssessmentResults({
 
 
   return (
-    <div className="bg-white">
-      <div className="container mx-auto px-6 py-12">
+    <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
+      <div className="container mx-auto px-6 py-16">
         {/* Section 1: Card on the left, content on the right */}
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
           {/* Left: Score Card as a featured card */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="relative h-full"
+            className="relative"
           >
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
-              <ScoreCard assessment={assessment} result={result} />
-            </div>
+            <ScoreCard assessment={assessment} result={result} />
           </motion.div>
 
           {/* Right: Header + brief summary */}
@@ -572,88 +576,149 @@ export default function AssessmentResults({
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col gap-6"
+            className="flex flex-col gap-8"
           >
             {headerContent}
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-8 h-8 bg-brand-green-100 rounded-lg flex items-center justify-center">
-                  <span className="material-symbols-outlined text-sm text-brand-green-700">verified</span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/80 rounded-3xl p-8 border border-slate-200/60 shadow-sm backdrop-blur-sm"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-base text-slate-700">verified</span>
                 </div>
-                <span className="text-sm font-semibold text-brand-green-700 uppercase tracking-wide">{result.level}</span>
+                <span className="text-base font-light text-slate-700">{result.level}</span>
               </div>
-              <p className="text-slate-700 leading-relaxed">
+              <p className="text-slate-600 leading-relaxed text-base font-light">
                 {(aiExplanation && aiExplanation.summary) || result.description}
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
 
         {/* Section 2: Content on the left, Card on the right */}
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-16 items-start">
           {/* Left: Deeper explanation */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Original Assessment Data */}
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h3 className="text-lg font-semibold text-slate-900 mb-3">Assessment Description</h3>
-              <p className="text-slate-700 leading-relaxed">{result.description}</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-base text-slate-700">description</span>
+                </div>
+                <h3 className="text-lg font-light text-slate-800">Assessment Description</h3>
+              </div>
+              <p className="text-slate-600 leading-relaxed text-base font-light">{result.description}</p>
+            </motion.div>
 
             {result.recommendations && result.recommendations.length > 0 && (
-              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Clinical Recommendations</h3>
-                <ul className="list-disc pl-5 space-y-2 text-slate-700">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base text-slate-700">recommend</span>
+                  </div>
+                  <h3 className="text-lg font-light text-slate-800">Clinical Recommendations</h3>
+                </div>
+                <ul className="space-y-3">
                   {result.recommendations.map((recommendation: string, idx: number) => (
-                    <li key={idx}>{recommendation}</li>
+                    <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                      <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{recommendation}</span>
+                    </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             )}
 
             {result.insights && result.insights.length > 0 && (
-              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Key Insights</h3>
-                <ul className="list-disc pl-5 space-y-2 text-slate-700">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base text-slate-700">lightbulb</span>
+                  </div>
+                  <h3 className="text-lg font-light text-slate-800">Key Insights</h3>
+                </div>
+                <ul className="space-y-3">
                   {result.insights.map((insight: string, idx: number) => (
-                    <li key={idx}>{insight}</li>
+                    <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                      <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{insight}</span>
+                    </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             )}
 
             {result.nextSteps && result.nextSteps.length > 0 && (
-              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">Next Steps</h3>
-                <ul className="list-disc pl-5 space-y-2 text-slate-700">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base text-slate-700">flag</span>
+                  </div>
+                  <h3 className="text-lg font-light text-slate-800">Next Steps</h3>
+                </div>
+                <ul className="space-y-3">
                   {result.nextSteps.map((step: string, idx: number) => (
-                    <li key={idx}>{step}</li>
+                    <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                      <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{step}</span>
+                    </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             )}
 
             {/* User Responses (Collapsible) */}
             {result.responses && Object.keys(result.responses).length > 0 && (
-              <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
                 <details className="group">
-                  <summary className="text-lg font-semibold text-slate-900 mb-4 cursor-pointer list-none flex items-center gap-2">
-                    <span className="material-symbols-outlined text-xl group-open:rotate-90 transition-transform duration-200">chevron_right</span>
-                    Your Responses
+                  <summary className="text-lg font-light text-slate-800 mb-6 cursor-pointer list-none flex items-center gap-4">
+                    <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                      <span className="material-symbols-outlined text-base text-slate-700 group-open:rotate-90 transition-transform duration-200">chevron_right</span>
+                    </div>
+                    <span>Your Responses</span>
                   </summary>
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-6 space-y-4">
                     {Object.entries(result.responses).map(([questionId, response]) => {
                       const question = assessment.questions.find((q: any) => q.id === questionId)
                       return (
-                        <div key={questionId} className="p-4 bg-white rounded-lg border border-slate-200">
-                          <p className="text-sm font-medium text-slate-700 mb-2">
+                        <div key={questionId} className="p-6 bg-white/80 rounded-2xl border border-slate-200/50">
+                          <p className="text-base font-light text-slate-700 mb-3">
                             {question?.text || `Question ${questionId}`}
                           </p>
-                          <p className="text-slate-600">
+                          <p className="text-slate-600 text-sm font-light">
                             {typeof response === 'number' ? `Score: ${response}` : String(response)}
                           </p>
                         </div>
@@ -661,41 +726,77 @@ export default function AssessmentResults({
                     })}
                   </div>
                 </details>
-              </div>
+              </motion.div>
             )}
 
             {/* AI-Generated Explanation */}
             {(aiExplanation || result.description) && (
               <>
-                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-3">
-                    {aiExplanation ? 'AI-Generated Explanation' : 'Assessment Explanation'}
-                  </h3>
-                  <p className="text-slate-700 leading-relaxed">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+                >
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                      <span className="material-symbols-outlined text-base text-slate-700">psychology</span>
+                    </div>
+                    <h3 className="text-lg font-light text-slate-800">
+                      {aiExplanation ? 'AI-Generated Explanation' : 'Assessment Explanation'}
+                    </h3>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed text-base font-light">
                     {aiExplanation?.whatItMeans || result.description}
                   </p>
-                </div>
+                </motion.div>
 
                 {((aiExplanation?.manifestations && aiExplanation.manifestations.length > 0) || (result.manifestations && result.manifestations.length > 0)) && (
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4">How these symptoms might show up in your daily life</h3>
-                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.7 }}
+                    className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+                  >
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-base text-slate-700">visibility</span>
+                      </div>
+                      <h3 className="text-lg font-light text-slate-800">How these symptoms might show up in your daily life</h3>
+                    </div>
+                    <ul className="space-y-3">
                       {(aiExplanation?.manifestations || result.manifestations || []).map((item: string, idx: number) => (
-                        <li key={idx}>{item}</li>
+                        <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                          <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="leading-relaxed">{item}</span>
+                        </li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 )}
 
                 {((aiExplanation?.unconsciousManifestations && aiExplanation.unconsciousManifestations.length > 0) || (result.unconsciousManifestations && result.unconsciousManifestations.length > 0)) && (
-                  <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-4">Unconscious patterns that may show up</h3>
-                    <ul className="list-disc pl-5 space-y-2 text-slate-700">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.8 }}
+                    className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+                  >
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-base text-slate-700">psychology_alt</span>
+                      </div>
+                      <h3 className="text-lg font-light text-slate-800">Unconscious patterns that may show up</h3>
+                    </div>
+                    <ul className="space-y-3">
                       {(aiExplanation?.unconsciousManifestations || result.unconsciousManifestations || []).map((item: string, idx: number) => (
-                        <li key={idx}>{item}</li>
+                        <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                          <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                          <span className="leading-relaxed">{item}</span>
+                        </li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 )}
               </>
             )}
@@ -706,26 +807,44 @@ export default function AssessmentResults({
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative"
+            className="relative space-y-6"
           >
-            <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+            <div className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm">
               <AIInsights aiExplanation={aiExplanation} isLoading={isAILoading} />
-              {aiExplanation && aiExplanation.recommendations?.length > 0 && (
-                <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 mt-4">
-                  <h4 className="text-base font-semibold text-slate-900 mb-3">Recommended next steps</h4>
-                  <ul className="list-disc pl-5 space-y-2 text-slate-700">
-                    {aiExplanation.recommendations.map((rec: string, idx: number) => (
-                      <li key={idx}>{rec}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {showActions && (
-                <div className="pt-6">
-                  <ActionButtons onRetake={onRetake} onContinue={onContinue} />
-                </div>
-              )}
             </div>
+            {aiExplanation && aiExplanation.recommendations?.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base text-slate-700">list_alt</span>
+                  </div>
+                  <h4 className="text-lg font-light text-slate-800">Recommended next steps</h4>
+                </div>
+                <ul className="space-y-3">
+                  {aiExplanation.recommendations.map((rec: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-3 text-slate-600 text-base font-light">
+                      <span className="w-2 h-2 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{rec}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            )}
+            {showActions && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-white/60 rounded-3xl p-8 border border-slate-200/40 shadow-sm"
+              >
+                <ActionButtons onRetake={onRetake} onContinue={onContinue} />
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>

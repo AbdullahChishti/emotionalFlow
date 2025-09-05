@@ -183,7 +183,7 @@ export default function ResultsPage() {
     }
   }, [])
 
-  const fetchFromDatabase = useCallback(async (assessmentId?: string): Promise<any> => {
+  const fetchFromDatabase = useCallback(async (assessmentId?: string, userId?: string): Promise<any> => {
     console.log('🔍 ResultsPage: fetchFromDatabase called', { assessmentId })
     if (!user?.id) throw new Error('No user ID available')
 
@@ -199,14 +199,14 @@ export default function ResultsPage() {
     let history
     try {
       history = await Promise.race([fetchPromise, timeoutPromise])
-      console.log('✅ ResultsPage: Got assessment history', { count: history?.length })
+      console.log('✅ ResultsPage: Got assessment history', { count: Array.isArray(history) ? history.length : 0 })
     } catch (error) {
       console.error('❌ ResultsPage: Database fetch failed or timed out', error)
       throw error
     }
 
     // If no results, try to get data from user profile as fallback
-    if (!history || history.length === 0) {
+    if (!history || (Array.isArray(history) && history.length === 0)) {
       try {
         const profile = await AssessmentManager.getLatestUserProfile(user.id)
         if (profile?.profile_data) {
@@ -295,15 +295,16 @@ export default function ResultsPage() {
 
     if (assessmentId) {
       // Single assessment mode
-      const entry = history
-        .filter(h => h.assessmentId === assessmentId)
-        .sort((a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime())[0]
+      const entry = Array.isArray(history) ? history
+        .filter((h: any) => h.assessmentId === assessmentId)
+        .sort((a: any, b: any) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime())[0] : null
 
       return entry ? createAssessmentResult(entry, assessmentId) : null
     } else {
       // Multiple assessments mode
       const latest: Record<string, any> = {}
-      history.forEach(entry => {
+      if (Array.isArray(history)) {
+        history.forEach((entry: any) => {
         const existing = latest[entry.assessmentId]
         if (!existing || new Date(entry.takenAt) > new Date(existing.takenAt)) {
           latest[entry.assessmentId] = {
@@ -313,7 +314,10 @@ export default function ResultsPage() {
         }
       })
       return latest
+    } else {
+      return {}
     }
+  }
   }, [user?.id, createAssessmentResult])
 
   const fetchFromStorage = useCallback((assessmentId?: string): any => {
@@ -354,7 +358,7 @@ export default function ResultsPage() {
       // Try database first, then localStorage as fallback
       console.log('🔍 ResultsPage: Trying database fetch...')
       try {
-        result = await fetchFromDatabase(assessmentParam || undefined)
+        result = await fetchFromDatabase(assessmentParam || undefined, user.id)
         console.log('✅ ResultsPage: Database fetch successful:', result)
         setUsingFallback(false)
         setSyncError(null)
@@ -373,7 +377,7 @@ export default function ResultsPage() {
             console.log('✅ ResultsPage: Got user profile:', !!profile?.profile_data)
             if (profile?.profile_data) {
               // This will be handled by the updated fetchFromDatabase function
-              result = await fetchFromDatabase(assessmentParam || undefined)
+              result = await fetchFromDatabase(assessmentParam || undefined, user.id)
               console.log('✅ ResultsPage: Profile extraction successful:', result)
               setUsingFallback(false)
             }
@@ -433,7 +437,7 @@ export default function ResultsPage() {
     setSyncError(null)
     try {
       const assessmentParam = searchParams.get('assessment')
-      const fresh = await fetchFromDatabase(assessmentParam || undefined)
+      const fresh = await fetchFromDatabase(assessmentParam || undefined, user.id)
       if (!fresh || (typeof fresh === 'object' && Object.keys(fresh).length === 0)) {
         setSyncError('Still syncing your results. Please try again shortly.')
       } else {
@@ -540,25 +544,37 @@ export default function ResultsPage() {
 
   // Inline banner for fallback/sync status
   const SyncBanner = usingFallback ? (
-    <div className="max-w-4xl mx-auto mb-6">
-      <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-900">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined">cloud_sync</span>
-          <span className="text-sm">
-            Showing results from your device while we finish saving to the cloud.
-          </span>
-        </div>
+    <div className="max-w-4xl mx-auto mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between px-6 py-4 rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm text-slate-700 shadow-sm"
+      >
         <div className="flex items-center gap-3">
-          {syncError && <span className="text-xs text-amber-800">{syncError}</span>}
-          <button
-            onClick={retrySync}
-            disabled={syncing}
-            className={`px-3 py-1.5 text-sm rounded-md border transition ${syncing ? 'opacity-60 cursor-not-allowed' : 'hover:bg-amber-100'} border-amber-300 text-amber-900 bg-white`}
-          >
-            {syncing ? 'Syncing…' : 'Retry Sync'}
-          </button>
+          <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-600">cloud_sync</span>
+          </div>
+          <div>
+            <div className="text-sm font-light">
+              Showing results from your device while we finish saving to the cloud.
+            </div>
+            {syncError && (
+              <div className="text-xs text-slate-500 mt-1">{syncError}</div>
+            )}
+          </div>
         </div>
-      </div>
+        <button
+          onClick={retrySync}
+          disabled={syncing}
+          className={`px-4 py-2 text-sm rounded-xl border transition-all duration-300 ${
+            syncing
+              ? 'opacity-60 cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
+              : 'hover:bg-slate-50 border-slate-200 bg-white text-slate-700 hover:shadow-sm'
+          }`}
+        >
+          {syncing ? 'Syncing…' : 'Retry Sync'}
+        </button>
+      </motion.div>
     </div>
   ) : null
 
