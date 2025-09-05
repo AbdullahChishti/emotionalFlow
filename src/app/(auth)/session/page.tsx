@@ -26,7 +26,7 @@ export default function SessionPage() {
   return (
     <ModernSessionScreen 
       onNavigate={handleNavigate}
-      matchedUser={{ name: 'MindWell Therapist' }}
+      matchedUser={{ name: 'MindWell' }}
     />
   )
 }
