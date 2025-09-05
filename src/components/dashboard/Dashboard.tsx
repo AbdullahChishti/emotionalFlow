@@ -9,7 +9,8 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
-import { AssessmentManager } from '@/lib/services/AssessmentManager'
+import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
+import { buildUserSnapshot, Snapshot, NextBestAction } from '@/lib/snapshot'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -129,28 +130,43 @@ export function Dashboard() {
   const [hasAssessmentData, setHasAssessmentData] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
+  const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
+  const [whyOpen, setWhyOpen] = useState(false)
+  const [history, setHistory] = useState<AssessmentHistoryEntry[]>([])
+  const [latestMeta, setLatestMeta] = useState<Record<string, string>>({})
+  const [coverage, setCoverage] = useState<{ assessed: string[]; missing: string[]; stale: string[] }>({ assessed: [], missing: [], stale: [] })
+
+  // Prevent multiple simultaneous fetches
+  const [isFetching, setIsFetching] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   // Memoized navigation handler
   const handleNavigate = useCallback((path: string) => {
-    router.push(path)
+    try {
+      router.push(path)
+    } catch (error) {
+      console.error('Navigation error:', error)
+      // Fallback to window.location if router fails
+      window.location.href = path
+    }
   }, [router])
 
-  // Memoized data fetching function
-  const fetchAssessmentData = useCallback(async (): Promise<Record<string, AssessmentResult>> => {
-    if (!user?.id) return {}
+  // Data fetching function (explicit userId to avoid stale closures)
+  const fetchAssessmentData = useCallback(async (userId: string): Promise<{ results: Record<string, AssessmentResult>; history: AssessmentHistoryEntry[]; latest: Record<string, string> }> => {
+    if (!userId) return { results: {}, history: [], latest: {} }
 
     try {
       // Create timeout promise
-      const timeoutPromise = new Promise<never>((_, reject) => 
+      const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout')), FETCH_TIMEOUT)
       )
 
       // Fetch assessment history with timeout
-      const dataPromise = AssessmentManager.getAssessmentHistory(user.id)
-      const assessmentHistory = await Promise.race([dataPromise, timeoutPromise])
+      const dataPromise = AssessmentManager.getAssessmentHistory(userId)
+      const assessmentHistory = await Promise.race([dataPromise, timeoutPromise]) as AssessmentHistoryEntry[]
 
       if (!assessmentHistory || assessmentHistory.length === 0) {
-        return {}
+        return { results: {}, history: [], latest: {} }
       }
 
       // Convert to expected format - keep only latest result per assessment
@@ -169,28 +185,32 @@ export function Dashboard() {
             severity: entry.severity as any,
             recommendations: [],
             insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
-            nextSteps: []
+            nextSteps: [],
+            manifestations: []
           }
           latestTimes[entry.assessmentId] = entryTime
         }
       }
 
-      return results
+      const latest: Record<string, string> = Object.fromEntries(Object.entries(latestTimes).map(([k, v]) => [k, v.toISOString()]))
+      return { results, history: assessmentHistory, latest }
     } catch (error) {
       console.error('Error fetching assessment data:', error)
       throw error
     }
-  }, [user?.id])
+  }, [])
 
   // Main data fetching effect
   useEffect(() => {
     let isMounted = true
 
     const fetchData = async () => {
-      if (!user?.id || !profile || dataFetched) {
+      if (!user?.id || !profile || dataFetched || isFetching) {
         setLoading(false)
         return
       }
+
+      setIsFetching(true)
 
       try {
         // Try to load from localStorage first for immediate display
@@ -209,12 +229,39 @@ export function Dashboard() {
         }
 
         // Fetch fresh data from database
-        const freshResults = await fetchAssessmentData()
-        
+        const { results: freshResults, history: freshHistory, latest } = await fetchAssessmentData(user.id)
+
         if (isMounted) {
           setAssessmentResults(freshResults)
           setHasAssessmentData(Object.keys(freshResults).length > 0)
           setDataFetched(true)
+          setHistory(freshHistory)
+          setLatestMeta(latest)
+
+          // Build snapshot
+          if (user?.id) {
+            const snap = await buildUserSnapshot(user.id)
+            setSnapshot(snap)
+          }
+
+          // Compute coverage
+          const allIds = Object.keys(ASSESSMENTS)
+          const now = Date.now()
+          const staleCutoffDays = 30
+          const assessed: string[] = []
+          const missing: string[] = []
+          const stale: string[] = []
+          for (const id of allIds) {
+            const dt = latest[id]
+            if (!dt) {
+              missing.push(id)
+              continue
+            }
+            const ageDays = Math.floor((now - new Date(dt).getTime()) / (1000 * 60 * 60 * 24))
+            if (ageDays > staleCutoffDays) stale.push(id)
+            else assessed.push(id)
+          }
+          setCoverage({ assessed, missing, stale })
 
           // Update localStorage with fresh data
           try {
@@ -224,16 +271,21 @@ export function Dashboard() {
           }
         }
       } catch (error) {
-        if (isMounted && retryCount < MAX_RETRIES) {
-          // Retry after delay
-          setRetryCount(prev => prev + 1)
-          setTimeout(() => {
-            if (isMounted) fetchData()
-          }, RETRY_DELAY)
+        console.error('Dashboard fetch error:', error)
+        if (isMounted) {
+          setError(error instanceof Error ? error.message : 'Failed to load dashboard data')
+          if (retryCount < MAX_RETRIES) {
+            // Retry after delay
+            setRetryCount(prev => prev + 1)
+            setTimeout(() => {
+              if (isMounted) fetchData()
+            }, RETRY_DELAY)
+          }
         }
       } finally {
         if (isMounted) {
           setLoading(false)
+          setIsFetching(false)
         }
       }
     }
@@ -242,8 +294,9 @@ export function Dashboard() {
 
     return () => {
       isMounted = false
+      setIsFetching(false)
     }
-  }, [user?.id, profile, fetchAssessmentData, retryCount, dataFetched])
+  }, [user?.id, profile, retryCount, dataFetched]) // Stable dependencies to prevent infinite loops
 
   // URL parameter handling effect
   useEffect(() => {
@@ -255,6 +308,19 @@ export function Dashboard() {
       setRetryCount(0)
     }
   }, [])
+
+  // Loading timeout effect - prevent infinite loading
+  useEffect(() => {
+    if (loading) {
+      const timeout = setTimeout(() => {
+        console.warn('Dashboard loading timeout - forcing loaded state')
+        setLoading(false)
+        setIsFetching(false)
+      }, 30000) // 30 second timeout
+
+      return () => clearTimeout(timeout)
+    }
+  }, [loading])
 
   // Utility functions
   const getGreeting = useCallback(() => {
@@ -291,106 +357,252 @@ export function Dashboard() {
     return lastRange?.max ?? 100
   }, [])
 
-  // Assessment results rendering
-  const renderAssessmentSummary = useCallback(() => {
-    if (!hasAssessmentData) return null
+  const formatRelative = useCallback((iso?: string) => {
+    if (!iso) return ''
+    const diffMs = Date.now() - new Date(iso).getTime()
+    const d = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (d <= 0) {
+      const h = Math.floor(diffMs / (1000 * 60 * 60))
+      if (h > 0) return `${h}h ago`
+      const m = Math.max(1, Math.floor(diffMs / (1000 * 60)))
+      return `${m}m ago`
+    }
+    if (d < 7) return `${d}d ago`
+    const w = Math.floor(d / 7)
+    if (w < 8) return `${w}w ago`
+    const mo = Math.floor(d / 30)
+    return `${mo}mo ago`
+  }, [])
 
-    const resultEntries = Object.entries(assessmentResults)
+  const truncate = useCallback((text: string, len = 120) => {
+    if (!text) return ''
+    return text.length > len ? `${text.slice(0, len).trim()}…` : text
+  }, [])
 
-    return (
-      <motion.div
-        className="space-y-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-      >
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-secondary-900">Your Assessment Results</h2>
-            <p className="text-secondary-600">Based on your recent assessments</p>
-          </div>
-          <button
-            onClick={() => handleNavigate('/results')}
-            className="text-sm font-medium text-brand-green-700 hover:text-brand-green-800 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600 rounded"
-          >
-            View all
-          </button>
+
+  const keyLabel = (key: string) => {
+    switch (key) {
+      case 'anxiety': return 'Anxiety'
+      case 'depression': return 'Depression'
+      case 'stress': return 'Stress'
+      case 'wellbeing': return 'Well-being'
+      case 'resilience': return 'Resilience'
+      case 'trauma_exposure': return 'Trauma exposure'
+      default: return key
+    }
+  }
+
+  const renderSnapshotHero = () => (
+    <motion.div
+      className="bg-gradient-to-br from-white via-slate-50/30 to-white border border-slate-200/40 rounded-3xl p-8 md:p-10 shadow-sm"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-start justify-between gap-6 mb-8">
+        <div className="flex-1">
+          <h2 className="text-2xl md:text-3xl font-light text-slate-700 mb-3">Your wellness snapshot</h2>
+          <p className="text-slate-600 text-base leading-relaxed max-w-2xl font-light">
+            Your personalized insights are ready. We're here to support your mental wellness journey with tailored recommendations and resources.
+          </p>
         </div>
+        <div className="hidden md:block flex-shrink-0">
+          <a href="/crisis-support" className="text-sm text-slate-400 hover:text-slate-600 transition-colors duration-300 font-light">
+            Need immediate support?
+          </a>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resultEntries.map(([assessmentId, result]) => {
-            const assessment = ASSESSMENTS[assessmentId]
-            if (!assessment) return null
+      {snapshot?.dimensions && snapshot.dimensions.length > 0 && (
+        <div className="flex flex-wrap gap-3 mb-8">
+          {snapshot.dimensions
+            .filter(d => ['anxiety','trauma_exposure','wellbeing','stress','depression','resilience'].includes(d.key))
+            .slice(0, 4)
+            .map(d => (
+              <div key={d.key} className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/70 border border-slate-200/40 shadow-sm">
+                <span className="text-sm font-light text-slate-700">{keyLabel(d.key)}</span>
+                <span className="text-sm font-light text-slate-500">{d.level}</span>
+              </div>
+            ))}
+        </div>
+      )}
 
-            return (
-              <motion.button
-                key={assessmentId}
-                onClick={() => handleNavigate(`/results?assessment=${assessmentId}`)}
-                className="text-left bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-xl transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <button
+          onClick={() => handleNavigate('/session')}
+          className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl bg-slate-800 text-white font-light shadow-sm hover:shadow-md transition-all duration-300 hover:bg-slate-700"
+        >
+          <span className="material-symbols-outlined mr-3 text-lg">play_arrow</span>
+          Start session
+        </button>
+        <button
+          onClick={() => handleNavigate('/results')}
+          className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl border border-slate-300/60 bg-white/80 text-slate-700 font-light shadow-sm hover:shadow-md hover:border-slate-400/60 transition-all duration-300"
+        >
+          <span className="material-symbols-outlined mr-3 text-lg">lightbulb</span>
+          Personalized next steps
+        </button>
+      </div>
+
+      <div className="border-t border-slate-200/40 pt-6">
+        <button
+          onClick={() => setWhyOpen(v => !v)}
+          className="text-sm text-slate-500 hover:text-slate-700 transition-colors duration-300 font-light"
+        >
+          {whyOpen ? 'Hide details' : 'Why this?'}
+        </button>
+        {whyOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-4 p-4 rounded-2xl bg-white/50 border border-slate-200/30"
+          >
+            <div className="text-sm font-light text-slate-700 mb-3">Informed by</div>
+            <div className="flex flex-wrap gap-2">
+              {(snapshot?.explainability.assessments_used || []).map((name) => {
+                const pair = Object.entries(ASSESSMENTS).find(([id, def]) => {
+                  const display = def?.shortTitle || def?.title || id.toUpperCase()
+                  return name === display || name.includes(def?.shortTitle || '')
+                })
+                const id = pair?.[0]
+                const when = id ? formatRelative(latestMeta[id]) : ''
+                return (
+                  <span key={name} className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/60 border border-slate-200/40 text-slate-600 text-sm font-light">
+                    {name}{when ? ` • ${when}` : ''}
+                  </span>
+                )
+              })}
+            </div>
+          </motion.div>
+        )}
+        <div className="mt-6 text-xs text-slate-400 leading-relaxed font-light">
+          This information is for your awareness only, not a clinical diagnosis.{' '}
+          <a href="/crisis-support" className="text-slate-500 hover:text-slate-700 transition-colors duration-300">Need immediate support?</a>
+          <span className="mx-2 text-slate-300">•</span>
+          <a href="/profile" className="text-slate-500 hover:text-slate-700 transition-colors duration-300">Manage personalization</a>
+        </div>
+      </div>
+    </motion.div>
+  )
+
+  const renderNextActions = () => {
+    const actions: NextBestAction[] = snapshot?.next_best_actions?.slice(0, 3) || []
+    if (actions.length === 0) return null
+    return (
+      <div className="space-y-4">
+        <h3 className="text-base font-light text-slate-700">Next best actions</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {actions.map((a, idx) => (
+            <div key={idx} className="bg-white/60 border border-slate-200/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+              <div>
+                <div className="font-light text-slate-700 text-sm">{a.title}</div>
+                <div className="text-xs text-slate-500 font-light mt-1">{a.duration_min} min</div>
+              </div>
+              <button
+                onClick={() => handleNavigate('/session')}
+                className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-700 text-white text-sm font-light hover:bg-slate-600 transition-colors duration-300"
+                style={{ backgroundColor: '#335f64' }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-slate-600">analytics</span>
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-secondary-900">{assessment.shortTitle}</div>
-                      <div className={`inline-flex items-center gap-2 text-[11px] mt-1 px-2 py-0.5 rounded-full ${getSeverityColor(result.severity)}`}>
-                        {result.level}
-                      </div>
-                    </div>
-                  </div>
-                  <span className="material-symbols-outlined text-slate-400">chevron_right</span>
+                Start
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const buildSparklinePath = (points: number[], width = 160, height = 30) => {
+    if (points.length === 0) return ''
+    const step = width / Math.max(1, points.length - 1)
+    const path = points.map((p, i) => {
+      const x = i * step
+      const y = height - (p / 100) * height
+      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
+    }).join(' ')
+    return path
+  }
+
+  const renderTrends = () => {
+    const dims: { label: string; id: string }[] = [
+      { label: 'Anxiety', id: 'gad7' },
+      { label: 'Well-being', id: 'who5' },
+      { label: 'Stress', id: 'pss10' }
+    ]
+    const byId = history.filter(Boolean).reduce((acc: Record<string, AssessmentHistoryEntry[]>, h) => {
+      acc[h.assessmentId] = acc[h.assessmentId] || []
+      acc[h.assessmentId].push(h)
+      return acc
+    }, {})
+    return (
+      <div className="space-y-4">
+        <h3 className="text-base font-light text-slate-700">Trends</h3>
+        <div className="space-y-3">
+          {dims.map(d => {
+            const series = (byId[d.id] || [])
+              .slice(0, 12)
+              .reverse()
+              .map(e => {
+                const max = getMaxScore(d.id)
+                return Math.min(100, (e.score / max) * 100)
+              })
+            const path = buildSparklinePath(series)
+            const lastThree = (byId[d.id] || []).slice(0, 3).map(e => e.level)
+            return (
+              <div key={d.id} className="bg-white/60 border border-slate-200/40 rounded-2xl p-3 shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm font-light text-slate-700">{d.label}</div>
+                  <div className="text-xs text-slate-500 font-light">{lastThree.join(' → ')}</div>
                 </div>
-                <div className="flex items-end gap-2">
-                  <div className="text-3xl font-bold text-secondary-900">{result.score}</div>
-                  <div className="text-sm text-secondary-600">/ {getMaxScore(assessmentId)}</div>
-                </div>
-                <div className="mt-3">
-                  <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div 
-                      className="h-2 rounded-full bg-gradient-to-r from-brand-green-500 to-brand-green-600" 
-                      style={{ width: `${Math.min(100, (result.score / getMaxScore(assessmentId)) * 100)}%` }} 
-                    />
-                  </div>
-                </div>
-                {result.insights && result.insights.length > 0 && (
-                  <p className="text-sm text-secondary-600 leading-relaxed mt-3 line-clamp-2">
-                    {result.insights[0]}
-                  </p>
-                )}
-              </motion.button>
+                <svg viewBox="0 0 160 30" width="100%" height="30" className="mt-2">
+                  <path d={path} fill="none" stroke="#64748b" strokeWidth="1.5" />
+                </svg>
+              </div>
             )
           })}
         </div>
-      </motion.div>
+      </div>
     )
-  }, [hasAssessmentData, assessmentResults, getSeverityColor, getMaxScore, handleNavigate])
+  }
+
+  // Recent assessments section intentionally removed to declutter
 
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="animate-pulse space-y-8">
-              <div className="h-8 w-2/3 bg-slate-200 rounded" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="h-20 bg-slate-200 rounded-full" />
-                <div className="h-20 bg-slate-200 rounded-full" />
-              </div>
-              <div className="h-6 w-40 bg-slate-200 rounded" />
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 3 }, (_, i) => (
-                  <div key={i} className="h-40 bg-slate-200 rounded-3xl" />
-                ))}
-              </div>
-            </div>
-          </div>
+      <div className="animate-pulse space-y-8 pt-16 md:pt-20">
+        <div className="h-6 w-2/3 bg-slate-200/60 rounded-lg mx-auto" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl mx-auto">
+          <div className="h-16 bg-slate-200/60 rounded-2xl" />
+          <div className="h-16 bg-slate-200/60 rounded-2xl" />
         </div>
+        <div className="h-4 w-32 bg-slate-200/60 rounded mx-auto" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="h-32 bg-slate-200/60 rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error && !loading) {
+    return (
+      <div className="text-center py-12 pt-28 md:pt-32">
+        <h2 className="text-2xl font-light text-slate-600 mb-4">Unable to load dashboard</h2>
+        <p className="text-slate-500 font-light mb-6 max-w-md mx-auto">{error}</p>
+        <button
+          onClick={() => {
+            setError(null)
+            setDataFetched(false)
+            setRetryCount(0)
+            setLoading(true)
+          }}
+          className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-700 text-white font-light hover:bg-slate-600 transition-colors duration-300"
+        >
+          Try again
+        </button>
       </div>
     )
   }
@@ -398,20 +610,16 @@ export function Dashboard() {
   // Profile not ready state
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-        <div className="text-center">
-          <h2 className="text-2xl font-light text-secondary-700 mb-4">Setting up your profile...</h2>
-          <p className="text-secondary-600 font-light">This will only take a moment.</p>
-          <LoadingSpinner size="lg" className="mt-6" />
-        </div>
+      <div className="text-center py-12 pt-28 md:pt-32">
+        <h2 className="text-2xl font-light text-slate-600 mb-4">Setting up your profile...</h2>
+        <p className="text-slate-500 font-light">This will only take a moment.</p>
+        <LoadingSpinner size="lg" className="mt-6" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
-        <div className="space-y-8 md:space-y-12 lg:space-y-16">
+    <div className="space-y-6 md:space-y-8 lg:space-y-10 pt-16 md:pt-20">
           {/* Header Section */}
           <motion.div
             className="text-center space-y-3 md:space-y-4"
@@ -419,116 +627,77 @@ export function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-secondary-900 leading-tight px-4">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-slate-800 leading-relaxed px-4">
               {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
             </h1>
-            <p className="text-xs sm:text-sm md:text-base text-secondary-600 max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto px-4 font-light">
               {getFormattedDate()} • {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
             </p>
           </motion.div>
 
-          {/* Action Band */}
-          <motion.div
-            className="space-y-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto px-4">
-              <ActionPill
-                icon="chat"
-                label="Start Session"
-                description="Connect with a listener or offer support"
-                onClick={() => handleNavigate('/session')}
-                variant="primary"
-              />
-              <ActionPill
-                icon="psychology"
-                label="Take Assessments"
-                description="Complete personalized mental health assessments"
-                onClick={() => handleNavigate('/assessments')}
-                variant="secondary"
-              />
-            </div>
-          </motion.div>
+          {/* Snapshot Hero */}
+          {renderSnapshotHero()}
 
-          {/* Assessment Results Section */}
-          {hasAssessmentData && (
-            <div className="max-w-7xl mx-auto px-4">
-              {renderAssessmentSummary()}
-            </div>
-          )}
+          {/* Row 2: Next actions (left) and Trends (right) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto px-4">
+            <div>{renderNextActions()}</div>
+            <div>{renderTrends()}</div>
+          </div>
 
-          {/* Main Content - Centered SVG (only show if no assessment data) */}
+          {/* Coverage row */}
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-4 shadow-sm">
+              <div className="text-sm font-light text-slate-700 mb-3">Coverage</div>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {coverage.assessed.map(id => (
+                  <span key={`ok-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60">
+                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
+                  </span>
+                ))}
+                {coverage.stale.map(id => (
+                  <span key={`stale-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60">
+                    <span className="material-symbols-outlined text-[14px]">error</span>
+                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
+                  </span>
+                ))}
+                {coverage.missing.map(id => (
+                  <span key={`miss-${id}`} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60">
+                    <span className="material-symbols-outlined text-[14px]">check_box_outline_blank</span>
+                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+
+          {/* Empty state if no assessments */}
           {!hasAssessmentData && (
             <motion.div
-              className="max-w-7xl mx-auto px-4 -mt-12"
+              className="max-w-2xl mx-auto px-4 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <motion.div
-                className="h-[31rem] flex items-start justify-center pt-4"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.6 }}
-              >
-                <img
-                  src="/assets/Mental_health-bro_2.svg"
-                  alt="Mental wellness illustration"
-                  className="w-full h-full max-h-[31rem] object-contain"
-                />
-              </motion.div>
+              <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
+                <h3 className="text-lg font-light text-slate-700">Complete a quick check-in to personalize your support.</h3>
+                <p className="text-slate-500 mt-2 text-sm font-light">It takes about 3 minutes.</p>
+                <div className="mt-4">
+                  <button
+                    onClick={() => handleNavigate('/assessments')}
+                    className="inline-flex items-center px-5 py-2.5 rounded-xl text-white font-light text-sm shadow-sm hover:shadow-md transition-all duration-300"
+                    style={{ backgroundColor: '#335f64' }}
+                  >
+                    Take a 3-min screener
+                  </button>
+                </div>
+              </div>
             </motion.div>
           )}
 
-          {/* Quick Actions for Assessment Users */}
-          {hasAssessmentData && (
-            <motion.div
-              className="max-w-7xl mx-auto px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-secondary-900 mb-2">Continue Your Journey</h2>
-                <p className="text-secondary-600">Explore personalized resources and support</p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <ActionPill
-                  icon="wellness"
-                  label="Wellness Plan"
-                  description="Your personalized wellness activities"
-                  onClick={() => handleNavigate('/wellness')}
-                  variant="secondary"
-                />
-                <ActionPill
-                  icon="self_improvement"
-                  label="Meditation"
-                  description="Guided sessions for your needs"
-                  onClick={() => handleNavigate('/meditation')}
-                  variant="secondary"
-                />
-                <ActionPill
-                  icon="groups"
-                  label="Community"
-                  description="Connect with supportive peers"
-                  onClick={() => handleNavigate('/community')}
-                  variant="secondary"
-                />
-                <ActionPill
-                  icon="support"
-                  label="Crisis Support"
-                  description="24/7 mental health resources"
-                  onClick={() => handleNavigate('/crisis-support')}
-                  variant="secondary"
-                />
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
+          {/* Recent assessments removed for declutter */}
+
     </div>
   )
 }
