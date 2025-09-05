@@ -11,6 +11,7 @@ import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult } from '@/data/assessments'
 import { ASSESSMENTS } from '@/data/assessments'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
+import { TestAssessmentCompletion } from '@/components/debug/TestAssessmentCompletion'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -758,6 +759,13 @@ export function Dashboard() {
             </motion.div>
           )}
         </div>
+
+        {/* Debug Component - Remove in production */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="max-w-4xl mx-auto mt-8">
+            <TestAssessmentCompletion />
+          </div>
+        )}
       </div>
     </div>
   )

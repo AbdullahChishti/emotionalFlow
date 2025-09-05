@@ -53,6 +53,7 @@ export class AssessmentManager {
     maxRetries: number = 3
   ): Promise<AssessmentResultRow | null> {
     console.log(`🔄 Saving assessment result for ${assessmentId}...`)
+    console.log(`🔍 DEBUG: Save params - userId: ${userId}, assessmentId: ${assessmentId}, score: ${result.score}`)
 
     let lastError: any = null
 
@@ -178,6 +179,16 @@ export class AssessmentManager {
     console.log(`📚 Fetching assessment history for user ${userId}...`)
 
     try {
+      // Debug: Check if there are ANY assessment results in the database
+      const { data: allData, error: allError } = await supabase
+        .from('assessment_results')
+        .select('user_id, assessment_id, taken_at')
+        .limit(5)
+
+      if (!allError && allData) {
+        console.log(`🔍 DEBUG: Total assessment results in DB (first 5):`, allData)
+      }
+
       const { data, error } = await supabase
         .from('assessment_results')
         .select('id, assessment_id, assessment_title, score, level, severity, taken_at, friendly_explanation')
@@ -189,7 +200,7 @@ export class AssessmentManager {
         return []
       }
 
-      console.log(`📋 Found ${data?.length || 0} assessment results in history`)
+      console.log(`📋 Found ${data?.length || 0} assessment results in history for user: ${userId}`)
 
       return (data || []).map(item => ({
         id: item.id,
