@@ -473,13 +473,6 @@ export function Dashboard() {
           <span className="material-symbols-outlined mr-3 text-lg">lightbulb</span>
           Personalized next steps
         </button>
-        <button
-          onClick={() => handleNavigate('/assessments')}
-          className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl border border-slate-300/60 bg-white/80 text-slate-700 font-light shadow-sm hover:shadow-md hover:border-slate-400/60 transition-all duration-300"
-        >
-          <span className="material-symbols-outlined mr-3 text-lg">psychology</span>
-          Take assessment
-        </button>
       </div>
 
       <div className="border-t border-slate-200/40 pt-6">
