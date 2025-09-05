@@ -141,32 +141,33 @@ export default function ResultsPage() {
           throw new Error(`Assessment ${assessmentParam} not found`)
         }
 
-        // Try to get from localStorage first (for fresh completions)
+        // Try to get from database first (most reliable and up-to-date)
         let result: AssessmentResult | null = null
-        try {
-          const storedResults = localStorage.getItem('assessmentResults')
-          if (storedResults) {
-            const parsedResults = JSON.parse(storedResults)
-            result = parsedResults[assessmentParam]
+        const history = await AssessmentManager.getAssessmentHistory(user.id)
+        const latestEntry = history.find(entry => entry.assessmentId === assessmentParam)
+        
+        if (latestEntry) {
+          result = {
+            score: latestEntry.score,
+            level: latestEntry.level,
+            severity: latestEntry.severity,
+            description: `You scored ${latestEntry.score} on the ${assessment.title}`,
+            insights: latestEntry.friendlyExplanation ? [latestEntry.friendlyExplanation] : [],
+            responses: {}
           }
-        } catch (e) {
-          console.warn('Could not parse stored results:', e)
         }
 
-        // If not in localStorage, fetch from database
+        // Fallback to localStorage for very fresh completions (before database save)
         if (!result) {
-          const history = await AssessmentManager.getAssessmentHistory(user.id)
-          const latestEntry = history.find(entry => entry.assessmentId === assessmentParam)
-          
-          if (latestEntry) {
-            result = {
-              score: latestEntry.score,
-              level: latestEntry.level,
-              severity: latestEntry.severity,
-              description: `You scored ${latestEntry.score} on the ${assessment.title}`,
-              insights: latestEntry.friendlyExplanation ? [latestEntry.friendlyExplanation] : [],
-              responses: {}
+          try {
+            const storedResults = localStorage.getItem('assessmentResults')
+            if (storedResults) {
+              const parsedResults = JSON.parse(storedResults)
+              result = parsedResults[assessmentParam]
+              console.log('Using localStorage fallback for fresh assessment result')
             }
+          } catch (e) {
+            console.warn('Could not parse stored results:', e)
           }
         }
 
@@ -180,40 +181,41 @@ export default function ResultsPage() {
           mode: 'single'
         })
       } else {
-        // Multiple assessments mode - try localStorage first
+        // Multiple assessments mode - fetch from database first
         let results: Record<string, AssessmentResult> = {}
         
-        try {
-          const storedResults = localStorage.getItem('assessmentResults')
-          if (storedResults) {
-            results = JSON.parse(storedResults)
-          }
-        } catch (e) {
-          console.warn('Could not parse stored results:', e)
-        }
-
-        // If no stored results, fetch recent from database
-        if (Object.keys(results).length === 0) {
-          const history = await AssessmentManager.getAssessmentHistory(user.id)
-          
-          // Group by assessment ID and take the most recent
-          const latestResults: Record<string, AssessmentResult> = {}
-          history.forEach(entry => {
-            if (!latestResults[entry.assessmentId] || 
-                new Date(entry.takenAt) > new Date(latestResults[entry.assessmentId].takenAt || 0)) {
-              latestResults[entry.assessmentId] = {
-                score: entry.score,
-                level: entry.level,
-                severity: entry.severity,
-                description: `You scored ${entry.score} on the ${ASSESSMENTS[entry.assessmentId]?.title || 'Assessment'}`,
-                insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
-                responses: {},
-                takenAt: entry.takenAt
-              }
+        const history = await AssessmentManager.getAssessmentHistory(user.id)
+        
+        // Group by assessment ID and take the most recent
+        const latestResults: Record<string, AssessmentResult> = {}
+        history.forEach(entry => {
+          if (!latestResults[entry.assessmentId] || 
+              new Date(entry.takenAt) > new Date(latestResults[entry.assessmentId].takenAt || 0)) {
+            latestResults[entry.assessmentId] = {
+              score: entry.score,
+              level: entry.level,
+              severity: entry.severity,
+              description: `You scored ${entry.score} on the ${ASSESSMENTS[entry.assessmentId]?.title || 'Assessment'}`,
+              insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
+              responses: {},
+              takenAt: entry.takenAt
             }
-          })
-          
-          results = latestResults
+          }
+        })
+        
+        results = latestResults
+
+        // Fallback to localStorage for very fresh completions (before database save)
+        if (Object.keys(results).length === 0) {
+          try {
+            const storedResults = localStorage.getItem('assessmentResults')
+            if (storedResults) {
+              results = JSON.parse(storedResults)
+              console.log('Using localStorage fallback for fresh assessment results')
+            }
+          } catch (e) {
+            console.warn('Could not parse stored results:', e)
+          }
         }
 
         if (Object.keys(results).length === 0) {

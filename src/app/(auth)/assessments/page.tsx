@@ -19,7 +19,8 @@ export default function AssessmentsPage() {
   }
 
   const handleAssessmentComplete = (results: Record<string, AssessmentResult>, userProfile: UserProfile) => {
-    // Store results in localStorage for the results page
+    // Temporarily cache results for immediate access while database operations complete
+    // Results page will prioritize database data and use this as fallback only
     try {
       localStorage.setItem('assessmentResults', JSON.stringify(results))
       if (userProfile) {

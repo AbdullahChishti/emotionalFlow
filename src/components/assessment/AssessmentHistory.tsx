@@ -130,37 +130,8 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     })
   }
 
-  const handleAssessmentClick = async (entry: AssessmentHistoryEntry) => {
-    // Store the specific assessment result in localStorage for the results page
-    const assessmentResult = {
-      [entry.assessmentId]: {
-        score: entry.score,
-        level: entry.level,
-        severity: entry.severity,
-        insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
-        responses: {}, // We don't have the raw responses in the history entry
-        assessment: ASSESSMENTS[entry.assessmentId]
-      }
-    }
-
-    try {
-      localStorage.setItem('assessmentResults', JSON.stringify(assessmentResult))
-      // Record the takenAt timestamp for freshness merging
-      const takenAtMap: Record<string, string> = {}
-      takenAtMap[entry.assessmentId] = entry.takenAt
-      localStorage.setItem('assessmentResultsTakenAt', JSON.stringify(takenAtMap))
-      // Persist latest profile for reliable fallback on Results page
-      if (user?.id) {
-        const latest = await AssessmentManager.getLatestUserProfile(user.id)
-        if (latest?.profile_data) {
-          localStorage.setItem('userProfile', JSON.stringify(latest.profile_data))
-        }
-      }
-    } catch (err) {
-      console.warn('Failed to cache assessment data for results page', err)
-    }
-
-    // Navigate to results page, scoping to this assessment
+  const handleAssessmentClick = (entry: AssessmentHistoryEntry) => {
+    // Navigate to results page with assessment ID - results page will fetch data from database
     const target = `/results?assessment=${encodeURIComponent(entry.assessmentId)}`
     try {
       router.push(target)
