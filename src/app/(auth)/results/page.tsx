@@ -185,7 +185,8 @@ export default function ResultsPage() {
 
   const fetchFromDatabase = useCallback(async (assessmentId?: string, userId?: string): Promise<any> => {
     console.log('🔍 ResultsPage: fetchFromDatabase called', { assessmentId })
-    if (!user?.id) throw new Error('No user ID available')
+    const effectiveUserId = userId || user?.id
+    if (!effectiveUserId) throw new Error('No user ID available')
 
     console.log('🔍 ResultsPage: Fetching assessment history...')
 
@@ -194,7 +195,7 @@ export default function ResultsPage() {
       setTimeout(() => reject(new Error('Database fetch timeout')), 8000)
     })
 
-    const fetchPromise = AssessmentManager.getAssessmentHistory(user.id)
+    const fetchPromise = AssessmentManager.getAssessmentHistory(effectiveUserId)
 
     let history
     try {
@@ -208,7 +209,7 @@ export default function ResultsPage() {
     // If no results, try to get data from user profile as fallback
     if (!history || (Array.isArray(history) && history.length === 0)) {
       try {
-        const profile = await AssessmentManager.getLatestUserProfile(user.id)
+        const profile = await AssessmentManager.getLatestUserProfile(effectiveUserId)
         if (profile?.profile_data) {
           const profileData = profile.profile_data as any
           const extractedResults: any[] = []
@@ -468,8 +469,23 @@ export default function ResultsPage() {
     // Safety timeout to prevent infinite loading
     const safetyTimeout = setTimeout(() => {
       console.log('⏰ ResultsPage: Safety timeout triggered - forcing loading to false as safety measure')
+      // Try device data as last resort
+      const assessmentParam = searchParams.get('assessment')
+      const local = fetchFromStorage(assessmentParam || undefined)
+      if (local) {
+        console.log('✅ ResultsPage: Using device data due to safety timeout')
+        if (assessmentParam) {
+          const assessment = ASSESSMENTS[assessmentParam]
+          if (assessment) {
+            setAssessmentData({ assessment, result: local, mode: 'single' })
+          }
+        } else if (typeof local === 'object') {
+          setAssessmentData({ results: local, mode: 'multiple' })
+        }
+        setUsingFallback(true)
+      }
       setLoading(false)
-    }, 10000) // 10 seconds
+    }, 12000) // 12 seconds
 
     return () => clearTimeout(safetyTimeout)
   }, [searchParams, user])
@@ -536,6 +552,27 @@ export default function ResultsPage() {
             >
               Clear & Retry
             </button>
+            {/* Use device data fallback if present */}
+            {safeGetFromStorage('assessmentResults') && (
+              <button
+                onClick={() => {
+                  const stored = fetchFromStorage(searchParams.get('assessment') || undefined)
+                  if (stored) {
+                    if (searchParams.get('assessment')) {
+                      const assessment = ASSESSMENTS[searchParams.get('assessment') as string]
+                      if (assessment) setAssessmentData({ assessment, result: stored, mode: 'single' })
+                    } else if (typeof stored === 'object') {
+                      setAssessmentData({ results: stored, mode: 'multiple' })
+                    }
+                    setUsingFallback(true)
+                    setError(null)
+                  }
+                }}
+                className="px-4 py-2 text-sm bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-all duration-300"
+              >
+                Use Device Data
+              </button>
+            )}
           </div>
         </div>
       </div>

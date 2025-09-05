@@ -293,7 +293,7 @@ export default function AssessmentResults({
   useEffect(() => {
     let isMounted = true
     let timeoutId: NodeJS.Timeout
-
+    
           // Quick timeout to ensure we don't get stuck in loading state
     const quickTimeoutId = setTimeout(() => {
       if (isMounted && isAILoading) {
@@ -301,6 +301,13 @@ export default function AssessmentResults({
         setAILoadingWithLog(false)
       }
     }, 2000) // 2 seconds
+    // Hard cap timeout as ultimate fallback
+    const hardTimeoutId = setTimeout(() => {
+      if (isMounted && isAILoading) {
+        console.warn('Hard timeout - disabling AI loading and proceeding with base results')
+        setAILoadingWithLog(false)
+      }
+    }, 10000) // 10 seconds
 
     const generateAIExplanation = async () => {
       if (!assessment || !result) {
@@ -429,6 +436,7 @@ export default function AssessmentResults({
       isMounted = false
       if (timeoutId) clearTimeout(timeoutId)
       if (quickTimeoutId) clearTimeout(quickTimeoutId)
+      clearTimeout(hardTimeoutId)
     }
   }, [user, assessment, result, preGeneratedAI])
 

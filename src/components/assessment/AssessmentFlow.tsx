@@ -53,6 +53,7 @@ export function AssessmentFlow({
   const [results, setResults] = useState<Record<string, AssessmentResult>>({})
 
   const [savingResults, setSavingResults] = useState(false)
+  const [saveStartAt, setSaveStartAt] = useState<number | null>(null)
 
   // Validate assessmentIds and currentAssessmentIndex
   if (!assessmentIds || assessmentIds.length === 0) {
@@ -381,6 +382,7 @@ export function AssessmentFlow({
       console.log('🎯 Final assessment - processing completion')
       // Final step: immediately navigate to results and process in background
       setSavingResults(true)
+      setSaveStartAt(Date.now())
 
       const defaultProfile: UserProfile = {
         id: user?.id || 'anonymous',
@@ -408,6 +410,16 @@ export function AssessmentFlow({
       // Do not reset savingResults here; component will unmount after navigation
     }
   }
+
+  // Safety: if saving overlay persists too long (navigation issue), auto-hide and enable manual continue
+  useEffect(() => {
+    if (!savingResults) return
+    const timeout = setTimeout(() => {
+      console.warn('AssessmentFlow: saving overlay active >6s, enabling manual continue')
+      setSavingResults(false)
+    }, 6000)
+    return () => clearTimeout(timeout)
+  }, [savingResults])
 
   const renderSelection = () => (
     <motion.div
@@ -586,10 +598,25 @@ export function AssessmentFlow({
 
       {/* Saving overlay when finalizing */}
       {savingResults && (
-        <div className="fixed inset-0 z-40 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-800 mx-auto mb-4"></div>
-            <p className="text-slate-700 font-medium">Saving your assessment results…</p>
+        <div className="fixed inset-0 z-40 bg-white/90 backdrop-blur-sm flex items-center justify-center px-6">
+          <div className="text-center max-w-sm">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-800 mx-auto mb-4"></div>
+            <p className="text-slate-800 font-medium">Finalizing your results…</p>
+            <p className="text-slate-500 text-sm mt-2">This should only take a moment.</p>
+            <button
+              onClick={() => {
+                const defaultProfile: UserProfile = {
+                  id: user?.id || 'anonymous',
+                  email: user?.email || undefined,
+                  lastAssessmentDate: new Date()
+                }
+                onComplete(results, defaultProfile)
+              }}
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            >
+              <span className="material-symbols-outlined text-base">arrow_forward</span>
+              Continue to results
+            </button>
           </div>
         </div>
       )}
