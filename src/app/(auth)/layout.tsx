@@ -26,14 +26,19 @@ function AuthenticatedContent({ children }: { children: React.ReactNode }) {
   // Handle unauthenticated routes - only redirect if not already on login/signup
   if (!user) {
     // Only redirect if we're not already on a public route
-    if (typeof window !== 'undefined' && !pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
+    if (typeof window !== 'undefined' && !pathname.startsWith('/login') && !pathname.startsWith('/signup') && !pathname.includes('/auth/callback')) {
       // Use router.push instead of window.location.href to avoid full page reload
       window.location.href = '/login'
     }
     return null
   }
 
-  // User is authenticated - go directly to dashboard
+  // User is authenticated - go directly to dashboard (except for callback page)
+  if (pathname.includes('/auth/callback')) {
+    // Allow callback page to handle its own logic without layout
+    return <>{children}</>
+  }
+
   return (
     <AuthenticatedLayout>
       {children}

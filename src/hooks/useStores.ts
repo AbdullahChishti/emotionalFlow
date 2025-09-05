@@ -22,11 +22,9 @@ export function useAuth() {
     profile,
     isAuthenticated,
     isLoading,
-    needsOnboarding,
     login,
     logout,
     updateProfile,
-    completeOnboarding,
     refreshProfile
   } = useAuthStore()
 
@@ -35,11 +33,9 @@ export function useAuth() {
     profile,
     isAuthenticated,
     isLoading,
-    needsOnboarding,
     login,
     logout,
     updateProfile,
-    completeOnboarding,
     refreshProfile
   }
 }

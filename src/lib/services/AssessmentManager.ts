@@ -4,7 +4,7 @@
  */
 
 import { supabase } from '../supabase'
-import { AssessmentResult } from '@/data/assessments'
+import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
 import { UserProfile, AssessmentIntegrator } from '@/data/assessment-integration'
 import { Database } from '@/types/database'
 import { getAIAssessmentExplanation } from '../assessment-ai'
@@ -22,6 +22,7 @@ export interface AssessmentHistoryEntry {
   severity: string
   takenAt: string
   friendlyExplanation?: string
+  resultData?: any
 }
 
 export interface AssessmentContext {
@@ -52,8 +53,6 @@ export class AssessmentManager {
     friendlyExplanation?: string,
     maxRetries: number = 3
   ): Promise<AssessmentResultRow | null> {
-    console.log(`🔄 Saving assessment result for ${assessmentId}...`)
-    console.log(`🔍 DEBUG: Save params - userId: ${userId}, assessmentId: ${assessmentId}, score: ${result.score}`)
 
     let lastError: any = null
 
@@ -76,21 +75,21 @@ export class AssessmentManager {
           .single()
 
         if (error) {
-          console.error(`❌ Database error saving ${assessmentId} (attempt ${attempt}):`, error)
+          console.error(`Database error saving ${assessmentId} (attempt ${attempt}):`, error)
           lastError = error
 
           if (error.code === '23505' || error.code === '23503') {
-            console.log('❌ Non-retryable error, giving up')
+            console.log(`Non-retryable error for ${assessmentId}, giving up`)
             break
           }
 
           if (attempt < maxRetries) {
-            console.log(`⏳ Retrying in ${attempt * 1000}ms...`)
+            console.log(`Retrying ${assessmentId} save in ${attempt * 1000}ms...`)
             await new Promise(resolve => setTimeout(resolve, attempt * 1000))
             continue
           }
         } else {
-          console.log(`✅ Successfully saved ${assessmentId} to database`)
+          console.log(`Successfully saved ${assessmentId} to database`)
           return data
         }
       } catch (error) {
@@ -191,7 +190,7 @@ export class AssessmentManager {
 
       const { data, error } = await supabase
         .from('assessment_results')
-        .select('id, assessment_id, assessment_title, score, level, severity, taken_at, friendly_explanation')
+        .select('id, assessment_id, assessment_title, score, level, severity, taken_at, friendly_explanation, result_data')
         .eq('user_id', userId)
         .order('taken_at', { ascending: false })
 
@@ -210,7 +209,8 @@ export class AssessmentManager {
         level: item.level,
         severity: item.severity,
         takenAt: item.taken_at,
-        friendlyExplanation: item.friendly_explanation
+        friendlyExplanation: item.friendly_explanation,
+        resultData: item.result_data
       }))
     } catch (error) {
       console.error('💥 Exception fetching assessment history:', error)
@@ -252,23 +252,67 @@ export class AssessmentManager {
     results: Record<string, AssessmentResult>,
     userId: string
   ): Promise<{ profile: UserProfile; databaseResult: UserAssessmentProfileRow | null }> {
-    console.log('🔄 Processing assessment results...')
 
     // Process results immediately with local scoring
     const userProfile = AssessmentIntegrator.processResultsImmediate(results)
     userProfile.id = userId
 
-    console.log('✅ Local processing completed')
 
     try {
+      // Log what we're preparing for AI
+      console.log('[AssessmentManager] 🔄 PREPARING DATA FOR AI EXPLANATIONS:')
+      Object.entries(results).forEach(([assessmentId, result]) => {
+        console.log(`[AssessmentManager] ${assessmentId}:`, {
+          score: result.score,
+          maxScore: ASSESSMENTS[assessmentId]?.maxScore,
+          category: ASSESSMENTS[assessmentId]?.category
+        })
+      })
+
       // Generate AI explanations in parallel (non-blocking)
       const aiExplanations = await Promise.allSettled([
-        results['phq9'] ? getAIAssessmentExplanation('phq9', 'PHQ-9 Depression Assessment', results['phq9']) : Promise.resolve(''),
-        results['gad7'] ? getAIAssessmentExplanation('gad7', 'GAD-7 Anxiety Assessment', results['gad7']) : Promise.resolve(''),
-        results['pss10'] ? getAIAssessmentExplanation('pss10', 'PSS-10 Perceived Stress Scale', results['pss10']) : Promise.resolve(''),
-        results['who5'] ? getAIAssessmentExplanation('who5', 'WHO-5 Well-Being Index', results['who5']) : Promise.resolve(''),
-        results['pcl5'] ? getAIAssessmentExplanation('pcl5', 'PCL-5 PTSD Checklist', results['pcl5']) : Promise.resolve(''),
-        results['cd-risc'] ? getAIAssessmentExplanation('cd-risc', 'CD-RISC Resilience Scale', results['cd-risc']) : Promise.resolve('')
+        results['phq9'] ? getAIAssessmentExplanation({
+          assessmentName: 'PHQ-9 Depression Assessment',
+          score: results['phq9'].score,
+          maxScore: ASSESSMENTS['phq9']?.maxScore || 27,
+          responses: {}, // We'll need to get actual responses from somewhere
+          category: 'depression'
+        }) : Promise.resolve(''),
+        results['gad7'] ? getAIAssessmentExplanation({
+          assessmentName: 'GAD-7 Anxiety Assessment',
+          score: results['gad7'].score,
+          maxScore: ASSESSMENTS['gad7']?.maxScore || 21,
+          responses: {},
+          category: 'anxiety'
+        }) : Promise.resolve(''),
+        results['pss10'] ? getAIAssessmentExplanation({
+          assessmentName: 'PSS-10 Perceived Stress Scale',
+          score: results['pss10'].score,
+          maxScore: ASSESSMENTS['pss10']?.maxScore || 40,
+          responses: {},
+          category: 'stress'
+        }) : Promise.resolve(''),
+        results['who5'] ? getAIAssessmentExplanation({
+          assessmentName: 'WHO-5 Well-Being Index',
+          score: results['who5'].score,
+          maxScore: ASSESSMENTS['who5']?.maxScore || 25,
+          responses: {},
+          category: 'wellbeing'
+        }) : Promise.resolve(''),
+        results['pcl5'] ? getAIAssessmentExplanation({
+          assessmentName: 'PCL-5 PTSD Checklist',
+          score: results['pcl5'].score,
+          maxScore: ASSESSMENTS['pcl5']?.maxScore || 80,
+          responses: {},
+          category: 'trauma'
+        }) : Promise.resolve(''),
+        results['cd-risc'] ? getAIAssessmentExplanation({
+          assessmentName: 'CD-RISC Resilience Scale',
+          score: results['cd-risc'].score,
+          maxScore: ASSESSMENTS['cd-risc']?.maxScore || 80,
+          responses: {},
+          category: 'resilience'
+        }) : Promise.resolve('')
       ])
 
       // Extract successful AI explanations
@@ -314,13 +358,10 @@ export class AssessmentManager {
         }
       }
 
-      console.log('✅ AI enhancement completed')
-
       // Save individual assessment results to database
-      console.log('💾 Saving individual assessment results...')
-      await Promise.allSettled(
+      const saveResults = await Promise.allSettled(
         Object.entries(results).map(async ([assessmentId, result]) => {
-          const assessment = await import('@/data/assessments').then(m => m.ASSESSMENTS[assessmentId])
+          const assessment = ASSESSMENTS[assessmentId]
           if (assessment) {
             const explanationMap: Record<string, string> = {
               'phq9': depressionExplanation,
@@ -330,7 +371,7 @@ export class AssessmentManager {
               'pcl5': traumaExplanation,
               'cd-risc': resilienceExplanation
             }
-            
+
             return this.saveAssessmentResult(
               userId,
               assessmentId,
@@ -339,9 +380,18 @@ export class AssessmentManager {
               result.responses || {},
               explanationMap[assessmentId]
             )
+          } else {
+            console.warn(`⚠️ Assessment ${assessmentId} not found in ASSESSMENTS`)
           }
         })
       )
+      
+      // Log any failed saves
+      saveResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`Failed to save assessment ${Object.keys(results)[index]}:`, result.reason)
+        }
+      })
 
       // Save to database
       const databaseResult = await this.saveUserProfile(userId, enhancedProfile)
@@ -355,10 +405,16 @@ export class AssessmentManager {
 
       // Save individual assessment results to database (without AI explanations)
       console.log('💾 Saving individual assessment results (fallback)...')
-      await Promise.allSettled(
+      const fallbackSaveResults = await Promise.allSettled(
         Object.entries(results).map(async ([assessmentId, result]) => {
-          const assessment = await import('@/data/assessments').then(m => m.ASSESSMENTS[assessmentId])
+          const assessment = ASSESSMENTS[assessmentId]
           if (assessment) {
+            console.log(`💾 Saving ${assessmentId} result (fallback) for user ${userId}:`, {
+              score: result.score,
+              level: result.level,
+              severity: result.severity
+            })
+
             return this.saveAssessmentResult(
               userId,
               assessmentId,
@@ -366,9 +422,18 @@ export class AssessmentManager {
               result,
               result.responses || {}
             )
+          } else {
+            console.warn(`⚠️ Assessment ${assessmentId} not found in ASSESSMENTS (fallback)`)
           }
         })
       )
+      
+      // Log any failed saves
+      fallbackSaveResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`❌ Failed to save assessment ${Object.keys(results)[index]} (fallback):`, result.reason)
+        }
+      })
 
       // Return basic profile without AI enhancements
       const databaseResult = await this.saveUserProfile(userId, userProfile)

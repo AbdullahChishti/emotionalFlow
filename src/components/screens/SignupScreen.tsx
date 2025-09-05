@@ -24,6 +24,7 @@ export default function SignupScreen() {
   const [displayName, setDisplayName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
   const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const router = useRouter()
@@ -139,7 +140,8 @@ export default function SignupScreen() {
           setError(error.message)
         }
       } else {
-        router.push('/')
+        // Show success message instead of redirecting
+        setSuccess(true)
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.')
@@ -311,6 +313,26 @@ export default function SignupScreen() {
               <p className="text-body text-slate-600">Start your journey to better mental health</p>
             </div>
 
+            {/* Success Message */}
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">check_circle</span>
+                  <div>
+                    <p className="font-medium">Account created successfully!</p>
+                    <p className="text-sm mt-1">
+                      A confirmation email has been sent to <strong>{email}</strong>. 
+                      Please check your inbox and click the link to confirm your account.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Error Message */}
             {error && (
               <ErrorMessage
@@ -320,7 +342,8 @@ export default function SignupScreen() {
             )}
 
             {/* Signup Form */}
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            {!success ? (
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <fieldset className="space-y-6">
                 <legend className="sr-only">Account Information</legend>
               <FormField
@@ -375,19 +398,33 @@ export default function SignupScreen() {
               </div>
               </fieldset>
             </form>
-
-            {/* Footer */}
-            <div className="text-center pt-5 border-t border-slate-200/50 mt-6">
-              <p className="text-body text-slate-700">
-                Already have an account?{' '}
+            ) : (
+              /* Success State - Back to Login Button */
+              <div className="text-center">
                 <Link
                   href="/login"
-                  className="text-slate-700 hover:text-slate-900 font-semibold transition-colors"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-slate-700 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors"
                 >
-                  Sign in
+                  <span className="material-symbols-outlined mr-2">arrow_back</span>
+                  Back to Login
                 </Link>
-              </p>
-            </div>
+              </div>
+            )}
+
+            {/* Footer */}
+            {!success && (
+              <div className="text-center pt-5 border-t border-slate-200/50 mt-6">
+                <p className="text-body text-slate-700">
+                  Already have an account?{' '}
+                  <Link
+                    href="/login"
+                    className="text-slate-700 hover:text-slate-900 font-semibold transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                </p>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>

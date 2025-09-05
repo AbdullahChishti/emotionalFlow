@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { track } from '@/lib/analytics'
 
@@ -17,16 +17,44 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { user, loading: authLoading } = useAuth()
 
-  // Analytics + redirect when authenticated
+  // Handle URL parameters and redirect when authenticated
   useEffect(() => {
     track('signin_view')
-    if (user) {
+    
+    // Check for URL parameters
+    const message = searchParams.get('message')
+    const errorParam = searchParams.get('error')
+    
+    if (message === 'email_confirmed') {
+      setSuccessMessage('Email confirmed successfully! Please sign in with your credentials.')
+    }
+    
+    if (errorParam) {
+      switch (errorParam) {
+        case 'auth_failed':
+          setError('Authentication failed. Please try again.')
+          break
+        case 'no_session':
+          setError('No session found. Please sign in.')
+          break
+        case 'unexpected':
+          setError('An unexpected error occurred. Please try again.')
+          break
+        default:
+          setError('An error occurred. Please try again.')
+      }
+    }
+    
+    // Only auto-redirect if user is already logged in (not from email confirmation)
+    if (user && !message) {
       router.push('/dashboard')
     }
-  }, [user, router])
+  }, [user, router, searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -221,6 +249,17 @@ export default function LoginScreen() {
               </Link>
               {/* Welcome text removed as per request */}
             </div>
+
+            {/* Success Message */}
+            {successMessage && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm"
+              >
+                {successMessage}
+              </motion.div>
+            )}
 
             {/* Error Message */}
             {error && (

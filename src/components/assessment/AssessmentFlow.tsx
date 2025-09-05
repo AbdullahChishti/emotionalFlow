@@ -48,6 +48,7 @@ export function AssessmentFlow({
   const [currentAssessmentIndex, setCurrentAssessmentIndex] = useState(0)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [responses, setResponses] = useState<Record<string, number | string>>({})
+  const [completionTriggered, setCompletionTriggered] = useState(false) // Prevent multiple completions
   const [allResponses, setAllResponses] = useState<Record<string, Record<string, number | string>>>({})
   const [results, setResults] = useState<Record<string, AssessmentResult>>({})
 
@@ -172,7 +173,6 @@ export function AssessmentFlow({
 
   // Legacy function - now handled by FlowManager
   const saveAssessmentDataToDatabase = async (userProfile: any, results: Record<string, AssessmentResult>) => {
-    console.log('⚠️ Legacy saveAssessmentDataToDatabase called - this should now be handled by FlowManager')
     // This function is kept for backward compatibility but should not be used
     // Assessment saving is now handled by FlowManager.completeAssessmentFlow()
     return Promise.resolve()
@@ -271,12 +271,17 @@ export function AssessmentFlow({
       })
 
       const result = currentAssessment.scoring.interpretation(score, numericResponses)
+      
+      // Add responses to the result object for database storage
+      const resultWithResponses = {
+        ...result,
+        responses: newResponses
+      }
 
       const newResults = {
         ...results,
-        [currentAssessment.id]: result
+        [currentAssessment.id]: resultWithResponses
       }
-      setResults(newResults)
 
       // Store responses for this assessment
       setAllResponses(prev => ({
@@ -287,13 +292,31 @@ export function AssessmentFlow({
       // Skip individual results - go to next assessment or completion
       if (currentAssessmentIndex < assessmentIds.length - 1) {
         // Move to next assessment
+        setResults(newResults) // Update results state for intermediate assessments
         setCurrentAssessmentIndex(currentAssessmentIndex + 1)
         setCurrentQuestionIndex(0)
         setResponses({})
         setCurrentState('taking')
       } else {
         // All assessments complete - process and navigate to results
-        handleContinue()
+        console.log('🎯 ASSESSMENT COMPLETE - Final assessment finished')
+        console.log('📊 Final results:', newResults)
+
+        // Prevent multiple completions
+        if (completionTriggered) {
+          console.log('⚠️ Completion already triggered, ignoring duplicate')
+          return
+        }
+
+        setCompletionTriggered(true)
+        console.log('✅ Completion triggered flag set')
+
+        // Update results state
+        setResults(newResults)
+
+        // Call handleContinue immediately - React state updates are synchronous within the same render cycle
+        console.log('🚀 Calling handleContinue with final results')
+        handleContinue(newResults)
       }
     }
   }
@@ -325,10 +348,13 @@ export function AssessmentFlow({
     return score
   }
 
-  const handleContinue = async () => {
+  const handleContinue = async (assessmentResults?: Record<string, any>) => {
+    console.log('🎯 handleContinue called with:', assessmentResults)
+
     // Prevent multiple submissions
     if (savingResults) {
-      console.log('⏳ Already processing results, ignoring duplicate call')
+      console.log('Already processing results, ignoring duplicate call')
+      console.log('💡 If this is unexpected, savingResults state might be stuck')
       return
     }
 
@@ -338,42 +364,48 @@ export function AssessmentFlow({
       return
     }
 
+    console.log('🔍 Navigation check:', {
+      currentAssessmentIndex,
+      totalAssessments: assessmentIds.length,
+      isLastAssessment: currentAssessmentIndex >= assessmentIds.length - 1,
+      savingResults
+    })
+
     if (currentAssessmentIndex < assessmentIds.length - 1) {
+      console.log('➡️ Moving to next assessment')
       setCurrentAssessmentIndex(currentAssessmentIndex + 1)
       setCurrentQuestionIndex(0)
       setResponses({})
       setCurrentState('taking')
     } else {
-      // Final assessment: skip redundant completion screen and go straight to dashboard
+      console.log('🎯 Final assessment - processing completion')
+      // Final step: immediately navigate to results and process in background
       setSavingResults(true)
-      try {
-        // Use FlowManager for complete assessment flow
-        if (user) {
-          console.log('🎯 Starting complete assessment flow with FlowManager')
-          await FlowManager.completeAssessmentFlow(results, user.id)
-          console.log('✅ Assessment flow completed successfully')
-        }
 
-        // Trigger completion callback with user profile
-        const defaultProfile: UserProfile = {
-          id: user?.id || 'anonymous',
-          email: user?.email || undefined,
-          lastAssessmentDate: new Date()
-        }
-        onComplete(results, userProfile || defaultProfile)
-      } catch (error) {
-        console.error('💥 Critical error in assessment processing:', error)
-        // Fallback to basic processing
-        console.log('⚠️ Using fallback processing due to error')
-        const defaultProfile: UserProfile = {
-          id: user?.id || 'anonymous',
-          email: user?.email || undefined,
-          lastAssessmentDate: new Date()
-        }
-        onComplete(results, userProfile || defaultProfile)
-      } finally {
-        setSavingResults(false)
+      const defaultProfile: UserProfile = {
+        id: user?.id || 'anonymous',
+        email: user?.email || undefined,
+        lastAssessmentDate: new Date()
       }
+      const resultsToProcess = assessmentResults || results
+
+      // Fire-and-forget processing to avoid blocking UI navigation
+      if (user) {
+        Promise.resolve(
+          FlowManager.completeAssessmentFlow(resultsToProcess, user.id)
+        ).catch(err => {
+          console.error('💥 Background assessment processing failed:', err)
+        }).finally(() => {
+          console.log('🔄 Background processing finished (success or failure)')
+        })
+      }
+
+      console.log('🎯 Calling onComplete callback immediately (non-blocking) with:', {
+        resultsCount: Object.keys(resultsToProcess).length,
+        userProfile: userProfile ? 'provided' : 'default'
+      })
+      onComplete(resultsToProcess, userProfile || defaultProfile)
+      // Do not reset savingResults here; component will unmount after navigation
     }
   }
 
@@ -569,6 +601,16 @@ export function AssessmentFlow({
       >
         <span className="material-symbols-outlined text-lg">close</span>
       </motion.button>
+
+      {/* Saving overlay when finalizing */}
+      {savingResults && (
+        <div className="fixed inset-0 z-40 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-800 mx-auto mb-4"></div>
+            <p className="text-gray-700 font-medium">Saving your assessment results…</p>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <AnimatePresence mode="wait">

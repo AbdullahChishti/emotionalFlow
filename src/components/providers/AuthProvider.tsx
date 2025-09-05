@@ -187,7 +187,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('Skipping authentication due to skip_auth parameter')
           setUser(null)
           setProfile(null)
-          setNeedsOnboarding(false)
           setLoading(false)
           initializingRef.current = false
           if (safetyTimeout) clearTimeout(safetyTimeout)
@@ -199,7 +198,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.warn('Supabase credentials missing - running in demo mode')
           setUser(null)
           setProfile(null)
-          setNeedsOnboarding(false)
           setLoading(false)
           initializingRef.current = false
           if (safetyTimeout) clearTimeout(safetyTimeout)
@@ -213,7 +211,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.warn(`Auth initialization timeout (${timeoutDuration}ms) - setting loading to false`)
             setUser(null)
             setProfile(null)
-            setNeedsOnboarding(false)
             setLoading(false)
             initializingRef.current = false
           }
@@ -240,7 +237,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           // In development, continue without auth rather than failing completely
           setUser(null)
           setProfile(null)
-          setNeedsOnboarding(false)
           setLoading(false)
           initializingRef.current = false
           
@@ -276,7 +272,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (isMounted) {
           setUser(null)
           setProfile(null)
-          setNeedsOnboarding(false)
           setLoading(false)
         }
       } finally {
@@ -304,8 +299,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return
       }
 
-      // For other events, handle sign in
-      if (event === 'SIGNED_IN' && session?.user) {
+      // For other events, handle sign in (but skip if we're on auth callback page)
+      if (event === 'SIGNED_IN' && session?.user && !window.location.pathname.includes('/auth/callback')) {
         console.log('User signed in, starting login flow:', session.user.id)
         setUser(session.user)
 
@@ -360,15 +355,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signOut = async () => {
+    // Set a timeout to force complete the logout if it hangs
+    const logoutTimeout = setTimeout(() => {
+      console.warn('Logout timeout reached, forcing completion')
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
+      window.location.href = '/'
+    }, 5000) // 5 second timeout
+
     try {
       console.log('Starting logout flow...')
       setLoading(true)
 
       // Use FlowManager for complete logout flow
-      await FlowManager.handleLogout()
+      FlowManager.handleLogout()
 
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut()
+      // Sign out from Supabase (with timeout)
+      const signOutPromise = supabase.auth.signOut()
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase signOut timeout')), 3000)
+      )
+
+      const { error } = await Promise.race([signOutPromise, timeoutPromise]) as any
 
       if (error) {
         console.error('Supabase sign out error:', error)
@@ -377,10 +386,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.log('Supabase signed out successfully')
       }
 
+      // Clear timeout since we're completing normally
+      clearTimeout(logoutTimeout)
+
       // Clear local state
       setUser(null)
       setProfile(null)
-      setNeedsOnboarding(false)
       setLoading(false)
 
       // Small delay to ensure state is cleared before redirect
@@ -390,12 +401,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }, 100)
     } catch (error) {
       console.error('Logout flow exception:', error)
+      // Clear timeout
+      clearTimeout(logoutTimeout)
+
       // Even if there's an exception, force logout
       setUser(null)
       setProfile(null)
-      setNeedsOnboarding(false)
       setLoading(false)
 
+      // Force redirect even on error
       setTimeout(() => {
         window.location.href = '/'
       }, 100)

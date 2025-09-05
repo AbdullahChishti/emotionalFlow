@@ -7,14 +7,43 @@ import { useAuth } from '@/components/providers/AuthProvider'
 import { AssessmentManager } from '@/lib/services/AssessmentManager'
 import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { ASSESSMENTS } from '@/data/assessments'
-import { AssessmentResult } from '@/types'
+import { AssessmentResult } from '@/data/assessments'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+
+// Extended interface for results with timestamp
+interface AssessmentResultWithTimestamp extends AssessmentResult {
+  takenAt?: string
+}
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
+// Safe localStorage operations
+const safeGetFromStorage = (key: string): any => {
+  try {
+    const item = localStorage.getItem(key)
+    return item ? JSON.parse(item) : null
+  } catch (error) {
+    console.warn(`Failed to parse ${key} from localStorage:`, error)
+    return null
+  }
+}
+
+const safeRemoveFromStorage = (key: string): void => {
+  try {
+    localStorage.removeItem(key)
+  } catch (error) {
+    console.warn(`Failed to remove ${key} from localStorage:`, error)
+  }
+}
+
+const clearAssessmentData = (): void => {
+  const keys = ['assessmentResults', 'assessmentResultsTakenAt', 'userProfile']
+  keys.forEach(key => safeRemoveFromStorage(key))
+}
+
 interface MultipleResultsDisplayProps {
-  results: Record<string, AssessmentResult>
+  results: Record<string, AssessmentResultWithTimestamp>
   onRetake: () => void
   onNewAssessment: () => void
 }
@@ -71,7 +100,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
                     assessment={assessment}
                     result={result}
                     onRetake={() => router.push(`/assessments?retake=${assessmentId}`)}
-                    onContinue={() => router.push('/dashboard')}
+                    onContinue={() => router.push(`/results?assessment=${assessmentId}`)}
                     variant="summary"
                     showActions={true}
                     className="border-0 shadow-none bg-transparent p-0"
@@ -114,130 +143,333 @@ export default function ResultsPage() {
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [usingFallback, setUsingFallback] = useState(false) // true when showing local data
+  const [syncing, setSyncing] = useState(false)
+  const [syncError, setSyncError] = useState<string | null>(null)
   const [assessmentData, setAssessmentData] = useState<{
     assessment?: any
     result?: AssessmentResult
-    results?: Record<string, AssessmentResult>
+    results?: Record<string, AssessmentResultWithTimestamp>
     mode: 'single' | 'multiple'
   }>({ mode: 'single' })
+  const [dataLoaded, setDataLoaded] = useState(false) // Prevent duplicate loads for same param
+  const [lastParam, setLastParam] = useState<string | null>(null)
 
-  const loadAssessmentData = useCallback(async () => {
+  const createAssessmentResult = useCallback((entry: any, assessmentId: string): AssessmentResult => {
+    const assessment = ASSESSMENTS[assessmentId]
+
+    // Extract AI-generated content from resultData if available
+    const resultData = entry.resultData || {}
+    const recommendations = resultData.recommendations || entry.recommendations || []
+    const manifestations = resultData.manifestations || entry.manifestations || []
+    const nextSteps = resultData.nextSteps || entry.nextSteps || []
+    const insights = resultData.insights || (entry.friendlyExplanation ? [entry.friendlyExplanation] : (entry.insights || []))
+
+    console.log(`🔍 Processing ${assessmentId} result:`, {
+      hasResultData: !!entry.resultData,
+      recommendationsCount: recommendations.length,
+      manifestationsCount: manifestations.length,
+      insightsCount: insights.length
+    })
+
+    return {
+      score: entry.score || 0,
+      level: entry.level || 'Unknown',
+      severity: (entry.severity || 'normal') as 'normal' | 'mild' | 'moderate' | 'severe' | 'critical',
+      description: entry.description || resultData.description || `You scored ${entry.score || 0} on the ${assessment?.title || 'Assessment'}`,
+      insights,
+      recommendations,
+      nextSteps,
+      manifestations
+    }
+  }, [])
+
+  const fetchFromDatabase = useCallback(async (assessmentId?: string): Promise<any> => {
+    console.log('🔍 ResultsPage: fetchFromDatabase called', { assessmentId })
+    if (!user?.id) throw new Error('No user ID available')
+
+    console.log('🔍 ResultsPage: Fetching assessment history...')
+
+    // Add timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Database fetch timeout')), 8000)
+    })
+
+    const fetchPromise = AssessmentManager.getAssessmentHistory(user.id)
+
+    let history
+    try {
+      history = await Promise.race([fetchPromise, timeoutPromise])
+      console.log('✅ ResultsPage: Got assessment history', { count: history?.length })
+    } catch (error) {
+      console.error('❌ ResultsPage: Database fetch failed or timed out', error)
+      throw error
+    }
+
+    // If no results, try to get data from user profile as fallback
+    if (!history || history.length === 0) {
+      try {
+        const profile = await AssessmentManager.getLatestUserProfile(user.id)
+        if (profile?.profile_data) {
+          const profileData = profile.profile_data as any
+          const extractedResults: any[] = []
+
+          // Extract each assessment type
+          if (profileData.currentSymptoms?.depression?.score > 0) {
+            extractedResults.push({
+              id: 'profile-phq9',
+              assessmentId: 'phq9',
+              assessmentTitle: 'PHQ-9 Depression Assessment',
+              score: profileData.currentSymptoms.depression.score,
+              level: profileData.currentSymptoms.depression.level || 'Unknown',
+              severity: profileData.currentSymptoms.depression.needsIntervention ? 'moderate' : 'normal',
+              takenAt: profile.last_assessed || new Date().toISOString(),
+              friendlyExplanation: profileData.currentSymptoms.depression.friendlyExplanation
+            })
+          }
+
+          if (profileData.currentSymptoms?.anxiety?.score > 0) {
+            extractedResults.push({
+              id: 'profile-gad7',
+              assessmentId: 'gad7',
+              assessmentTitle: 'GAD-7 Anxiety Assessment',
+              score: profileData.currentSymptoms.anxiety.score,
+              level: profileData.currentSymptoms.anxiety.level || 'Unknown',
+              severity: profileData.currentSymptoms.anxiety.needsIntervention ? 'moderate' : 'normal',
+              takenAt: profile.last_assessed || new Date().toISOString(),
+              friendlyExplanation: profileData.currentSymptoms.anxiety.friendlyExplanation
+            })
+          }
+
+          if (profileData.currentSymptoms?.stress?.score > 0) {
+            extractedResults.push({
+              id: 'profile-pss10',
+              assessmentId: 'pss10',
+              assessmentTitle: 'PSS-10 Perceived Stress Scale',
+              score: profileData.currentSymptoms.stress.score,
+              level: profileData.currentSymptoms.stress.level || 'Unknown',
+              severity: profileData.currentSymptoms.stress.needsIntervention ? 'moderate' : 'normal',
+              takenAt: profile.last_assessed || new Date().toISOString(),
+              friendlyExplanation: profileData.currentSymptoms.stress.friendlyExplanation
+            })
+          }
+
+          if (profileData.currentSymptoms?.wellbeing?.score > 0) {
+            extractedResults.push({
+              id: 'profile-who5',
+              assessmentId: 'who5',
+              assessmentTitle: 'WHO-5 Well-Being Index',
+              score: profileData.currentSymptoms.wellbeing.score,
+              level: profileData.currentSymptoms.wellbeing.level || 'Unknown',
+              severity: profileData.currentSymptoms.wellbeing.needsEnhancement ? 'moderate' : 'normal',
+              takenAt: profile.last_assessed || new Date().toISOString(),
+              friendlyExplanation: profileData.currentSymptoms.wellbeing.friendlyExplanation
+            })
+          }
+
+          if (profileData.resilience?.score > 0) {
+            extractedResults.push({
+              id: 'profile-cd-risc',
+              assessmentId: 'cd-risc',
+              assessmentTitle: 'CD-RISC Resilience Scale',
+              score: profileData.resilience.score,
+              level: profileData.resilience.level || 'Unknown',
+              severity: 'normal',
+              takenAt: profile.last_assessed || new Date().toISOString(),
+              friendlyExplanation: profileData.resilience.friendlyExplanation
+            })
+          }
+
+          if (extractedResults.length > 0) {
+            history = extractedResults
+          } else {
+            return null
+          }
+        } else {
+          return null
+        }
+      } catch (profileError) {
+        console.warn('Error fetching user profile:', profileError)
+        return null
+      }
+    }
+
+    if (assessmentId) {
+      // Single assessment mode
+      const entry = history
+        .filter(h => h.assessmentId === assessmentId)
+        .sort((a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime())[0]
+
+      return entry ? createAssessmentResult(entry, assessmentId) : null
+    } else {
+      // Multiple assessments mode
+      const latest: Record<string, any> = {}
+      history.forEach(entry => {
+        const existing = latest[entry.assessmentId]
+        if (!existing || new Date(entry.takenAt) > new Date(existing.takenAt)) {
+          latest[entry.assessmentId] = {
+            ...createAssessmentResult(entry, entry.assessmentId),
+            takenAt: entry.takenAt
+          }
+        }
+      })
+      return latest
+    }
+  }, [user?.id, createAssessmentResult])
+
+  const fetchFromStorage = useCallback((assessmentId?: string): any => {
+    const storedResults = safeGetFromStorage('assessmentResults')
+    if (!storedResults || typeof storedResults !== 'object') return null
+
+    if (assessmentId) {
+      return storedResults[assessmentId] || null
+    } else {
+      return Object.keys(storedResults).length > 0 ? storedResults : null
+    }
+  }, [])
+
+  const loadAssessmentData = useCallback(async (targetParam?: string | null) => {
+    console.log('🔄 ResultsPage: Starting loadAssessmentData')
+    // Skip only if we already loaded for the same param
+    if (dataLoaded && targetParam === lastParam) {
+      console.log('⚠️ ResultsPage: Data already loaded for this param, skipping')
+      return
+    }
+
     if (!user) {
+      console.log('❌ ResultsPage: No user, setting error')
       setError('Please log in to view assessment results.')
       setLoading(false)
+      setDataLoaded(true)
       return
     }
 
     try {
+      console.log('🔄 ResultsPage: Setting loading to true')
       setLoading(true)
       setError(null)
 
-      const assessmentParam = searchParams.get('assessment')
+      const assessmentParam = targetParam ?? searchParams.get('assessment')
+      let result: any = null
       
+      // Try database first, then localStorage as fallback
+      console.log('🔍 ResultsPage: Trying database fetch...')
+      try {
+        result = await fetchFromDatabase(assessmentParam || undefined)
+        console.log('✅ ResultsPage: Database fetch successful:', result)
+        setUsingFallback(false)
+        setSyncError(null)
+      } catch (dbError) {
+        console.error('❌ ResultsPage: Database fetch failed:', dbError)
+        console.log('🔄 ResultsPage: Falling back to localStorage...')
+        result = fetchFromStorage(assessmentParam || undefined)
+        console.log('✅ ResultsPage: localStorage result:', result)
+        setUsingFallback(!!result)
+
+        // If still no data from localStorage, try to extract from user profile one more time
+        if (!result) {
+          console.log('🔄 ResultsPage: No localStorage data, trying profile extraction...')
+          try {
+            const profile = await AssessmentManager.getLatestUserProfile(user.id)
+            console.log('✅ ResultsPage: Got user profile:', !!profile?.profile_data)
+            if (profile?.profile_data) {
+              // This will be handled by the updated fetchFromDatabase function
+              result = await fetchFromDatabase(assessmentParam || undefined)
+              console.log('✅ ResultsPage: Profile extraction successful:', result)
+              setUsingFallback(false)
+            }
+          } catch (profileError) {
+            console.warn('❌ ResultsPage: Profile extraction failed:', profileError)
+            setUsingFallback(false)
+          }
+        }
+      }
+
       if (assessmentParam) {
         // Single assessment mode
+        console.log('📊 ResultsPage: Single assessment mode')
         const assessment = ASSESSMENTS[assessmentParam]
         if (!assessment) {
-          throw new Error(`Assessment ${assessmentParam} not found`)
-        }
-
-        // Try to get from database first (most reliable and up-to-date)
-        let result: AssessmentResult | null = null
-        const history = await AssessmentManager.getAssessmentHistory(user.id)
-        const latestEntry = history.find(entry => entry.assessmentId === assessmentParam)
-        
-        if (latestEntry) {
-          result = {
-            score: latestEntry.score,
-            level: latestEntry.level,
-            severity: latestEntry.severity,
-            description: `You scored ${latestEntry.score} on the ${assessment.title}`,
-            insights: latestEntry.friendlyExplanation ? [latestEntry.friendlyExplanation] : [],
-            responses: {}
-          }
-        }
-
-        // Fallback to localStorage for very fresh completions (before database save)
-        if (!result) {
-          try {
-            const storedResults = localStorage.getItem('assessmentResults')
-            if (storedResults) {
-              const parsedResults = JSON.parse(storedResults)
-              result = parsedResults[assessmentParam]
-              console.log('Using localStorage fallback for fresh assessment result')
-            }
-          } catch (e) {
-            console.warn('Could not parse stored results:', e)
-          }
+          throw new Error(`Assessment "${assessmentParam}" not found`)
         }
 
         if (!result) {
-          throw new Error('No results found for this assessment')
+          throw new Error(`No results found for "${assessment.title}". Please complete this assessment first.`)
         }
 
+        console.log('✅ ResultsPage: Setting single assessment data')
         setAssessmentData({
           assessment,
           result,
           mode: 'single'
         })
       } else {
-        // Multiple assessments mode - fetch from database first
-        let results: Record<string, AssessmentResult> = {}
-        
-        const history = await AssessmentManager.getAssessmentHistory(user.id)
-        
-        // Group by assessment ID and take the most recent
-        const latestResults: Record<string, AssessmentResult> = {}
-        history.forEach(entry => {
-          if (!latestResults[entry.assessmentId] || 
-              new Date(entry.takenAt) > new Date(latestResults[entry.assessmentId].takenAt || 0)) {
-            latestResults[entry.assessmentId] = {
-              score: entry.score,
-              level: entry.level,
-              severity: entry.severity,
-              description: `You scored ${entry.score} on the ${ASSESSMENTS[entry.assessmentId]?.title || 'Assessment'}`,
-              insights: entry.friendlyExplanation ? [entry.friendlyExplanation] : [],
-              responses: {},
-              takenAt: entry.takenAt
-            }
-          }
-        })
-        
-        results = latestResults
-
-        // Fallback to localStorage for very fresh completions (before database save)
-        if (Object.keys(results).length === 0) {
-          try {
-            const storedResults = localStorage.getItem('assessmentResults')
-            if (storedResults) {
-              results = JSON.parse(storedResults)
-              console.log('Using localStorage fallback for fresh assessment results')
-            }
-          } catch (e) {
-            console.warn('Could not parse stored results:', e)
-          }
-        }
-
-        if (Object.keys(results).length === 0) {
+        // Multiple assessments mode
+        console.log('📊 ResultsPage: Multiple assessments mode')
+        if (!result || Object.keys(result).length === 0) {
           throw new Error('No assessment results found. Please complete an assessment first.')
         }
 
+        console.log('✅ ResultsPage: Setting multiple assessment data')
         setAssessmentData({
-          results,
+          results: result,
           mode: 'multiple'
         })
       }
     } catch (err) {
-      console.error('Error loading assessment data:', err)
+      console.error('❌ ResultsPage: Error loading assessment data:', err)
       setError(err instanceof Error ? err.message : 'Failed to load assessment results')
+      setDataLoaded(true)
     } finally {
+      console.log('🏁 ResultsPage: Finally block - setting loading to false')
       setLoading(false)
+      setDataLoaded(true)
+      setLastParam(targetParam ?? searchParams.get('assessment'))
     }
-  }, [user, searchParams])
+  }, [dataLoaded, lastParam, searchParams])
+
+  const retrySync = useCallback(async () => {
+    if (!user) return
+    setSyncing(true)
+    setSyncError(null)
+    try {
+      const assessmentParam = searchParams.get('assessment')
+      const fresh = await fetchFromDatabase(assessmentParam || undefined)
+      if (!fresh || (typeof fresh === 'object' && Object.keys(fresh).length === 0)) {
+        setSyncError('Still syncing your results. Please try again shortly.')
+      } else {
+        // Update state with fresh DB data
+        if (assessmentParam) {
+          const assessment = ASSESSMENTS[assessmentParam]
+          if (!assessment) throw new Error(`Assessment "${assessmentParam}" not found`)
+          setAssessmentData({ assessment, result: fresh, mode: 'single' })
+        } else if (typeof fresh === 'object') {
+          setAssessmentData({ results: fresh, mode: 'multiple' })
+        }
+        setUsingFallback(false)
+        // Clear cached local version to avoid stale data
+        safeRemoveFromStorage('assessmentResults')
+      }
+    } catch (e) {
+      setSyncError(e instanceof Error ? e.message : 'Sync failed')
+    } finally {
+      setSyncing(false)
+    }
+  }, [user, searchParams, fetchFromDatabase])
 
   useEffect(() => {
-    loadAssessmentData()
-  }, [loadAssessmentData])
+    console.log('🔄 ResultsPage: useEffect triggered')
+    const param = searchParams.get('assessment')
+    loadAssessmentData(param)
+
+    // Safety timeout to prevent infinite loading
+    const safetyTimeout = setTimeout(() => {
+      console.log('⏰ ResultsPage: Safety timeout triggered - forcing loading to false as safety measure')
+      setLoading(false)
+    }, 10000) // 10 seconds
+
+    return () => clearTimeout(safetyTimeout)
+  }, [searchParams, user])
 
   const handleRetake = useCallback(() => {
     if (assessmentData.mode === 'single' && assessmentData.assessment) {
@@ -255,11 +487,17 @@ export default function ResultsPage() {
     router.push('/dashboard')
   }, [router])
 
+  const handleClearDataAndRetry = useCallback(() => {
+    clearAssessmentData()
+    setError(null)
+    loadAssessmentData()
+  }, [loadAssessmentData])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="text-center">
-          <LoadingSpinner size="large" />
+          <LoadingSpinner size="lg" />
           <p className="text-slate-600 mt-4">Loading your assessment results...</p>
         </div>
       </div>
@@ -289,33 +527,69 @@ export default function ResultsPage() {
             >
               Back to Dashboard
             </button>
+            <button
+              onClick={handleClearDataAndRetry}
+              className="px-4 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300"
+            >
+              Clear & Retry
+            </button>
           </div>
         </div>
       </div>
     )
   }
 
+  // Inline banner for fallback/sync status
+  const SyncBanner = usingFallback ? (
+    <div className="max-w-4xl mx-auto mb-6">
+      <div className="flex items-center justify-between px-4 py-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-900">
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined">cloud_sync</span>
+          <span className="text-sm">
+            Showing results from your device while we finish saving to the cloud.
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {syncError && <span className="text-xs text-amber-800">{syncError}</span>}
+          <button
+            onClick={retrySync}
+            disabled={syncing}
+            className={`px-3 py-1.5 text-sm rounded-md border transition ${syncing ? 'opacity-60 cursor-not-allowed' : 'hover:bg-amber-100'} border-amber-300 text-amber-900 bg-white`}
+          >
+            {syncing ? 'Syncing…' : 'Retry Sync'}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null
+
   // Render based on mode
   if (assessmentData.mode === 'multiple' && assessmentData.results) {
     return (
-      <MultipleResultsDisplay
-        results={assessmentData.results}
-        onRetake={handleRetake}
-        onNewAssessment={handleNewAssessment}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="container mx-auto px-6 py-6">{SyncBanner}</div>
+        <MultipleResultsDisplay
+          results={assessmentData.results}
+          onRetake={handleRetake}
+          onNewAssessment={handleNewAssessment}
+        />
+      </div>
     )
   }
 
   if (assessmentData.mode === 'single' && assessmentData.assessment && assessmentData.result) {
     return (
-      <AssessmentResults
-        assessment={assessmentData.assessment}
-        result={assessmentData.result}
-        onRetake={handleRetake}
-        onContinue={handleContinue}
-        variant="full"
-        showActions={true}
-      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <div className="container mx-auto px-6 py-6">{SyncBanner}</div>
+        <AssessmentResults
+          assessment={assessmentData.assessment}
+          result={assessmentData.result}
+          onRetake={handleRetake}
+          onContinue={handleContinue}
+          variant="full"
+          showActions={true}
+        />
+      </div>
     )
   }
 

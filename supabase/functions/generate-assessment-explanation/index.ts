@@ -69,8 +69,31 @@ Deno.serve(async (req) => {
 
     const { assessmentData, userProfile }: ExplanationRequest = await req.json()
 
+    // Log what we received from the client
+    console.log('Edge Function: 📥 RECEIVED FROM CLIENT:')
+    console.log('Edge Function: Assessment Data:', {
+      assessmentName: assessmentData.assessmentName,
+      score: assessmentData.score,
+      maxScore: assessmentData.maxScore,
+      category: assessmentData.category,
+      responsesCount: Object.keys(assessmentData.responses).length,
+      responsesSample: Object.entries(assessmentData.responses).slice(0, 3) // First 3 responses
+    })
+    console.log('Edge Function: User Profile:', userProfile ? {
+      display_name: userProfile.display_name,
+      preferred_mode: userProfile.preferred_mode,
+      emotional_capacity: userProfile.emotional_capacity,
+      is_anonymous: userProfile.is_anonymous
+    } : 'No user profile')
+
     // Generate AI-friendly explanation
+    console.log('Edge Function: Starting AI explanation generation')
     const explanation = await generateAIAssessmentExplanation(assessmentData, userProfile)
+
+    console.log('Edge Function: Generated explanation:', explanation)
+    console.log('Edge Function: Explanation keys:', Object.keys(explanation))
+    console.log('Edge Function: Manifestations length:', explanation.manifestations?.length || 0)
+    console.log('Edge Function: Recommendations length:', explanation.recommendations?.length || 0)
 
     return new Response(
       JSON.stringify({
@@ -90,15 +113,24 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error generating assessment explanation:', error)
 
+    const fallbackExplanation = generateFallbackExplanation(assessmentData)
+    console.log('Edge Function: Using fallback explanation:', fallbackExplanation)
+
     return new Response(
       JSON.stringify({
         success: false,
         error: 'Failed to generate explanation',
-        fallback: generateFallbackExplanation(assessmentData)
+        explanation: fallbackExplanation,
+        metadata: {
+          generatedAt: new Date().toISOString(),
+          assessmentType: assessmentData.category,
+          assessmentName: assessmentData.assessmentName,
+          fallback: true
+        }
       }),
       {
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' },
-        status: 500,
+        status: 200, // Return 200 for fallback
       }
     )
   }
@@ -109,6 +141,10 @@ async function generateAIAssessmentExplanation(
   userProfile?: UserProfile
 ): Promise<AIExplanation> {
   const prompt = buildAssessmentPrompt(assessmentData, userProfile)
+
+  console.log('Edge Function: 🤖 PROMPT BEING SENT TO OPENAI:')
+  console.log('Edge Function: Prompt length:', prompt.length)
+  console.log('Edge Function: Prompt preview (first 500 chars):', prompt.substring(0, 500) + '...')
 
   try {
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -141,11 +177,17 @@ Always respond with a JSON object containing: summary, whatItMeans, unconsciousM
 
     const data = await openaiResponse.json()
 
+    console.log('Edge Function: OpenAI response status:', openaiResponse.status)
+    console.log('Edge Function: OpenAI response data:', data)
+
     if (data.choices && data.choices[0]) {
       try {
         const content = data.choices[0].message.content
+        console.log('Edge Function: OpenAI content:', content)
         const parsed = JSON.parse(content)
-        return {
+        console.log('Edge Function: Parsed response:', parsed)
+
+        const result = {
           summary: parsed.summary || '',
           whatItMeans: parsed.whatItMeans || '',
           manifestations: Array.isArray(parsed.manifestations) ? parsed.manifestations : [],
@@ -154,8 +196,17 @@ Always respond with a JSON object containing: summary, whatItMeans, unconsciousM
           nextSteps: parsed.nextSteps || '',
           supportiveMessage: parsed.supportiveMessage || ''
         }
+
+        console.log('Edge Function: Final result structure:', {
+          summary: result.summary?.length || 0,
+          whatItMeans: result.whatItMeans?.length || 0,
+          manifestations: result.manifestations?.length || 0,
+          recommendations: result.recommendations?.length || 0
+        })
+
+        return result
       } catch (parseError) {
-        console.error('Failed to parse OpenAI response:', parseError)
+        console.error('Edge Function: Failed to parse OpenAI response:', parseError)
         return generateStructuredExplanation(assessmentData, userProfile)
       }
     }

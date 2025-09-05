@@ -155,9 +155,28 @@ const AIInsights = memo(({ aiExplanation, isLoading }: { aiExplanation: any | nu
           <div className="w-10 h-10 bg-brand-green-100 rounded-lg flex items-center justify-center">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-green-600"></div>
           </div>
-          <h3 className="text-lg font-semibold text-slate-900">Preparing your personalized guidance...</h3>
+          <h3 className="text-lg font-semibold text-slate-900">Generating personalized insights...</h3>
         </div>
-        <p className="text-slate-600 text-sm">Please wait while we generate tailored recommendations.</p>
+        <p className="text-slate-600 text-sm">We're creating tailored recommendations and coping strategies just for you.</p>
+        <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+          <span className="material-symbols-outlined text-sm">info</span>
+          <span>This usually takes 5-10 seconds</span>
+        </div>
+      </div>
+    )
+  }
+
+  // If we have no AI explanation at all, show a placeholder
+  if (!aiExplanation) {
+    return (
+      <div className="bg-slate-50 rounded-xl p-6 border border-slate-200 mb-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-slate-400">psychology</span>
+          </div>
+          <h3 className="text-lg font-semibold text-slate-700">Personalized Insights</h3>
+        </div>
+        <p className="text-slate-600 text-sm">Your personalized recommendations and coping strategies will appear here shortly.</p>
       </div>
     )
   }
@@ -271,16 +290,19 @@ export default function AssessmentResults({
 
   const { user } = useAuth()
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(preGeneratedAI || null)
-  const [isLoading, setIsLoading] = useState(false) // Start with false since we have result data
+  const [isAILoading, setIsAILoading] = useState(false) // Loading state specifically for AI content
+  const [hasAIData, setHasAIData] = useState(!!preGeneratedAI)
+  const [isLoading, setIsLoading] = useState(false) // Overall component loading state
 
   // Debug loading state changes
-  const setLoadingWithLog = (loading: boolean) => {
-    console.log('AssessmentResults loading state change:', loading, {
+  const setAILoadingWithLog = (loading: boolean) => {
+    console.log('AssessmentResults AI loading state change:', loading, {
       assessmentId: assessment?.id,
       hasResult: !!result,
+      hasAIData,
       preGeneratedAI: !!preGeneratedAI
     })
-    setIsLoading(loading)
+    setIsAILoading(loading)
   }
   const [error, setError] = useState<string | null>(null)
 
@@ -288,25 +310,24 @@ export default function AssessmentResults({
     assessmentId: assessment?.id,
     hasResult: !!result,
     resultKeys: result ? Object.keys(result) : [],
-    preGeneratedAI: !!preGeneratedAI,
-    isLoading
+    variant
   })
 
   useEffect(() => {
     let isMounted = true
     let timeoutId: NodeJS.Timeout
 
-    // Quick timeout to ensure we don't get stuck in loading state
+          // Quick timeout to ensure we don't get stuck in loading state
     const quickTimeoutId = setTimeout(() => {
-      if (isMounted && isLoading) {
-        console.warn('Quick timeout - forcing loading to false')
-        setLoadingWithLog(false)
+      if (isMounted && isAILoading) {
+        console.warn('Quick timeout - forcing AI loading to false')
+        setAILoadingWithLog(false)
       }
     }, 2000) // 2 seconds
 
     const generateAIExplanation = async () => {
       if (!assessment || !result) {
-        if (isMounted) setLoadingWithLog(false)
+        if (isMounted) setAILoadingWithLog(false)
         return
       }
 
@@ -315,53 +336,49 @@ export default function AssessmentResults({
         console.log('Using pre-generated AI explanation, skipping internal generation')
         if (isMounted) {
           setAiExplanation(preGeneratedAI)
-          setLoadingWithLog(false)
+          setHasAIData(true)
+          setAILoadingWithLog(false)
         }
         return
       }
 
-      // Skip AI generation entirely if we have basic result data
-      // This prevents the loading screen when we already have processed results
-      const hasBasicResultData = result && (result.description || (result.recommendations && result.recommendations.length > 0))
-      const hasStructuredResultData = result && (result.manifestations || result.unconsciousManifestations || result.nextSteps)
+      // Check specifically for AI-generated content (recommendations, manifestations, etc.)
+      const hasAIContent = result && (
+        (result.recommendations && result.recommendations.length > 0) ||
+        (result.manifestations && result.manifestations.length > 0) ||
+        (result.unconsciousManifestations && result.unconsciousManifestations.length > 0) ||
+        (result.nextSteps && result.nextSteps.length > 0) ||
+        (result.insights && result.insights.length > 0)
+      )
 
-      console.log('AssessmentResults - checking data availability:', {
+      console.log('AssessmentResults - checking AI data availability:', {
         hasResult: !!result,
-        hasDescription: !!result?.description,
         hasRecommendations: !!(result?.recommendations && result.recommendations.length > 0),
         hasManifestations: !!(result?.manifestations && result.manifestations.length > 0),
-        hasBasicResultData,
-        hasStructuredResultData
+        hasAIContent,
+        hasAIData
       })
 
-      // If we have any result data at all, skip AI generation to avoid loading screen
-      if (hasBasicResultData || hasStructuredResultData) {
-        console.log('Result data available, skipping AI generation to avoid loading screen')
+      // If we already have AI content, use it and don't show loading
+      if (hasAIContent) {
+        console.log('AI content already available, no need to generate')
         if (isMounted) {
-          setLoadingWithLog(false)
+          setHasAIData(true)
+          setAILoadingWithLog(false)
         }
         return
       }
 
-      // Additional fallback: if we have a result object with any properties, don't load
-      if (result && Object.keys(result).length > 0) {
-        console.log('Result object exists with properties, skipping AI loading')
-        if (isMounted) {
-          setLoadingWithLog(false)
-        }
-        return
+      // If we don't have AI content, start loading and generate it
+      console.log('AI content missing, starting generation...')
+      if (isMounted) {
+        setAILoadingWithLog(true)
       }
 
       // If user is not authenticated, skip AI explanation but still show results
       if (!user) {
-        if (isMounted) setLoadingWithLog(false)
+        if (isMounted) setAILoadingWithLog(false)
         return
-      }
-
-      // Only show loading if we don't have result data with manifestations
-      const hasResultData = result.manifestations && result.manifestations.length > 0
-      if (!hasResultData && isMounted) {
-        setLoadingWithLog(true)
       }
 
       try {
@@ -370,7 +387,7 @@ export default function AssessmentResults({
         timeoutId = setTimeout(() => {
           if (isMounted) {
             console.warn('AI explanation timeout - forcing loading to complete')
-            setLoadingWithLog(false)
+            setAILoadingWithLog(false)
           }
         }, 10000) // 10 second timeout (reduced from 30)
 
@@ -415,15 +432,16 @@ export default function AssessmentResults({
         if (isMounted) {
           console.log('[AI] Setting explanation and stopping loading...')
           setAiExplanation(explanation)
-          setLoadingWithLog(false)
-          console.log('[AI] Loading state set to false')
+          setHasAIData(true)
+          setAILoadingWithLog(false)
+          console.log('[AI] AI loading state set to false, hasAIData set to true')
         }
       } catch (err) {
         console.error('Error generating AI explanation:', err)
         if (timeoutId) clearTimeout(timeoutId)
         if (isMounted) {
           setError('Failed to generate explanation')
-          setLoadingWithLog(false)
+          setAILoadingWithLog(false)
         }
       }
     }
@@ -709,6 +727,7 @@ export default function AssessmentResults({
     )
   }
 
+
   return (
     <div className="bg-white">
       <div className="container mx-auto px-6 py-12">
@@ -868,7 +887,7 @@ export default function AssessmentResults({
             className="relative"
           >
             <div className="relative bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
-              <AIInsights aiExplanation={aiExplanation} isLoading={isLoading} />
+              <AIInsights aiExplanation={aiExplanation} isLoading={isAILoading} />
               {aiExplanation && aiExplanation.recommendations?.length > 0 && (
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 mt-4">
                   <h4 className="text-base font-semibold text-slate-900 mb-3">Recommended next steps</h4>

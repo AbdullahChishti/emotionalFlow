@@ -52,7 +52,7 @@ export class FlowManager {
       logAuthError(error as Error, 'login_flow', user.id)
       const authStore = useAuthStore.getState()
       authStore.setLoading(false)
-      authStore.setError('Login failed. Please try again.')
+      // Note: Error handling is managed by the calling component
       throw error
     }
   }
@@ -62,7 +62,7 @@ export class FlowManager {
   /**
    * Complete logout flow with state cleanup
    */
-  static async handleLogout(): Promise<void> {
+  static handleLogout(): void {
     console.log('🚪 FlowManager: Starting logout flow')
 
     try {
@@ -134,7 +134,6 @@ export class FlowManager {
     results: Record<string, any>,
     userId: string
   ): Promise<void> {
-    console.log('🎯 FlowManager: Completing assessment flow', { resultCount: Object.keys(results).length })
 
     try {
       // Step 1: Process results with AssessmentManager (handles database saves)
@@ -161,7 +160,6 @@ export class FlowManager {
         // Continue execution - database operations succeeded
       }
 
-      console.log('✅ FlowManager: Assessment flow completed successfully')
 
     } catch (error) {
       console.error('❌ FlowManager: Assessment completion failed', error)

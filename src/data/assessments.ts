@@ -127,12 +127,10 @@ export const ACE_QUESTIONNAIRE: Assessment = {
     interpretation: (score: number) => ({
       score,
       level: score === 0 ? 'No ACEs' :
-             score <= 3 ? 'Low ACEs' :
-             score <= 5 ? 'Moderate ACEs' : 'High ACEs',
+             score <= 3 ? 'Low ACEs' : 'High ACEs',
       description: `You reported ${score} Adverse Childhood Experiences. Research shows that ACEs can impact physical and mental health throughout life.`,
       severity: score === 0 ? 'normal' :
-                score <= 3 ? 'mild' :
-                score <= 5 ? 'moderate' : 'severe',
+                score <= 3 ? 'moderate' : 'severe',
       recommendations: score > 3 ? [
         'Consider speaking with a mental health professional about your experiences',
         'Practice self-care and stress management techniques',
@@ -161,14 +159,23 @@ export const ACE_QUESTIONNAIRE: Assessment = {
         'Continue personal growth and self-care practices',
         'Consider how to support trauma survivors in your community',
         'Share your positive experiences to help others'
+      ],
+      manifestations: score > 3 ? [
+        'Increased risk for mental health conditions like depression and anxiety',
+        'Higher likelihood of substance use disorders',
+        'Potential for chronic health conditions',
+        'Challenges in relationships and emotional regulation'
+      ] : [
+        'Generally lower risk for trauma-related health issues',
+        'Stronger foundation for mental health resilience',
+        'Better emotional regulation capabilities'
       ]
     }),
 
     ranges: [
       { min: 0, max: 0, label: 'No ACEs', description: 'No adverse childhood experiences reported', severity: 'normal', recommendations: [] },
-      { min: 1, max: 3, label: 'Low ACEs', description: '1-3 adverse experiences', severity: 'mild', recommendations: ['Consider professional support if needed'] },
-      { min: 4, max: 5, label: 'Moderate ACEs', description: '4-5 adverse experiences', severity: 'moderate', recommendations: ['Professional consultation recommended'] },
-      { min: 6, max: 10, label: 'High ACEs', description: '6+ adverse experiences', severity: 'severe', recommendations: ['Strongly recommend professional mental health support'] }
+      { min: 1, max: 3, label: 'Low ACEs', description: '1-3 adverse experiences', severity: 'moderate', recommendations: ['Consider professional support if needed'] },
+      { min: 4, max: 10, label: 'High ACEs', description: '4+ adverse experiences', severity: 'severe', recommendations: ['Strongly recommend professional mental health support'] }
     ]
   }
 }
@@ -430,6 +437,34 @@ export const GAD7_ASSESSMENT: Assessment = {
         'Continue building resilience',
         'Help others who may be struggling with anxiety',
         'Stay informed about mental health resources'
+      ],
+      manifestations: score >= 15 ? [
+        'Constant worry and fear that interferes with daily activities',
+        'Panic attacks with physical symptoms like racing heart and sweating',
+        'Avoidance of situations that trigger anxiety',
+        'Difficulty sleeping due to racing thoughts',
+        'Physical symptoms like muscle tension and headaches',
+        'Social withdrawal and isolation',
+        'Difficulty concentrating and making decisions',
+        'Feeling constantly on edge or restless'
+      ] : score >= 10 ? [
+        'Frequent worry that is hard to control',
+        'Feeling restless or on edge',
+        'Difficulty concentrating due to anxiety',
+        'Irritability and mood swings',
+        'Muscle tension and physical discomfort',
+        'Sleep disturbances',
+        'Fatigue from constant worry'
+      ] : score >= 5 ? [
+        'Occasional worry about various aspects of life',
+        'Feeling anxious in stressful situations',
+        'Mild physical symptoms like butterflies in stomach',
+        'Some difficulty concentrating when anxious',
+        'Occasional sleep disturbances'
+      ] : [
+        'Normal levels of concern and worry',
+        'Healthy response to stress',
+        'Good ability to manage anxiety'
       ]
     }),
 
@@ -554,6 +589,40 @@ export const CDRISC_ASSESSMENT: Assessment = {
         'Help others develop their coping skills',
         'Stay engaged with challenging activities',
         'Share your experiences to inspire others'
+      ],
+      manifestations: score < 20 ? [
+        'Difficulty bouncing back from setbacks',
+        'Overwhelm by relatively minor stressors',
+        'Tendency to avoid challenges or new experiences',
+        'Negative thinking patterns dominate',
+        'Difficulty maintaining perspective during crises',
+        'Social withdrawal when facing difficulties',
+        'Physical symptoms from chronic stress',
+        'Loss of confidence in handling adversity'
+      ] : score < 30 ? [
+        'Some difficulty with major life stressors',
+        'Occasional overwhelm by challenging situations',
+        'Mixed success with coping strategies',
+        'Tendency to focus on problems rather than solutions',
+        'Some social support but could be stronger',
+        'Occasional difficulty maintaining optimism',
+        'Some physical stress symptoms'
+      ] : score < 35 ? [
+        'Generally good ability to handle stress',
+        'Effective coping strategies most of the time',
+        'Positive outlook maintained during difficulties',
+        'Strong social support network',
+        'Good problem-solving abilities',
+        'Ability to learn from challenges',
+        'Maintained physical and mental health'
+      ] : [
+        'Excellent ability to handle major life challenges',
+        'Strong coping skills and adaptive responses',
+        'Maintained optimism and perspective in crises',
+        'Extensive social support network',
+        'Superior problem-solving and creative solutions',
+        'Growth and learning from adversity',
+        'Strong physical and mental resilience'
       ]
     }),
 
@@ -684,6 +753,39 @@ export const PSS10_ASSESSMENT: Assessment = {
         'Continue effective stress management practices',
         'Help others who may be experiencing high stress',
         'Share your coping strategies'
+      ],
+      manifestations: score >= 37 ? [
+        'Constant feeling of being overwhelmed and unable to cope',
+        'Chronic fatigue and exhaustion from persistent stress',
+        'Severe sleep disturbances and insomnia',
+        'Difficulty concentrating and making decisions',
+        'Irritability and mood swings',
+        'Physical symptoms like headaches, muscle tension, stomach issues',
+        'Social withdrawal and relationship strain',
+        'Loss of interest in previously enjoyable activities'
+      ] : score >= 27 ? [
+        'Frequent feelings of being overwhelmed',
+        'Difficulty relaxing and unwinding',
+        'Sleep problems and fatigue',
+        'Irritability and short temper',
+        'Physical symptoms like tension headaches or stomach discomfort',
+        'Difficulty concentrating on tasks',
+        'Some social withdrawal',
+        'Reduced enjoyment of activities'
+      ] : score >= 14 ? [
+        'Occasional feelings of stress and pressure',
+        'Some difficulty relaxing completely',
+        'Mild sleep disturbances',
+        'Occasional irritability',
+        'Mild physical symptoms like tension',
+        'Some concentration difficulties',
+        'Occasional social withdrawal'
+      ] : [
+        'Generally good stress management',
+        'Ability to handle daily challenges effectively',
+        'Good relaxation and recovery capabilities',
+        'Healthy work-life balance',
+        'Strong social support systems'
       ]
     }),
 
@@ -785,6 +887,40 @@ export const WHO5_ASSESSMENT: Assessment = {
         'Continue wellbeing-enhancing practices',
         'Mentor others in cultivating wellbeing',
         'Contribute to community wellbeing initiatives'
+      ],
+      manifestations: score < 8 ? [
+        'Persistent feelings of sadness and hopelessness',
+        'Loss of interest in activities once enjoyed',
+        'Difficulty experiencing positive emotions',
+        'Lack of energy and motivation',
+        'Sleep disturbances affecting daily life',
+        'Social withdrawal and isolation',
+        'Difficulty finding meaning or purpose',
+        'Physical symptoms like fatigue and body aches'
+      ] : score < 13 ? [
+        'Occasional feelings of sadness or low mood',
+        'Reduced interest in some activities',
+        'Some difficulty experiencing joy',
+        'Occasional lack of energy',
+        'Some sleep disturbances',
+        'Social withdrawal in certain situations',
+        'Questioning life meaning and purpose'
+      ] : score < 18 ? [
+        'Generally positive mood with occasional lows',
+        'Good interest in activities and relationships',
+        'Ability to experience joy and positive emotions',
+        'Adequate energy levels most of the time',
+        'Generally good sleep quality',
+        'Active social life and relationships',
+        'Sense of purpose and meaning'
+      ] : [
+        'Consistently positive mood and outlook',
+        'High levels of interest and engagement in life',
+        'Frequent experiences of joy and positive emotions',
+        'High energy levels and vitality',
+        'Excellent sleep quality and rest',
+        'Strong social connections and support',
+        'Clear sense of purpose and life satisfaction'
       ]
     }),
 
@@ -978,6 +1114,49 @@ export const PCL5_ASSESSMENT: Assessment = {
         'Continue building resilience',
         'Learn about trauma-informed care',
         'Support others who may be experiencing trauma'
+      ],
+      manifestations: score >= 65 ? [
+        'Severe flashbacks and nightmares that disrupt daily life',
+        'Complete avoidance of trauma reminders and social situations',
+        'Extreme emotional numbness and detachment',
+        'Severe hypervigilance affecting all activities',
+        'Intense anger outbursts and irritability',
+        'Self-destructive behaviors and risk-taking',
+        'Severe concentration and memory problems',
+        'Chronic sleep disturbances and exhaustion'
+      ] : score >= 49 ? [
+        'Frequent nightmares and intrusive memories',
+        'Significant avoidance of trauma-related situations',
+        'Emotional numbness affecting relationships',
+        'High levels of anxiety and hypervigilance',
+        'Irritability and anger issues',
+        'Difficulty concentrating and remembering',
+        'Sleep problems and fatigue',
+        'Social withdrawal and isolation'
+      ] : score >= 34 ? [
+        'Occasional nightmares or intrusive thoughts',
+        'Some avoidance of trauma reminders',
+        'Mild emotional numbness',
+        'Moderate anxiety and jumpiness',
+        'Irritability in certain situations',
+        'Some concentration difficulties',
+        'Sleep disturbances',
+        'Social difficulties'
+      ] : score >= 19 ? [
+        'Mild nightmares or unwanted memories',
+        'Occasional avoidance of reminders',
+        'Some emotional detachment',
+        'Mild anxiety symptoms',
+        'Occasional irritability',
+        'Minor concentration issues',
+        'Some sleep problems'
+      ] : [
+        'Minimal trauma-related symptoms',
+        'Good emotional regulation',
+        'Normal anxiety levels',
+        'Healthy social functioning',
+        'Good concentration and memory',
+        'Normal sleep patterns'
       ]
     }),
 

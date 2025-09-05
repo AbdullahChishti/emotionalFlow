@@ -23,25 +23,75 @@ export async function getAIAssessmentExplanation(
   userProfile?: any
 ): Promise<AIExplanation> {
   try {
-    // Call the Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke('generate-assessment-explanation', {
+    // Log what we're sending to the AI
+    console.log('[AI] 🚀 SENDING TO EDGE FUNCTION:')
+    console.log('[AI] Assessment Data:', {
+      assessmentName: assessmentData.assessmentName,
+      score: assessmentData.score,
+      maxScore: assessmentData.maxScore,
+      category: assessmentData.category,
+      responsesKeys: Object.keys(assessmentData.responses),
+      responsesSample: Object.entries(assessmentData.responses).slice(0, 3) // First 3 responses
+    })
+    console.log('[AI] User Profile:', userProfile ? {
+      display_name: userProfile.display_name,
+      preferred_mode: userProfile.preferred_mode,
+      emotional_capacity: userProfile.emotional_capacity,
+      is_anonymous: userProfile.is_anonymous
+    } : 'No user profile')
+
+    // Call the Supabase Edge Function with a timeout to prevent hangs
+    const TIMEOUT_MS = 8000
+    const invokePromise = supabase.functions.invoke('generate-assessment-explanation', {
       body: {
         assessmentData,
         userProfile
       }
     })
 
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('AI explanation timeout')), TIMEOUT_MS)
+    )
+
+    const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as {
+      data: any
+      error: any
+    }
+
     if (error) {
       throw error
     }
 
     // Log exactly what we received from the Edge Function (ChatGPT-backed)
-    console.groupCollapsed('[AI] Explanation: edge function response')
-    console.log('assessmentData sent:', assessmentData)
-    console.log('raw data received:', data)
-    console.groupEnd()
+    console.log('[AI] Raw response from edge function:', data)
+    console.log('[AI] Response type:', typeof data)
+    console.log('[AI] Response keys:', data ? Object.keys(data) : 'null')
 
-    return data as AIExplanation
+    // Handle both success and fallback response structures
+    let explanation: AIExplanation
+
+    if (data?.explanation) {
+      // Success response with explanation
+      explanation = data.explanation
+      console.log('[AI] Using explanation from response')
+    } else if (data?.fallback) {
+      // Fallback response
+      explanation = data.fallback
+      console.log('[AI] Using fallback explanation')
+    } else {
+      // Direct response (legacy)
+      explanation = data as AIExplanation
+      console.log('[AI] Using direct response')
+    }
+
+    console.log('[AI] Final explanation:', {
+      summary: explanation?.summary?.length || 0,
+      recommendations: explanation?.recommendations?.length || 0,
+      manifestations: explanation?.manifestations?.length || 0,
+      nextSteps: explanation?.nextSteps?.length || 0
+    })
+
+    return explanation as AIExplanation
   } catch (error) {
     console.error('Error getting AI explanation:', error)
 
