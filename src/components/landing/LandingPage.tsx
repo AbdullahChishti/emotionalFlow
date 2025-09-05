@@ -240,24 +240,32 @@ const ChatExperienceSection = () => {
         </div>
 
         <div className="text-center">
-          <button
-            onClick={() => router.push('/login')}
-            className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 mx-auto"
-            style={{
-              backgroundColor: '#335f64',
-              boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)',
-              border: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#2a4f52';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#335f64';
-            }}
-          >
-            <span className="truncate">Start Chatting Now</span>
-          </button>
-          <p className="text-slate-500 text-sm mt-4">Free • Private • No Judgement</p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-4">
+            <button
+              onClick={() => router.push('/login')}
+              className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-white text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105"
+              style={{
+                backgroundColor: '#335f64',
+                boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)',
+                border: 'none'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#2a4f52';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#335f64';
+              }}
+            >
+              <span className="truncate">Start Chatting Now</span>
+            </button>
+            <button
+              onClick={() => router.push('/assessments')}
+              className="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-6 text-slate-700 text-base font-bold shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 border border-slate-300 bg-white hover:bg-slate-50"
+            >
+              <span className="truncate">Take Wellness Assessment</span>
+            </button>
+          </div>
+          <p className="text-slate-500 text-sm">Free • Private • No Judgement</p>
         </div>
       </div>
     </section>
