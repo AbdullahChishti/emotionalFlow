@@ -26,6 +26,7 @@ interface AssessmentState {
   isLoading: boolean
   isProcessingResults: boolean
   showResults: boolean
+  error: string | null
 
   // Actions
   setCurrentFlow: (flow: string | null) => void
@@ -42,6 +43,7 @@ interface AssessmentState {
   setLoading: (loading: boolean) => void
   setProcessingResults: (processing: boolean) => void
   setShowResults: (show: boolean) => void
+  setError: (error: string | null) => void
 
   // Progress actions
   updateProgress: (assessmentId: string, completed: boolean) => void
@@ -69,6 +71,7 @@ export const useAssessmentStore = create<AssessmentState>()(
       isLoading: false,
       isProcessingResults: false,
       showResults: false,
+      error: null,
 
       // Basic setters
       setCurrentFlow: (flow) => set({ currentFlow: flow }),
@@ -136,6 +139,8 @@ export const useAssessmentStore = create<AssessmentState>()(
 
       setShowResults: (show) => set({ showResults }),
 
+      setError: (error) => set({ error }),
+
       // Progress management
       updateProgress: (assessmentId, completed) => {
         console.log('📊 Assessment store: Updating progress', { assessmentId, completed })
@@ -166,7 +171,8 @@ export const useAssessmentStore = create<AssessmentState>()(
           selectedAssessments: [],
           showResults: false,
           isLoading: false,
-          isProcessingResults: false
+          isProcessingResults: false,
+          error: null
         })
       },
 
@@ -177,7 +183,8 @@ export const useAssessmentStore = create<AssessmentState>()(
           userProfile: null,
           completedAssessments: {},
           progressPercentage: 0,
-          showResults: false
+          showResults: false,
+          error: null
         })
       }
     }),

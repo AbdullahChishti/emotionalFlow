@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult } from '@/data/assessments'
 import { ASSESSMENTS } from '@/data/assessments'
-import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
+import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -292,7 +292,7 @@ export function Dashboard() {
           console.log('🗄️ DATABASE FIRST: Fetching assessment history from database...')
           setHydratingAssessments(true)
           // Add timeout for assessment history fetch
-          const assessmentPromise = AssessmentService.getAssessmentHistory(user.id)
+          const assessmentPromise = AssessmentManager.getAssessmentHistory(user.id)
           const timeoutPromise = new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Assessment fetch timeout')), 8000) // Increased timeout
           )

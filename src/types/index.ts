@@ -71,3 +71,29 @@ export interface AppSettings {
     fontSize: 'small' | 'medium' | 'large'
   }
 }
+
+export interface UserProfile {
+  id: string
+  email?: string
+  fullName?: string
+  avatar?: string
+  demographics?: {
+    age?: number
+    location?: string
+    gender?: string
+  }
+  preferences?: {
+    assessmentReminders: boolean
+    shareResults: boolean
+    dataRetention: 'minimal' | 'standard' | 'extended'
+  }
+  assessmentHistory?: Array<{
+    id: string
+    completedAt: Date
+    scores: Record<string, number>
+  }>
+  mentalHealthGoals?: string[]
+  currentConcerns?: string[]
+  lastAssessmentDate?: Date
+  riskFlags?: string[]
+}

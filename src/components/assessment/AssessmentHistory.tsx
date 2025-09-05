@@ -8,7 +8,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
-import AssessmentService, { AssessmentHistoryEntry } from '@/lib/assessment-service'
+import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -61,7 +61,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       }
 
       // Fetch fresh data
-      const history = await AssessmentService.getAssessmentHistory(authUserId)
+      const history = await AssessmentManager.getAssessmentHistory(authUserId)
 
       // Update cache
       if (typeof window !== 'undefined') {
@@ -151,7 +151,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       localStorage.setItem('assessmentResultsTakenAt', JSON.stringify(takenAtMap))
       // Persist latest profile for reliable fallback on Results page
       if (user?.id) {
-        const latest = await AssessmentService.getLatestUserProfile(user.id)
+        const latest = await AssessmentManager.getLatestUserProfile(user.id)
         if (latest?.profile_data) {
           localStorage.setItem('userProfile', JSON.stringify(latest.profile_data))
         }
@@ -227,16 +227,16 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
 
   return (
     <div className={`${className}`}>
-      {/* Header */}
+      {/* Minimal Header */}
       <motion.div
-        className="mb-8"
+        className="text-center mb-12"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Assessment History</h2>
-        <p className="text-gray-600">
-          Track your mental health journey and see how your scores change over time.
+        <h2 className="text-3xl font-light text-gray-900 mb-4 tracking-tight">Previous Assessments</h2>
+        <p className="text-gray-600 font-light max-w-md mx-auto">
+          Track your progress and revisit past results
         </p>
       </motion.div>
 
@@ -248,80 +248,79 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
           className="mt-6"
         >
           {assessmentHistory.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+            <div className="text-center py-16">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gray-100 flex items-center justify-center">
                 <span className="material-symbols-outlined text-2xl text-gray-400">assessment</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No Assessments Yet</h3>
-              <p className="text-gray-600 mb-6">
-                Complete your first assessment to start tracking your mental health journey.
+              <h3 className="text-2xl font-light text-gray-900 mb-3">No assessments yet</h3>
+              <p className="text-gray-600 font-light mb-8 max-w-sm mx-auto">
+                Take your first assessment to begin tracking your journey
               </p>
               <motion.button
                 onClick={() => window.location.href = '/assessments'}
-                className="px-6 py-3 text-white rounded-xl transition-colors duration-200"
-                style={{ backgroundColor: '#335f64' }}
+                className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors duration-200"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Take Assessment
+                Start Assessment
               </motion.button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6 max-w-3xl mx-auto">
               {assessmentHistory.map((entry, index) => (
                 <motion.div
                   key={entry.id}
-                  className="group bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md hover:border-brand-green-300 cursor-pointer transition-all duration-200"
+                  className="group bg-white border border-gray-200 rounded-2xl p-8 cursor-pointer transition-all duration-300 hover:border-gray-300 hover:shadow-lg"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => handleAssessmentClick(entry)}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-200 group-hover:bg-brand-green-50 group-hover:border-brand-green-200 transition-colors duration-200">
-                        <span className="material-symbols-outlined text-xl text-gray-600 group-hover:text-brand-green-600 transition-colors duration-200">
+                    <div className="flex items-start space-x-6">
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
+                        <span className="material-symbols-outlined text-xl text-gray-600 transition-colors duration-200">
                           {getAssessmentIcon(entry.assessmentId)}
                         </span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">
                           {entry.assessmentTitle}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-3">
-                          Completed on {formatDate(entry.takenAt)}
+                        <p className="text-sm text-gray-500 mb-4 font-light">
+                          {formatDate(entry.takenAt)}
                         </p>
-                        <div className="flex items-center space-x-4">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-2xl font-bold text-gray-900">
+                        <div className="flex items-center space-x-6">
+                          <div className="text-center">
+                            <div className="text-2xl font-light text-gray-900 mb-1">
                               {entry.score}
-                            </span>
-                            <span className="text-sm text-gray-500">/ 10</span>
+                            </div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">
+                              Score
+                            </div>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${getSeverityColor(entry.severity)}`}>
-                            {entry.level}
-                          </span>
+                          <div className="text-center">
+                            <div className={`text-sm font-medium mb-1 ${
+                              entry.severity === 'normal' ? 'text-green-600' :
+                              entry.severity === 'mild' ? 'text-yellow-600' :
+                              entry.severity === 'moderate' ? 'text-orange-600' :
+                              entry.severity === 'severe' ? 'text-red-600' : 'text-red-800'
+                            }`}>
+                              {entry.level}
+                            </div>
+                            <div className="text-xs text-gray-500 uppercase tracking-wider">
+                              Level
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500 font-medium mb-2">
-                        {entry.severity.charAt(0).toUpperCase() + entry.severity.slice(1)} Severity
-                      </div>
-                      <div className="flex items-center text-brand-green-600 text-sm font-medium">
-                        <span className="material-symbols-outlined text-lg mr-1">visibility</span>
-                        View Details
-                      </div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="material-symbols-outlined text-gray-400">arrow_forward</span>
                     </div>
                   </div>
-                  
-                  {entry.friendlyExplanation && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                      <p className="text-sm text-gray-700 leading-relaxed">{entry.friendlyExplanation}</p>
-                    </div>
-                  )}
                 </motion.div>
               ))}
             </div>

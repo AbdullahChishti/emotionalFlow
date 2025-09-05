@@ -258,6 +258,17 @@ export default function AssessmentResults({
   className = '',
   aiExplanation: preGeneratedAI
 }: AssessmentResultsProps) {
+  // Guard against undefined assessment or result
+  if (!assessment || !result) {
+    console.warn('AssessmentResults: Missing assessment or result data', { assessment, result })
+    return (
+      <div className="p-6 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-500 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading assessment results...</p>
+      </div>
+    )
+  }
+
   const { user } = useAuth()
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(preGeneratedAI || null)
   const [isLoading, setIsLoading] = useState(false) // Start with false since we have result data
@@ -428,6 +439,11 @@ export default function AssessmentResults({
 
   // Memoized header content with category and severity chips
   const headerContent = useMemo(() => {
+    // Guard against undefined assessment
+    if (!assessment) {
+      return null
+    }
+
     const severityMap: Record<string, string> = {
       normal: 'bg-green-100/80 text-green-800 border-green-200/60',
       mild: 'bg-emerald-100/80 text-emerald-800 border-emerald-200/60',
@@ -464,7 +480,7 @@ export default function AssessmentResults({
         </div>
       </div>
     )
-  }, [assessment.title, assessment.category, result?.severity, result?.level])
+  }, [assessment?.title, assessment?.category, result?.severity, result?.level])
 
   // Handle compact variant for summary displays
   if (variant === 'compact') {

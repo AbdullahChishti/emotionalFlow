@@ -5,7 +5,7 @@
 
 import { supabase } from '../supabase'
 import { AssessmentResult } from '@/data/assessments'
-import { UserProfile, AssessmentIntegrations } from '@/data/assessment-integration'
+import { UserProfile, AssessmentIntegrator } from '@/data/assessment-integration'
 import { Database } from '@/types/database'
 import { getAIAssessmentExplanation } from '../assessment-ai'
 
@@ -244,7 +244,7 @@ export class AssessmentManager {
     console.log('🔄 Processing assessment results...')
 
     // Process results immediately with local scoring
-    const userProfile = AssessmentIntegrations.processResultsImmediate(results)
+    const userProfile = AssessmentIntegrator.processResultsImmediate(results)
     userProfile.id = userId
 
     console.log('✅ Local processing completed')

@@ -1020,38 +1020,44 @@ export const ASSESSMENT_CATEGORIES = {
   trauma: {
     title: 'Trauma & Stress',
     description: 'Assess experiences of trauma and current stress levels',
-    color: 'from-red-500/20 to-pink-500/20',
-    icon: '🩹'
+    color: 'red',
+    severity: 'high',
+    clinical: true
   },
   depression: {
     title: 'Depression',
     description: 'Screen for depressive symptoms and severity',
-    color: 'from-blue-500/20 to-indigo-500/20',
-    icon: '😢'
+    color: 'blue',
+    severity: 'high',
+    clinical: true
   },
   anxiety: {
     title: 'Anxiety',
     description: 'Evaluate anxiety symptoms and worry patterns',
-    color: 'from-yellow-500/20 to-orange-500/20',
-    icon: '😰'
+    color: 'amber',
+    severity: 'medium',
+    clinical: true
   },
   personality: {
     title: 'Personality',
     description: 'Understand personality traits and coping styles',
-    color: 'from-purple-500/20 to-violet-500/20',
-    icon: '🧠'
+    color: 'purple',
+    severity: 'low',
+    clinical: false
   },
   resilience: {
     title: 'Resilience',
     description: 'Measure ability to cope with stress and adversity',
-    color: 'from-emerald-500/20 to-teal-500/20',
-    icon: '💪'
+    color: 'emerald',
+    severity: 'low',
+    clinical: false
   },
   wellbeing: {
     title: 'Well-being',
     description: 'Assess overall mental health and life satisfaction',
-    color: 'from-cyan-500/20 to-blue-500/20',
-    icon: '✨'
+    color: 'violet',
+    severity: 'low',
+    clinical: false
   }
 }
 
