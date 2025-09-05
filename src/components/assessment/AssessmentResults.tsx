@@ -22,44 +22,15 @@ interface AssessmentResultsProps {
 // Memoized static left panel for results
 const ResultsLeftPanel = memo(() => (
   <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-    {/* Glassmorphic Background Elements */}
-    <div className="absolute inset-0 bg-gradient-to-br from-brand-green-100/50 to-brand-green-200/30"></div>
-    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-green-200/20 rounded-full blur-3xl"></div>
-    <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-brand-green-300/15 rounded-full blur-3xl"></div>
+    {/* Minimal background removed for modern, clean look */}
 
     {/* SVG Illustration */}
     <div className="relative z-10 flex items-center justify-center w-full p-12">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full max-w-lg"
-      >
-        <img
-          src="/assets/Contemplating-bro_1.svg"
-          alt="Assessment completed illustration"
-          className="w-full h-auto drop-shadow-2xl"
-        />
-      </motion.div>
+      {/* Illustration removed to keep layout minimal */}
     </div>
 
     {/* Inspirational Text Overlay */}
-    <div className="absolute bottom-12 left-12 right-12 z-20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="glassmorphic rounded-2xl p-6 text-center"
-      >
-        <h3 className="text-xl font-semibold text-brand-green-800 mb-2">
-          Well Done!
-        </h3>
-        <p className="text-brand-green-700/80 text-sm leading-relaxed">
-          You've completed your assessment. These insights will help guide your
-          wellness journey and personal growth.
-        </p>
-      </motion.div>
-    </div>
+    {/* Removed overlay text for cleaner aesthetic */}
   </div>
 ))
 
@@ -74,16 +45,16 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
   const c = 2 * Math.PI * r
 
   const severityColors: Record<string, string> = {
-    normal: '#16a34a', // green-600
-    mild: '#059669',   // emerald-600
-    moderate: '#d97706', // amber-600
-    severe: '#ea580c', // orange-600
-    critical: '#dc2626' // red-600
+    normal: '#10b981',
+    mild: '#34d399',
+    moderate: '#f59e0b',
+    severe: '#f97316',
+    critical: '#ef4444'
   }
   const stroke = severityColors[result?.severity || 'normal']
 
   return (
-    <div className="bg-white/80 rounded-2xl shadow-sm border border-white/50 p-8 mb-8">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
       <div className="flex items-center gap-6">
         {/* Circular progress meter */}
         <div className="relative w-32 h-32">
@@ -100,17 +71,17 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center rotate-[90deg]">
-            <div className="text-3xl font-bold" style={{ color: '#1f3d42' }}>{score}</div>
-            <div className="text-xs text-zinc-500">/ {max}</div>
+            <div className="text-2xl font-semibold" style={{ color: '#1f3d42' }}>{score}</div>
+            <div className="text-[11px] text-zinc-500">/ {max}</div>
           </div>
         </div>
 
         {/* Score details */}
         <div className="flex-1">
-          <div className="text-sm text-zinc-600 mb-1">Overall Score</div>
-          <div className="text-2xl font-semibold mb-2" style={{ color: '#1f3d42' }}>{pct}%</div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-green-100/80 text-brand-green-800 rounded-full text-xs font-semibold border border-brand-green-200/50">
-            <span className="material-symbols-outlined text-sm">verified</span>
+          <div className="text-xs text-zinc-600 mb-1">Overall Score</div>
+          <div className="text-xl font-semibold mb-2" style={{ color: '#1f3d42' }}>{pct}%</div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-700">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stroke }} />
             {result.level}
           </div>
         </div>
@@ -462,37 +433,32 @@ export default function AssessmentResults({
       return null
     }
 
-    const severityMap: Record<string, string> = {
-      normal: 'bg-green-100/80 text-green-800 border-green-200/60',
-      mild: 'bg-emerald-100/80 text-emerald-800 border-emerald-200/60',
-      moderate: 'bg-amber-100/80 text-amber-800 border-amber-200/60',
-      severe: 'bg-orange-100/80 text-orange-800 border-orange-200/60',
-      critical: 'bg-red-100/80 text-red-800 border-red-200/60'
+    const severityColor: Record<string, string> = {
+      normal: '#10b981',
+      mild: '#34d399',
+      moderate: '#f59e0b',
+      severe: '#f97316',
+      critical: '#ef4444'
     }
-    const severityClass = severityMap[result?.severity || 'normal']
+    const dot = severityColor[result?.severity || 'normal']
     const categoryLabel = assessment.category.charAt(0).toUpperCase() + assessment.category.slice(1)
 
     return (
       <div className="mb-4">
-        <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-2xl mb-3">
-          <span
-            className="material-symbols-outlined text-xl"
-            style={{ color: '#1f3d42' }}
-          >
-            analytics
-          </span>
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-xl mb-3">
+          <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 mb-2 text-center md:text-left">{assessment.title}</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-zinc-900 mb-2 text-center md:text-left">{assessment.title}</h1>
         <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-brand-green-100/60 text-brand-green-800 rounded-full text-xs font-medium border border-brand-green-200/60 capitalize">
-            <span className="material-symbols-outlined text-sm" style={{ color: '#1f3d42' }}>category</span>
+          <span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-slate-700 rounded-full text-xs font-medium border border-slate-200 capitalize">
+            <span className="material-symbols-outlined text-sm text-slate-600">category</span>
             {categoryLabel}
           </span>
-          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${severityClass}`}>
-            <span className="material-symbols-outlined text-sm">monitoring</span>
+          <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-700`}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: dot }} />
             {result?.severity || 'normal'}
           </span>
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-white/70 text-zinc-700 rounded-full text-xs font-medium border border-white/50">
+          <span className="inline-flex items-center gap-2 px-3 py-1 bg-white text-zinc-700 rounded-full text-xs font-medium border border-slate-200">
             Level: {result?.level}
           </span>
         </div>
@@ -512,27 +478,22 @@ export default function AssessmentResults({
   // Handle summary variant for overview pages
   if (variant === 'summary') {
     return (
-      <div className={`bg-white/80 rounded-2xl shadow-sm border border-white/50 p-6 ${className}`}>
+      <div className={`bg-white rounded-2xl shadow-sm border border-slate-200 p-5 ${className}`}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-xl flex items-center justify-center">
-              <span
-                className="material-symbols-outlined text-lg"
-                style={{ color: '#1f3d42' }}
-              >
-                analytics
-              </span>
+            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">
+              <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-zinc-900">{assessment.shortTitle}</h3>
-              <p className="text-sm text-zinc-600 font-medium">{result.level}</p>
+              <h3 className="text-base font-semibold text-zinc-900">{assessment.shortTitle}</h3>
+              <p className="text-xs text-zinc-600 font-medium">{result.level}</p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-light text-brand-green-700" style={{ color: '#1f3d42' }}>
+            <div className="text-2xl font-semibold text-brand-green-700" style={{ color: '#1f3d42' }}>
               {result.score}
             </div>
-            <div className="text-sm text-zinc-600">
+            <div className="text-xs text-zinc-600">
               out of {assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max}
             </div>
           </div>
@@ -560,148 +521,11 @@ export default function AssessmentResults({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
-          {/* Animated Brain Icon */}
-          <motion.div
-            className="relative mb-8"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="w-24 h-24 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-full flex items-center justify-center mx-auto shadow-lg">
-              <motion.span
-                className="material-symbols-outlined text-4xl text-brand-green-700"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0]
-                }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                psychology
-              </motion.span>
-            </div>
-            
-            {/* Floating Dots */}
-            <motion.div
-              className="absolute -top-2 -right-2 w-4 h-4 bg-brand-green-500 rounded-full"
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.7, 1, 0.7]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: 0.2
-              }}
-            />
-            <motion.div
-              className="absolute -bottom-2 -left-2 w-3 h-3 bg-brand-green-400 rounded-full"
-              animate={{
-                y: [0, -8, 0],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{
-                duration: 1.8,
-                repeat: Infinity,
-                delay: 0.5
-              }}
-            />
-          </motion.div>
-
-          {/* Main Text */}
-          <motion.h2
-            className="text-2xl font-bold text-slate-900 mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Analyzing your results...
-          </motion.h2>
-
-          {/* Subtitle */}
-          <motion.p
-            className="text-slate-600 mb-8 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            Our AI is processing your responses and generating personalized insights just for you.
-          </motion.p>
-
-          {/* Progress Steps */}
-          <motion.div
-            className="space-y-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-          >
-            {[
-              { text: "Processing your responses", delay: 0 },
-              { text: "Analyzing patterns", delay: 1 },
-              { text: "Generating insights", delay: 2 },
-              { text: "Creating recommendations", delay: 3 }
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                className="flex items-center gap-3 text-sm text-slate-600"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + step.delay * 0.3, duration: 0.5 }}
-              >
-                <motion.div
-                  className="w-2 h-2 bg-brand-green-500 rounded-full"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5]
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    delay: step.delay * 0.3
-                  }}
-                />
-                <span>{step.text}</span>
-                <motion.div
-                  className="ml-auto"
-                  animate={{ opacity: [0, 1, 0] }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: step.delay * 0.3 + 0.5
-                  }}
-                >
-                  <span className="material-symbols-outlined text-brand-green-600 text-sm">
-                    check_circle
-                  </span>
-                </motion.div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Loading Bar */}
-          <motion.div
-            className="mt-8 bg-slate-200 rounded-full h-2 overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 0.6 }}
-          >
-            <motion.div
-              className="h-full bg-gradient-to-r from-brand-green-500 to-brand-green-600 rounded-full"
-              animate={{
-                width: ["0%", "25%", "50%", "75%", "100%"]
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </motion.div>
+          <div className="w-10 h-10 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin mx-auto mb-4" />
+          <div className="text-slate-900 font-medium">Analyzing your results…</div>
+          <div className="text-slate-500 text-sm mt-1">Generating personalized insights</div>
         </div>
       </div>
     )
@@ -709,11 +533,9 @@ export default function AssessmentResults({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-500 text-2xl">⚠️</span>
-          </div>
+          <div className="w-10 h-10 border-2 border-red-200 border-t-red-600 rounded-full animate-spin mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button

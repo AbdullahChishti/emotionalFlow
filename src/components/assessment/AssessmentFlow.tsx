@@ -414,41 +414,23 @@ export function AssessmentFlow({
       className="max-w-6xl mx-auto space-y-8"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.3 }}
     >
       {/* Header */}
       <motion.div
-        className="bg-white rounded-xl border border-gray-200 p-8 text-center"
-        initial={{ opacity: 0, y: -20 }}
+        className="text-center"
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.1 }}
       >
-        <div className="mb-6">
-          <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
-            <span className="material-symbols-outlined text-2xl text-gray-600">psychology</span>
-          </div>
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Clinical Assessment
-        </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
-          Complete this scientifically validated psychological assessment to gain evidence-based insights into your mental health and well-being.
+        <h1 className="text-4xl font-semibold text-slate-900 mb-2">Assessments</h1>
+        <p className="text-slate-600 max-w-2xl mx-auto">
+          Evidence-based measures to understand your current state.
         </p>
-        
-        {/* Professional validation badge */}
-        <motion.div
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-full text-sm font-medium text-blue-800"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <span className="material-symbols-outlined text-base">verified</span>
-          <span>Clinically Validated • Evidence-Based • Professional Grade</span>
-        </motion.div>
       </motion.div>
 
       {/* Assessment List */}
-      <div className="grid md:grid-cols-2 gap-8">
+      <div className="grid md:grid-cols-2 gap-6">
         {assessmentIds.map((assessmentId, index) => {
           const assessment = ASSESSMENTS[assessmentId]
           const category = ASSESSMENT_CATEGORIES[assessment.category]
@@ -458,12 +440,12 @@ export function AssessmentFlow({
           return (
             <motion.div
               key={assessmentId}
-              className={`bg-white rounded-lg border border-gray-200 p-6 cursor-pointer group hover:border-gray-300 hover:shadow-sm transition-all duration-200 ${
-                isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''
+              className={`bg-white rounded-xl border border-slate-200 p-6 cursor-pointer group hover:bg-slate-50 transition-colors ${
+                isSelected ? 'outline outline-2 outline-slate-900' : ''
               }`}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + index * 0.1 }}
+              transition={{ delay: 0.1 + index * 0.03 }}
               whileHover={{ scale: 1.01 }}
               onClick={() => {
                 setCurrentAssessmentIndex(index)
@@ -472,11 +454,11 @@ export function AssessmentFlow({
                 setCurrentState('taking')
               }}
             >
-              <div className="flex items-start gap-6">
+              <div className="flex items-start gap-4">
                 {/* Icon */}
                 <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-all duration-200">
-                    <span className="material-symbols-outlined text-xl text-gray-600">
+                  <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center group-hover:bg-slate-200 transition-colors">
+                    <span className="material-symbols-outlined text-base text-slate-600">
                       {getAssessmentIconName(assessmentId)}
                     </span>
                   </div>
@@ -484,33 +466,33 @@ export function AssessmentFlow({
                 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-2">
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-700 transition-colors">
+                      <h3 className="text-base font-semibold text-slate-900 mb-1 group-hover:text-slate-700 transition-colors">
                         {assessment.shortTitle}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed">
+                      <p className="text-slate-600 leading-relaxed text-sm">
                         {assessment.description}
                       </p>
                     </div>
                   </div>
                   
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">schedule</span>
+                  <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-xs">schedule</span>
                       <span>{assessment.estimatedTime} min</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-sm">quiz</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-xs">quiz</span>
                       <span>{assessment.questions.length} questions</span>
                     </div>
                   </div>
                 </div>
                 
                 {/* Arrow indicator */}
-                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <span className="material-symbols-outlined text-gray-400">arrow_forward</span>
+                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="material-symbols-outlined text-slate-400">arrow_forward</span>
                 </div>
               </div>
             </motion.div>
@@ -520,16 +502,16 @@ export function AssessmentFlow({
 
       {/* Start Button */}
       <motion.div
-        className="text-center pt-8"
+        className="text-center pt-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.2 }}
       >
         <motion.button
           onClick={() => setCurrentState('taking')}
-          className="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all duration-200 font-medium flex items-center gap-2 mx-auto"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="px-6 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium flex items-center gap-2 mx-auto"
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
         >
           <span className="material-symbols-outlined text-lg">play_arrow</span>
           Begin Assessment
@@ -542,10 +524,10 @@ export function AssessmentFlow({
     <div className="relative">
       {/* Exit Button - Positioned absolutely */}
       <motion.div
-        className="absolute top-4 left-4 z-50"
-        initial={{ opacity: 0, x: -20 }}
+        className="absolute top-6 left-6 z-50"
+        initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.2 }}
       >
         <motion.button
           onClick={() => {
@@ -554,14 +536,14 @@ export function AssessmentFlow({
             setCurrentQuestionIndex(0)
             setResponses({})
           }}
-          className="group flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-lg text-gray-700 hover:text-gray-900 hover:bg-gray-50 transition-colors duration-200 shadow-sm"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="group flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-sm"
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
         >
-          <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform duration-200">
+          <span className="material-symbols-outlined text-base group-hover:-translate-x-0.5 transition-transform">
             arrow_back
           </span>
-          <span className="font-medium">Back</span>
+          <span className="text-sm font-medium">Back</span>
         </motion.button>
       </motion.div>
 
@@ -588,18 +570,18 @@ export function AssessmentFlow({
   // renderResults and renderCompleted functions removed - results now shown on dedicated /results page
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-white py-12 px-6">
       {/* Exit Button */}
       <motion.button
         onClick={onExit}
-        className="fixed top-6 right-6 z-50 p-3 rounded-lg bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all duration-300 shadow-sm"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        className="fixed top-6 right-6 z-50 p-2.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors shadow-sm"
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.2 }}
       >
-        <span className="material-symbols-outlined text-lg">close</span>
+        <span className="material-symbols-outlined text-base">close</span>
       </motion.button>
 
       {/* Saving overlay when finalizing */}
@@ -607,7 +589,7 @@ export function AssessmentFlow({
         <div className="fixed inset-0 z-40 bg-white/80 backdrop-blur-sm flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-800 mx-auto mb-4"></div>
-            <p className="text-gray-700 font-medium">Saving your assessment results…</p>
+            <p className="text-slate-700 font-medium">Saving your assessment results…</p>
           </div>
         </div>
       )}

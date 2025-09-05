@@ -52,26 +52,26 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
   const router = useRouter()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-6 py-12">
         {/* Header */}
         <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 20 }}
+          className="text-center mb-10"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-2xl mb-4">
-            <span className="material-symbols-outlined text-2xl text-brand-green-700">analytics</span>
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-xl mb-3">
+            <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
           </div>
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">Your Assessment Results</h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <h1 className="text-3xl font-semibold text-slate-900 mb-2">Your Assessment Results</h1>
+          <p className="text-sm text-slate-600 max-w-2xl mx-auto">
             Here's a comprehensive overview of your completed assessments and insights.
           </p>
         </motion.div>
 
         {/* Results Grid */}
-        <div className="grid gap-8 max-w-6xl mx-auto">
+        <div className="grid gap-6 max-w-6xl mx-auto">
           {Object.entries(results).map(([assessmentId, result], index) => {
             const assessment = ASSESSMENTS[assessmentId]
             if (!assessment) return null
@@ -79,23 +79,23 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
             return (
               <motion.div
                 key={assessmentId}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
+                transition={{ duration: 0.35, delay: index * 0.05, ease: 'easeOut' }}
+                className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
               >
-                <div className="p-6 border-b border-slate-200 bg-slate-50">
+                <div className="p-5 border-b border-slate-200 bg-slate-50">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-brand-green-100 to-brand-green-200 rounded-xl flex items-center justify-center">
-                      <span className="material-symbols-outlined text-lg text-brand-green-700">analytics</span>
+                    <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                      <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-900">{assessment.title}</h2>
-                      <p className="text-sm text-slate-600">{assessment.description}</p>
+                      <h2 className="text-base font-semibold text-slate-900">{assessment.title}</h2>
+                      <p className="text-xs text-slate-600">{assessment.description}</p>
                     </div>
                   </div>
                 </div>
-                <div className="p-6">
+                <div className="p-5">
                   <AssessmentResults
                     assessment={assessment}
                     result={result}
@@ -113,21 +113,20 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
 
         {/* Action Buttons */}
         <motion.div
-          className="flex flex-col sm:flex-row gap-4 justify-center mt-12 max-w-md mx-auto"
-          initial={{ opacity: 0, y: 20 }}
+          className="flex flex-col sm:flex-row gap-3 justify-center mt-8 max-w-md mx-auto"
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.35, delay: 0.2 }}
         >
           <button
             onClick={onRetake}
-            className="px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all duration-300 font-semibold"
+            className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium text-sm"
           >
             Retake Assessments
           </button>
           <button
             onClick={onNewAssessment}
-            className="px-6 py-3 bg-brand-green-700 text-white rounded-xl hover:bg-brand-green-800 transition-all duration-300 font-semibold shadow-md"
-            style={{ backgroundColor: '#1f3d42' }}
+            className="px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium text-sm"
           >
             Take New Assessment
           </button>
@@ -495,7 +494,7 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="text-slate-600 mt-4">Loading your assessment results...</p>
@@ -506,7 +505,7 @@ export default function ResultsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center max-w-md mx-auto px-6">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined text-2xl text-red-600">error</span>
@@ -566,7 +565,7 @@ export default function ResultsPage() {
   // Render based on mode
   if (assessmentData.mode === 'multiple' && assessmentData.results) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen bg-white">
         <div className="container mx-auto px-6 py-6">{SyncBanner}</div>
         <MultipleResultsDisplay
           results={assessmentData.results}
@@ -579,7 +578,7 @@ export default function ResultsPage() {
 
   if (assessmentData.mode === 'single' && assessmentData.assessment && assessmentData.result) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen bg-white">
         <div className="container mx-auto px-6 py-6">{SyncBanner}</div>
         <AssessmentResults
           assessment={assessmentData.assessment}
@@ -594,14 +593,13 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-slate-900 mb-4">No Results Available</h1>
         <p className="text-slate-600 mb-6">No assessment results found.</p>
         <button
           onClick={() => router.push('/assessments')}
-          className="px-6 py-3 bg-brand-green-700 text-white rounded-xl hover:bg-brand-green-800 transition-all duration-300 font-semibold"
-          style={{ backgroundColor: '#1f3d42' }}
+          className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-semibold"
         >
           Take Assessment
         </button>
