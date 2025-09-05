@@ -37,7 +37,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden">
+    <div className="min-h-screen bg-white relative overflow-hidden">
       {/* Subtle background decorations */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
         <div className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-slate-400/15 rounded-tl-full" />
@@ -51,7 +51,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
         className="relative z-10 h-screen flex flex-col"
       >
         {/* Header with session controls */}
-        <div className="flex-shrink-0 p-4 border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
+        <div className="flex-shrink-0 p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-semibold text-slate-800">Therapy Session</h1>
@@ -89,14 +89,15 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
 
         {/* Main content - Two columns */}
         <div className="flex-1 overflow-hidden">
-          <div className="max-w-7xl mx-auto h-full flex gap-6 p-6">
-            {/* Left Column - Assessment Sidebar */}
-            <div className="w-80 flex-shrink-0">
-              <AssessmentSidebar />
-                    </div>
+          <div className="max-w-7xl mx-auto h-full grid grid-cols-[260px_1fr] gap-6 p-6">
+            {/* Left Column - Subtle assessment access indicator */}
+            <div className="relative">
+              <AssessmentSidebar variant="compact" />
+              <div className="absolute right-[-12px] top-0 bottom-0 w-px bg-slate-200/80" />
+            </div>
 
             {/* Right Column - Chat Interface */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0">
               <ChatInterface therapistName={therapistName} />
             </div>
           </div>

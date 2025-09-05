@@ -116,7 +116,7 @@ function ActionPill({ icon, label, description, onClick, variant = 'primary', di
 }
 
 // Constants to prevent magic numbers
-const FETCH_TIMEOUT = 5000 // 5 seconds
+const FETCH_TIMEOUT = 15000 // 15 seconds to avoid false timeouts
 const RETRY_DELAY = 2000 // 2 seconds
 const MAX_RETRIES = 1
 
@@ -153,17 +153,22 @@ export function Dashboard() {
 
   // Data fetching function (explicit userId to avoid stale closures)
   const fetchAssessmentData = useCallback(async (userId: string): Promise<{ results: Record<string, AssessmentResult>; history: AssessmentHistoryEntry[]; latest: Record<string, string> }> => {
+    console.log('[Dash] fetchAssessmentData:start', { userId })
     if (!userId) return { results: {}, history: [], latest: {} }
 
     try {
       // Create timeout promise
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), FETCH_TIMEOUT)
+      const timeoutPromise = new Promise<AssessmentHistoryEntry[]>((resolve) =>
+        setTimeout(() => resolve([]), FETCH_TIMEOUT)
       )
 
       // Fetch assessment history with timeout
       const dataPromise = AssessmentManager.getAssessmentHistory(userId)
+      const t0 = performance.now()
       const assessmentHistory = await Promise.race([dataPromise, timeoutPromise]) as AssessmentHistoryEntry[]
+      const dur = Math.round(performance.now() - t0)
+      console.log('[Dash] getAssessmentHistory:ms', dur)
+      console.log('[Dash] fetchAssessmentData:history', { count: assessmentHistory?.length || 0 })
 
       if (!assessmentHistory || assessmentHistory.length === 0) {
         return { results: {}, history: [], latest: {} }
@@ -193,10 +198,13 @@ export function Dashboard() {
       }
 
       const latest: Record<string, string> = Object.fromEntries(Object.entries(latestTimes).map(([k, v]) => [k, v.toISOString()]))
-      return { results, history: assessmentHistory, latest }
+      const payload = { results, history: assessmentHistory, latest }
+      console.log('[Dash] fetchAssessmentData:done', { resultsCount: Object.keys(results).length })
+      return payload
     } catch (error) {
       console.error('Error fetching assessment data:', error)
-      throw error
+      // Graceful fallback instead of throwing so UI doesn't hard-fail
+      return { results: {}, history: [], latest: {} }
     }
   }, [])
 
@@ -205,12 +213,30 @@ export function Dashboard() {
     let isMounted = true
 
     const fetchData = async () => {
-      if (!user?.id || !profile || dataFetched || isFetching) {
+      console.log('[Dash] effect:fetchData:enter', { userReady: !!user?.id, profileReady: !!profile, dataFetched, isFetching })
+      if (!user?.id) {
+        console.log('[Dash] effect:skip (no user)')
+        setLoading(false)
+        return
+      }
+      if (!profile) {
+        console.log('[Dash] effect:skip (no profile)')
+        setLoading(false)
+        return
+      }
+      if (dataFetched) {
+        console.log('[Dash] effect:skip (already fetched)')
+        setLoading(false)
+        return
+      }
+      if (isFetching) {
+        console.log('[Dash] effect:skip (already fetching)')
         setLoading(false)
         return
       }
 
       setIsFetching(true)
+      console.log('[Dash] effect:fetch:start')
 
       try {
         // Try to load from localStorage first for immediate display
@@ -221,6 +247,7 @@ export function Dashboard() {
             if (Object.keys(parsed).length > 0) {
               setAssessmentResults(parsed)
               setHasAssessmentData(true)
+              console.log('[Dash] localStorage:used', { keys: Object.keys(parsed).length })
             }
           } catch (parseError) {
             console.warn('Failed to parse stored assessment results:', parseError)
@@ -229,7 +256,9 @@ export function Dashboard() {
         }
 
         // Fetch fresh data from database
+        console.log('[Dash] db:fetch:start')
         const { results: freshResults, history: freshHistory, latest } = await fetchAssessmentData(user.id)
+        console.log('[Dash] db:fetch:done', { resultsCount: Object.keys(freshResults).length, historyCount: freshHistory.length })
 
         if (isMounted) {
           setAssessmentResults(freshResults)
@@ -237,11 +266,13 @@ export function Dashboard() {
           setDataFetched(true)
           setHistory(freshHistory)
           setLatestMeta(latest)
+          console.log('[Dash] state:update:complete')
 
-          // Build snapshot
+          // Build snapshot (non-blocking)
           if (user?.id) {
-            const snap = await buildUserSnapshot(user.id)
-            setSnapshot(snap)
+            Promise.resolve(buildUserSnapshot(user.id))
+              .then(snap => { setSnapshot(snap); console.log('[Dash] snapshot:ready') })
+              .catch(err => console.warn('Snapshot build failed:', err))
           }
 
           // Compute coverage
@@ -266,6 +297,7 @@ export function Dashboard() {
           // Update localStorage with fresh data
           try {
             localStorage.setItem('assessmentResults', JSON.stringify(freshResults))
+            console.log('[Dash] localStorage:updated')
           } catch (storageError) {
             console.warn('Failed to store assessment results:', storageError)
           }
@@ -273,19 +305,17 @@ export function Dashboard() {
       } catch (error) {
         console.error('Dashboard fetch error:', error)
         if (isMounted) {
-          setError(error instanceof Error ? error.message : 'Failed to load dashboard data')
-          if (retryCount < MAX_RETRIES) {
-            // Retry after delay
-            setRetryCount(prev => prev + 1)
-            setTimeout(() => {
-              if (isMounted) fetchData()
-            }, RETRY_DELAY)
-          }
+          // Do not hard-fail on errors; show empty state instead
+          setError(null)
+          setDataFetched(true)
+          setHasAssessmentData(false)
+          console.log('[Dash] fetch:error:graceful-empty')
         }
       } finally {
         if (isMounted) {
           setLoading(false)
           setIsFetching(false)
+          console.log('[Dash] effect:fetch:finally', { loading: false, isFetching: false })
         }
       }
     }
@@ -295,6 +325,7 @@ export function Dashboard() {
     return () => {
       isMounted = false
       setIsFetching(false)
+      console.log('[Dash] cleanup')
     }
   }, [user?.id, profile, retryCount, dataFetched]) // Stable dependencies to prevent infinite loops
 

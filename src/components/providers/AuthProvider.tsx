@@ -168,14 +168,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       initializingRef.current = true
       
-      // Add a safety timeout to prevent infinite loading
-      safetyTimeout = setTimeout(() => {
-        if (isMounted && loading) {
-          console.warn('Auth initialization taking too long, forcing completion')
-          setLoading(false)
-          initializingRef.current = false
-        }
-      }, 5000) // Reduced to 5 second safety timeout
+      // Add a safety timeout to prevent infinite loading (production only)
+      if (process.env.NODE_ENV !== 'development') {
+        safetyTimeout = setTimeout(() => {
+          if (isMounted && loading) {
+            console.warn('Auth initialization taking too long, forcing completion')
+            setLoading(false)
+            initializingRef.current = false
+          }
+        }, 5000)
+      }
 
       try {
         console.log('Initializing auth...')
@@ -244,6 +246,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (timeoutId) {
             clearTimeout(timeoutId)
           }
+          if (safetyTimeout) {
+            clearTimeout(safetyTimeout)
+          }
           return
         }
 
@@ -267,6 +272,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false)
           console.log('Auth initialization complete')
         }
+        if (safetyTimeout) {
+          clearTimeout(safetyTimeout)
+        }
       } catch (error) {
         console.error('Auth initialization error:', error)
         if (isMounted) {
@@ -278,6 +286,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         initializingRef.current = false
         if (timeoutId) {
           clearTimeout(timeoutId)
+        }
+        if (safetyTimeout) {
+          clearTimeout(safetyTimeout)
         }
       }
     }
