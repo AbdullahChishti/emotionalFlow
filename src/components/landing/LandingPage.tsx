@@ -190,8 +190,7 @@ const ChatExperienceSection = () => {
           </h2>
 
           <p className="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto leading-loose font-light tracking-wide">
-            Connect with a compassionate listener who understands. Our chat is designed to provide support, understanding, 
-            and a judgment-free space to share what's on your mind—whenever you need it.
+            When life feels heavy, you deserve a gentle space to breathe. We listen with care and offer tools that help—always here, always free.
           </p>
           
           <div className="mt-6 text-center">
@@ -256,7 +255,7 @@ const ChatExperienceSection = () => {
                 e.currentTarget.style.backgroundColor = '#335f64';
               }}
             >
-              <span className="truncate">Start Chatting Now</span>
+              <span className="truncate">Start Chatting with MindWell</span>
             </button>
             <button
               onClick={() => router.push('/assessments')}
