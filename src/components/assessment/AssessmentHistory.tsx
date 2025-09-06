@@ -30,9 +30,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   const mountedRef = useRef(false)
 
   const loadHistory = useCallback(async () => {
-    setLoading(true)
     setError(null)
-
     try {
       // Resolve userId from context or Supabase as a fallback
       const ctxUserId = user?.id
@@ -43,38 +41,38 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
         return
       }
 
-      // Check cache first
       const cacheKey = `assessment-history-${authUserId}`
       const cachedData = typeof window !== 'undefined' ? localStorage.getItem(cacheKey) : null
-      
+
+      let usedCache = false
       if (cachedData) {
         try {
           const parsedData = JSON.parse(cachedData)
+          // If cache is fresh (<5 min), show immediately, but still revalidate in background
           if (Date.now() - parsedData.timestamp < 5 * 60 * 1000) {
             setAssessmentHistory(parsedData.data)
             setLoading(false)
-            return
+            usedCache = true
           }
         } catch (_) {
           // Ignore cache parse errors
         }
       }
 
-      // Fetch fresh data
+      if (!usedCache) setLoading(true)
+
+      // Fetch fresh data (stale-while-revalidate)
       const history = await AssessmentManager.getAssessmentHistory(authUserId)
 
-      // Update cache
+      // Update cache & UI if different/new
       if (typeof window !== 'undefined') {
         localStorage.setItem(cacheKey, JSON.stringify({ data: history, timestamp: Date.now() }))
       }
-
       setAssessmentHistory(history)
     } catch (error) {
       console.error('Error loading assessment history:', error)
       setError('Failed to load assessment history. Please try again.')
-      if (retryCount < 3) {
-        setTimeout(() => setRetryCount(prev => prev + 1), 2000)
-      }
+      if (retryCount < 3) setTimeout(() => setRetryCount(prev => prev + 1), 2000)
     } finally {
       setLoading(false)
     }
@@ -94,6 +92,20 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       loadHistory()
     }
   }, [authLoading, user?.id, retryCount, loadHistory])
+
+  // Subscribe to realtime changes for immediate refresh after results save
+  useEffect(() => {
+    if (!user?.id) return
+    const channel = supabase
+      .channel('assessment_results_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assessment_results', filter: `user_id=eq.${user.id}` }, () => {
+        loadHistory()
+      })
+      .subscribe()
+    return () => {
+      try { supabase.removeChannel(channel) } catch (_) {}
+    }
+  }, [user?.id, loadHistory])
 
   const getAssessmentIcon = (assessmentId: string) => {
     const assessment = ASSESSMENTS[assessmentId]
