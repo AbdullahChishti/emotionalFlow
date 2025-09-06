@@ -12,6 +12,20 @@ import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
 import { OverallAssessmentService, OverallAssessmentResult } from '@/lib/services/OverallAssessmentService'
+
+// Extended type to support error states
+interface ExtendedOverallAssessmentResult extends OverallAssessmentResult {
+  isError?: boolean
+  errorType?: string
+  canRetry?: boolean
+}
+
+// Extend window interface for debounce tracking
+declare global {
+  interface Window {
+    lastGenerateInsightsClick?: number
+  }
+}
 import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
 
 // Material Symbols icons import
@@ -131,7 +145,7 @@ export function Dashboard() {
   const [coverage, setCoverage] = useState<{ assessed: string[]; missing: string[]; stale: string[] }>({ assessed: [], missing: [], stale: [] })
 
   // Overall assessment state with persistence
-  const [overallAssessment, setOverallAssessment] = useState<OverallAssessmentResult | null>(() => {
+  const [overallAssessment, setOverallAssessment] = useState<ExtendedOverallAssessmentResult | null>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('currentOverallAssessment')
       return stored ? JSON.parse(stored) : null
@@ -176,123 +190,264 @@ export function Dashboard() {
     }
   }, [router])
 
-  // Generate overall assessment with progress tracking
-  const handleGenerateOverallAssessment = useCallback(async () => {
-    if (!user?.id || isGeneratingOverall) return
+  // Enhanced error types for better user feedback
+  type GenerationError = 
+    | 'NO_USER'
+    | 'NO_ASSESSMENTS' 
+    | 'NETWORK_ERROR'
+    | 'TIMEOUT_ERROR'
+    | 'SERVICE_ERROR'
+    | 'AUTH_ERROR'
+    | 'DATA_ERROR'
+    | 'UNKNOWN_ERROR'
 
+  const getErrorMessage = (errorType: GenerationError, retryCount: number): { title: string; message: string; canRetry: boolean } => {
+    switch (errorType) {
+      case 'NO_USER':
+        return {
+          title: 'Authentication Required',
+          message: 'Please log in to generate your insights.',
+          canRetry: false
+        }
+      case 'NO_ASSESSMENTS':
+        return {
+          title: 'No Assessments Found',
+          message: 'Complete at least one assessment to generate personalized insights.',
+          canRetry: false
+        }
+      case 'NETWORK_ERROR':
+        return {
+          title: 'Connection Issue',
+          message: retryCount > 0 ? 'Still having connection issues. Please check your internet connection.' : 'Unable to connect to our servers. Please check your internet connection.',
+          canRetry: true
+        }
+      case 'TIMEOUT_ERROR':
+        return {
+          title: 'Request Timeout',
+          message: retryCount > 0 ? 'The analysis is taking longer than expected. This might be due to high server load.' : 'The analysis is taking longer than expected. Let\'s try again.',
+          canRetry: true
+        }
+      case 'SERVICE_ERROR':
+        return {
+          title: 'Service Temporarily Unavailable',
+          message: retryCount > 0 ? 'Our AI analysis service is experiencing issues. Please try again in a few minutes.' : 'Our analysis service is temporarily unavailable.',
+          canRetry: true
+        }
+      case 'AUTH_ERROR':
+        return {
+          title: 'Authentication Error',
+          message: 'Your session has expired. Please refresh the page and try again.',
+          canRetry: false
+        }
+      case 'DATA_ERROR':
+        return {
+          title: 'Data Processing Error',
+          message: 'There was an issue processing your assessment data. Please try again.',
+          canRetry: true
+        }
+      default:
+        return {
+          title: 'Unexpected Error',
+          message: retryCount > 0 ? 'We\'re still experiencing technical difficulties. Please try again later.' : 'Something unexpected happened. Let\'s try again.',
+          canRetry: true
+        }
+    }
+  }
+
+  // Classify error type for better handling
+  const classifyError = (error: any): GenerationError => {
+    if (!error) return 'UNKNOWN_ERROR'
+    
+    const errorMessage = error.message?.toLowerCase() || ''
+    const errorString = error.toString?.()?.toLowerCase() || ''
+    
+    // Check for specific error patterns
+    if (errorMessage.includes('no assessments') || errorMessage.includes('assessment history')) {
+      return 'NO_ASSESSMENTS'
+    }
+    if (errorMessage.includes('timeout') || errorMessage.includes('timed out')) {
+      return 'TIMEOUT_ERROR'
+    }
+    if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('connection')) {
+      return 'NETWORK_ERROR'
+    }
+    if (errorMessage.includes('unauthorized') || errorMessage.includes('auth') || errorMessage.includes('401')) {
+      return 'AUTH_ERROR'
+    }
+    if (errorMessage.includes('service') || errorMessage.includes('500') || errorMessage.includes('502') || errorMessage.includes('503')) {
+      return 'SERVICE_ERROR'
+    }
+    if (errorMessage.includes('data') || errorMessage.includes('parse') || errorMessage.includes('validation')) {
+      return 'DATA_ERROR'
+    }
+    
+    return 'UNKNOWN_ERROR'
+  }
+
+  // Watertight generate overall assessment with comprehensive error handling
+  const handleGenerateOverallAssessment = useCallback(async () => {
+    // Guard clauses - prevent execution in invalid states
+    if (!user?.id) {
+      console.warn('Generate insights called without valid user')
+      return
+    }
+    
+    if (isGeneratingOverall) {
+      console.warn('Generate insights called while already generating')
+      return
+    }
+
+    // Initialize state safely
     setIsGeneratingOverall(true)
     setOverallProgress(0)
     setShowOverallResults(true)
-    setOverallAssessment(null) // Reset previous results
-    setOverallRetryCount(0) // Reset retry count
-
+    setOverallAssessment(null)
+    
     let progressInterval: NodeJS.Timeout | null = null
     let timeoutId: NodeJS.Timeout | null = null
-
-    try {
-      // Simulate progress updates with more realistic progression
-      progressInterval = setInterval(() => {
-        setOverallProgress(prev => {
-          if (prev >= 85) return prev // Stop at 85% until completion
-          return prev + Math.random() * 8 + 2 // Slower, more realistic progress
-        })
-      }, 300)
-
-      // Set a timeout to prevent infinite loading
-      timeoutId = setTimeout(() => {
-        console.warn('Overall assessment generation timeout - forcing completion')
-        if (progressInterval) clearInterval(progressInterval)
-        setOverallProgress(100)
-        setIsGeneratingOverall(false)
-        setShowOverallResults(false)
-        // Show error state
-        setOverallAssessment({
-          userId: user.id,
-          assessmentData: {
-            userId: user.id,
-            assessments: [],
-            assessmentCount: 0,
-            dateRange: { earliest: new Date().toISOString(), latest: new Date().toISOString() },
-            totalScore: 0,
-            averageScore: 0
-          },
-          holisticAnalysis: {
-          executiveSummary: 'We encountered an issue analyzing how your mental health might be affecting your daily life.',
-          manifestations: ['Unable to analyze potential impacts at this time'],
-          unconsciousManifestations: [],
-          riskFactors: ['Technical issue'],
-          protectiveFactors: ['You\'re taking steps to understand your experiences'],
-          overallRiskLevel: 'low',
-          confidenceLevel: 0,
-          supportiveMessage: 'Don\'t worry - this is just a technical hiccup. We\'ll try again to understand how you might be feeling.'
-          },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        })
-      }, 45000) // 45 second timeout
-
-      // Generate overall assessment
-      const result = await OverallAssessmentService.generateHolisticAssessment(user.id)
-      
-      // Clear intervals and timeouts
-      if (progressInterval) clearInterval(progressInterval)
-      if (timeoutId) clearTimeout(timeoutId)
-      
-      setOverallProgress(100)
-      
-      // Small delay to show 100% progress
-      setTimeout(() => {
-        setOverallAssessment(result)
-        setIsGeneratingOverall(false)
-      }, 800)
-
-    } catch (error) {
-      console.error('Error generating overall assessment:', error)
-      
-      // Clear intervals and timeouts
-      if (progressInterval) clearInterval(progressInterval)
-      if (timeoutId) clearTimeout(timeoutId)
-      
-      setIsGeneratingOverall(false)
-      
-      // Check if we should retry (max 2 retries)
-      if (overallRetryCount < 2) {
-        console.log(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/2)`)
-        setOverallRetryCount(prev => prev + 1)
-        
-        // Retry after a short delay
-        setTimeout(() => {
-          handleGenerateOverallAssessment()
-        }, 2000)
-        return
+    let currentErrorType: GenerationError | null = null
+    
+    // Cleanup function to ensure state consistency
+    const cleanup = () => {
+      if (progressInterval) {
+        clearInterval(progressInterval)
+        progressInterval = null
       }
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+    }
+
+    // Error handler that creates appropriate fallback response
+    const handleError = (error: any, errorType?: GenerationError) => {
+      cleanup()
       
-      // Show error state with helpful message after max retries
-      setOverallAssessment({
+      const detectedErrorType = errorType || classifyError(error)
+      const errorInfo = getErrorMessage(detectedErrorType, overallRetryCount)
+      
+      console.error('Overall assessment generation failed:', {
+        error,
+        errorType: detectedErrorType,
+        retryCount: overallRetryCount,
+        canRetry: errorInfo.canRetry,
+        userId: user.id
+      })
+
+      // Create error response that shows in the UI
+      const errorResponse: ExtendedOverallAssessmentResult = {
         userId: user.id,
         assessmentData: {
           userId: user.id,
           assessments: [],
           assessmentCount: 0,
-          dateRange: { earliest: new Date().toISOString(), latest: new Date().toISOString() },
+          dateRange: { 
+            earliest: new Date().toISOString(), 
+            latest: new Date().toISOString() 
+          },
           totalScore: 0,
           averageScore: 0
         },
         holisticAnalysis: {
-          executiveSummary: 'We encountered an issue analyzing how your mental health might be affecting your daily life. This might be due to a temporary service issue.',
-          manifestations: ['Unable to analyze potential impacts at this time', 'Please try again in a few moments'],
+          executiveSummary: errorInfo.message,
+          manifestations: [
+            'We encountered an issue generating your insights',
+            errorInfo.canRetry ? 'You can try again using the button below' : 'Please complete an assessment first'
+          ],
           unconsciousManifestations: [],
           riskFactors: ['Technical issue'],
-          protectiveFactors: ['You\'re taking steps to understand your experiences'],
-          overallRiskLevel: 'low',
+          protectiveFactors: ['You\'re taking proactive steps to understand your mental health'],
+          overallRiskLevel: 'low' as const,
           confidenceLevel: 0,
-          supportiveMessage: 'Don\'t worry - this is just a technical hiccup. We\'ll try again to understand how you might be feeling.'
+          supportiveMessage: errorInfo.canRetry 
+            ? 'Don\'t worry - this is just a temporary issue. Your data is safe and we\'ll try again.'
+            : 'Take a moment to complete an assessment, then we can provide personalized insights.'
         },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      })
+        updatedAt: new Date().toISOString(),
+        isError: true,
+        errorType: detectedErrorType,
+        canRetry: errorInfo.canRetry
+      }
+
+      setOverallAssessment(errorResponse)
+      setIsGeneratingOverall(false)
+      setOverallProgress(100)
     }
-  }, [user?.id, isGeneratingOverall])
+
+    try {
+      // Pre-flight checks
+      if (!hasAssessmentData) {
+        handleError(new Error('No assessment data available'), 'NO_ASSESSMENTS')
+        return
+      }
+
+      // Start progress simulation
+      progressInterval = setInterval(() => {
+        setOverallProgress(prev => {
+          // More realistic progress curve
+          if (prev >= 90) return prev // Stop at 90% until completion
+          if (prev >= 70) return prev + Math.random() * 2 + 0.5 // Slow down near end
+          if (prev >= 40) return prev + Math.random() * 4 + 1 // Medium speed
+          return prev + Math.random() * 8 + 3 // Fast initial progress
+        })
+      }, 400)
+
+      // Set multiple timeout layers for robustness
+      const GENERATION_TIMEOUT = 60000 // 60 seconds - generous for AI processing
+      
+      timeoutId = setTimeout(() => {
+        console.warn('Overall assessment generation timeout after 60s')
+        handleError(new Error('Request timeout - analysis taking too long'), 'TIMEOUT_ERROR')
+      }, GENERATION_TIMEOUT)
+
+      // Attempt generation with timeout race
+      const generationPromise = OverallAssessmentService.generateHolisticAssessment(user.id)
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Generation timeout')), GENERATION_TIMEOUT - 5000)
+      )
+
+      const result = await Promise.race([generationPromise, timeoutPromise])
+      
+      // Success path
+      cleanup()
+      setOverallProgress(100)
+      
+      // Brief delay to show completion
+      setTimeout(() => {
+        setOverallAssessment(result)
+        setIsGeneratingOverall(false)
+        setOverallRetryCount(0) // Reset retry count on success
+      }, 500)
+
+    } catch (error) {
+      const errorType = classifyError(error)
+      const errorInfo = getErrorMessage(errorType, overallRetryCount)
+      
+      // Determine if we should retry
+      const shouldRetry = errorInfo.canRetry && 
+                         overallRetryCount < 2 && 
+                         ['NETWORK_ERROR', 'TIMEOUT_ERROR', 'SERVICE_ERROR', 'UNKNOWN_ERROR'].includes(errorType)
+
+      if (shouldRetry) {
+        console.log(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/3)`)
+        cleanup()
+        setIsGeneratingOverall(false)
+        setOverallRetryCount(prev => prev + 1)
+        
+        // Exponential backoff: 2s, 4s, 8s
+        const retryDelay = Math.pow(2, overallRetryCount + 1) * 1000
+        
+        setTimeout(() => {
+          handleGenerateOverallAssessment()
+        }, retryDelay)
+        return
+      }
+      
+      // Final failure - show error state
+      handleError(error, errorType)
+    }
+  }, [user?.id, isGeneratingOverall, hasAssessmentData, overallRetryCount])
 
   // Data fetching function (explicit userId to avoid stale closures)
   const fetchAssessmentData = useCallback(async (userId: string): Promise<{ results: Record<string, AssessmentResult>; history: AssessmentHistoryEntry[]; latest: Record<string, string> }> => {
@@ -525,8 +680,10 @@ export function Dashboard() {
     }
   }, [overallProgress])
 
-  // Cleanup effect for overall assessment generation
+  // Enhanced cleanup effect for overall assessment generation
   useEffect(() => {
+    let cleanupTimeouts: NodeJS.Timeout[] = []
+    
     return () => {
       // Cleanup any running intervals or timeouts when component unmounts
       if (isGeneratingOverall || showOverallResults) {
@@ -534,13 +691,52 @@ export function Dashboard() {
           isGeneratingOverall,
           showOverallResults,
           hasOverallAssessment: !!overallAssessment,
-          stackTrace: new Error().stack?.split('\n').slice(0, 5).join('\n')
+          timestamp: new Date().toISOString()
         })
-        // Don't cleanup if we're in the middle of generation or showing results
-        // This prevents the modal from disappearing due to component remounts
+        
+        // If we're generating, save the state for recovery
+        if (isGeneratingOverall && typeof window !== 'undefined') {
+          localStorage.setItem('dashboardUnmountedDuringGeneration', 'true')
+          localStorage.setItem('unmountTimestamp', Date.now().toString())
+        }
       }
+      
+      // Clear any pending cleanup timeouts
+      cleanupTimeouts.forEach(timeout => clearTimeout(timeout))
     }
   }, [isGeneratingOverall, showOverallResults, overallAssessment])
+
+  // Recovery effect - handle cases where component unmounted during generation
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const unmountedDuringGeneration = localStorage.getItem('dashboardUnmountedDuringGeneration')
+      const unmountTimestamp = localStorage.getItem('unmountTimestamp')
+      
+      if (unmountedDuringGeneration === 'true' && unmountTimestamp) {
+        const timeSinceUnmount = Date.now() - parseInt(unmountTimestamp)
+        
+        // If less than 2 minutes have passed, we might still be generating
+        if (timeSinceUnmount < 120000) {
+          console.log('🔄 Recovering from unmount during generation')
+          setIsGeneratingOverall(false) // Reset generation state
+          setShowOverallResults(false) // Hide results modal
+          setOverallProgress(0) // Reset progress
+          
+          // Show a brief recovery message
+          const recoveryTimeout = setTimeout(() => {
+            // Could show a toast notification here if we had one
+            console.log('✅ Dashboard state recovered after unmount')
+          }, 1000)
+          
+          return () => clearTimeout(recoveryTimeout)
+        }
+        
+        // Clean up old recovery data
+        localStorage.removeItem('dashboardUnmountedDuringGeneration')
+        localStorage.removeItem('unmountTimestamp')
+      }
+    }
+  }, [])
 
   // Utility functions
   const getGreeting = useCallback(() => {
@@ -655,63 +851,100 @@ export function Dashboard() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
-          {/* Primary (teal solid, white text) */}
+          {/* Primary - Get insights button */}
           <button
-            onClick={() => handleNavigate('/session')}
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl text-white font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
+            onClick={(e) => {
+              // Prevent double-clicks and ensure single execution
+              e.preventDefault()
+              e.stopPropagation()
+              
+              if (isGeneratingOverall || !hasAssessmentData || !user?.id) {
+                console.warn('Generate insights button clicked but conditions not met:', {
+                  isGenerating: isGeneratingOverall,
+                  hasData: hasAssessmentData,
+                  hasUser: !!user?.id
+                })
+                return
+              }
+              
+              // Debounce to prevent rapid clicks
+              if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) {
+                console.warn('Generate insights clicked too rapidly, ignoring')
+                return
+              }
+              
+              window.lastGenerateInsightsClick = Date.now()
+              handleGenerateOverallAssessment()
+            }}
+            disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
+            className="inline-flex items-center justify-center px-5 py-3 rounded-xl text-white font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:cursor-not-allowed"
             style={{ 
-              backgroundColor: '#0F766E',
-              boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
+              backgroundColor: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#E5E7EB' : '#0F766E',
+              color: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#9CA3AF' : 'white',
+              boxShadow: isGeneratingOverall || !hasAssessmentData || !user?.id ? 'none' : '0 2px 6px rgba(16, 24, 40, 0.06)',
               minHeight: '44px'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
-            onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#0D4F4B'}
-            onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
+            onMouseEnter={(e) => {
+              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
+                e.currentTarget.style.backgroundColor = '#115E59'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
+                e.currentTarget.style.backgroundColor = '#0F766E'
+              }
+            }}
+            onMouseDown={(e) => {
+              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
+                e.currentTarget.style.backgroundColor = '#0D4F4B'
+              }
+            }}
+            onMouseUp={(e) => {
+              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
+                e.currentTarget.style.backgroundColor = '#115E59'
+              }
+            }}
+            title={
+              !user?.id ? 'Please log in to generate insights' :
+              !hasAssessmentData ? 'Complete an assessment first to generate insights' :
+              isGeneratingOverall ? 'Generating insights...' :
+              'Generate personalized insights from your assessments'
+            }
+          >
+            <span className="material-symbols-outlined mr-3 text-xl">
+              {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
+            </span>
+            {isGeneratingOverall ? 'Creating insights...' : 'Get insights from my assessments'}
+          </button>
+          
+          {/* Secondary - Begin session */}
+          <button
+            onClick={() => handleNavigate('/session')}
+            className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#CBD5E1] focus:ring-offset-2"
+            style={{ 
+              color: '#334155',
+              border: '1px solid #E2E8F0',
+              backgroundColor: 'transparent',
+              minHeight: '44px'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#F1F5F9'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent'
+            }}
+            onMouseDown={(e) => {
+              e.currentTarget.style.backgroundColor = '#E2E8F0'
+            }}
+            onMouseUp={(e) => {
+              e.currentTarget.style.backgroundColor = '#F1F5F9'
+            }}
           >
             <span className="material-symbols-outlined mr-3 text-xl">self_care</span>
             Begin session
           </button>
           
-          {/* Secondary (indigo solid, white text) */}
-          <button
-            onClick={handleGenerateOverallAssessment}
-            disabled={isGeneratingOverall || !hasAssessmentData}
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#C7D2FE] focus:ring-offset-2 disabled:cursor-not-allowed"
-            style={{ 
-              backgroundColor: isGeneratingOverall || !hasAssessmentData ? '#E5E7EB' : '#4F46E5',
-              color: isGeneratingOverall || !hasAssessmentData ? '#9CA3AF' : 'white',
-              boxShadow: isGeneratingOverall || !hasAssessmentData ? 'none' : '0 2px 6px rgba(16, 24, 40, 0.06)',
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData) {
-                e.currentTarget.style.backgroundColor = '#4338CA'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData) {
-                e.currentTarget.style.backgroundColor = '#4F46E5'
-              }
-            }}
-            onMouseDown={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData) {
-                e.currentTarget.style.backgroundColor = '#3730A3'
-              }
-            }}
-            onMouseUp={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData) {
-                e.currentTarget.style.backgroundColor = '#4338CA'
-              }
-            }}
-          >
-            <span className="material-symbols-outlined mr-3 text-xl">
-              {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
-            </span>
-            {isGeneratingOverall ? 'Creating insights...' : 'Get insights'}
-          </button>
-          
-          {/* Neutral outline */}
+          {/* Secondary - View progress */}
           <button
             onClick={() => handleNavigate('/results')}
             className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#CBD5E1] focus:ring-offset-2"
@@ -837,38 +1070,62 @@ export function Dashboard() {
             </p>
             {/* Primary outline variant */}
             <button
-              onClick={handleGenerateOverallAssessment}
-              disabled={isGeneratingOverall || !hasAssessmentData}
+              onClick={(e) => {
+                // Prevent double-clicks and ensure single execution
+                e.preventDefault()
+                e.stopPropagation()
+                
+                if (isGeneratingOverall || !hasAssessmentData || !user?.id) {
+                  return
+                }
+                
+                // Debounce to prevent rapid clicks
+                if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) {
+                  return
+                }
+                
+                window.lastGenerateInsightsClick = Date.now()
+                handleGenerateOverallAssessment()
+              }}
+              disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
               className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:cursor-not-allowed"
               style={{ 
-                color: isGeneratingOverall || !hasAssessmentData ? '#9CA3AF' : '#0F766E',
-                backgroundColor: isGeneratingOverall || !hasAssessmentData ? '#E5E7EB' : '#ECFDF5',
-                border: isGeneratingOverall || !hasAssessmentData ? 'none' : '1px solid #0F766E',
+                color: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#9CA3AF' : '#0F766E',
+                backgroundColor: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#E5E7EB' : '#ECFDF5',
+                border: isGeneratingOverall || !hasAssessmentData || !user?.id ? 'none' : '1px solid #0F766E',
                 minHeight: '44px'
               }}
               onMouseEnter={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData) {
+                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
                   e.currentTarget.style.backgroundColor = '#ECFDF5'
                 }
               }}
               onMouseLeave={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData) {
+                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
                   e.currentTarget.style.backgroundColor = 'transparent'
                 }
               }}
               onMouseDown={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData) {
+                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
                   e.currentTarget.style.backgroundColor = '#D1FAE5'
                 }
               }}
               onMouseUp={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData) {
+                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
                   e.currentTarget.style.backgroundColor = '#ECFDF5'
                 }
               }}
+              title={
+                !user?.id ? 'Please log in to generate insights' :
+                !hasAssessmentData ? 'Complete an assessment first to generate insights' :
+                isGeneratingOverall ? 'Generating insights...' :
+                'Generate personalized insights from your assessments'
+              }
             >
-              <span className="material-symbols-outlined text-base">auto_awesome</span>
-              Generate insights
+              <span className="material-symbols-outlined text-base">
+                {isGeneratingOverall ? 'hourglass_empty' : 'auto_awesome'}
+              </span>
+              {isGeneratingOverall ? 'Generating...' : 'Generate insights'}
             </button>
           </div>
         </div>
@@ -1342,13 +1599,121 @@ export function Dashboard() {
                       </div>
                     </div>
                   ) : overallAssessment ? (
-                    <OverallAssessmentResults
-                      overallAssessment={overallAssessment}
-                      onRetake={() => {
-                        setShowOverallResults(false)
-                        handleNavigate('/assessments')
-                      }}
-                    />
+                    overallAssessment.isError ? (
+                      // Error state with retry option
+                      <div className="p-8 text-center">
+                        <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                          <span className="material-symbols-outlined text-red-500 text-2xl">error</span>
+                        </div>
+                        <h3 className="text-xl font-medium text-slate-900 mb-3">
+                          {overallAssessment.errorType === 'NO_ASSESSMENTS' ? 'No Assessments Found' : 'Unable to Generate Insights'}
+                        </h3>
+                        <div className="max-w-md mx-auto mb-8">
+                          <p className="text-slate-600 mb-4 leading-relaxed">
+                            {overallAssessment.holisticAnalysis.executiveSummary}
+                          </p>
+                          {overallAssessment.holisticAnalysis.manifestations.map((item, idx) => (
+                            <p key={idx} className="text-sm text-slate-500 mb-2">• {item}</p>
+                          ))}
+                        </div>
+                        
+                        <div className="flex gap-3 justify-center">
+                          {overallAssessment.canRetry ? (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setShowOverallResults(false)
+                                  setOverallAssessment(null)
+                                  // Clear localStorage
+                                  if (typeof window !== 'undefined') {
+                                    localStorage.removeItem('currentOverallAssessment')
+                                    localStorage.removeItem('showOverallResults')
+                                    localStorage.removeItem('isGeneratingOverall')
+                                    localStorage.removeItem('overallProgress')
+                                  }
+                                }}
+                                className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                              >
+                                Close
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setOverallAssessment(null)
+                                  setOverallRetryCount(0)
+                                  handleGenerateOverallAssessment()
+                                }}
+                                disabled={isGeneratingOverall}
+                                className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  backgroundColor: isGeneratingOverall ? '#9CA3AF' : '#0F766E',
+                                  boxShadow: isGeneratingOverall ? 'none' : '0 2px 6px rgba(16, 24, 40, 0.06)',
+                                  minHeight: '44px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (!isGeneratingOverall) {
+                                    e.currentTarget.style.backgroundColor = '#115E59'
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (!isGeneratingOverall) {
+                                    e.currentTarget.style.backgroundColor = '#0F766E'
+                                  }
+                                }}
+                              >
+                                <span className="material-symbols-outlined mr-2 text-base">
+                                  {isGeneratingOverall ? 'hourglass_empty' : 'refresh'}
+                                </span>
+                                {isGeneratingOverall ? 'Retrying...' : 'Try Again'}
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setShowOverallResults(false)
+                                  setOverallAssessment(null)
+                                  // Clear localStorage
+                                  if (typeof window !== 'undefined') {
+                                    localStorage.removeItem('currentOverallAssessment')
+                                    localStorage.removeItem('showOverallResults')
+                                    localStorage.removeItem('isGeneratingOverall')
+                                    localStorage.removeItem('overallProgress')
+                                  }
+                                }}
+                                className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                              >
+                                Close
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setShowOverallResults(false)
+                                  handleNavigate('/assessments')
+                                }}
+                                className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
+                                style={{
+                                  backgroundColor: '#0F766E',
+                                  boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
+                                  minHeight: '44px'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
+                              >
+                                <span className="material-symbols-outlined mr-2 text-base">psychology</span>
+                                Take Assessment
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <OverallAssessmentResults
+                        overallAssessment={overallAssessment}
+                        onRetake={() => {
+                          setShowOverallResults(false)
+                          handleNavigate('/assessments')
+                        }}
+                      />
+                    )
                   ) : (
                     <div className="p-6 text-center">
                       <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
