@@ -159,7 +159,7 @@ export function Navigation({ className = '' }: NavigationProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.3 }}
                   >
-                    <Link href={item.href} prefetch={false}>
+                    <Link href={item.href}>
                       <motion.button
                         className={`glassmorphic-nav-item flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-300 relative ${
                           isCrisis
@@ -293,7 +293,7 @@ export function Navigation({ className = '' }: NavigationProps) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 + 0.2 }}
                       >
-                        <Link href={item.href} prefetch={false} onClick={() => setIsMenuOpen(false)}>
+                        <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
                           <motion.button
                             className={`glassmorphic-nav-item w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 ${
                               isCrisis
