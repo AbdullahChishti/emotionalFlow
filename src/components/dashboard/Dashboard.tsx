@@ -666,14 +666,14 @@ export function Dashboard() {
     }
   }, [])
 
-  // Loading timeout effect - prevent infinite loading
+  // Loading timeout effect - prevent infinite loading and stuck navigation
   useEffect(() => {
     if (loading) {
       const timeout = setTimeout(() => {
         console.warn('Dashboard loading timeout - forcing loaded state')
         setLoading(false)
         setIsFetching(false)
-      }, 30000) // 30 second timeout
+      }, 8000) // 8 second timeout to avoid perceived hang
 
       return () => clearTimeout(timeout)
     }
