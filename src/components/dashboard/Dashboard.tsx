@@ -1149,11 +1149,7 @@ export function Dashboard() {
                   <span className="material-symbols-outlined text-sm opacity-60 group-hover:opacity-100 transition-opacity">info</span>
                 </p>
                 {/* Modern tooltip */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, y: -4 }}
-                  whileHover={{ opacity: 1, scale: 1, y: 0 }}
-                  className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50"
-                >
+                <div className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
                       <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
@@ -1171,7 +1167,7 @@ export function Dashboard() {
                       AI-powered insights from your complete assessment history
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </div>
               {updatedAt && (
                 <p className="text-sm text-slate-400 mt-2 font-light">Updated {formatRelative(updatedAt)}</p>
