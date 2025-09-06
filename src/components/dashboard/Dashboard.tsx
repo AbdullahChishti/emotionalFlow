@@ -10,7 +10,9 @@ import { useRouter } from 'next/navigation'
 import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
-import { buildUserSnapshot, Snapshot, NextBestAction } from '@/lib/snapshot'
+import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
+import { OverallAssessmentService, OverallAssessmentResult } from '@/lib/services/OverallAssessmentService'
+import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -20,11 +22,10 @@ interface StatCardProps {
   icon: string
   value: string | number
   label: string
-  trend?: 'up' | 'down' | 'neutral'
   loading?: boolean
 }
 
-function StatCard({ icon, value, label, trend, loading }: StatCardProps) {
+function StatCard({ icon, value, label, loading }: StatCardProps) {
   if (loading) {
     return (
       <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 sm:p-6 border border-white/50 shadow-lg">
@@ -48,13 +49,6 @@ function StatCard({ icon, value, label, trend, loading }: StatCardProps) {
         <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-green-100 rounded-2xl flex items-center justify-center">
           <span className="material-symbols-outlined text-brand-green-600 text-lg sm:text-xl">{icon}</span>
         </div>
-        {trend && (
-          <span className={`material-symbols-outlined text-sm ${
-            trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-slate-400'
-          }`}>
-            {trend === 'up' ? 'trending_up' : trend === 'down' ? 'trending_down' : 'trending_flat'}
-          </span>
-        )}
       </div>
       <div className="text-2xl sm:text-3xl font-bold text-secondary-900 mb-1">{value}</div>
       <div className="text-xs sm:text-sm text-secondary-600 leading-relaxed">{label}</div>
@@ -136,6 +130,37 @@ export function Dashboard() {
   const [latestMeta, setLatestMeta] = useState<Record<string, string>>({})
   const [coverage, setCoverage] = useState<{ assessed: string[]; missing: string[]; stale: string[] }>({ assessed: [], missing: [], stale: [] })
 
+  // Overall assessment state with persistence
+  const [overallAssessment, setOverallAssessment] = useState<OverallAssessmentResult | null>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('currentOverallAssessment')
+      return stored ? JSON.parse(stored) : null
+    }
+    return null
+  })
+  const [isGeneratingOverall, setIsGeneratingOverall] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('isGeneratingOverall') === 'true'
+    }
+    return false
+  })
+  const [showOverallResults, setShowOverallResults] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('showOverallResults') === 'true'
+    }
+    return false
+  })
+  const [overallProgress, setOverallProgress] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return parseInt(localStorage.getItem('overallProgress') || '0')
+    }
+    return 0
+  })
+  const [overallRetryCount, setOverallRetryCount] = useState(0)
+  // Latest saved overall assessment for impact card
+  const [latestOverall, setLatestOverall] = useState<OverallAssessmentResult | null>(null)
+  const [loadingImpact, setLoadingImpact] = useState(false)
+
   // Prevent multiple simultaneous fetches
   const [isFetching, setIsFetching] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -150,6 +175,124 @@ export function Dashboard() {
       window.location.href = path
     }
   }, [router])
+
+  // Generate overall assessment with progress tracking
+  const handleGenerateOverallAssessment = useCallback(async () => {
+    if (!user?.id || isGeneratingOverall) return
+
+    setIsGeneratingOverall(true)
+    setOverallProgress(0)
+    setShowOverallResults(true)
+    setOverallAssessment(null) // Reset previous results
+    setOverallRetryCount(0) // Reset retry count
+
+    let progressInterval: NodeJS.Timeout | null = null
+    let timeoutId: NodeJS.Timeout | null = null
+
+    try {
+      // Simulate progress updates with more realistic progression
+      progressInterval = setInterval(() => {
+        setOverallProgress(prev => {
+          if (prev >= 85) return prev // Stop at 85% until completion
+          return prev + Math.random() * 8 + 2 // Slower, more realistic progress
+        })
+      }, 300)
+
+      // Set a timeout to prevent infinite loading
+      timeoutId = setTimeout(() => {
+        console.warn('Overall assessment generation timeout - forcing completion')
+        if (progressInterval) clearInterval(progressInterval)
+        setOverallProgress(100)
+        setIsGeneratingOverall(false)
+        setShowOverallResults(false)
+        // Show error state
+        setOverallAssessment({
+          userId: user.id,
+          assessmentData: {
+            userId: user.id,
+            assessments: [],
+            assessmentCount: 0,
+            dateRange: { earliest: new Date().toISOString(), latest: new Date().toISOString() },
+            totalScore: 0,
+            averageScore: 0
+          },
+          holisticAnalysis: {
+          executiveSummary: 'We encountered an issue analyzing how your mental health might be affecting your daily life.',
+          manifestations: ['Unable to analyze potential impacts at this time'],
+          unconsciousManifestations: [],
+          riskFactors: ['Technical issue'],
+          protectiveFactors: ['You\'re taking steps to understand your experiences'],
+          overallRiskLevel: 'low',
+          confidenceLevel: 0,
+          supportiveMessage: 'Don\'t worry - this is just a technical hiccup. We\'ll try again to understand how you might be feeling.'
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        })
+      }, 45000) // 45 second timeout
+
+      // Generate overall assessment
+      const result = await OverallAssessmentService.generateHolisticAssessment(user.id)
+      
+      // Clear intervals and timeouts
+      if (progressInterval) clearInterval(progressInterval)
+      if (timeoutId) clearTimeout(timeoutId)
+      
+      setOverallProgress(100)
+      
+      // Small delay to show 100% progress
+      setTimeout(() => {
+        setOverallAssessment(result)
+        setIsGeneratingOverall(false)
+      }, 800)
+
+    } catch (error) {
+      console.error('Error generating overall assessment:', error)
+      
+      // Clear intervals and timeouts
+      if (progressInterval) clearInterval(progressInterval)
+      if (timeoutId) clearTimeout(timeoutId)
+      
+      setIsGeneratingOverall(false)
+      
+      // Check if we should retry (max 2 retries)
+      if (overallRetryCount < 2) {
+        console.log(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/2)`)
+        setOverallRetryCount(prev => prev + 1)
+        
+        // Retry after a short delay
+        setTimeout(() => {
+          handleGenerateOverallAssessment()
+        }, 2000)
+        return
+      }
+      
+      // Show error state with helpful message after max retries
+      setOverallAssessment({
+        userId: user.id,
+        assessmentData: {
+          userId: user.id,
+          assessments: [],
+          assessmentCount: 0,
+          dateRange: { earliest: new Date().toISOString(), latest: new Date().toISOString() },
+          totalScore: 0,
+          averageScore: 0
+        },
+        holisticAnalysis: {
+          executiveSummary: 'We encountered an issue analyzing how your mental health might be affecting your daily life. This might be due to a temporary service issue.',
+          manifestations: ['Unable to analyze potential impacts at this time', 'Please try again in a few moments'],
+          unconsciousManifestations: [],
+          riskFactors: ['Technical issue'],
+          protectiveFactors: ['You\'re taking steps to understand your experiences'],
+          overallRiskLevel: 'low',
+          confidenceLevel: 0,
+          supportiveMessage: 'Don\'t worry - this is just a technical hiccup. We\'ll try again to understand how you might be feeling.'
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+    }
+  }, [user?.id, isGeneratingOverall])
 
   // Data fetching function (explicit userId to avoid stale closures)
   const fetchAssessmentData = useCallback(async (userId: string): Promise<{ results: Record<string, AssessmentResult>; history: AssessmentHistoryEntry[]; latest: Record<string, string> }> => {
@@ -353,6 +496,52 @@ export function Dashboard() {
     }
   }, [loading])
 
+  // Persist overall assessment state to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (overallAssessment) {
+        localStorage.setItem('currentOverallAssessment', JSON.stringify(overallAssessment))
+      } else {
+        localStorage.removeItem('currentOverallAssessment')
+      }
+    }
+  }, [overallAssessment])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('isGeneratingOverall', isGeneratingOverall.toString())
+    }
+  }, [isGeneratingOverall])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('showOverallResults', showOverallResults.toString())
+    }
+  }, [showOverallResults])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('overallProgress', overallProgress.toString())
+    }
+  }, [overallProgress])
+
+  // Cleanup effect for overall assessment generation
+  useEffect(() => {
+    return () => {
+      // Cleanup any running intervals or timeouts when component unmounts
+      if (isGeneratingOverall || showOverallResults) {
+        console.log('🚨 Dashboard unmounting during overall assessment:', {
+          isGeneratingOverall,
+          showOverallResults,
+          hasOverallAssessment: !!overallAssessment,
+          stackTrace: new Error().stack?.split('\n').slice(0, 5).join('\n')
+        })
+        // Don't cleanup if we're in the middle of generation or showing results
+        // This prevents the modal from disappearing due to component remounts
+      }
+    }
+  }, [isGeneratingOverall, showOverallResults, overallAssessment])
+
   // Utility functions
   const getGreeting = useCallback(() => {
     const hour = new Date().getHours()
@@ -379,6 +568,18 @@ export function Dashboard() {
       critical: 'text-red-600 bg-red-100'
     }
     return colors[severity as keyof typeof colors] || 'text-slate-600 bg-slate-100'
+  }, [])
+
+  // Map level bands (low/mild/moderate/high) to badge styles
+  const getLevelBadgeClasses = useCallback((level: string) => {
+    const map: Record<string, string> = {
+      low: 'text-green-700 bg-green-50 border border-green-200/60',
+      mild: 'text-emerald-700 bg-emerald-50 border border-emerald-200/60',
+      moderate: 'text-amber-700 bg-amber-50 border border-amber-200/60',
+      high: 'text-red-700 bg-red-50 border border-red-200/60',
+      critical: 'text-red-800 bg-red-50 border border-red-300'
+    }
+    return map[level?.toLowerCase()] || 'text-slate-600 bg-slate-50 border border-slate-200/60'
   }, [])
 
   const getMaxScore = useCallback((assessmentId: string) => {
@@ -410,6 +611,23 @@ export function Dashboard() {
     return text.length > len ? `${text.slice(0, len).trim()}…` : text
   }, [])
 
+  // Fetch latest overall assessment for the impact card
+  useEffect(() => {
+    const loadLatestOverall = async () => {
+      if (!user?.id || !hasAssessmentData) return
+      setLoadingImpact(true)
+      try {
+        const latest = await OverallAssessmentService.getLatestHolisticAssessment(user.id)
+        setLatestOverall(latest)
+      } catch (e) {
+        console.warn('Failed to load latest overall assessment:', e)
+      } finally {
+        setLoadingImpact(false)
+      }
+    }
+    loadLatestOverall()
+  }, [user?.id, hasAssessmentData])
+
 
   const keyLabel = (key: string) => {
     switch (key) {
@@ -424,56 +642,69 @@ export function Dashboard() {
   }
 
   const renderSnapshotHero = () => (
-    <motion.div
-      className="bg-gradient-to-br from-white via-slate-50/30 to-white border border-slate-200/40 rounded-3xl p-8 md:p-10 shadow-sm"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="flex items-start justify-between gap-6 mb-8">
-        <div className="flex-1">
-          <h2 className="text-2xl md:text-3xl font-light text-slate-700 mb-3">Your wellness snapshot</h2>
-          <p className="text-slate-600 text-base leading-relaxed max-w-2xl font-light">
-            Your personalized insights are ready. We're here to support your mental wellness journey with tailored recommendations and resources.
+    <div className="bg-gradient-to-br from-white via-slate-50/30 to-white border border-slate-200/40 rounded-3xl p-8 md:p-10 lg:p-12 shadow-sm">
+      <div className="max-w-none">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-slate-700 mb-4">Your wellness snapshot</h2>
+          <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-3xl mx-auto font-light">
+            {hasAssessmentData
+              ? "Your personalized insights are ready. Click the button below to generate a comprehensive mental health profile using all your assessments."
+              : "Complete assessments to unlock personalized insights and tailored recommendations for your mental wellness journey."
+            }
           </p>
         </div>
-        <div className="hidden md:block flex-shrink-0">
-          <a href="/crisis-support" className="text-sm text-slate-400 hover:text-slate-600 transition-colors duration-300 font-light">
+
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+          <button
+            onClick={() => handleNavigate('/session')}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-slate-800 text-white font-light shadow-sm hover:shadow-md transition-all duration-300 hover:bg-slate-700 text-base"
+          >
+            <span className="material-symbols-outlined mr-3 text-xl">play_arrow</span>
+            Start session
+          </button>
+          <button
+            onClick={handleGenerateOverallAssessment}
+            disabled={isGeneratingOverall || !hasAssessmentData}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-light shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-base"
+          >
+            <span className="material-symbols-outlined mr-3 text-xl">
+              {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
+            </span>
+            {isGeneratingOverall ? 'Generating insights...' : 'Get personalized insights'}
+          </button>
+          <button
+            onClick={() => handleNavigate('/results')}
+            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl border border-slate-300/60 bg-white/80 text-slate-700 font-light shadow-sm hover:shadow-md hover:border-slate-400/60 transition-all duration-300 text-base"
+          >
+            <span className="material-symbols-outlined mr-3 text-xl">lightbulb</span>
+            View results
+          </button>
+        </div>
+
+        <div className="text-center">
+          <a href="/crisis-support" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 transition-colors duration-300 font-light">
+            <span className="material-symbols-outlined text-base">help</span>
             Need immediate support?
           </a>
         </div>
       </div>
 
+      {/* Dimension buttons */}
       {snapshot?.dimensions && snapshot.dimensions.length > 0 && (
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-wrap gap-3 mb-6">
           {snapshot.dimensions
             .filter(d => ['anxiety','trauma_exposure','wellbeing','stress','depression','resilience'].includes(d.key))
             .slice(0, 4)
             .map(d => (
               <div key={d.key} className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/70 border border-slate-200/40 shadow-sm">
                 <span className="text-sm font-light text-slate-700">{keyLabel(d.key)}</span>
-                <span className="text-sm font-light text-slate-500">{d.level}</span>
+                <span className={`text-sm font-light px-2.5 py-1 rounded-xl ${getLevelBadgeClasses(d.level)}`}>
+                  {d.level}
+                </span>
               </div>
             ))}
         </div>
       )}
-
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <button
-          onClick={() => handleNavigate('/session')}
-          className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl bg-slate-800 text-white font-light shadow-sm hover:shadow-md transition-all duration-300 hover:bg-slate-700"
-        >
-          <span className="material-symbols-outlined mr-3 text-lg">play_arrow</span>
-          Start session
-        </button>
-        <button
-          onClick={() => handleNavigate('/results')}
-          className="inline-flex items-center justify-center px-6 py-3.5 rounded-2xl border border-slate-300/60 bg-white/80 text-slate-700 font-light shadow-sm hover:shadow-md hover:border-slate-400/60 transition-all duration-300"
-        >
-          <span className="material-symbols-outlined mr-3 text-lg">lightbulb</span>
-          Personalized next steps
-        </button>
-      </div>
 
       <div className="border-t border-slate-200/40 pt-6">
         <button
@@ -513,84 +744,116 @@ export function Dashboard() {
           <a href="/profile" className="text-slate-500 hover:text-slate-700 transition-colors duration-300">Manage personalization</a>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 
-  const renderNextActions = () => {
-    const actions: NextBestAction[] = snapshot?.next_best_actions?.slice(0, 3) || []
-    if (actions.length === 0) return null
-    return (
-      <div className="space-y-4">
-        <h3 className="text-base font-light text-slate-700">Next best actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {actions.map((a, idx) => (
-            <div key={idx} className="bg-white/60 border border-slate-200/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-              <div>
-                <div className="font-light text-slate-700 text-sm">{a.title}</div>
-                <div className="text-xs text-slate-500 font-light mt-1">{a.duration_min} min</div>
-              </div>
-              <button
-                onClick={() => handleNavigate('/session')}
-                className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-700 text-white text-sm font-light hover:bg-slate-600 transition-colors duration-300"
-                style={{ backgroundColor: '#335f64' }}
-              >
-                Start
-              </button>
-            </div>
-          ))}
+  // renderNextActions function removed
+
+
+
+  const renderImpactCard = () => {
+    const risk = latestOverall?.holisticAnalysis?.overallRiskLevel
+    const updatedAt = latestOverall?.updatedAt
+    const lines = (latestOverall?.holisticAnalysis?.manifestations && latestOverall.holisticAnalysis.manifestations.length > 0)
+      ? latestOverall.holisticAnalysis.manifestations
+      : (latestOverall?.holisticAnalysis?.unconsciousManifestations && latestOverall.holisticAnalysis.unconsciousManifestations.length > 0)
+        ? latestOverall.holisticAnalysis.unconsciousManifestations
+        : []
+
+    if (loadingImpact) {
+      return (
+        <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
+          <div className="animate-pulse space-y-3">
+            <div className="h-5 w-1/3 bg-slate-200/60 rounded" />
+            <div className="h-4 w-11/12 bg-slate-200/60 rounded" />
+            <div className="h-4 w-10/12 bg-slate-200/60 rounded" />
+            <div className="h-4 w-9/12 bg-slate-200/60 rounded" />
+          </div>
         </div>
-      </div>
-    )
-  }
+      )
+    }
 
-  const buildSparklinePath = (points: number[], width = 160, height = 30) => {
-    if (points.length === 0) return ''
-    const step = width / Math.max(1, points.length - 1)
-    const path = points.map((p, i) => {
-      const x = i * step
-      const y = height - (p / 100) * height
-      return `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`
-    }).join(' ')
-    return path
-  }
+    if (!latestOverall) {
+      return (
+        <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-purple-600">psychology</span>
+            </div>
+            <div className="text-lg font-light text-slate-700 mb-2">How this might impact your life</div>
+            <div className="text-sm text-slate-500 font-light mb-6 max-w-md mx-auto">Generate a personalized analysis to see possible day-to-day impacts.</div>
+            <button
+              onClick={handleGenerateOverallAssessment}
+              disabled={isGeneratingOverall || !hasAssessmentData}
+              className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-800 text-white font-light hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+            >
+              <span className="material-symbols-outlined mr-2">sparkles</span>
+              Get personalized insights
+            </button>
+          </div>
+        </div>
+      )
+    }
 
-  const renderTrends = () => {
-    const dims: { label: string; id: string }[] = [
-      { label: 'Anxiety', id: 'gad7' },
-      { label: 'Well-being', id: 'who5' },
-      { label: 'Stress', id: 'pss10' }
-    ]
-    const byId = history.filter(Boolean).reduce((acc: Record<string, AssessmentHistoryEntry[]>, h) => {
-      acc[h.assessmentId] = acc[h.assessmentId] || []
-      acc[h.assessmentId].push(h)
-      return acc
-    }, {})
     return (
-      <div className="space-y-4">
-        <h3 className="text-base font-light text-slate-700">Trends</h3>
-        <div className="space-y-3">
-          {dims.map(d => {
-            const series = (byId[d.id] || [])
-              .slice(0, 12)
-              .reverse()
-              .map(e => {
-                const max = getMaxScore(d.id)
-                return Math.min(100, (e.score / max) * 100)
-              })
-            const path = buildSparklinePath(series)
-            const lastThree = (byId[d.id] || []).slice(0, 3).map(e => e.level)
-            return (
-              <div key={d.id} className="bg-white/60 border border-slate-200/40 rounded-2xl p-3 shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-light text-slate-700">{d.label}</div>
-                  <div className="text-xs text-slate-500 font-light">{lastThree.join(' → ')}</div>
-                </div>
-                <svg viewBox="0 0 160 30" width="100%" height="30" className="mt-2">
-                  <path d={path} fill="none" stroke="#64748b" strokeWidth="1.5" />
-                </svg>
-              </div>
-            )
-          })}
+      <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <div className="text-base font-light text-slate-700">How this might impact your life</div>
+            {updatedAt && (
+              <div className="text-xs text-slate-400 font-light mt-1">Updated {formatRelative(updatedAt)}</div>
+            )}
+          </div>
+          {risk && (
+            <span className={`text-xs font-light px-2.5 py-1 rounded-xl ${getLevelBadgeClasses(risk)}`}>{risk}</span>
+          )}
+        </div>
+        {lines && lines.length > 0 ? (
+          <ul className="list-disc pl-5 text-slate-700 space-y-2">
+            {lines.slice(0, 5).map((l: string, idx: number) => (
+              <li key={idx} className="text-sm font-light">{l}</li>
+            ))}
+          </ul>
+        ) : (
+          <div className="text-sm text-slate-500 font-light">No specific impacts identified. Try refreshing your insights.</div>
+        )}
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={async () => {
+              if (!user?.id) return
+              console.log('🔄 Refreshing life impacts for user:', user.id)
+              setLoadingImpact(true)
+              try {
+                const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+                console.log('✅ Fresh impacts received:', {
+                  hasResult: !!freshImpacts,
+                  manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
+                  unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0
+                })
+                setLatestOverall(freshImpacts)
+              } catch (error) {
+                console.error('❌ Error refreshing impacts:', {
+                  error,
+                  message: error instanceof Error ? error.message : 'Unknown error',
+                  userId: user.id
+                })
+              } finally {
+                setLoadingImpact(false)
+              }
+            }}
+            disabled={loadingImpact}
+            className="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300/60 bg-white/80 text-slate-700 text-sm font-light hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span className="material-symbols-outlined mr-2">refresh</span>
+            {loadingImpact ? 'Refreshing...' : 'Refresh insights'}
+          </button>
+          <button
+            onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-800 text-white text-sm font-light hover:bg-slate-700"
+          >
+            <span className="material-symbols-outlined mr-2">open_in_new</span>
+            View full profile
+          </button>
         </div>
       </div>
     )
@@ -663,58 +926,97 @@ export function Dashboard() {
 
   return (
     <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-      <div className="container mx-auto px-6 py-16">
-        <div className="space-y-6 md:space-y-8 lg:space-y-10">
-          {/* Header Section */}
-          <motion.div
-            className="text-center space-y-3 md:space-y-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-light text-slate-800 leading-relaxed px-4">
-              {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
-            </h1>
-            <p className="text-base text-slate-500 max-w-2xl mx-auto px-4 font-light">
-              {getFormattedDate()} • {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
-            </p>
-          </motion.div>
+      <div className="container mx-auto px-6 py-20 md:py-24 lg:py-16">
+        <div className="space-y-8 md:space-y-10 lg:space-y-12">
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 lg:gap-12 items-start">
+            {/* Left Column - Main Content (70%) */}
+            <div className="lg:col-span-8 xl:col-span-9 space-y-8 md:space-y-10">
+              {/* Snapshot Hero */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                {renderSnapshotHero()}
+              </motion.div>
 
-          {/* Snapshot Hero */}
-          {renderSnapshotHero()}
+              {/* Impact card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                {renderImpactCard()}
+              </motion.div>
+            </div>
 
-          {/* Row 2: Next actions (left) and Trends (right) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-7xl mx-auto">
-            <div>{renderNextActions()}</div>
-            <div>{renderTrends()}</div>
+            {/* Right Column - Greeting Card (30%) */}
+            <div className="lg:col-span-4 xl:col-span-3">
+              <motion.div
+                className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-white/50 shadow-lg h-fit lg:sticky lg:top-8"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
+                    <span className="material-symbols-outlined text-2xl text-blue-600">wb_sunny</span>
+                  </div>
+                  <div className="space-y-3">
+                    <h2 className="text-xl md:text-2xl font-light text-slate-800 leading-tight">
+                      {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
+                    </h2>
+                    <p className="text-sm text-slate-500 font-light">
+                      {getFormattedDate()}
+                    </p>
+                    <div className="w-12 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent mx-auto my-4"></div>
+                    <p className="text-sm text-slate-400 font-light leading-relaxed">
+                      {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
 
           {/* Coverage row */}
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
-              <div className="text-base font-light text-slate-700 mb-4">Coverage</div>
-              <div className="flex flex-wrap gap-3 text-sm">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <span className="material-symbols-outlined text-green-600">analytics</span>
+                </div>
+                <div className="text-lg font-light text-slate-700">Assessment Coverage</div>
+                <div className="text-sm text-slate-500 font-light mt-1">Track your mental health assessment progress</div>
+              </div>
+              <div className="flex flex-wrap justify-center gap-3 text-sm">
                 {coverage.assessed.map(id => (
-                  <span key={`ok-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60">
+                  <span key={`ok-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60 shadow-sm">
                     <span className="material-symbols-outlined text-base">check_circle</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
                 {coverage.stale.map(id => (
-                  <span key={`stale-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60">
+                  <span key={`stale-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60 shadow-sm">
                     <span className="material-symbols-outlined text-base">error</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
                 {coverage.missing.map(id => (
-                  <span key={`miss-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60">
+                  <span key={`miss-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60 shadow-sm">
                     <span className="material-symbols-outlined text-base">check_box_outline_blank</span>
                     {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
                   </span>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
 
           {/* Empty state if no assessments */}
@@ -740,6 +1042,123 @@ export function Dashboard() {
           )}
 
           {/* Recent assessments removed for declutter */}
+
+          {/* Overall Assessment Results Modal/Overlay */}
+          {showOverallResults && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => {
+                if (!isGeneratingOverall) {
+                  setShowOverallResults(false)
+                  setOverallAssessment(null)
+                  // Clear localStorage
+                  if (typeof window !== 'undefined') {
+                    localStorage.removeItem('currentOverallAssessment')
+                    localStorage.removeItem('showOverallResults')
+                    localStorage.removeItem('isGeneratingOverall')
+                    localStorage.removeItem('overallProgress')
+                  }
+                }
+              }}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                  <h2 className="text-2xl font-light text-slate-900">
+                    {isGeneratingOverall ? 'Generating Your Insights' : 'Your Personalized Mental Health Profile'}
+                  </h2>
+                  {!isGeneratingOverall && (
+                    <button
+                      onClick={() => {
+                        setShowOverallResults(false)
+                        setOverallAssessment(null)
+                        // Clear localStorage
+                        if (typeof window !== 'undefined') {
+                          localStorage.removeItem('currentOverallAssessment')
+                          localStorage.removeItem('showOverallResults')
+                          localStorage.removeItem('isGeneratingOverall')
+                          localStorage.removeItem('overallProgress')
+                        }
+                      }}
+                      className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-slate-500">close</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+                  {isGeneratingOverall ? (
+                    <div className="p-8 text-center">
+                      <div className="mb-6">
+                        <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <span className="material-symbols-outlined text-2xl text-blue-600 animate-spin">psychology</span>
+                        </div>
+                        <h3 className="text-xl font-light text-slate-900 mb-2">Analyzing Your Assessments</h3>
+                        <p className="text-slate-600 font-light">
+                          We're using AI to create a comprehensive analysis of all your mental health assessments.
+                        </p>
+                      </div>
+                      
+                      {/* Progress Bar */}
+                      <div className="max-w-md mx-auto">
+                        <div className="flex justify-between text-sm text-slate-600 mb-2">
+                          <span>Progress</span>
+                          <span>{Math.round(overallProgress)}%</span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2">
+                          <motion.div
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${overallProgress}%` }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </div>
+                        <p className="text-sm text-slate-500 mt-3 font-light">
+                          This usually takes 10-30 seconds...
+                        </p>
+                      </div>
+                    </div>
+                  ) : overallAssessment ? (
+                    <OverallAssessmentResults
+                      overallAssessment={overallAssessment}
+                      onRetake={() => {
+                        setShowOverallResults(false)
+                        handleNavigate('/assessments')
+                      }}
+                    />
+                  ) : (
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <span className="material-symbols-outlined text-2xl text-slate-400">error</span>
+                      </div>
+                      <h3 className="text-xl font-light text-slate-900 mb-2">Unable to Generate Insights</h3>
+                      <p className="text-slate-600 font-light mb-6">
+                        There was an error creating your personalized profile. Please try again.
+                      </p>
+                      <button
+                        onClick={handleGenerateOverallAssessment}
+                        className="inline-flex items-center px-6 py-3 rounded-2xl bg-slate-800 text-white font-light hover:bg-slate-700 transition-colors"
+                      >
+                        <span className="material-symbols-outlined mr-2">refresh</span>
+                        Try Again
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
 
         </div>
       </div>

@@ -66,12 +66,7 @@ export function Navigation({ className = '' }: NavigationProps) {
       href: '/session',
       icon: 'chat'
     },
-    {
-      name: 'Support',
-      href: '/crisis-support',
-      isCrisis: true,
-      icon: 'emergency'
-    },
+    // Support option removed from header navigation per request
     {
       name: 'Profile',
       href: '/profile',

@@ -108,18 +108,9 @@ function buildDimensions(byId: Record<string, any>): SnapshotDimension[] {
 }
 
 function pickActions(dimensions: SnapshotDimension[]): NextBestAction[] {
-  const levels = Object.fromEntries(dimensions.map(d => [d.key, d.level])) as Record<string, string>
-  const actions: NextBestAction[] = []
-  // Always add a brief exercise
-  actions.push({ title: 'Guided breathing', duration_min: 5, type: 'exercise' })
-  if (levels['anxiety'] === 'high' || levels['stress'] === 'high' || levels['anxiety'] === 'moderate') {
-    actions.push({ title: 'Grounding skills pack', duration_min: 7, type: 'education' })
-  }
-  // Suggest check-in gently if any moderate+ dimension
-  if (dimensions.some(d => ['moderate', 'high'].includes(d.level))) {
-    actions.push({ title: 'Optional: schedule a check-in', duration_min: 10, type: 'checkin' })
-  }
-  return actions.slice(0, 3)
+  // Next best actions feature has been removed from dashboard
+  // Return empty array to maintain compatibility
+  return []
 }
 
 export async function buildUserSnapshot(userId: string): Promise<Snapshot | null> {
