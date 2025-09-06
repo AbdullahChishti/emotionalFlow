@@ -951,77 +951,82 @@ export function Dashboard() {
               </motion.div>
             </div>
 
-            {/* Right Column - Greeting Card (30%) */}
-            <div className="lg:col-span-4 xl:col-span-3 space-y-4">
+            {/* Right Column - Unified Welcome & Assessments Card */}
+            <div className="lg:col-span-4 xl:col-span-3">
               <motion.div
-                className="bg-white border border-slate-200/60 rounded-2xl p-5 md:p-6 shadow-sm h-fit lg:sticky lg:top-24"
+                className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl h-fit overflow-hidden lg:sticky lg:top-24"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <div className="text-center space-y-4">
-                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto">
-                    <span className="material-symbols-outlined text-xl text-slate-600">wb_sunny</span>
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-blue-50/5 rounded-3xl"></div>
+
+                {/* Greeting Section */}
+                <div className="relative z-10 text-center mb-6">
+                  <div className="w-12 h-12 bg-slate-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border border-white/30">
+                    <span className="material-symbols-outlined text-slate-600 text-xl">wb_sunny</span>
                   </div>
                   <div className="space-y-2">
-                    <h2 className="text-lg font-medium text-slate-800 leading-tight">
+                    <h2 className="text-lg font-bold text-slate-900 leading-tight">
                       {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
                     </h2>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-500 font-medium">
                       {getFormattedDate()}
                     </p>
-                    <div className="w-8 h-px bg-slate-200 mx-auto my-3"></div>
-                    <p className="text-xs text-slate-400 leading-relaxed">
+                    <div className="w-12 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent mx-auto my-3"></div>
+                    <p className="text-xs text-slate-500/80 leading-relaxed font-medium">
                       {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
                     </p>
                   </div>
                 </div>
-              </motion.div>
 
-              {/* Assessment Coverage Card */}
-              <motion.div
-                className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl h-fit overflow-hidden"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-              >
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-blue-50/5 rounded-3xl"></div>
-                <div className="relative z-10 text-center mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100/80 to-indigo-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border border-white/30">
-                    <span className="material-symbols-outlined text-blue-600 text-xl">assignment_turned_in</span>
+                {/* Elegant Divider */}
+                <div className="relative z-10 flex items-center mb-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200/60 to-transparent"></div>
+                  <div className="px-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-100/80 to-indigo-100/80 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-sm border border-white/30">
+                      <span className="material-symbols-outlined text-blue-600 text-sm">assignment_turned_in</span>
+                    </div>
                   </div>
-                  <div className="text-lg font-bold text-slate-900 mb-1">Assessments you have taken</div>
-                  <div className="text-sm text-slate-600/80 font-medium">Track your mental health journey</div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200/60 to-transparent"></div>
                 </div>
 
-                <div className="relative z-10 space-y-3">
-                  {coverage.assessed.map(id => (
-                    <div key={`ok-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
-                      <div className="flex-shrink-0 w-6 h-6 bg-emerald-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
-                        <span className="material-symbols-outlined text-white text-sm">check</span>
-                      </div>
-                      <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
-                    </div>
-                  ))}
+                {/* Assessments Section */}
+                <div className="relative z-10">
+                  <div className="text-center mb-4">
+                    <div className="text-sm font-semibold text-slate-800 mb-1">Your Assessments</div>
+                    <div className="text-xs text-slate-600/80 font-medium">Track your mental health journey</div>
+                  </div>
 
-                  {coverage.stale.map(id => (
-                    <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
-                      <div className="flex-shrink-0 w-6 h-6 bg-amber-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
-                        <span className="material-symbols-outlined text-white text-sm">schedule</span>
+                  <div className="space-y-3">
+                    {coverage.assessed.map(id => (
+                      <div key={`ok-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                        <div className="flex-shrink-0 w-6 h-6 bg-emerald-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                          <span className="material-symbols-outlined text-white text-sm">check</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
                       </div>
-                      <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
-                    </div>
-                  ))}
+                    ))}
 
-                  {coverage.missing.map(id => (
-                    <div key={`miss-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/30 backdrop-blur-sm border border-white/20 hover:bg-white/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
-                      <div className="flex-shrink-0 w-6 h-6 bg-slate-400/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
-                        <span className="material-symbols-outlined text-slate-600 text-sm">radio_button_unchecked</span>
+                    {coverage.stale.map(id => (
+                      <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                        <div className="flex-shrink-0 w-6 h-6 bg-amber-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                          <span className="material-symbols-outlined text-white text-sm">schedule</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
                       </div>
-                      <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
-                    </div>
-                  ))}
+                    ))}
+
+                    {coverage.missing.map(id => (
+                      <div key={`miss-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/30 backdrop-blur-sm border border-white/20 hover:bg-white/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                        <div className="flex-shrink-0 w-6 h-6 bg-slate-400/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                          <span className="material-symbols-outlined text-slate-600 text-sm">radio_button_unchecked</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             </div>
