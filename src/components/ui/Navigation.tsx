@@ -88,7 +88,7 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
   const navigationItems = user ? authenticatedNavigationItems : landingNavigationItems
 
   return (
-    <motion.nav 
+    <motion.nav
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${className}`}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -96,9 +96,9 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
     >
       {/* Background blur overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/5 to-white/10 backdrop-blur-xl" />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <motion.div 
+        <motion.div
           className={`flex justify-between items-center glassmorphic rounded-3xl px-6 py-4 transition-all duration-500 ${
             scrolled ? 'shadow-2xl' : 'shadow-lg'
           }`}
@@ -149,8 +149,8 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
             <div className="hidden lg:flex items-center space-x-2">
               {navigationItems.map((item, index) => {
                 const isActive = isClient && (
-                  item.exact 
-                    ? pathname === item.href 
+                  item.exact
+                    ? pathname === item.href
                     : pathname?.startsWith(item.href)
                 )
                 const isCrisis = item.isCrisis
@@ -206,6 +206,7 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
                         </motion.div>
                       </Link>
                     </motion.div>
+                  </motion.div>
                 )
               })}
             </div>
@@ -218,12 +219,12 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
               <motion.button
                 onClick={() => router.push('/login')}
                 className="flex items-center gap-3 rounded-2xl px-8 py-3 text-sm font-bold text-white shadow-2xl transition-all duration-500 relative overflow-hidden"
-                style={{ 
+                style={{
                   background: 'linear-gradient(135deg, #335f64 0%, #2a4f54 50%, #1e3a3e 100%)',
                   boxShadow: '0 10px 40px rgba(51, 95, 100, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                 }}
-                whileHover={{ 
-                  scale: 1.05, 
+                whileHover={{
+                  scale: 1.05,
                   y: -3,
                   boxShadow: '0 15px 50px rgba(51, 95, 100, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2)'
                 }}
@@ -232,7 +233,7 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <motion.span 
+                <motion.span
                   className="material-symbols-outlined text-xl"
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -259,7 +260,7 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.8 }}
             >
-              <motion.span 
+              <motion.span
                 className="material-symbols-outlined text-2xl text-secondary-700"
                 animate={{ rotate: isMenuOpen ? 180 : 0 }}
                 transition={{ duration: 0.3 }}
@@ -285,8 +286,8 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
                   // Show navigation items for authenticated users
                   navigationItems.map((item, index) => {
                     const isActive = isClient && (
-                      item.exact 
-                        ? pathname === item.href 
+                      item.exact
+                        ? pathname === item.href
                         : pathname?.startsWith(item.href)
                     )
                     const isCrisis = item.isCrisis
@@ -336,7 +337,7 @@ export function Navigation({ className = '', currentPage, onPageChange }: Naviga
                         setIsMenuOpen(false)
                       }}
                       className="w-full px-6 py-4 rounded-2xl text-sm font-bold text-white shadow-2xl flex items-center justify-center gap-3 relative overflow-hidden"
-                      style={{ 
+                      style={{
                         background: 'linear-gradient(135deg, #335f64 0%, #2a4f54 50%, #1e3a3e 100%)',
                         boxShadow: '0 10px 40px rgba(51, 95, 100, 0.4)'
                       }}
