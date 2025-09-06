@@ -262,7 +262,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full bg-white/60 backdrop-blur-sm rounded-2xl border border-slate-200/60 shadow-sm">
       {/* Chat Header */}
       <div className="p-4 border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
@@ -280,7 +280,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1" role="log" aria-live="polite">
+      <div className="flex-1 overflow-y-auto p-4 space-y-1 min-h-0" role="log" aria-live="polite">
         <AnimatePresence mode="popLayout">
           {messages.map((message) => (
             <TherapeuticMessage key={message.id} message={message} />

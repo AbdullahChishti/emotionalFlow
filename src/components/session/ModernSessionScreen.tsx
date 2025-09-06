@@ -97,7 +97,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
             </div>
 
             {/* Right Column - Chat Interface */}
-            <div className="min-w-0 h-full">
+            <div className="min-w-0 h-full overflow-hidden">
               <ChatInterface therapistName={therapistName} />
             </div>
           </div>
