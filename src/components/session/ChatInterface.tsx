@@ -280,7 +280,16 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-1 min-h-0" role="log" aria-live="polite">
+      <div
+        className="flex-1 overflow-y-auto p-4 space-y-1 min-h-0 chat-messages"
+        role="log"
+        aria-live="polite"
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#cbd5e1 #f1f5f9',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
         <AnimatePresence mode="popLayout">
           {messages.map((message) => (
             <TherapeuticMessage key={message.id} message={message} />
