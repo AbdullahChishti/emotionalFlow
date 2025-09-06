@@ -246,33 +246,30 @@ export function OverallAssessmentResults({
         </motion.div>
       )}
 
-      {/* Manifestations */}
+      {/* How This Might Impact Your Life */}
       {aiAnalysis.manifestations && aiAnalysis.manifestations.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-3xl border border-slate-200/60 p-8 shadow-lg"
+          className="bg-white rounded-2xl border border-slate-200 p-6"
         >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-amber-600 text-xl">visibility</span>
-            </div>
-            <h2 className="text-2xl font-light text-slate-900">How This Shows Up in Your Daily Life</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <span className="material-symbols-outlined text-slate-600 text-xl">person</span>
+            <h2 className="text-xl font-medium text-slate-900">How This Might Impact Your Life</h2>
           </div>
-          <div className="grid gap-4">
+
+          <div className="space-y-3">
             {aiAnalysis.manifestations.map((manifestation, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
-                className="flex items-start gap-4 p-4 bg-amber-50/50 rounded-2xl border border-amber-200/40"
+                className="flex items-start gap-3 p-4 rounded-lg bg-slate-50"
               >
-                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="material-symbols-outlined text-amber-600 text-sm">arrow_forward</span>
-                </div>
-                <p className="text-slate-700 leading-relaxed text-base">{manifestation}</p>
+                <span className="material-symbols-outlined text-slate-500 text-sm mt-0.5">arrow_right</span>
+                <p className="text-slate-700 leading-relaxed text-sm">{manifestation}</p>
               </motion.div>
             ))}
           </div>
