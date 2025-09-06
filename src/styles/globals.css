@@ -17,4 +17,13 @@ body {
 @keyframes float2 {
   0%, 100% { transform: translateY(0) rotate(0deg);}
   50% { transform: translateY(20px) rotate(-6deg);}
-} 
+}
+
+/* Hide scrollbars for assessment coverage */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

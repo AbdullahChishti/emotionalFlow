@@ -28,11 +28,11 @@ interface StatCardProps {
 function StatCard({ icon, value, label, loading }: StatCardProps) {
   if (loading) {
     return (
-      <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 sm:p-6 border border-white/50 shadow-lg">
+      <div className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm">
         <div className="animate-pulse">
-          <div className="w-8 h-8 bg-slate-200 rounded-lg mb-4"></div>
-          <div className="w-16 h-8 bg-slate-200 rounded mb-2"></div>
-          <div className="w-20 h-4 bg-slate-200 rounded"></div>
+          <div className="w-7 h-7 bg-slate-200 rounded-lg mb-3"></div>
+          <div className="w-14 h-6 bg-slate-200 rounded mb-2"></div>
+          <div className="w-16 h-3 bg-slate-200 rounded"></div>
         </div>
       </div>
     )
@@ -40,18 +40,18 @@ function StatCard({ icon, value, label, loading }: StatCardProps) {
 
   return (
     <motion.div
-      className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 sm:p-6 border border-white/50 shadow-lg hover:shadow-xl transition-shadow h-full"
-      initial={{ opacity: 0, y: 12 }}
+      className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-slate-300/60 transition-all duration-200 h-full"
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand-green-100 rounded-2xl flex items-center justify-center">
-          <span className="material-symbols-outlined text-brand-green-600 text-lg sm:text-xl">{icon}</span>
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center">
+          <span className="material-symbols-outlined text-slate-600 text-lg">{icon}</span>
         </div>
       </div>
-      <div className="text-2xl sm:text-3xl font-bold text-secondary-900 mb-1">{value}</div>
-      <div className="text-xs sm:text-sm text-secondary-600 leading-relaxed">{label}</div>
+      <div className="text-xl font-semibold text-slate-900 mb-1">{value}</div>
+      <div className="text-sm text-slate-600 leading-snug">{label}</div>
     </motion.div>
   )
 }
@@ -66,14 +66,14 @@ interface ActionPillProps {
 }
 
 function ActionPill({ icon, label, description, onClick, variant = 'primary', disabled }: ActionPillProps) {
-  const baseClasses = "flex items-start gap-3 sm:gap-4 p-4 sm:p-6 rounded-full transition-all duration-300 transform w-full min-h-[100px]"
+  const baseClasses = "flex items-center gap-3 p-4 rounded-2xl transition-all duration-200 w-full min-h-[80px]"
   const variantClasses = variant === 'primary'
-    ? "text-white shadow-lg hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-neutral-900"
-    : "bg-white/80 backdrop-blur-sm border-2 border-brand-green-300 text-secondary-900 shadow-lg hover:shadow-xl hover:scale-105 hover:border-brand-green-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-green-600"
+    ? "text-white shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-900"
+    : "bg-white border border-slate-200/60 text-slate-900 shadow-sm hover:shadow-md hover:border-slate-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-600"
 
   const primaryStyle = variant === 'primary' ? {
-    backgroundColor: '#335f64',
-    boxShadow: '0 10px 15px -3px rgba(51, 95, 100, 0.3)'
+    backgroundColor: '#334155',
+    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)'
   } : {}
 
   return (
@@ -82,28 +82,28 @@ function ActionPill({ icon, label, description, onClick, variant = 'primary', di
       disabled={disabled}
       className={`${baseClasses} ${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       style={variant === 'primary' ? primaryStyle : {}}
-      whileHover={!disabled ? { scale: 1.02 } : {}}
-      whileTap={!disabled ? { scale: 0.98 } : {}}
-      initial={{ opacity: 0, y: 8 }}
+      whileHover={!disabled ? { scale: 1.01 } : {}}
+      whileTap={!disabled ? { scale: 0.99 } : {}}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       aria-label={label}
     >
-      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-        variant === 'primary' ? 'bg-white/20' : 'bg-brand-green-100'
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+        variant === 'primary' ? 'bg-white/15' : 'bg-slate-100'
       }`}>
-        <span className={`material-symbols-outlined text-lg sm:text-xl ${
-          variant === 'primary' ? 'text-white' : 'text-brand-green-600'
+        <span className={`material-symbols-outlined text-lg ${
+          variant === 'primary' ? 'text-white' : 'text-slate-600'
         }`}>{icon}</span>
       </div>
-      <div className="text-left flex-1 min-w-0 py-1">
-        <div className="font-bold text-sm sm:text-base leading-tight break-words">{label}</div>
-        <div className={`text-xs sm:text-sm ${variant === 'primary' ? 'text-white/80' : 'text-secondary-600'} leading-relaxed mt-1 break-words`}>
+      <div className="text-left flex-1 min-w-0">
+        <div className="font-medium text-sm leading-tight break-words">{label}</div>
+        <div className={`text-xs ${variant === 'primary' ? 'text-white/75' : 'text-slate-500'} leading-relaxed mt-0.5 break-words`}>
           {description}
         </div>
       </div>
-      <span className={`material-symbols-outlined text-lg sm:text-xl flex-shrink-0 ${
-        variant === 'primary' ? 'text-white/60' : 'text-secondary-400'
+      <span className={`material-symbols-outlined text-lg flex-shrink-0 ${
+        variant === 'primary' ? 'text-white/60' : 'text-slate-400'
       }`}>arrow_forward</span>
     </motion.button>
   )
@@ -642,48 +642,48 @@ export function Dashboard() {
   }
 
   const renderSnapshotHero = () => (
-    <div className="bg-gradient-to-br from-white via-slate-50/30 to-white border border-slate-200/40 rounded-3xl p-8 md:p-10 lg:p-12 shadow-sm">
+    <div className="bg-white border border-slate-200/60 rounded-2xl p-6 md:p-8 shadow-sm">
       <div className="max-w-none">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-slate-700 mb-4">Your wellness snapshot</h2>
-          <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-3xl mx-auto font-light">
+        <div className="text-center mb-6">
+          <h2 className="text-xl md:text-2xl font-medium text-slate-800 mb-3">Your wellness snapshot</h2>
+          <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
             {hasAssessmentData
-              ? "Your personalized insights are ready. Click the button below to generate a comprehensive mental health profile using all your assessments."
+              ? "Your personalized insights are ready. Generate a comprehensive mental health profile using all your assessments."
               : "Complete assessments to unlock personalized insights and tailored recommendations for your mental wellness journey."
             }
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6 justify-center">
           <button
             onClick={() => handleNavigate('/session')}
-            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-slate-800 text-white font-light shadow-sm hover:shadow-md transition-all duration-300 hover:bg-slate-700 text-base"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-slate-800 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:bg-slate-700 text-sm"
           >
-            <span className="material-symbols-outlined mr-3 text-xl">play_arrow</span>
+            <span className="material-symbols-outlined mr-2 text-lg">play_arrow</span>
             Start session
           </button>
           <button
             onClick={handleGenerateOverallAssessment}
             disabled={isGeneratingOverall || !hasAssessmentData}
-            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-light shadow-lg hover:shadow-xl transition-all duration-300 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-base"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium shadow-sm hover:shadow-md transition-all duration-200 hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
-            <span className="material-symbols-outlined mr-3 text-xl">
+            <span className="material-symbols-outlined mr-2 text-lg">
               {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
             </span>
             {isGeneratingOverall ? 'Generating insights...' : 'Get personalized insights'}
           </button>
           <button
             onClick={() => handleNavigate('/results')}
-            className="inline-flex items-center justify-center px-8 py-4 rounded-2xl border border-slate-300/60 bg-white/80 text-slate-700 font-light shadow-sm hover:shadow-md hover:border-slate-400/60 transition-all duration-300 text-base"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-200/60 bg-white text-slate-700 font-medium shadow-sm hover:shadow-md hover:border-slate-300/60 transition-all duration-200 text-sm"
           >
-            <span className="material-symbols-outlined mr-3 text-xl">lightbulb</span>
+            <span className="material-symbols-outlined mr-2 text-lg">lightbulb</span>
             View results
           </button>
         </div>
 
         <div className="text-center">
-          <a href="/crisis-support" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-slate-600 transition-colors duration-300 font-light">
-            <span className="material-symbols-outlined text-base">help</span>
+          <a href="/crisis-support" className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-600 transition-colors duration-200">
+            <span className="material-symbols-outlined text-sm">help</span>
             Need immediate support?
           </a>
         </div>
@@ -691,14 +691,14 @@ export function Dashboard() {
 
       {/* Dimension buttons */}
       {snapshot?.dimensions && snapshot.dimensions.length > 0 && (
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-wrap gap-2 mb-5">
           {snapshot.dimensions
             .filter(d => ['anxiety','trauma_exposure','wellbeing','stress','depression','resilience'].includes(d.key))
             .slice(0, 4)
             .map(d => (
-              <div key={d.key} className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white/70 border border-slate-200/40 shadow-sm">
-                <span className="text-sm font-light text-slate-700">{keyLabel(d.key)}</span>
-                <span className={`text-sm font-light px-2.5 py-1 rounded-xl ${getLevelBadgeClasses(d.level)}`}>
+              <div key={d.key} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200/60 shadow-sm">
+                <span className="text-xs text-slate-700">{keyLabel(d.key)}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-lg ${getLevelBadgeClasses(d.level)}`}>
                   {d.level}
                 </span>
               </div>
@@ -706,21 +706,21 @@ export function Dashboard() {
         </div>
       )}
 
-      <div className="border-t border-slate-200/40 pt-6">
+      <div className="border-t border-slate-200/60 pt-4">
         <button
           onClick={() => setWhyOpen(v => !v)}
-          className="text-sm text-slate-500 hover:text-slate-700 transition-colors duration-300 font-light"
+          className="text-xs text-slate-500 hover:text-slate-700 transition-colors duration-200"
         >
-          {whyOpen ? 'Hide details' : 'Why this?'}
+          {whyOpen ? 'Hide details' : 'How do we know this?'}
         </button>
         {whyOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="mt-4 p-4 rounded-2xl bg-white/50 border border-slate-200/30"
+            className="mt-3 p-3 rounded-xl bg-slate-50/80 border border-slate-200/40"
           >
-            <div className="text-sm font-light text-slate-700 mb-3">Informed by</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="text-xs text-slate-700 mb-2">Informed by</div>
+            <div className="flex flex-wrap gap-1.5">
               {(snapshot?.explainability.assessments_used || []).map((name) => {
                 const pair = Object.entries(ASSESSMENTS).find(([id, def]) => {
                   const display = def?.shortTitle || def?.title || id.toUpperCase()
@@ -729,7 +729,7 @@ export function Dashboard() {
                 const id = pair?.[0]
                 const when = id ? formatRelative(latestMeta[id]) : ''
                 return (
-                  <span key={name} className="inline-flex items-center px-3 py-1.5 rounded-xl bg-white/60 border border-slate-200/40 text-slate-600 text-sm font-light">
+                  <span key={name} className="inline-flex items-center px-2 py-1 rounded-lg bg-white border border-slate-200/40 text-slate-600 text-xs">
                     {name}{when ? ` • ${when}` : ''}
                   </span>
                 )
@@ -737,11 +737,11 @@ export function Dashboard() {
             </div>
           </motion.div>
         )}
-        <div className="mt-6 text-xs text-slate-400 leading-relaxed font-light">
+        <div className="mt-4 text-xs text-slate-400 leading-relaxed">
           This information is for your awareness only, not a clinical diagnosis.{' '}
-          <a href="/crisis-support" className="text-slate-500 hover:text-slate-700 transition-colors duration-300">Need immediate support?</a>
+          <a href="/crisis-support" className="text-slate-500 hover:text-slate-700 transition-colors duration-200">Need immediate support?</a>
           <span className="mx-2 text-slate-300">•</span>
-          <a href="/profile" className="text-slate-500 hover:text-slate-700 transition-colors duration-300">Manage personalization</a>
+          <a href="/profile" className="text-slate-500 hover:text-slate-700 transition-colors duration-200">Manage personalization</a>
         </div>
       </div>
     </div>
@@ -762,12 +762,12 @@ export function Dashboard() {
 
     if (loadingImpact) {
       return (
-        <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
-          <div className="animate-pulse space-y-3">
-            <div className="h-5 w-1/3 bg-slate-200/60 rounded" />
-            <div className="h-4 w-11/12 bg-slate-200/60 rounded" />
-            <div className="h-4 w-10/12 bg-slate-200/60 rounded" />
-            <div className="h-4 w-9/12 bg-slate-200/60 rounded" />
+        <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
+          <div className="animate-pulse space-y-2">
+            <div className="h-4 w-1/3 bg-slate-200/60 rounded" />
+            <div className="h-3 w-11/12 bg-slate-200/60 rounded" />
+            <div className="h-3 w-10/12 bg-slate-200/60 rounded" />
+            <div className="h-3 w-9/12 bg-slate-200/60 rounded" />
           </div>
         </div>
       )
@@ -775,19 +775,19 @@ export function Dashboard() {
 
     if (!latestOverall) {
       return (
-        <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
+        <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm">
           <div className="text-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-purple-600">psychology</span>
+            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-symbols-outlined text-slate-600 text-lg">psychology</span>
             </div>
-            <div className="text-lg font-light text-slate-700 mb-2">How this might impact your life</div>
-            <div className="text-sm text-slate-500 font-light mb-6 max-w-md mx-auto">Generate a personalized analysis to see possible day-to-day impacts.</div>
+            <div className="text-base font-medium text-slate-700 mb-2">How this might impact your life</div>
+            <div className="text-sm text-slate-500 mb-4 max-w-md mx-auto">Generate a personalized analysis to see possible day-to-day impacts.</div>
             <button
               onClick={handleGenerateOverallAssessment}
               disabled={isGeneratingOverall || !hasAssessmentData}
-              className="inline-flex items-center px-6 py-3 rounded-xl bg-slate-800 text-white font-light hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
             >
-              <span className="material-symbols-outlined mr-2">sparkles</span>
+              <span className="material-symbols-outlined mr-2 text-base">sparkles</span>
               Get personalized insights
             </button>
           </div>
@@ -796,28 +796,28 @@ export function Dashboard() {
     }
 
     return (
-      <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <div className="text-base font-light text-slate-700">How this might impact your life</div>
+            <div className="text-base font-medium text-slate-700">How this might impact your life</div>
             {updatedAt && (
-              <div className="text-xs text-slate-400 font-light mt-1">Updated {formatRelative(updatedAt)}</div>
+              <div className="text-xs text-slate-400 mt-0.5">Updated {formatRelative(updatedAt)}</div>
             )}
           </div>
           {risk && (
-            <span className={`text-xs font-light px-2.5 py-1 rounded-xl ${getLevelBadgeClasses(risk)}`}>{risk}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-lg ${getLevelBadgeClasses(risk)}`}>{risk}</span>
           )}
         </div>
         {lines && lines.length > 0 ? (
-          <ul className="list-disc pl-5 text-slate-700 space-y-2">
+          <ul className="list-disc pl-4 text-slate-700 space-y-1.5">
             {lines.slice(0, 5).map((l: string, idx: number) => (
-              <li key={idx} className="text-sm font-light">{l}</li>
+              <li key={idx} className="text-sm">{l}</li>
             ))}
           </ul>
         ) : (
-          <div className="text-sm text-slate-500 font-light">No specific impacts identified. Try refreshing your insights.</div>
+          <div className="text-sm text-slate-500">No specific impacts identified. Try refreshing your insights.</div>
         )}
-        <div className="mt-4 flex gap-3">
+        <div className="mt-4 flex gap-2">
           <button
             onClick={async () => {
               if (!user?.id) return
@@ -842,16 +842,16 @@ export function Dashboard() {
               }
             }}
             disabled={loadingImpact}
-            className="inline-flex items-center px-4 py-2 rounded-xl border border-slate-300/60 bg-white/80 text-slate-700 text-sm font-light hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-4 py-2 rounded-xl border border-slate-200/60 bg-white text-slate-700 text-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <span className="material-symbols-outlined mr-2">refresh</span>
+            <span className="material-symbols-outlined mr-1.5 text-base">refresh</span>
             {loadingImpact ? 'Refreshing...' : 'Refresh insights'}
           </button>
           <button
             onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
-            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-800 text-white text-sm font-light hover:bg-slate-700"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-800 text-white text-sm hover:bg-slate-700 transition-all duration-200"
           >
-            <span className="material-symbols-outlined mr-2">open_in_new</span>
+            <span className="material-symbols-outlined mr-1.5 text-base">open_in_new</span>
             View full profile
           </button>
         </div>
@@ -864,9 +864,9 @@ export function Dashboard() {
   // Loading state
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-        <div className="container mx-auto px-6 py-16">
-          <div className="animate-pulse space-y-8 pt-16 md:pt-20">
+      <div className="bg-slate-50/30 min-h-screen">
+        <div className="container mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16">
+          <div className="animate-pulse space-y-6 md:space-y-8">
             <div className="h-6 w-2/3 bg-slate-200/60 rounded-lg mx-auto" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-5xl mx-auto">
               <div className="h-16 bg-slate-200/60 rounded-2xl" />
@@ -887,9 +887,9 @@ export function Dashboard() {
   // Error state
   if (error && !loading) {
     return (
-      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-        <div className="container mx-auto px-6 py-16">
-          <div className="text-center py-12 pt-28 md:pt-32">
+      <div className="bg-slate-50/30 min-h-screen">
+        <div className="container mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16">
+          <div className="text-center py-8">
             <h2 className="text-2xl font-light text-slate-600 mb-4">Unable to load dashboard</h2>
             <p className="text-slate-500 font-light mb-6 max-w-md mx-auto">{error}</p>
             <button
@@ -912,9 +912,9 @@ export function Dashboard() {
   // Profile not ready state
   if (!profile) {
     return (
-      <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-        <div className="container mx-auto px-6 py-16">
-          <div className="text-center py-12 pt-28 md:pt-32">
+      <div className="bg-slate-50/30 min-h-screen">
+        <div className="container mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16">
+          <div className="text-center py-8">
             <h2 className="text-2xl font-light text-slate-600 mb-4">Setting up your profile...</h2>
             <p className="text-slate-500 font-light">This will only take a moment.</p>
             <LoadingSpinner size="lg" className="mt-6" />
@@ -925,13 +925,13 @@ export function Dashboard() {
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-      <div className="container mx-auto px-6 py-20 md:py-24 lg:py-16">
-        <div className="space-y-8 md:space-y-10 lg:space-y-12">
+    <div className="bg-slate-50/30 min-h-screen">
+      <div className="container mx-auto px-4 pt-20 pb-12 md:pt-24 md:pb-16 transform scale-110 origin-top">
+        <div className="space-y-6 md:space-y-8">
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 lg:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
             {/* Left Column - Main Content (70%) */}
-            <div className="lg:col-span-8 xl:col-span-9 space-y-8 md:space-y-10">
+            <div className="lg:col-span-8 xl:col-span-9 space-y-6">
               {/* Snapshot Hero */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -952,71 +952,79 @@ export function Dashboard() {
             </div>
 
             {/* Right Column - Greeting Card (30%) */}
-            <div className="lg:col-span-4 xl:col-span-3">
+            <div className="lg:col-span-4 xl:col-span-3 space-y-4">
               <motion.div
-                className="bg-white/60 backdrop-blur-sm rounded-3xl p-6 md:p-8 border border-white/50 shadow-lg h-fit lg:sticky lg:top-8"
+                className="bg-white border border-slate-200/60 rounded-2xl p-5 md:p-6 shadow-sm h-fit lg:sticky lg:top-24"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <div className="text-center space-y-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto shadow-sm">
-                    <span className="material-symbols-outlined text-2xl text-blue-600">wb_sunny</span>
+                <div className="text-center space-y-4">
+                  <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto">
+                    <span className="material-symbols-outlined text-xl text-slate-600">wb_sunny</span>
                   </div>
-                  <div className="space-y-3">
-                    <h2 className="text-xl md:text-2xl font-light text-slate-800 leading-tight">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-medium text-slate-800 leading-tight">
                       {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
                     </h2>
-                    <p className="text-sm text-slate-500 font-light">
+                    <p className="text-xs text-slate-500">
                       {getFormattedDate()}
                     </p>
-                    <div className="w-12 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent mx-auto my-4"></div>
-                    <p className="text-sm text-slate-400 font-light leading-relaxed">
+                    <div className="w-8 h-px bg-slate-200 mx-auto my-3"></div>
+                    <p className="text-xs text-slate-400 leading-relaxed">
                       {hasAssessmentData ? 'Your personalized dashboard is ready' : "You're doing your best today."}
                     </p>
                   </div>
                 </div>
               </motion.div>
+
+              {/* Assessment Coverage Card */}
+              <motion.div
+                className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm h-fit"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <div className="text-center mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                    <span className="material-symbols-outlined text-blue-600 text-lg">assignment_turned_in</span>
+                  </div>
+                  <div className="text-base font-semibold text-slate-800">Assessments you have taken</div>
+                  <div className="text-sm text-slate-500 mt-1">Track your mental health journey</div>
+                </div>
+
+                <div className="space-y-2.5">
+                  {coverage.assessed.map(id => (
+                    <div key={`ok-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-emerald-25 hover:from-emerald-100 hover:to-emerald-50 border border-emerald-200/30 hover:border-emerald-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+                      <div className="flex-shrink-0 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="material-symbols-outlined text-white text-sm font-bold">check</span>
+                      </div>
+                      <span className="text-sm font-semibold text-emerald-900 group-hover:text-emerald-950">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                    </div>
+                  ))}
+
+                  {coverage.stale.map(id => (
+                    <div key={`stale-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-25 hover:from-amber-100 hover:to-amber-50 border border-amber-200/30 hover:border-amber-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+                      <div className="flex-shrink-0 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="material-symbols-outlined text-white text-sm font-bold">schedule</span>
+                      </div>
+                      <span className="text-sm font-semibold text-amber-900 group-hover:text-amber-950">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                    </div>
+                  ))}
+
+                  {coverage.missing.map(id => (
+                    <div key={`miss-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-50/50 hover:bg-slate-100/60 border border-slate-200/30 hover:border-slate-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
+                      <div className="flex-shrink-0 w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="material-symbols-outlined text-slate-500 text-sm">radio_button_unchecked</span>
+                      </div>
+                      <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </div>
 
-          {/* Coverage row */}
-          <motion.div
-            className="max-w-7xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <div className="bg-white/60 border border-slate-200/40 rounded-2xl p-8 shadow-sm">
-              <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                  <span className="material-symbols-outlined text-green-600">analytics</span>
-                </div>
-                <div className="text-lg font-light text-slate-700">Assessment Coverage</div>
-                <div className="text-sm text-slate-500 font-light mt-1">Track your mental health assessment progress</div>
-              </div>
-              <div className="flex flex-wrap justify-center gap-3 text-sm">
-                {coverage.assessed.map(id => (
-                  <span key={`ok-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 text-emerald-700 border border-emerald-200/60 shadow-sm">
-                    <span className="material-symbols-outlined text-base">check_circle</span>
-                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
-                  </span>
-                ))}
-                {coverage.stale.map(id => (
-                  <span key={`stale-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50/80 text-amber-700 border border-amber-200/60 shadow-sm">
-                    <span className="material-symbols-outlined text-base">error</span>
-                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
-                  </span>
-                ))}
-                {coverage.missing.map(id => (
-                  <span key={`miss-${id}`} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50/80 text-slate-600 border border-slate-200/60 shadow-sm">
-                    <span className="material-symbols-outlined text-base">check_box_outline_blank</span>
-                    {(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </motion.div>
 
 
           {/* Empty state if no assessments */}
@@ -1027,13 +1035,13 @@ export function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="bg-white/60 border border-slate-200/40 rounded-3xl p-10 shadow-sm">
-                <h3 className="text-xl font-light text-slate-700 mb-3">Complete a quick check-in to personalize your support.</h3>
-                <p className="text-slate-500 text-base font-light mb-6">It takes about 3 minutes.</p>
+              <div className="bg-white border border-slate-200/60 rounded-2xl p-8 shadow-sm">
+                <h3 className="text-lg font-medium text-slate-700 mb-2">Complete a quick check-in to personalize your support.</h3>
+                <p className="text-slate-500 text-sm mb-5">It takes about 3 minutes.</p>
                 <button
                   onClick={() => handleNavigate('/assessments')}
-                  className="inline-flex items-center px-6 py-3 rounded-2xl text-white font-light shadow-sm hover:shadow-md transition-all duration-300"
-                  style={{ backgroundColor: '#335f64' }}
+                  className="inline-flex items-center px-5 py-2.5 rounded-xl text-white font-medium shadow-sm hover:shadow-md transition-all duration-200 text-sm"
+                  style={{ backgroundColor: '#334155' }}
                 >
                   Take a 3-min screener
                 </button>
@@ -1068,12 +1076,12 @@ export function Dashboard() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-3xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+                className="bg-white rounded-2xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                  <h2 className="text-2xl font-light text-slate-900">
+                <div className="flex items-center justify-between p-5 border-b border-slate-200">
+                  <h2 className="text-xl font-medium text-slate-900">
                     {isGeneratingOverall ? 'Generating Your Insights' : 'Your Personalized Mental Health Profile'}
                   </h2>
                   {!isGeneratingOverall && (
@@ -1089,42 +1097,42 @@ export function Dashboard() {
                           localStorage.removeItem('overallProgress')
                         }
                       }}
-                      className="p-2 hover:bg-slate-100 rounded-xl transition-colors"
+                      className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
                     >
-                      <span className="material-symbols-outlined text-slate-500">close</span>
+                      <span className="material-symbols-outlined text-slate-500 text-lg">close</span>
                     </button>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div className="overflow-y-auto max-h-[calc(90vh-100px)]">
                   {isGeneratingOverall ? (
-                    <div className="p-8 text-center">
-                      <div className="mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                          <span className="material-symbols-outlined text-2xl text-blue-600 animate-spin">psychology</span>
+                    <div className="p-6 text-center">
+                      <div className="mb-5">
+                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                          <span className="material-symbols-outlined text-xl text-slate-600 animate-spin">psychology</span>
                         </div>
-                        <h3 className="text-xl font-light text-slate-900 mb-2">Analyzing Your Assessments</h3>
-                        <p className="text-slate-600 font-light">
+                        <h3 className="text-lg font-medium text-slate-900 mb-2">Analyzing Your Assessments</h3>
+                        <p className="text-slate-600 text-sm">
                           We're using AI to create a comprehensive analysis of all your mental health assessments.
                         </p>
                       </div>
                       
                       {/* Progress Bar */}
-                      <div className="max-w-md mx-auto">
-                        <div className="flex justify-between text-sm text-slate-600 mb-2">
+                      <div className="max-w-sm mx-auto">
+                        <div className="flex justify-between text-xs text-slate-600 mb-2">
                           <span>Progress</span>
                           <span>{Math.round(overallProgress)}%</span>
                         </div>
-                        <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className="w-full bg-slate-200 rounded-full h-1.5">
                           <motion.div
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${overallProgress}%` }}
                             transition={{ duration: 0.3 }}
                           />
                         </div>
-                        <p className="text-sm text-slate-500 mt-3 font-light">
+                        <p className="text-xs text-slate-500 mt-2">
                           This usually takes 10-30 seconds...
                         </p>
                       </div>
@@ -1138,19 +1146,19 @@ export function Dashboard() {
                       }}
                     />
                   ) : (
-                    <div className="p-8 text-center">
-                      <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span className="material-symbols-outlined text-2xl text-slate-400">error</span>
+                    <div className="p-6 text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <span className="material-symbols-outlined text-xl text-slate-400">error</span>
                       </div>
-                      <h3 className="text-xl font-light text-slate-900 mb-2">Unable to Generate Insights</h3>
-                      <p className="text-slate-600 font-light mb-6">
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">Unable to Generate Insights</h3>
+                      <p className="text-slate-600 text-sm mb-4">
                         There was an error creating your personalized profile. Please try again.
                       </p>
                       <button
                         onClick={handleGenerateOverallAssessment}
-                        className="inline-flex items-center px-6 py-3 rounded-2xl bg-slate-800 text-white font-light hover:bg-slate-700 transition-colors"
+                        className="inline-flex items-center px-5 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 transition-colors text-sm"
                       >
-                        <span className="material-symbols-outlined mr-2">refresh</span>
+                        <span className="material-symbols-outlined mr-2 text-base">refresh</span>
                         Try Again
                       </button>
                     </div>
