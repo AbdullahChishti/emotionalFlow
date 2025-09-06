@@ -763,19 +763,11 @@ export function Dashboard() {
     if (loadingImpact) {
       return (
         <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
-          <div className="animate-pulse space-y-3">
-            <div className="flex items-center justify-between mb-3">
-              <div className="h-4 w-2/3 bg-slate-200/60 rounded-lg" />
-              <div className="h-5 w-12 bg-slate-200/60 rounded-full" />
-            </div>
-            <div className="h-3 w-full bg-slate-200/60 rounded" />
-            <div className="h-3 w-5/6 bg-slate-200/60 rounded" />
-            <div className="h-3 w-4/5 bg-slate-200/60 rounded" />
-            <div className="h-3 w-3/4 bg-slate-200/60 rounded" />
-            <div className="flex gap-2 mt-4">
-              <div className="h-8 w-24 bg-slate-200/60 rounded-lg" />
-              <div className="h-8 w-32 bg-slate-200/60 rounded-lg" />
-            </div>
+          <div className="animate-pulse space-y-2">
+            <div className="h-4 w-1/3 bg-slate-200/60 rounded" />
+            <div className="h-3 w-11/12 bg-slate-200/60 rounded" />
+            <div className="h-3 w-10/12 bg-slate-200/60 rounded" />
+            <div className="h-3 w-9/12 bg-slate-200/60 rounded" />
           </div>
         </div>
       )
@@ -785,15 +777,15 @@ export function Dashboard() {
       return (
         <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm">
           <div className="text-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-              <span className="material-symbols-outlined text-purple-600 text-xl">psychology</span>
+            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+              <span className="material-symbols-outlined text-slate-600 text-lg">psychology</span>
             </div>
-            <div className="text-lg font-semibold text-slate-800 mb-2">How this might impact your life</div>
-            <div className="text-sm text-slate-500 mb-5 max-w-md mx-auto leading-relaxed">Generate a personalized analysis to see possible day-to-day impacts and gain deeper insights into your mental health journey.</div>
+            <div className="text-base font-medium text-slate-700 mb-2">How this might impact your life</div>
+            <div className="text-sm text-slate-500 mb-4 max-w-md mx-auto">Generate a personalized analysis to see possible day-to-day impacts.</div>
             <button
               onClick={handleGenerateOverallAssessment}
               disabled={isGeneratingOverall || !hasAssessmentData}
-              className="inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-sm shadow-md hover:shadow-lg hover:scale-105"
+              className="inline-flex items-center px-5 py-2.5 rounded-xl bg-slate-800 text-white font-medium hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
             >
               <span className="material-symbols-outlined mr-2 text-base">sparkles</span>
               Get personalized insights
@@ -805,39 +797,27 @@ export function Dashboard() {
 
     return (
       <div className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl flex items-center justify-center shadow-sm">
-              <span className="material-symbols-outlined text-purple-600 text-sm">psychology</span>
-            </div>
-            <div>
-              <div className="text-base font-semibold text-slate-800">How this might impact your life</div>
-              {updatedAt && (
-                <div className="text-xs text-slate-400 mt-0.5">Updated {formatRelative(updatedAt)}</div>
-              )}
-            </div>
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <div className="text-base font-medium text-slate-700">How this might impact your life</div>
+            {updatedAt && (
+              <div className="text-xs text-slate-400 mt-0.5">Updated {formatRelative(updatedAt)}</div>
+            )}
           </div>
           {risk && (
-            <span className={`text-xs font-medium px-3 py-1.5 rounded-xl shadow-sm ${getLevelBadgeClasses(risk)}`}>{risk}</span>
+            <span className={`text-xs px-2 py-0.5 rounded-lg ${getLevelBadgeClasses(risk)}`}>{risk}</span>
           )}
         </div>
-
         {lines && lines.length > 0 ? (
-          <div className="space-y-3 mb-4">
+          <ul className="list-disc pl-4 text-slate-700 space-y-1.5">
             {lines.slice(0, 5).map((l: string, idx: number) => (
-              <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100/60">
-                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                <p className="text-sm text-slate-700 leading-relaxed">{l}</p>
-              </div>
+              <li key={idx} className="text-sm">{l}</li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="text-sm text-slate-500 mb-4 p-3 rounded-xl bg-slate-50/50 border border-slate-100/60">
-            No specific impacts identified. Try refreshing your insights.
-          </div>
+          <div className="text-sm text-slate-500">No specific impacts identified. Try refreshing your insights.</div>
         )}
-
-        <div className="flex gap-3">
+        <div className="mt-4 flex gap-2">
           <button
             onClick={async () => {
               if (!user?.id) return
@@ -862,16 +842,16 @@ export function Dashboard() {
               }
             }}
             disabled={loadingImpact}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl border border-slate-200/60 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-300/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:shadow-sm"
+            className="inline-flex items-center px-4 py-2 rounded-xl border border-slate-200/60 bg-white text-slate-700 text-sm hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
-            <span className="material-symbols-outlined mr-2 text-sm">refresh</span>
+            <span className="material-symbols-outlined mr-1.5 text-base">refresh</span>
             {loadingImpact ? 'Refreshing...' : 'Refresh insights'}
           </button>
           <button
             onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
-            className="inline-flex items-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
+            className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-800 text-white text-sm hover:bg-slate-700 transition-all duration-200"
           >
-            <span className="material-symbols-outlined mr-2 text-sm">open_in_new</span>
+            <span className="material-symbols-outlined mr-1.5 text-base">open_in_new</span>
             View full profile
           </button>
         </div>
@@ -1000,42 +980,44 @@ export function Dashboard() {
 
               {/* Assessment Coverage Card */}
               <motion.div
-                className="bg-white border border-slate-200/60 rounded-2xl p-5 shadow-sm h-fit"
+                className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl h-fit overflow-hidden"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
               >
-                <div className="text-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
-                    <span className="material-symbols-outlined text-blue-600 text-lg">assignment_turned_in</span>
+                {/* Subtle gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-blue-50/5 rounded-3xl"></div>
+                <div className="relative z-10 text-center mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100/80 to-indigo-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg border border-white/30">
+                    <span className="material-symbols-outlined text-blue-600 text-xl">assignment_turned_in</span>
                   </div>
-                  <div className="text-base font-semibold text-slate-800">Assessments you have taken</div>
-                  <div className="text-sm text-slate-500 mt-1">Track your mental health journey</div>
+                  <div className="text-lg font-bold text-slate-900 mb-1">Assessments you have taken</div>
+                  <div className="text-sm text-slate-600/80 font-medium">Track your mental health journey</div>
                 </div>
 
-                <div className="space-y-2.5">
+                <div className="relative z-10 space-y-3">
                   {coverage.assessed.map(id => (
-                    <div key={`ok-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-emerald-25 hover:from-emerald-100 hover:to-emerald-50 border border-emerald-200/30 hover:border-emerald-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
-                      <div className="flex-shrink-0 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-sm">
-                        <span className="material-symbols-outlined text-white text-sm font-bold">check</span>
+                    <div key={`ok-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                      <div className="flex-shrink-0 w-6 h-6 bg-emerald-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                        <span className="material-symbols-outlined text-white text-sm">check</span>
                       </div>
-                      <span className="text-sm font-semibold text-emerald-900 group-hover:text-emerald-950">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                      <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
                     </div>
                   ))}
 
                   {coverage.stale.map(id => (
-                    <div key={`stale-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-amber-50 to-amber-25 hover:from-amber-100 hover:to-amber-50 border border-amber-200/30 hover:border-amber-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
-                      <div className="flex-shrink-0 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center shadow-sm">
-                        <span className="material-symbols-outlined text-white text-sm font-bold">schedule</span>
+                    <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/40 backdrop-blur-sm border border-white/30 hover:bg-white/60 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                      <div className="flex-shrink-0 w-6 h-6 bg-amber-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                        <span className="material-symbols-outlined text-white text-sm">schedule</span>
                       </div>
-                      <span className="text-sm font-semibold text-amber-900 group-hover:text-amber-950">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                      <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
                     </div>
                   ))}
 
                   {coverage.missing.map(id => (
-                    <div key={`miss-${id}`} className="group flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-50/50 hover:bg-slate-100/60 border border-slate-200/30 hover:border-slate-300/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
-                      <div className="flex-shrink-0 w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center shadow-sm">
-                        <span className="material-symbols-outlined text-slate-500 text-sm">radio_button_unchecked</span>
+                    <div key={`miss-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/30 backdrop-blur-sm border border-white/20 hover:bg-white/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.01] cursor-pointer">
+                      <div className="flex-shrink-0 w-6 h-6 bg-slate-400/60 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                        <span className="material-symbols-outlined text-slate-600 text-sm">radio_button_unchecked</span>
                       </div>
                       <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
                     </div>
