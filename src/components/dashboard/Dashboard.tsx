@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { Profile, MoodEntry, ListeningSession } from '@/types'
@@ -31,94 +31,122 @@ import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
-// Reusable Components
+// Modern, minimal reusable components
 interface StatCardProps {
   icon: string
   value: string | number
   label: string
   loading?: boolean
+  trend?: 'up' | 'down' | 'neutral'
 }
 
-function StatCard({ icon, value, label, loading }: StatCardProps) {
+function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
   if (loading) {
     return (
-      <div className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm">
-        <div className="animate-pulse">
-          <div className="w-7 h-7 bg-slate-200 rounded-lg mb-3"></div>
-          <div className="w-14 h-6 bg-slate-200 rounded mb-2"></div>
-          <div className="w-16 h-3 bg-slate-200 rounded"></div>
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-6 shadow-sm">
+        <div className="animate-pulse space-y-3">
+          <div className="w-8 h-8 bg-slate-200/60 rounded-2xl"></div>
+          <div className="w-16 h-7 bg-slate-200/60 rounded-lg"></div>
+          <div className="w-20 h-4 bg-slate-200/60 rounded-md"></div>
         </div>
       </div>
     )
   }
 
+  const trendColors = {
+    up: 'text-emerald-500',
+    down: 'text-rose-500',
+    neutral: 'text-slate-400'
+  }
+
   return (
     <motion.div
-      className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-slate-300/60 transition-all duration-200 h-full"
-      initial={{ opacity: 0, y: 8 }}
+      className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-6 hover:bg-white hover:shadow-lg hover:border-slate-300/60 transition-all duration-300 group"
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -2 }}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-8 h-8 bg-slate-100 rounded-xl flex items-center justify-center">
-          <span className="material-symbols-outlined text-slate-600 text-lg">{icon}</span>
+      <div className="flex items-center justify-between mb-4">
+        <div className="w-10 h-10 bg-slate-50/80 rounded-2xl flex items-center justify-center group-hover:bg-slate-100/80 transition-colors duration-300">
+          <span className="material-symbols-outlined text-slate-600 text-xl">{icon}</span>
         </div>
+        {trend && (
+          <span className={`material-symbols-outlined text-sm ${trendColors[trend]}`}>
+            {trend === 'up' ? 'trending_up' : trend === 'down' ? 'trending_down' : 'trending_flat'}
+          </span>
+        )}
       </div>
-      <div className="text-xl font-semibold text-slate-900 mb-1">{value}</div>
-      <div className="text-sm text-slate-600 leading-snug">{label}</div>
+      <div className="text-2xl font-light text-slate-900 mb-2 tracking-tight">{value}</div>
+      <div className="text-sm text-slate-500 font-light">{label}</div>
     </motion.div>
   )
 }
 
-interface ActionPillProps {
+interface ActionCardProps {
   icon: string
   label: string
   description: string
   onClick: () => void
-  variant?: 'primary' | 'secondary'
+  variant?: 'primary' | 'secondary' | 'outline'
   disabled?: boolean
+  loading?: boolean
 }
 
-function ActionPill({ icon, label, description, onClick, variant = 'primary', disabled }: ActionPillProps) {
-  const baseClasses = "flex items-center gap-3 p-4 rounded-2xl transition-all duration-200 w-full min-h-[80px]"
-  const variantClasses = variant === 'primary'
-    ? "text-white shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-900"
-    : "bg-white border border-slate-200/60 text-slate-900 shadow-sm hover:shadow-md hover:border-slate-300/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-slate-600"
+function ActionCard({ icon, label, description, onClick, variant = 'primary', disabled, loading }: ActionCardProps) {
+  const variants = {
+    primary: {
+      base: "bg-gradient-to-br from-slate-900 to-slate-800 text-white border-slate-800",
+      hover: "hover:from-slate-800 hover:to-slate-700 hover:shadow-2xl hover:shadow-slate-900/20",
+      icon: "bg-white/10 text-white",
+      description: "text-white/70"
+    },
+    secondary: {
+      base: "bg-white/80 backdrop-blur-sm text-slate-900 border-slate-200/50",
+      hover: "hover:bg-white hover:shadow-xl hover:border-slate-300/60",
+      icon: "bg-slate-100/80 text-slate-600",
+      description: "text-slate-500"
+    },
+    outline: {
+      base: "bg-transparent text-slate-700 border-slate-300/60",
+      hover: "hover:bg-slate-50/80 hover:border-slate-400/60",
+      icon: "bg-slate-100/60 text-slate-600",
+      description: "text-slate-500"
+    }
+  }
 
-  const primaryStyle = variant === 'primary' ? {
-    backgroundColor: '#334155',
-    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)'
-  } : {}
+  const currentVariant = variants[variant]
 
   return (
     <motion.button
       onClick={onClick}
-      disabled={disabled}
-      className={`${baseClasses} ${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-      style={variant === 'primary' ? primaryStyle : {}}
-      whileHover={!disabled ? { scale: 1.01 } : {}}
-      whileTap={!disabled ? { scale: 0.99 } : {}}
-      initial={{ opacity: 0, y: 6 }}
+      disabled={disabled || loading}
+      className={`
+        flex items-center gap-4 p-6 rounded-3xl border transition-all duration-300 w-full min-h-[100px]
+        ${currentVariant.base} ${currentVariant.hover}
+        ${disabled || loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
+        focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2
+      `}
+      whileHover={!disabled && !loading ? { y: -2, scale: 1.01 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      aria-label={label}
     >
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-        variant === 'primary' ? 'bg-white/15' : 'bg-slate-100'
-      }`}>
-        <span className={`material-symbols-outlined text-lg ${
-          variant === 'primary' ? 'text-white' : 'text-slate-600'
-        }`}>{icon}</span>
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${currentVariant.icon}`}>
+        {loading ? (
+          <span className="material-symbols-outlined text-xl animate-spin">refresh</span>
+        ) : (
+          <span className="material-symbols-outlined text-xl">{icon}</span>
+        )}
       </div>
       <div className="text-left flex-1 min-w-0">
-        <div className="font-medium text-sm leading-tight break-words">{label}</div>
-        <div className={`text-xs ${variant === 'primary' ? 'text-white/75' : 'text-slate-500'} leading-relaxed mt-0.5 break-words`}>
+        <div className="font-medium text-base mb-1 tracking-tight">{label}</div>
+        <div className={`text-sm font-light leading-relaxed ${currentVariant.description}`}>
           {description}
         </div>
       </div>
-      <span className={`material-symbols-outlined text-lg flex-shrink-0 ${
-        variant === 'primary' ? 'text-white/60' : 'text-slate-400'
-      }`}>arrow_forward</span>
+      <span className="material-symbols-outlined text-xl flex-shrink-0 opacity-40">arrow_forward</span>
     </motion.button>
   )
 }
@@ -837,191 +865,184 @@ export function Dashboard() {
     }
   }
 
-  const renderSnapshotHero = () => (
-    <div className="bg-white border border-slate-100 rounded-2xl p-8 md:p-10 shadow-sm">
-      <div className="max-w-none">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-light text-slate-800 mb-4 leading-tight">Your Wellness Journey</h2>
-          <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-2xl mx-auto font-light">
-            {hasAssessmentData
-              ? "Your personalized insights are ready. Let's explore how you're feeling and create a path forward together."
-              : "Take a moment to check in with yourself. Complete a quick assessment to begin your personalized wellness journey."
-            }
-          </p>
-        </div>
+  const renderHeroSection = () => (
+    <div className="relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-emerald-50/30 rounded-[2rem]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(148,163,184,0.05),transparent_50%)] rounded-[2rem]"></div>
+      
+      <div className="relative bg-white/70 backdrop-blur-sm border border-slate-200/40 rounded-[2rem] p-12 md:p-16 shadow-sm">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="mb-6"
+            >
+              <h1 className="text-3xl md:text-4xl font-extralight text-slate-900 mb-6 leading-tight tracking-tight">
+                Your Wellness Journey
+              </h1>
+              <p className="text-slate-600 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-light">
+                {hasAssessmentData
+                  ? "Discover insights from your assessments and create a personalized path forward."
+                  : "Begin your journey to better mental health with a personalized assessment."
+                }
+              </p>
+            </motion.div>
+          </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
-          {/* Primary - Get insights button */}
-          <button
-            onClick={(e) => {
-              // Prevent double-clicks and ensure single execution
-              e.preventDefault()
-              e.stopPropagation()
-              
-              if (isGeneratingOverall || !hasAssessmentData || !user?.id) {
-                console.warn('Generate insights button clicked but conditions not met:', {
-                  isGenerating: isGeneratingOverall,
-                  hasData: hasAssessmentData,
-                  hasUser: !!user?.id
-                })
-                return
-              }
-              
-              // Debounce to prevent rapid clicks
-              if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) {
-                console.warn('Generate insights clicked too rapidly, ignoring')
-                return
-              }
-              
-              window.lastGenerateInsightsClick = Date.now()
-              handleGenerateOverallAssessment()
-            }}
-            disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl text-white font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:cursor-not-allowed"
-            style={{ 
-              backgroundColor: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#E5E7EB' : '#0F766E',
-              color: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#9CA3AF' : 'white',
-              boxShadow: isGeneratingOverall || !hasAssessmentData || !user?.id ? 'none' : '0 2px 6px rgba(16, 24, 40, 0.06)',
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                e.currentTarget.style.backgroundColor = '#115E59'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                e.currentTarget.style.backgroundColor = '#0F766E'
-              }
-            }}
-            onMouseDown={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                e.currentTarget.style.backgroundColor = '#0D4F4B'
-              }
-            }}
-            onMouseUp={(e) => {
-              if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                e.currentTarget.style.backgroundColor = '#115E59'
-              }
-            }}
-            title={
-              !user?.id ? 'Please log in to generate insights' :
-              !hasAssessmentData ? 'Complete an assessment first to generate insights' :
-              isGeneratingOverall ? 'Generating insights...' :
-              'Generate personalized insights from your assessments'
-            }
-          >
-            <span className="material-symbols-outlined mr-3 text-xl">
-              {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
-            </span>
-            {isGeneratingOverall ? 'Creating insights...' : 'Get insights from my assessments'}
-          </button>
-          
-          {/* Secondary - Begin session */}
-          <button
-            onClick={() => handleNavigate('/session')}
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#CBD5E1] focus:ring-offset-2"
-            style={{ 
-              color: '#334155',
-              border: '1px solid #E2E8F0',
-              backgroundColor: 'transparent',
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.backgroundColor = '#E2E8F0'
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9'
-            }}
-          >
-            <span className="material-symbols-outlined mr-3 text-xl">self_care</span>
-            Begin session
-          </button>
-          
-          {/* Secondary - View progress */}
-          <button
-            onClick={() => handleNavigate('/results')}
-            className="inline-flex items-center justify-center px-5 py-3 rounded-xl font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#CBD5E1] focus:ring-offset-2"
-            style={{ 
-              color: '#334155',
-              border: '1px solid #E2E8F0',
-              backgroundColor: 'transparent',
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-            onMouseDown={(e) => {
-              e.currentTarget.style.backgroundColor = '#E2E8F0'
-            }}
-            onMouseUp={(e) => {
-              e.currentTarget.style.backgroundColor = '#F1F5F9'
-            }}
-          >
-            <span className="material-symbols-outlined mr-3 text-xl">insights</span>
-            View progress
-          </button>
-        </div>
-
-      </div>
-
-      {/* Dimension buttons */}
-      {snapshot?.dimensions && snapshot.dimensions.length > 0 && (
-        <div className="flex flex-wrap gap-3 mb-8 justify-center">
-          {snapshot.dimensions
-            .filter(d => ['anxiety','trauma_exposure','wellbeing','stress','depression','resilience'].includes(d.key))
-            .slice(0, 4)
-            .map(d => (
-              <div key={d.key} className="inline-flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all duration-200">
-                <span className="text-sm text-slate-700 font-medium">{keyLabel(d.key)}</span>
-                <span className={`text-xs px-3 py-1 rounded-lg font-medium ${getLevelBadgeClasses(d.level)}`}>
-                  {d.level}
-                </span>
-              </div>
-            ))}
-        </div>
-      )}
-
-      <div className="border-t border-slate-100 pt-6">
-        <button
-          onClick={() => setWhyOpen(v => !v)}
-          className="text-sm text-slate-500 hover:text-slate-700 transition-colors duration-200 font-light"
-        >
-          {whyOpen ? 'Hide details' : 'How do we know this?'}
-        </button>
-        {whyOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mt-4 p-5 rounded-xl bg-slate-50/60 border border-slate-100"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 mb-12 justify-center max-w-2xl mx-auto"
           >
-            <div className="text-sm text-slate-700 mb-3 font-medium">Based on your assessments</div>
-            <div className="flex flex-wrap gap-2">
-              {(snapshot?.explainability.assessments_used || []).map((name) => {
-                const pair = Object.entries(ASSESSMENTS).find(([id, def]) => {
-                  const display = def?.shortTitle || def?.title || id.toUpperCase()
-                  return name === display || name.includes(def?.shortTitle || '')
-                })
-                const id = pair?.[0]
-                const when = id ? formatRelative(latestMeta[id]) : ''
-                return (
-                  <span key={name} className="inline-flex items-center px-3 py-2 rounded-lg bg-white border border-slate-100 text-slate-600 text-sm">
-                    {name}{when ? ` • ${when}` : ''}
-                  </span>
-                )
-              })}
+            {/* Primary Action */}
+            <button
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                
+                if (isGeneratingOverall || !hasAssessmentData || !user?.id) return
+                
+                if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) return
+                
+                window.lastGenerateInsightsClick = Date.now()
+                handleGenerateOverallAssessment()
+              }}
+              disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
+              className={`
+                group relative overflow-hidden px-8 py-4 rounded-2xl font-medium text-base 
+                transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2
+                ${isGeneratingOverall || !hasAssessmentData || !user?.id 
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20'
+                }
+              `}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-center justify-center gap-3">
+                <span className={`material-symbols-outlined text-xl ${
+                  isGeneratingOverall ? 'animate-spin' : ''
+                }`}>
+                  {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
+                </span>
+                <span>{isGeneratingOverall ? 'Creating insights...' : 'Generate insights'}</span>
+              </div>
+            </button>
+            
+            {/* Secondary Actions */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleNavigate('/session')}
+                className="group px-6 py-4 rounded-2xl border border-slate-200/60 bg-white/60 backdrop-blur-sm text-slate-700 font-medium transition-all duration-300 hover:bg-white hover:border-slate-300/60 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">self_care</span>
+                  <span className="hidden sm:inline">Session</span>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => handleNavigate('/results')}
+                className="group px-6 py-4 rounded-2xl border border-slate-200/60 bg-white/60 backdrop-blur-sm text-slate-700 font-medium transition-all duration-300 hover:bg-white hover:border-slate-300/60 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">insights</span>
+                  <span className="hidden sm:inline">Progress</span>
+                </div>
+              </button>
             </div>
           </motion.div>
-        )}
+
+          {/* Wellness Dimensions */}
+          {snapshot?.dimensions && snapshot.dimensions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-wrap gap-3 mb-12 justify-center"
+            >
+              {snapshot.dimensions
+                .filter(d => ['anxiety','trauma_exposure','wellbeing','stress','depression','resilience'].includes(d.key))
+                .slice(0, 4)
+                .map((d, index) => (
+                  <motion.div
+                    key={d.key}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                    className="group relative overflow-hidden"
+                  >
+                    <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-slate-200/60 hover:border-slate-300/80 transition-all duration-300 hover:shadow-sm">
+                      <span className="text-sm text-slate-700 font-medium">{keyLabel(d.key)}</span>
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium transition-colors duration-300 ${getLevelBadgeClasses(d.level)}`}>
+                        {d.level}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+            </motion.div>
+          )}
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="border-t border-slate-200/50 pt-8"
+          >
+            <button
+              onClick={() => setWhyOpen(v => !v)}
+              className="group flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors duration-300 font-light mx-auto"
+            >
+              <span>{whyOpen ? 'Hide details' : 'How do we know this?'}</span>
+              <span className={`material-symbols-outlined text-sm transition-transform duration-300 ${
+                whyOpen ? 'rotate-180' : ''
+              }`}>expand_more</span>
+            </button>
+            
+            <AnimatePresence>
+              {whyOpen && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                  exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-6 rounded-2xl bg-slate-50/40 border border-slate-200/50">
+                    <div className="text-sm text-slate-700 mb-4 font-medium flex items-center gap-2">
+                      <span className="material-symbols-outlined text-base">verified</span>
+                      Based on your assessments
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {(snapshot?.explainability.assessments_used || []).map((name, index) => {
+                        const pair = Object.entries(ASSESSMENTS).find(([id, def]) => {
+                          const display = def?.shortTitle || def?.title || id.toUpperCase()
+                          return name === display || name.includes(def?.shortTitle || '')
+                        })
+                        const id = pair?.[0]
+                        const when = id ? formatRelative(latestMeta[id]) : ''
+                        return (
+                          <motion.span
+                            key={name}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.2, delay: index * 0.05 }}
+                            className="inline-flex items-center px-4 py-2 rounded-xl bg-white/80 border border-slate-200/50 text-slate-600 text-sm font-medium"
+                          >
+                            {name}{when ? ` • ${when}` : ''}
+                          </motion.span>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
       </div>
     </div>
   )
@@ -1041,16 +1062,16 @@ export function Dashboard() {
 
     if (loadingImpact) {
       return (
-        <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm">
           <div className="animate-pulse space-y-4">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 bg-slate-100 rounded-lg"></div>
-              <div className="h-5 w-48 bg-slate-100 rounded"></div>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-10 h-10 bg-slate-200/60 rounded-2xl"></div>
+              <div className="h-6 w-48 bg-slate-200/60 rounded-lg"></div>
             </div>
             <div className="space-y-3">
-              <div className="h-4 w-full bg-slate-100 rounded"></div>
-              <div className="h-4 w-4/5 bg-slate-100 rounded"></div>
-              <div className="h-4 w-3/4 bg-slate-100 rounded"></div>
+              <div className="h-4 w-full bg-slate-200/60 rounded"></div>
+              <div className="h-4 w-4/5 bg-slate-200/60 rounded"></div>
+              <div className="h-4 w-3/4 bg-slate-200/60 rounded"></div>
             </div>
           </div>
         </div>
@@ -1059,159 +1080,162 @@ export function Dashboard() {
 
     if (!latestOverall) {
       return (
-        <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm">
           <div className="text-center max-w-sm mx-auto">
-            <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-slate-400 text-xl">psychology</span>
-            </div>
-            <h3 className="text-lg font-medium text-slate-900 mb-2">Life Impact Analysis</h3>
-            <p className="text-slate-500 text-sm mb-6 leading-relaxed">
-              Get personalized insights about how your mental health might be affecting your daily life.
-            </p>
-            {/* Primary outline variant */}
-            <button
-              onClick={(e) => {
-                // Prevent double-clicks and ensure single execution
-                e.preventDefault()
-                e.stopPropagation()
-                
-                if (isGeneratingOverall || !hasAssessmentData || !user?.id) {
-                  return
-                }
-                
-                // Debounce to prevent rapid clicks
-                if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) {
-                  return
-                }
-                
-                window.lastGenerateInsightsClick = Date.now()
-                handleGenerateOverallAssessment()
-              }}
-              disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
-              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:cursor-not-allowed"
-              style={{ 
-                color: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#9CA3AF' : '#0F766E',
-                backgroundColor: isGeneratingOverall || !hasAssessmentData || !user?.id ? '#E5E7EB' : '#ECFDF5',
-                border: isGeneratingOverall || !hasAssessmentData || !user?.id ? 'none' : '1px solid #0F766E',
-                minHeight: '44px'
-              }}
-              onMouseEnter={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                  e.currentTarget.style.backgroundColor = '#ECFDF5'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                  e.currentTarget.style.backgroundColor = 'transparent'
-                }
-              }}
-              onMouseDown={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                  e.currentTarget.style.backgroundColor = '#D1FAE5'
-                }
-              }}
-              onMouseUp={(e) => {
-                if (!isGeneratingOverall && hasAssessmentData && user?.id) {
-                  e.currentTarget.style.backgroundColor = '#ECFDF5'
-                }
-              }}
-              title={
-                !user?.id ? 'Please log in to generate insights' :
-                !hasAssessmentData ? 'Complete an assessment first to generate insights' :
-                isGeneratingOverall ? 'Generating insights...' :
-                'Generate personalized insights from your assessments'
-              }
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
             >
-              <span className="material-symbols-outlined text-base">
-                {isGeneratingOverall ? 'hourglass_empty' : 'auto_awesome'}
-              </span>
-              {isGeneratingOverall ? 'Generating...' : 'Generate insights'}
-            </button>
+              <div className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <span className="material-symbols-outlined text-slate-400 text-2xl">psychology</span>
+              </div>
+              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Life Impact Analysis</h3>
+              <p className="text-slate-500 text-base mb-8 leading-relaxed font-light">
+                Get personalized insights about how your mental health might be affecting your daily life.
+              </p>
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+
+                  if (isGeneratingOverall || !hasAssessmentData || !user?.id) return
+
+                  if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) return
+
+                  window.lastGenerateInsightsClick = Date.now()
+                  handleGenerateOverallAssessment()
+                }}
+                disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
+                className={`group px-6 py-3 rounded-2xl font-medium text-base transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2 ${
+                  isGeneratingOverall || !hasAssessmentData || !user?.id
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`material-symbols-outlined text-lg ${
+                    isGeneratingOverall ? 'animate-spin' : ''
+                  }`}>
+                    {isGeneratingOverall ? 'hourglass_empty' : 'auto_awesome'}
+                  </span>
+                  <span>{isGeneratingOverall ? 'Generating...' : 'Generate insights'}</span>
+                </div>
+              </button>
+            </motion.div>
           </div>
         </div>
       )
     }
 
     return (
-      <div className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm">
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300">
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-slate-600 text-lg">psychology</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-start justify-between mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-slate-600 text-xl">psychology</span>
             </div>
             <div>
-              <h3 className="text-lg font-medium text-slate-900">Life Impact Analysis</h3>
+              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Life Impact Analysis</h3>
               <div className="relative group">
-                <p className="text-xs text-slate-500 mt-1 cursor-help hover:text-slate-700 transition-colors duration-200">
-                  Based on all your assessments
-                  <span className="material-symbols-outlined text-xs ml-1 opacity-60 group-hover:opacity-100 transition-opacity">info</span>
+                <p className="text-sm text-slate-500 cursor-help hover:text-slate-700 transition-colors duration-300 font-light flex items-center gap-1">
+                  <span>Based on all your assessments</span>
+                  <span className="material-symbols-outlined text-sm opacity-60 group-hover:opacity-100 transition-opacity">info</span>
                 </p>
-                {/* Tooltip */}
-                <div className="absolute left-0 top-full mt-2 w-80 p-4 bg-white border border-slate-200 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                  <div className="relative">
-                    {/* Tooltip arrow */}
-                    <div className="absolute -top-2 left-4 w-4 h-4 bg-white border-l border-t border-slate-200 rotate-45"></div>
-                    <div className="relative bg-white">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="material-symbols-outlined text-blue-600 text-base">psychology</span>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-slate-900 mb-1">Comprehensive Analysis</h4>
-                          <p className="text-xs text-slate-600 leading-relaxed">
-                            We analyze every assessment you've completed to create a personalized summary of how your mental health patterns might be impacting your daily life, relationships, work, and overall well-being.
-                          </p>
-                        </div>
-                      </div>
-                      <div className="border-t border-slate-100 pt-3">
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                          <span className="material-symbols-outlined text-xs">verified</span>
-                          AI-powered insights from your complete assessment history
-                        </div>
-                      </div>
+                {/* Modern tooltip */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                  whileHover={{ opacity: 1, scale: 1, y: 0 }}
+                  className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50"
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-slate-900 mb-1">Comprehensive Analysis</h4>
+                      <p className="text-xs text-slate-600 leading-relaxed font-light">
+                        We analyze every assessment you've completed to create a personalized summary of how your mental health patterns might be impacting your daily life, relationships, work, and overall well-being.
+                      </p>
                     </div>
                   </div>
-                </div>
+                  <div className="border-t border-slate-200/50 pt-3">
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span className="material-symbols-outlined text-xs">verified</span>
+                      AI-powered insights from your complete assessment history
+                    </div>
+                  </div>
+                </motion.div>
               </div>
               {updatedAt && (
-                <p className="text-xs text-slate-400 mt-0.5">Updated {formatRelative(updatedAt)}</p>
+                <p className="text-sm text-slate-400 mt-2 font-light">Updated {formatRelative(updatedAt)}</p>
               )}
             </div>
           </div>
           {risk && (
-            <span className={`text-xs font-medium px-2.5 py-1 rounded-lg ${getLevelBadgeClasses(risk)}`}>
+            <motion.span
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className={`text-sm font-medium px-3 py-1.5 rounded-xl ${getLevelBadgeClasses(risk)}`}
+            >
               {risk} risk
-            </span>
+            </motion.span>
           )}
-        </div>
+        </motion.div>
 
         {/* Content */}
         {lines && lines.length > 0 ? (
-          <div className="space-y-3 mb-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="space-y-4 mb-8"
+          >
             {lines.slice(0, 4).map((impact: string, idx: number) => (
-              <div key={idx} className="flex items-start gap-3 group">
-                <div className="flex-shrink-0 w-1.5 h-1.5 bg-slate-300 rounded-full mt-2.5 group-hover:bg-slate-400 transition-colors"></div>
-                <p className="text-sm text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors">
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.1 + idx * 0.05 }}
+                className="flex items-start gap-4 group"
+              >
+                <div className="flex-shrink-0 w-2 h-2 bg-slate-300 rounded-full mt-3 group-hover:bg-slate-400 transition-colors duration-300"></div>
+                <p className="text-sm text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300 font-light">
                   {impact}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-center py-8 mb-8">
-            <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mx-auto mb-3">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+            className="text-center py-8 mb-8"
+          >
+            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <span className="material-symbols-outlined text-slate-400 text-lg">search_off</span>
             </div>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 font-light">
               No specific impacts identified. Try refreshing for updated insights.
             </p>
-          </div>
+          </motion.div>
         )}
 
         {/* Actions */}
-        <div className="flex gap-3">
-          {/* Neutral outline button */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="flex gap-4"
+        >
           <button
             onClick={async () => {
               if (!user?.id) return
@@ -1236,56 +1260,30 @@ export function Dashboard() {
               }
             }}
             disabled={loadingImpact}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#CBD5E1] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              color: loadingImpact ? '#9CA3AF' : '#334155',
-              backgroundColor: loadingImpact ? '#E5E7EB' : 'transparent',
-              border: `1px solid ${loadingImpact ? '#E5E7EB' : '#E2E8F0'}`,
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => {
-              if (!loadingImpact) {
-                e.currentTarget.style.backgroundColor = '#F1F5F9'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loadingImpact) {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }
-            }}
-            onMouseDown={(e) => {
-              if (!loadingImpact) {
-                e.currentTarget.style.backgroundColor = '#E2E8F0'
-              }
-            }}
-            onMouseUp={(e) => {
-              if (!loadingImpact) {
-                e.currentTarget.style.backgroundColor = '#F1F5F9'
-              }
-            }}
+            className={`flex-1 group px-5 py-3 rounded-2xl font-medium text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2 ${
+              loadingImpact
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                : 'bg-white/60 backdrop-blur-sm border border-slate-200/60 text-slate-700 hover:bg-white hover:border-slate-300/60 hover:shadow-lg'
+            }`}
           >
-            <span className="material-symbols-outlined text-base">refresh</span>
-            {loadingImpact ? 'Refreshing...' : 'Refresh'}
+            <div className="flex items-center justify-center gap-2">
+              <span className={`material-symbols-outlined text-base ${loadingImpact ? 'animate-spin' : ''}`}>
+                {loadingImpact ? 'refresh' : 'refresh'}
+              </span>
+              <span>{loadingImpact ? 'Refreshing...' : 'Refresh'}</span>
+            </div>
           </button>
-          
-          {/* Primary button */}
+
           <button
             onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-white text-sm font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
-            style={{
-              backgroundColor: '#0F766E',
-              boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
-              minHeight: '44px'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
-            onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#0D4F4B'}
-            onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
+            className="flex-1 group px-5 py-3 rounded-2xl font-medium text-sm bg-gradient-to-r from-slate-900 to-slate-800 text-white transition-all duration-300 hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
           >
-            <span className="material-symbols-outlined text-base">open_in_new</span>
-            View details
+            <div className="flex items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-base">open_in_new</span>
+              <span>View details</span>
+            </div>
           </button>
-        </div>
+        </motion.div>
       </div>
     )
   }
@@ -1388,7 +1386,7 @@ export function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                {renderSnapshotHero()}
+                {renderHeroSection()}
               </motion.div>
 
               {/* Impact card */}
