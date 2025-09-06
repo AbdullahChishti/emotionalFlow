@@ -18,9 +18,11 @@ interface NavigationItem {
 
 interface NavigationProps {
   className?: string
+  currentPage?: string
+  onPageChange?: (page: string) => void
 }
 
-export function Navigation({ className = '' }: NavigationProps) {
+export function Navigation({ className = '', currentPage, onPageChange }: NavigationProps) {
   let user = null
   try {
     const auth = useAuth()
@@ -159,21 +161,23 @@ export function Navigation({ className = '' }: NavigationProps) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 + 0.3 }}
                   >
-                    <Link href={item.href}>
-                      <motion.button
-                        className={`glassmorphic-nav-item flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-300 relative ${
-                          isCrisis
-                            ? isActive
-                              ? 'text-red-600 bg-red-50/30 border border-red-200/50'
-                              : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30 hover:border-red-300/50'
-                            : isActive
-                            ? 'text-slate-700 bg-white/20'
-                            : 'text-secondary-600 hover:text-slate-600 hover:bg-white/10'
-                        }`}
-                        whileHover={{ y: -2, scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                      >
+                    <motion.div
+                      whileHover={{ y: -2, scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    >
+                      <Link href={item.href}>
+                        <motion.div
+                          className={`glassmorphic-nav-item flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-300 relative ${
+                            isCrisis
+                              ? isActive
+                                ? 'text-red-600 bg-red-50/30 border border-red-200/50'
+                                : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30 hover:border-red-300/50'
+                              : isActive
+                              ? 'text-slate-700 bg-white/20'
+                              : 'text-secondary-600 hover:text-slate-600 hover:bg-white/10'
+                          }`}
+                        >
                         <span className="material-symbols-outlined text-lg">
                           {item.icon}
                         </span>
@@ -199,9 +203,9 @@ export function Navigation({ className = '' }: NavigationProps) {
                             style={{ x: '-50%' }}
                           />
                         )}
-                      </motion.button>
-                    </Link>
-                  </motion.div>
+                        </motion.div>
+                      </Link>
+                    </motion.div>
                 )
               })}
             </div>
@@ -293,26 +297,29 @@ export function Navigation({ className = '' }: NavigationProps) {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 + 0.2 }}
                       >
-                        <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
-                          <motion.button
-                            className={`glassmorphic-nav-item w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 ${
-                              isCrisis
-                                ? isActive
-                                  ? 'text-red-600 bg-red-50/30 border border-red-200/50'
-                                  : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30'
-                                : isActive
-                                ? 'text-slate-700 bg-white/30'
-                                : 'text-secondary-600 hover:text-slate-600 hover:bg-white/20'
-                            }`}
-                            whileHover={{ x: 5 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <span className="material-symbols-outlined text-xl">
-                              {item.icon}
-                            </span>
-                            {item.name}
-                          </motion.button>
-                        </Link>
+                        <motion.div
+                          whileHover={{ x: 5 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Link href={item.href} onClick={() => setIsMenuOpen(false)}>
+                            <motion.div
+                              className={`glassmorphic-nav-item w-full flex items-center gap-3 px-6 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 ${
+                                isCrisis
+                                  ? isActive
+                                    ? 'text-red-600 bg-red-50/30 border border-red-200/50'
+                                    : 'text-red-600 hover:text-red-700 hover:bg-red-50/20 border border-red-200/30'
+                                  : isActive
+                                  ? 'text-slate-700 bg-white/30'
+                                  : 'text-secondary-600 hover:text-slate-600 hover:bg-white/20'
+                              }`}
+                            >
+                              <span className="material-symbols-outlined text-xl">
+                                {item.icon}
+                              </span>
+                              {item.name}
+                            </motion.div>
+                          </Link>
+                        </motion.div>
                       </motion.div>
                     )
                   })
