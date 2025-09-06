@@ -642,7 +642,7 @@ export function Dashboard() {
   }
 
   const renderSnapshotHero = () => (
-    <div className="bg-white border border-slate-200/60 rounded-2xl p-6 md:p-8 shadow-sm">
+    <div className="bg-white border border-slate-200/60 rounded-2xl p-6 md:p-8 shadow-xl">
       <div className="max-w-none">
         <div className="text-center mb-6">
           <h2 className="text-xl md:text-2xl font-medium text-slate-800 mb-3">Your wellness snapshot</h2>
@@ -762,7 +762,7 @@ export function Dashboard() {
 
     if (loadingImpact) {
       return (
-        <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl overflow-hidden">
+        <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-blue-50/5 rounded-3xl"></div>
           <div className="relative z-10 animate-pulse space-y-3">
             <div className="h-4 w-2/3 bg-white/40 rounded-lg" />
@@ -776,7 +776,7 @@ export function Dashboard() {
 
     if (!latestOverall) {
       return (
-        <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl overflow-hidden">
+        <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-blue-50/5 rounded-3xl"></div>
           <div className="relative z-10 text-center">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-100/80 to-blue-100/80 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-white/30">
@@ -787,7 +787,7 @@ export function Dashboard() {
             <button
               onClick={handleGenerateOverallAssessment}
               disabled={isGeneratingOverall || !hasAssessmentData}
-              className="inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl text-sm"
+              className="inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 text-sm border border-white/20"
             >
               <span className="material-symbols-outlined mr-2 text-base">sparkles</span>
               Get personalized insights
@@ -798,7 +798,7 @@ export function Dashboard() {
     }
 
     return (
-      <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl overflow-hidden">
+      <div className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl overflow-hidden">
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-purple-50/5 rounded-3xl"></div>
 
@@ -859,14 +859,14 @@ export function Dashboard() {
                 }
               }}
               disabled={loadingImpact}
-              className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-2xl bg-white/60 backdrop-blur-sm border border-white/30 text-slate-700 text-sm font-medium hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg"
+              className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-2xl bg-white/70 backdrop-blur-sm border-2 border-white/40 text-slate-800 text-sm font-semibold hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-xl hover:scale-105"
             >
               <span className="material-symbols-outlined mr-2 text-base">refresh</span>
               {loadingImpact ? 'Refreshing...' : 'Refresh insights'}
             </button>
             <button
               onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
-              className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-700 text-white text-sm font-medium hover:from-slate-900 hover:to-slate-800 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="flex-1 inline-flex items-center justify-center px-4 py-3 rounded-2xl bg-gradient-to-r from-slate-800 to-slate-700 text-white text-sm font-semibold hover:from-slate-900 hover:to-slate-800 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 border border-white/20"
             >
               <span className="material-symbols-outlined mr-2 text-base">open_in_new</span>
               View full profile
@@ -971,8 +971,8 @@ export function Dashboard() {
 
             {/* Right Column - Unified Welcome & Assessments Card */}
             <div className="lg:col-span-4 xl:col-span-3">
-              <motion.div
-                className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl h-fit overflow-hidden lg:sticky lg:top-24"
+      <motion.div
+        className="relative bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl h-fit overflow-hidden lg:sticky lg:top-24"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
