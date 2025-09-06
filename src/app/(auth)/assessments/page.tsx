@@ -3,18 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AssessmentFlow } from '@/components/assessment/AssessmentFlow'
-import dynamic from 'next/dynamic'
-const AssessmentHistory = dynamic(() => import('@/components/assessment/AssessmentHistory'), {
-  ssr: false,
-  loading: () => (
-    <div className="py-12 text-center">
-      <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/80 border border-white/50 shadow">
-        <span className="material-symbols-outlined animate-spin" style={{ fontSize: 18 }}>progress_activity</span>
-        <span className="text-sm text-gray-600">Loading assessment history…</span>
-      </div>
-    </div>
-  )
-})
+import AssessmentHistory from '@/components/assessment/AssessmentHistory'
 import { useRouter } from 'next/navigation'
 import { ASSESSMENTS, ASSESSMENT_CATEGORIES } from '@/data/assessments'
 import { AssessmentResult, UserProfile } from '@/types'
