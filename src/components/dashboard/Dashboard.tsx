@@ -43,7 +43,7 @@ interface StatCardProps {
 function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
   if (loading) {
     return (
-      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-6 shadow-sm">
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-6 shadow-3xl shadow-slate-900/35">
         <div className="animate-pulse space-y-3">
           <div className="w-8 h-8 bg-slate-200/60 rounded-2xl"></div>
           <div className="w-16 h-7 bg-slate-200/60 rounded-lg"></div>
@@ -61,7 +61,7 @@ function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
 
   return (
     <motion.div
-      className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-6 hover:bg-white hover:shadow-lg hover:border-slate-300/60 transition-all duration-300 group"
+      className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-6 hover:bg-white hover:shadow-3xl hover:shadow-slate-900/40 hover:border-slate-300/60 transition-all duration-300 group"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -794,16 +794,22 @@ export function Dashboard() {
     return colors[severity as keyof typeof colors] || 'text-slate-600 bg-slate-100'
   }, [])
 
-  // Map level bands (low/mild/moderate/high) to badge styles
+  // Map level bands to badge styles (only low/mild/high are colored)
   const getLevelBadgeClasses = useCallback((level: string) => {
     const map: Record<string, string> = {
-      low: 'text-slate-700 bg-slate-50 border border-slate-200',
-      mild: 'text-amber-800 bg-amber-50 border border-amber-200',
-      moderate: 'text-amber-800 bg-amber-50 border border-amber-200',
-      high: 'text-red-700 bg-red-50 border border-red-200',
-      critical: 'text-red-700 bg-red-50 border border-red-200'
+      low: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
+      mild: 'text-amber-700 bg-amber-50 border border-amber-200',
+      high: 'text-rose-700 bg-rose-50 border border-rose-200',
+      moderate: 'text-slate-700 bg-slate-50 border border-slate-200',
+      critical: 'text-slate-700 bg-slate-50 border border-slate-200'
     }
-    return map[level?.toLowerCase()] || 'text-slate-700 bg-slate-50 border border-slate-200'
+    return map[level?.toLowerCase()] || map.moderate
+  }, [])
+
+  // Stronger border + shadow for wellness dimension pills
+  const getPillClasses = useCallback(() => {
+    // Neutral, minimal styling only (grey/white)
+    return 'border-slate-300 hover:border-slate-400 shadow-sm hover:shadow-md'
   }, [])
 
   const getMaxScore = useCallback((assessmentId: string) => {
@@ -871,7 +877,9 @@ export function Dashboard() {
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-emerald-50/30 rounded-[2rem]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(148,163,184,0.05),transparent_50%)] rounded-[2rem]"></div>
       
-      <div className="relative bg-white/70 backdrop-blur-sm border border-slate-200/40 rounded-[2rem] p-12 md:p-16 shadow-sm">
+      <div className="relative bg-white border border-slate-200 rounded-3xl p-12 md:p-16 shadow-lg shadow-slate-900/10">
+        
+
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <motion.div
@@ -913,11 +921,12 @@ export function Dashboard() {
               }}
               disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
               className={`
-                group relative overflow-hidden px-8 py-4 rounded-2xl font-medium text-base 
-                transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2
-                ${isGeneratingOverall || !hasAssessmentData || !user?.id 
-                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
-                  : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20'
+                group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base
+                transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2
+                transform hover:scale-[1.02] active:scale-[0.98] border border-transparent
+                ${isGeneratingOverall || !hasAssessmentData || !user?.id
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
+                  : 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20'
                 }
               `}
             >
@@ -936,21 +945,11 @@ export function Dashboard() {
             <div className="flex gap-3">
               <button
                 onClick={() => handleNavigate('/session')}
-                className="group px-6 py-4 rounded-2xl border border-slate-200/60 bg-white/60 backdrop-blur-sm text-slate-700 font-medium transition-all duration-300 hover:bg-white hover:border-slate-300/60 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
+                className="group px-6 py-4 rounded-3xl bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 font-semibold transition-all duration-300 ease-out hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40 focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98]"
               >
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-lg">self_care</span>
-                  <span className="hidden sm:inline">Session</span>
-                </div>
-              </button>
-              
-              <button
-                onClick={() => handleNavigate('/results')}
-                className="group px-6 py-4 rounded-2xl border border-slate-200/60 bg-white/60 backdrop-blur-sm text-slate-700 font-medium transition-all duration-300 hover:bg-white hover:border-slate-300/60 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-lg">insights</span>
-                  <span className="hidden sm:inline">Progress</span>
+                  <span className="material-symbols-outlined text-lg">spa</span>
+                  <span className="hidden sm:inline">Wellness Session</span>
                 </div>
               </button>
             </div>
@@ -975,8 +974,8 @@ export function Dashboard() {
                     transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
                     className="group relative overflow-hidden"
                   >
-                    <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-slate-200/60 hover:border-slate-300/80 transition-all duration-300 hover:shadow-sm">
-                      <span className="text-sm text-slate-700 font-medium">{keyLabel(d.key)}</span>
+                    <div className={`inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/95 backdrop-blur-sm border ${getPillClasses()} transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-200/60 focus:ring-offset-2`}>
+                       <span className="text-sm text-slate-700 font-medium">{keyLabel(d.key)}</span>
                       <span className={`text-xs px-3 py-1 rounded-full font-medium transition-colors duration-300 ${getLevelBadgeClasses(d.level)}`}>
                         {d.level}
                       </span>
@@ -1062,7 +1061,7 @@ export function Dashboard() {
 
     if (loadingImpact) {
       return (
-        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35">
           <div className="animate-pulse space-y-4">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-10 h-10 bg-slate-200/60 rounded-2xl"></div>
@@ -1080,7 +1079,7 @@ export function Dashboard() {
 
     if (!latestOverall) {
       return (
-        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm">
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35">
           <div className="text-center max-w-sm mx-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -1107,10 +1106,10 @@ export function Dashboard() {
                   handleGenerateOverallAssessment()
                 }}
                 disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
-                className={`group px-6 py-3 rounded-2xl font-medium text-base transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2 ${
+                className={`group px-6 py-3 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent ${
                   isGeneratingOverall || !hasAssessmentData || !user?.id
-                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20'
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
+                    : 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -1129,7 +1128,7 @@ export function Dashboard() {
     }
 
     return (
-      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-3xl p-8 shadow-sm hover:shadow-lg transition-all duration-300">
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35 hover:shadow-3xl hover:shadow-slate-900/45 transition-all duration-300">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -1149,7 +1148,7 @@ export function Dashboard() {
                   <span className="material-symbols-outlined text-sm opacity-60 group-hover:opacity-100 transition-opacity">info</span>
                 </p>
                 {/* Modern tooltip */}
-                <div className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/60 rounded-2xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
+                <div className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-3xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
                       <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
@@ -1256,10 +1255,10 @@ export function Dashboard() {
               }
             }}
             disabled={loadingImpact}
-            className={`flex-1 group px-5 py-3 rounded-2xl font-medium text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2 ${
+            className={`flex-1 group px-5 py-3 rounded-3xl font-semibold text-sm transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] ${
               loadingImpact
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                : 'bg-white/60 backdrop-blur-sm border border-slate-200/60 text-slate-700 hover:bg-white hover:border-slate-300/60 hover:shadow-lg'
+                ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
+                : 'bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40'
             }`}
           >
             <div className="flex items-center justify-center gap-2">
@@ -1272,7 +1271,7 @@ export function Dashboard() {
 
           <button
             onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
-            className="flex-1 group px-5 py-3 rounded-2xl font-medium text-sm bg-gradient-to-r from-slate-900 to-slate-800 text-white transition-all duration-300 hover:from-slate-800 hover:to-slate-700 hover:shadow-xl hover:shadow-slate-900/20 focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2"
+            className="flex-1 group px-5 py-3 rounded-3xl font-semibold text-sm bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white transition-all duration-300 ease-out hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 hover:shadow-3xl hover:shadow-emerald-900/50 focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] shadow-3xl border border-emerald-500/20"
           >
             <div className="flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-base">open_in_new</span>
@@ -1398,7 +1397,7 @@ export function Dashboard() {
             {/* Right Column - Unified Welcome & Assessments Card */}
             <div className="lg:col-span-4 xl:col-span-3">
       <motion.div
-        className="bg-white border border-slate-100 rounded-2xl p-8 shadow-sm h-fit lg:sticky lg:top-24"
+        className="bg-white border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35 h-fit lg:sticky lg:top-24"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -1430,13 +1429,13 @@ export function Dashboard() {
                 <div>
                   <div className="text-center mb-6">
                     <div className="text-lg font-medium text-slate-800 mb-2">Your Assessments</div>
-                    <div className="text-sm text-slate-500 font-light">Track your wellness journey</div>
+                    <div className="text-sm font-light text-slate-500">Track your wellness journey</div>
                   </div>
 
                   <div className="space-y-4">
                     {coverage.assessed.map(id => (
                       <div key={`ok-${id}`} className="group flex items-center gap-4 px-5 py-4 rounded-xl bg-white border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm" style={{ backgroundColor: '#22C55E' }}>
+                        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm bg-emerald-600">
                           <span className="material-symbols-outlined text-white text-base">check</span>
                         </div>
                         <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
@@ -1476,7 +1475,7 @@ export function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              <div className="bg-white border border-slate-100 rounded-2xl p-10 shadow-sm">
+              <div className="bg-white border border-slate-200/40 rounded-3xl p-10 shadow-3xl shadow-slate-900/35">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <span className="material-symbols-outlined text-blue-600 text-2xl">self_care</span>
                 </div>
@@ -1485,16 +1484,16 @@ export function Dashboard() {
                 {/* Primary button */}
                 <button
                   onClick={() => handleNavigate('/assessments')}
-                  className="inline-flex items-center px-5 py-3 rounded-xl text-white font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
+                  className="inline-flex items-center px-5 py-3 rounded-3xl text-white font-semibold transition-all duration-300 ease-out text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border border-emerald-500/20"
                   style={{
-                    backgroundColor: '#0F766E',
+                    backgroundColor: '#059669',
                     boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
                     minHeight: '44px'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
-                  onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#0D4F4B'}
-                  onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+                  onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#065f46'}
+                  onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#047857'}
                 >
                   <span className="material-symbols-outlined mr-3 text-xl">psychology</span>
                   Begin assessment
@@ -1531,12 +1530,12 @@ export function Dashboard() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-2xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
+                className="bg-white rounded-3xl shadow-3xl shadow-slate-900/40 max-w-6xl w-full max-h-[90vh] overflow-hidden border border-slate-200/40"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between p-5 border-b border-slate-200">
-                  <h2 className="text-xl font-medium text-slate-900">
+                  <h2 className="text-xl font-light text-slate-900 tracking-tight">
                     {isGeneratingOverall ? 'Generating Your Insights' : 'Your Personalized Mental Health Profile'}
                   </h2>
                   {!isGeneratingOverall && (
@@ -1552,9 +1551,9 @@ export function Dashboard() {
                           localStorage.removeItem('overallProgress')
                         }
                       }}
-                      className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="p-1.5 hover:bg-emerald-50 rounded-xl transition-all duration-200"
                     >
-                      <span className="material-symbols-outlined text-slate-500 text-lg">close</span>
+                      <span className="material-symbols-outlined text-emerald-600 text-lg">close</span>
                     </button>
                   )}
                 </div>
@@ -1562,33 +1561,33 @@ export function Dashboard() {
                 {/* Content */}
                 <div className="overflow-y-auto max-h-[calc(90vh-100px)]">
                   {isGeneratingOverall ? (
-                    <div className="p-6 text-center">
-                      <div className="mb-5">
-                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-                          <span className="material-symbols-outlined text-xl text-slate-600 animate-spin">psychology</span>
+                    <div className="p-8 text-center">
+                      <div className="mb-8">
+                        <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                          <span className="material-symbols-outlined text-2xl text-emerald-600 animate-spin">psychology</span>
                         </div>
-                        <h3 className="text-lg font-medium text-slate-900 mb-2">Analyzing Your Assessments</h3>
-                        <p className="text-slate-600 text-sm">
-                          We're using AI to create a comprehensive analysis of all your mental health assessments.
+                        <h3 className="text-xl font-light text-slate-900 mb-3 tracking-tight">Generating Your Insights</h3>
+                        <p className="text-slate-600 text-base leading-relaxed font-light max-w-md mx-auto">
+                          We're analyzing your assessments to create personalized insights...
                         </p>
                       </div>
-                      
+
                       {/* Progress Bar */}
                       <div className="max-w-sm mx-auto">
-                        <div className="flex justify-between text-xs text-slate-600 mb-2">
+                        <div className="flex justify-between text-sm text-slate-600 mb-4 font-light">
                           <span>Progress</span>
                           <span>{Math.round(overallProgress)}%</span>
                         </div>
-                        <div className="w-full bg-slate-200 rounded-full h-1.5">
+                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
                           <motion.div
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-1.5 rounded-full"
+                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${overallProgress}%` }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.4, ease: "easeOut" }}
                           />
                         </div>
-                        <p className="text-xs text-slate-500 mt-2">
-                          This usually takes 10-30 seconds...
+                        <p className="text-sm text-slate-500 mt-6 font-light">
+                          This usually takes 10-30 seconds
                         </p>
                       </div>
                     </div>
@@ -1626,7 +1625,7 @@ export function Dashboard() {
                                     localStorage.removeItem('overallProgress')
                                   }
                                 }}
-                                className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                                className="px-4 py-2.5 text-sm font-semibold bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 rounded-3xl hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:ring-offset-2 transition-all duration-300 ease-out transform hover:scale-[1.02] active:scale-[0.98]"
                               >
                                 Close
                               </button>
@@ -1637,20 +1636,20 @@ export function Dashboard() {
                                   handleGenerateOverallAssessment()
                                 }}
                                 disabled={isGeneratingOverall}
-                                className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="inline-flex items-center px-4 py-2.5 rounded-3xl text-white font-semibold transition-all duration-300 ease-out text-sm focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] border border-emerald-500/20"
                                 style={{
-                                  backgroundColor: isGeneratingOverall ? '#9CA3AF' : '#0F766E',
+                                  backgroundColor: isGeneratingOverall ? '#9CA3AF' : '#059669',
                                   boxShadow: isGeneratingOverall ? 'none' : '0 2px 6px rgba(16, 24, 40, 0.06)',
                                   minHeight: '44px'
                                 }}
                                 onMouseEnter={(e) => {
                                   if (!isGeneratingOverall) {
-                                    e.currentTarget.style.backgroundColor = '#115E59'
+                                    e.currentTarget.style.backgroundColor = '#047857'
                                   }
                                 }}
                                 onMouseLeave={(e) => {
                                   if (!isGeneratingOverall) {
-                                    e.currentTarget.style.backgroundColor = '#0F766E'
+                                    e.currentTarget.style.backgroundColor = '#059669'
                                   }
                                 }}
                               >
@@ -1674,7 +1673,7 @@ export function Dashboard() {
                                     localStorage.removeItem('overallProgress')
                                   }
                                 }}
-                                className="px-4 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 transition-colors"
+                                className="px-4 py-2.5 text-sm font-semibold bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 rounded-3xl hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 focus:ring-offset-2 transition-all duration-300 ease-out transform hover:scale-[1.02] active:scale-[0.98]"
                               >
                                 Close
                               </button>
@@ -1683,14 +1682,14 @@ export function Dashboard() {
                                   setShowOverallResults(false)
                                   handleNavigate('/assessments')
                                 }}
-                                className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
+                                className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
                                 style={{
-                                  backgroundColor: '#0F766E',
+                                  backgroundColor: '#059669',
                                   boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
                                   minHeight: '44px'
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
                               >
                                 <span className="material-symbols-outlined mr-2 text-base">psychology</span>
                                 Take Assessment
@@ -1719,16 +1718,16 @@ export function Dashboard() {
                       </p>
                       <button
                         onClick={handleGenerateOverallAssessment}
-                        className="inline-flex items-center px-4 py-2.5 rounded-xl text-white font-medium transition-all duration-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#5EEAD4] focus:ring-offset-2"
+                        className="inline-flex items-center px-4 py-2.5 rounded-3xl text-white font-semibold transition-all duration-300 ease-out text-sm focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-emerald-500/20"
                         style={{
-                          backgroundColor: '#0F766E',
+                          backgroundColor: '#059669',
                           boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
                           minHeight: '44px'
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#0F766E'}
-                        onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#0D4F4B'}
-                        onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#115E59'}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+                        onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#065f46'}
+                        onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#047857'}
                       >
                         <span className="material-symbols-outlined mr-2 text-base">refresh</span>
                         Try Again

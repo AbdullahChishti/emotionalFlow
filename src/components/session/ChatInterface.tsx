@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/analytics'
 import { ChatPersonalizationService } from '@/lib/chat-personalization'
 import { CHAT_CONFIG, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
+import { useAuth } from '@/components/providers/AuthProvider'
 import 'material-symbols/outlined.css'
 
 interface Message {
@@ -97,6 +98,7 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
 }
 
 export function ChatInterface({ therapistName }: ChatInterfaceProps) {
+  const { user: authUser } = useAuth()
   const [messages, setMessages] = useState<Message[]>([])
   const [sessionReady, setSessionReady] = useState(false)
   const [sessionError, setSessionError] = useState<string | null>(null)
@@ -113,17 +115,26 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const recognitionRef = useRef<any>(null)
 
-  // Initialize chat session
+  // Initialize chat session (robust to delayed auth)
   useEffect(() => {
+    let cancelled = false
+    let retryTimeout: any
+
     const initializeChat = async () => {
       try {
-        const { data: user } = await supabase.auth.getUser()
-        if (user?.user?.id) {
-          await ChatPersonalizationService.initializeSession(user.user.id, sessionMood)
-          setSessionReady(true)
-          setSessionError(null)
-          
-          // Set initial welcome message
+        const userId = authUser?.id || (await supabase.auth.getUser()).data.user?.id
+        if (!userId) {
+          retryTimeout = setTimeout(initializeChat, 600)
+          return
+        }
+
+        await ChatPersonalizationService.initializeSession(userId, sessionMood)
+        if (cancelled) return
+        setSessionReady(true)
+        setSessionError(null)
+
+        setMessages(prev => {
+          if (prev.length > 0) return prev
           const welcomeMessage: Message = {
             id: '1',
             text: `Hello, I'm ${therapistName}. I'm here to listen and support you today. This is a safe space where you can share whatever is on your mind. How are you feeling right now?`,
@@ -131,19 +142,20 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
             timestamp: new Date(),
             emotion: 'calm'
           }
-          setMessages([welcomeMessage])
-        } else {
-          throw new Error('User not authenticated')
-        }
-      } catch (error) {
+          return [welcomeMessage]
+        })
+      } catch (error: any) {
         console.error('Failed to initialize chat session:', error)
-        setSessionError('Failed to initialize chat session. Please refresh the page.')
-        setSessionReady(false)
+        if (cancelled) return
+        // Let the user proceed even if personalization fails
+        setSessionReady(true)
+        setSessionError('Personalization is unavailable right now. You can still chat.')
       }
     }
 
     initializeChat()
-  }, [therapistName, sessionMood])
+    return () => { cancelled = true; if (retryTimeout) clearTimeout(retryTimeout) }
+  }, [therapistName, sessionMood, authUser?.id])
 
   // Placeholder rotation
   useEffect(() => {

@@ -31,22 +31,40 @@ export function AssessmentSidebar({ variant = 'full' }: AssessmentSidebarProps) 
         const { data: user } = await supabase.auth.getUser()
         if (!user?.user?.id) return
 
-        // Get user's assessment history
+        // Get user's overall assessment profile (for last_assessed)
         const { data: assessmentHistory } = await supabase
           .from('user_assessment_profiles')
           .select('*')
           .eq('user_id', user.user.id)
           .single()
 
-        const items: AssessmentItem[] = Object.entries(ASSESSMENTS).map(([id, assessment]) => ({
-          id,
-          title: assessment.shortTitle,
-          category: assessment.category,
-          completed: !!completedAssessments[id],
-          lastTaken: assessmentHistory?.last_assessed ? new Date(assessmentHistory.last_assessed) : undefined,
-          score: userProfile?.currentSymptoms?.[id as keyof typeof userProfile.currentSymptoms]?.score,
-          level: userProfile?.currentSymptoms?.[id as keyof typeof userProfile.currentSymptoms]?.level
-        }))
+        // Also fetch latest individual assessment results to mark completions
+        const { data: resultsData } = await supabase
+          .from('assessment_results')
+          .select('assessment_id, level, taken_at')
+          .eq('user_id', user.user.id)
+          .order('taken_at', { ascending: false })
+
+        // Reduce to latest entry per assessment_id
+        const latestById: Record<string, { level?: string; taken_at?: string }> = {}
+        for (const row of resultsData || []) {
+          if (!latestById[row.assessment_id]) {
+            latestById[row.assessment_id] = { level: row.level as string, taken_at: row.taken_at as string }
+          }
+        }
+
+        const items: AssessmentItem[] = Object.entries(ASSESSMENTS).map(([id, assessment]) => {
+          const latest = latestById[id]
+          return {
+            id,
+            title: assessment.shortTitle,
+            category: assessment.category,
+            completed: !!completedAssessments[id] || !!latest,
+            lastTaken: latest?.taken_at ? new Date(latest.taken_at) : (assessmentHistory?.last_assessed ? new Date(assessmentHistory.last_assessed) : undefined),
+            score: userProfile?.currentSymptoms?.[id as keyof typeof userProfile.currentSymptoms]?.score,
+            level: (userProfile?.currentSymptoms?.[id as keyof typeof userProfile.currentSymptoms]?.level as string | undefined) || (latest?.level as string | undefined)
+          }
+        })
 
         setAssessmentItems(items)
       } catch (error) {
@@ -84,37 +102,64 @@ export function AssessmentSidebar({ variant = 'full' }: AssessmentSidebarProps) 
 
   // Compact quick chips for top 3 recent/completed
   if (variant === 'compact') {
-    const completed = assessmentItems
-      .filter(a => a.completed && a.level)
+    // Prioritize key clinical assessments, then by recency
+    const priority = ['ace', 'phq9', 'gad7']
+    const idx = (id: string) => {
+      const i = priority.indexOf(id)
+      return i === -1 ? 99 : i
+    }
+
+    const eligible = assessmentItems.filter(a => a.completed || a.level)
+    const completed = eligible
+      .sort((a, b) => {
+        const pa = idx(a.id)
+        const pb = idx(b.id)
+        if (pa !== pb) return pa - pb
+        const ta = a.lastTaken ? a.lastTaken.getTime() : 0
+        const tb = b.lastTaken ? b.lastTaken.getTime() : 0
+        return tb - ta
+      })
       .slice(0, 3)
 
     return (
       <motion.div
         initial={{ opacity: 0, x: -12 }}
         animate={{ opacity: 1, x: 0 }}
-        className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-slate-200/60 shadow-sm"
+        className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm"
       >
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
-            <span className="material-symbols-outlined text-slate-700 text-sm">verified_user</span>
-          </div>
-          <div className="text-xs text-slate-600">Secure access to your assessments</div>
+        {/* Header badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm mb-3">
+          <span className="material-symbols-outlined text-slate-700 text-sm">verified_user</span>
+          <span className="text-[11px] font-medium text-slate-700">Secure access to your assessments</span>
         </div>
 
+        {/* Selected assessments */}
         <div className="flex flex-wrap gap-2">
           {completed.length > 0 ? (
             completed.map(item => (
               <span
                 key={item.id}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-200 text-xs bg-white text-slate-700"
-                title={`${item.title} • ${item.level}`}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-slate-200 text-xs bg-white text-slate-700 shadow-sm"
+                title={`${item.title}${item.level ? ` • ${item.level}` : ''}`}
               >
                 <span className={`w-1.5 h-1.5 rounded-full ${
                   item.level === 'normal' ? 'bg-emerald-500' :
                   item.level === 'mild' ? 'bg-yellow-500' :
                   item.level === 'moderate' ? 'bg-orange-500' : 'bg-red-500'
                 }`} />
-                {item.title}
+                <span className="font-medium text-[11px]">{item.title}</span>
+                {item.level && (
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                      item.level === 'normal' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                      item.level === 'mild' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                      item.level === 'moderate' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                      'bg-rose-50 text-rose-700 border-rose-200'
+                    }`}
+                  >
+                    {item.level}
+                  </span>
+                )}
               </span>
             ))
           ) : (
@@ -122,8 +167,10 @@ export function AssessmentSidebar({ variant = 'full' }: AssessmentSidebarProps) 
           )}
         </div>
 
-        <div className="mt-3 text-[11px] text-slate-500">
-          Used to personalize this session.
+        {/* Footer claim */}
+        <div className="mt-3 text-[11px] text-slate-600 flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[14px] text-slate-500">lock</span>
+          <span>Used to personalize this session.</span>
         </div>
       </motion.div>
     )

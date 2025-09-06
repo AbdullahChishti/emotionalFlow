@@ -45,18 +45,8 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
         onSignOut={signOut}
       />
 
-      {/* Main Content Area */}
-      <main className="container mx-auto px-4 py-6 max-w-7xl">
-        {/* Back Button for certain pages */}
-        {(currentPage === 'assessments' ||
-          currentPage === 'results' ||
-          currentPage === 'session' ||
-          currentPage === 'profile') && (
-          <div className="mb-4">
-            <BackButton />
-          </div>
-        )}
-
+      {/* Main Content Area (offset for fixed header) */}
+      <main className="container mx-auto px-4 pt-24 lg:pt-28 pb-6 max-w-7xl">
         {/* Page Content */}
         <div className="space-y-6">
           {children}

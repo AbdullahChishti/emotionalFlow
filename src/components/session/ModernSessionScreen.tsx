@@ -37,7 +37,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
   }
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="bg-white relative overflow-hidden h-[calc(100dvh-6rem-1.5rem)] lg:h-[calc(100dvh-7rem-1.5rem)]">
       {/* Subtle background decorations */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
         <div className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-slate-400/15 rounded-tl-full" />
@@ -48,7 +48,7 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className="relative z-10 h-screen flex flex-col"
+        className="relative z-10 h-full flex flex-col"
       >
         {/* Header with session controls */}
         <div className="flex-shrink-0 p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -91,13 +91,13 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
         <div className="flex-1 overflow-hidden">
           <div className="max-w-7xl mx-auto h-full grid grid-cols-[260px_1fr] gap-6 p-6">
             {/* Left Column - Subtle assessment access indicator */}
-            <div className="relative">
+            <div className="relative h-full overflow-y-auto">
               <AssessmentSidebar variant="compact" />
               <div className="absolute right-[-12px] top-0 bottom-0 w-px bg-slate-200/80" />
             </div>
 
             {/* Right Column - Chat Interface */}
-            <div className="min-w-0">
+            <div className="min-w-0 h-full">
               <ChatInterface therapistName={therapistName} />
             </div>
           </div>
