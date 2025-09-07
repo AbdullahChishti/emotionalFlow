@@ -1819,144 +1819,118 @@ export function Dashboard() {
 
                 {/* Assessments Section */}
                 <div>
-                  <div className="text-center mb-6">
-                    <div className="text-lg font-medium text-slate-800 mb-2">Your Wellness Assessments</div>
+                  <div className="text-center mb-8">
+                    <div className="text-xl font-medium text-slate-800 mb-2">Your Wellness Assessments</div>
                     <div className="text-sm font-light text-slate-500">Discover insights about your mental health</div>
                   </div>
 
-                  {/* Progress Overview Card */}
-                  <div className="mb-6 p-5 rounded-2xl bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/60 shadow-lg shadow-slate-900/5">
+                  {/* Progress Overview */}
+                  <div className="mb-8 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm">
-                          <span className="material-symbols-outlined text-white text-lg">analytics</span>
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-semibold text-slate-800">Assessment Progress</h3>
-                          <p className="text-xs text-slate-500">Track your mental health journey</p>
-                        </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-800">Assessment Progress</h3>
+                        <p className="text-xs text-slate-500 mt-1">Track your mental health journey</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-slate-800">
-                          {coverage.assessed.length + coverage.stale.length}<span className="text-sm font-normal text-slate-500">/{Object.keys(ASSESSMENTS).length}</span>
+                        <div className="text-3xl font-bold text-slate-800">
+                          {coverage.assessed.length + coverage.stale.length}<span className="text-lg font-normal text-slate-500">/{Object.keys(ASSESSMENTS).length}</span>
                         </div>
                         <div className="text-xs text-slate-500">completed</div>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <div className="flex justify-between text-xs text-slate-600">
                         <span>Progress</span>
                         <span>{Math.round(((coverage.assessed.length + coverage.stale.length) / Object.keys(ASSESSMENTS).length) * 100)}%</span>
                       </div>
-                      <div className="w-full bg-slate-200 rounded-full h-2.5">
+                      <div className="w-full bg-slate-200 rounded-full h-3">
                         <div
-                          className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 h-2.5 rounded-full transition-all duration-700 ease-out"
+                          className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full transition-all duration-700 ease-out"
                           style={{ width: `${((coverage.assessed.length + coverage.stale.length) / Object.keys(ASSESSMENTS).length) * 100}%` }}
                         ></div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Assessment Grid */}
-                  <div className="grid grid-cols-1 gap-4">
-                    {/* Taken Assessments */}
-                    {(coverage.assessed.length > 0 || coverage.stale.length > 0) && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 px-1">
-                          <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-sm">check_circle</span>
-                          </div>
-                          <h4 className="text-sm font-semibold text-emerald-800">Assessments Completed</h4>
-                          <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full font-medium ml-auto">
-                            {coverage.assessed.length + coverage.stale.length} taken
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-3">
-                          {coverage.assessed.map(id => (
-                            <div key={`completed-${id}`} className="group p-4 rounded-xl bg-gradient-to-r from-emerald-50/50 to-white border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all duration-300 cursor-pointer">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center shadow-sm">
-                                  <span className="material-symbols-outlined text-white text-sm">check</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h5 className="text-sm font-semibold text-slate-800 truncate">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                  <p className="text-xs text-slate-500 truncate">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full">✓ Completed</span>
-                                  <span className="text-xs text-emerald-600">Recent</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-
-                          {coverage.stale.map(id => (
-                            <div key={`stale-${id}`} className="group p-4 rounded-xl bg-gradient-to-r from-amber-50/50 to-white border border-amber-100 hover:border-amber-200 hover:shadow-md transition-all duration-300 cursor-pointer">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center shadow-sm">
-                                  <span className="material-symbols-outlined text-white text-sm">schedule</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h5 className="text-sm font-semibold text-slate-800 truncate">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                  <p className="text-xs text-slate-500 truncate">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">Update needed</span>
-                                  <span className="text-xs text-amber-600">Old</span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  {/* Completed Assessments Section */}
+                  {(coverage.assessed.length > 0 || coverage.stale.length > 0) && (
+                    <div className="mb-8">
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-emerald-800">Completed Assessments</h4>
+                        <span className="text-sm text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full font-medium">
+                          {coverage.assessed.length + coverage.stale.length} completed
+                        </span>
                       </div>
-                    )}
 
-                    {/* Available Assessments */}
-                    {coverage.missing.length > 0 && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 px-1">
-                          <div className="w-6 h-6 rounded-full bg-slate-400 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white text-sm">add_circle</span>
-                          </div>
-                          <h4 className="text-sm font-semibold text-slate-700">Available Assessments</h4>
-                          <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full font-medium ml-auto">
-                            {coverage.missing.length} remaining
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-3">
-                          {coverage.missing.map(id => (
-                            <div key={`available-${id}`} className="group p-4 rounded-xl bg-gradient-to-r from-slate-50/50 to-white border border-slate-100 hover:border-slate-200 hover:shadow-md transition-all duration-300 cursor-pointer">
-                              <div className="flex items-center gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-300 flex items-center justify-center shadow-sm">
-                                  <span className="material-symbols-outlined text-slate-500 text-sm">radio_button_unchecked</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h5 className="text-sm font-semibold text-slate-700 truncate">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                  <p className="text-xs text-slate-500 truncate">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded-full">Available</span>
-                                  <span className="text-xs text-slate-500">Take now</span>
-                                </div>
+                      <div className="space-y-4">
+                        {coverage.assessed.map(id => (
+                          <div key={`completed-${id}`} className="p-5 rounded-xl bg-gradient-to-r from-emerald-50/30 to-white border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all duration-300 cursor-pointer">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
+                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
+                                <span className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full">
+                                  ✓ Completed - Recent
+                                </span>
                               </div>
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
+
+                        {coverage.stale.map(id => (
+                          <div key={`stale-${id}`} className="p-5 rounded-xl bg-gradient-to-r from-amber-50/30 to-white border border-amber-100 hover:border-amber-200 hover:shadow-md transition-all duration-300 cursor-pointer">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
+                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
+                                <span className="inline-flex items-center text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
+                                  Update needed - Old
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+
+                  {/* Available Assessments Section */}
+                  {coverage.missing.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-slate-700">Available Assessments</h4>
+                        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                          {coverage.missing.length} remaining
+                        </span>
+                      </div>
+
+                      <div className="space-y-4">
+                        {coverage.missing.map(id => (
+                          <div key={`available-${id}`} className="p-5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-pointer">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
+                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
+                                <span className="inline-flex items-center text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
+                                  Available - Take now
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Empty State */}
                   {coverage.assessed.length === 0 && coverage.stale.length === 0 && coverage.missing.length === 0 && (
-                    <div className="text-center py-12 px-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-                        <span className="material-symbols-outlined text-slate-400 text-2xl">assignment</span>
+                    <div className="text-center py-16 px-6">
+                      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <span className="material-symbols-outlined text-slate-400 text-3xl">assignment</span>
                       </div>
-                      <h4 className="text-base font-semibold text-slate-800 mb-2">No Assessments Available</h4>
-                      <p className="text-sm text-slate-500 font-light">Check back later for new mental health assessments</p>
+                      <h4 className="text-lg font-semibold text-slate-800 mb-2">No Assessments Available</h4>
+                      <p className="text-sm text-slate-500">Check back later for new mental health assessments</p>
                     </div>
                   )}
                 </div>
