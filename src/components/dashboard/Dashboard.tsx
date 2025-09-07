@@ -822,22 +822,40 @@ export function Dashboard() {
     }
   }, [user?.id, profile])
 
-  // Auto-load life impact analysis once per browser session when dashboard is ready and user has assessment data
+  // Auto-load life impact analysis when user logs in and has assessment data
   useEffect(() => {
     if (user?.id && hasAssessmentData && !latestOverall && !loadingImpact && dataFetched) {
-      const autoLoadKey = `auto_loaded_life_impacts_${user.id}`
-      const alreadyAutoLoaded = sessionStorage.getItem(autoLoadKey)
+      console.log('🔄 [AUTO_LOAD] Automatically loading life impact analysis for user:', user.id)
+      setIsAutoLoading(true)
 
-      if (!alreadyAutoLoaded) {
-        console.log('🔄 [AUTO_LOAD] Automatically loading life impact analysis for user:', user.id)
-        sessionStorage.setItem(autoLoadKey, 'true')
-        setIsAutoLoading(true)
-        handleGenerateOverallAssessment()
-      } else {
-        console.log('🔄 [AUTO_LOAD] Life impact analysis already auto-loaded for this browser session')
+      // Use getFreshLifeImpacts for automatic loading, not comprehensive historical analysis
+      const loadLifeImpacts = async () => {
+        try {
+          console.log('🔄 [AUTO_LOAD] Starting fresh life impacts analysis with most recent assessments...')
+          const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+          console.log('✅ [AUTO_LOAD] Life impacts loaded successfully:', {
+            hasResult: !!freshImpacts,
+            totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
+            manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
+            unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0,
+            riskLevel: freshImpacts?.holisticAnalysis?.overallRiskLevel,
+            confidenceLevel: freshImpacts?.holisticAnalysis?.confidenceLevel
+          })
+          setLatestOverall(freshImpacts)
+        } catch (error) {
+          console.error('❌ [AUTO_LOAD] Error loading life impacts:', {
+            error,
+            message: error instanceof Error ? error.message : 'Unknown error',
+            userId: user.id
+          })
+        } finally {
+          setIsAutoLoading(false)
+        }
       }
+
+      loadLifeImpacts()
     }
-  }, [user?.id, hasAssessmentData, latestOverall, loadingImpact, dataFetched, handleGenerateOverallAssessment])
+  }, [user?.id, hasAssessmentData, latestOverall, loadingImpact, dataFetched])
 
   // Profile loading timeout effect - prevent infinite loading if profile fails to load
   useEffect(() => {
@@ -1187,7 +1205,7 @@ export function Dashboard() {
                   }`}>
                     {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
                   </span>
-                  <span>{isGeneratingOverall ? 'Analyzing your complete history...' : 'Analyze complete history'}</span>
+                  <span>{isGeneratingOverall ? 'Analyzing your complete history...' : 'Analyze Complete History'}</span>
                 </div>
               </button>
 
