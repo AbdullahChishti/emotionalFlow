@@ -236,119 +236,50 @@ export function OverallAssessmentResults({
   }
 
   return (
-    <div className={`max-w-6xl mx-auto space-y-8 ${className}`}>
-      {/* Enhanced Hero Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border border-slate-200/50 shadow-lg"
-      >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-green-500/5" />
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-emerald-200/20 to-green-200/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-gradient-to-tr from-teal-200/20 to-emerald-200/20 rounded-full blur-2xl" />
+    <div className={`max-w-4xl mx-auto space-y-6 ${className}`}>
+      {/* Minimal Header */}
+      <div className="text-center py-6">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          Your Mental Health Profile
+        </h1>
+        <p className="text-slate-600">
+          Analysis based on {assessmentCount} assessments
+        </p>
+      </div>
 
-        {/* Header Content */}
-        <div className="relative px-8 py-12">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl mb-6 shadow-lg">
-              <span className="material-symbols-outlined text-3xl text-white">psychology</span>
+      {/* Risk Assessment */}
+      <div className="bg-white rounded-lg border border-slate-200 p-6">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <RiskDial level={summary.overallRiskLevel} />
+          <div className="flex-1 text-center md:text-left">
+            <div className="text-sm text-slate-500 uppercase tracking-wide mb-1">Risk Level</div>
+            <div className="text-2xl font-semibold text-slate-900 capitalize mb-2">
+              {summary.overallRiskLevel} Risk
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3">
-              Your Mental Health Journey
-            </h1>
-            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-              A comprehensive analysis of your mental wellness based on {assessmentCount} assessments
-            </p>
-          </div>
-
-          {/* Risk Assessment Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 p-8 shadow-xl"
-          >
-            <div className="flex flex-col lg:flex-row items-center gap-8">
-              <div className="flex-shrink-0">
-                <RiskDial level={summary.overallRiskLevel} />
-              </div>
-              <div className="flex-1 text-center lg:text-left">
-                <div className="text-sm uppercase tracking-wider text-slate-500 mb-2">Current Risk Level</div>
-                <div className="text-3xl font-bold text-slate-900 mb-4 capitalize">
-                  {summary.overallRiskLevel} Risk
-                </div>
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${getRiskColor(summary.overallRiskLevel)} font-medium`}>
-                    <span className="w-2 h-2 bg-current rounded-full"></span>
-                    {summary.overallRiskLevel} Risk
-                  </div>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 bg-white/80 font-medium">
-                    <span className="material-symbols-outlined text-lg">assessment</span>
-                    {assessmentCount} Assessments
-                  </div>
-                </div>
-                <div className="mt-4 text-sm text-slate-600">
-                  <span className="font-medium">Focus Area:</span> {summary.highestRiskArea || 'General Wellness'}
-                </div>
-              </div>
+            <div className="text-sm text-slate-600">
+              Focus area: {summary.highestRiskArea || 'General Wellness'}
             </div>
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Enhanced Stats Dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3, duration: 0.4 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-      >
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/50 p-6 hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">analytics</span>
-              </div>
-              <div className="text-sm text-slate-600 font-medium">Assessments</div>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">{assessmentCount}</div>
-            <div className="text-sm text-slate-500">Completed & Analyzed</div>
           </div>
         </div>
+      </div>
 
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 p-6 hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5" />
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">score</span>
-              </div>
-              <div className="text-sm text-slate-600 font-medium">Average Score</div>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">{summary.averageScore.toFixed(1)}</div>
-            <div className="text-sm text-slate-500">Out of 100 points</div>
-          </div>
+      {/* Simple Stats */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
+          <div className="text-xl font-semibold text-slate-900">{assessmentCount}</div>
+          <div className="text-sm text-slate-500">Assessments</div>
         </div>
-
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200/50 p-6 hover:shadow-lg transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5" />
-          <div className="relative">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">calendar_view_day</span>
-              </div>
-              <div className="text-sm text-slate-600 font-medium">Tracking Period</div>
-            </div>
-            <div className="text-3xl font-bold text-slate-900 mb-1">
-              {Math.ceil((new Date(dateRange.latest).getTime() - new Date(dateRange.earliest).getTime()) / (1000 * 60 * 60 * 24))}
-            </div>
-            <div className="text-sm text-slate-500">Days of insights</div>
-          </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
+          <div className="text-xl font-semibold text-slate-900">{summary.averageScore.toFixed(1)}</div>
+          <div className="text-sm text-slate-500">Avg Score</div>
         </div>
-      </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
+          <div className="text-xl font-semibold text-slate-900">
+            {Math.ceil((new Date(dateRange.latest).getTime() - new Date(dateRange.earliest).getTime()) / (1000 * 60 * 60 * 24))}
+          </div>
+          <div className="text-sm text-slate-500">Days</div>
+        </div>
+      </div>
 
       {/* Enhanced Summary Section */}
       {aiAnalysis.summary && (
@@ -379,629 +310,215 @@ export function OverallAssessmentResults({
         </motion.div>
       )}
 
-      {/* Enhanced Individual Assessment Overview */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.4 }}
-        className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
-      >
-        <div className="px-6 py-5 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center">
-              <span className="material-symbols-outlined text-slate-600">assessment</span>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-slate-900">Assessment Breakdown</h3>
-              <p className="text-sm text-slate-600">Detailed analysis of your mental health areas</p>
-            </div>
-          </div>
+      {/* Simple Assessment Overview */}
+      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100">
+          <h3 className="text-lg font-semibold text-slate-900">Assessment Breakdown</h3>
         </div>
-
-        <div className="divide-y divide-slate-50">
-        {Object.entries(allAssessments).map(([assessmentId, data]: [string, any], index: number) => {
-          const max = ASSESSMENTS[assessmentId]?.scoring?.ranges?.slice(-1)[0]?.max || 100
-          const pct = Math.round((data.score / max) * 100)
-          const series = (seriesByAssessment && seriesByAssessment[assessmentId]) || []
-          const severityColor = (
-            data.severity === 'critical' ? '#ef4444' :
-            data.severity === 'severe' ? '#f97316' :
-            data.severity?.includes('moderate') ? '#f59e0b' : '#10b981'
-          )
-          return (
-            <motion.div
-              key={assessmentId}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 + index * 0.05 }}
-                className="group px-6 py-4 hover:bg-slate-50/50 transition-colors duration-200"
-              >
-                <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
-                  <div className="relative">
-              <MiniRing pct={pct} color={severityColor} />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full border border-slate-200 flex items-center justify-center">
-                      <div className={`w-2 h-2 rounded-full`} style={{ backgroundColor: severityColor }}></div>
+        <div className="divide-y divide-slate-100">
+          {Object.entries(allAssessments).map(([assessmentId, data]: [string, any], index: number) => {
+            const max = ASSESSMENTS[assessmentId]?.scoring?.ranges?.slice(-1)[0]?.max || 100
+            const pct = Math.round((data.score / max) * 100)
+            return (
+              <div key={assessmentId} className="px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-slate-900">{data.assessment?.title || assessmentId.toUpperCase()}</span>
+                      <span className="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-700">{data.level}</span>
+                    </div>
+                    <div className="text-sm text-slate-500">
+                      Score: {data.score}/{max} ({pct}%)
                     </div>
                   </div>
-
-              <div className="min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h4 className="font-medium text-slate-900 truncate">{data.assessment?.title || assessmentId.toUpperCase()}</h4>
-                      <span className="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-700 font-medium whitespace-nowrap">
-                        {data.level}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-slate-900">{data.score}</span>
-                        <span className="text-sm text-slate-500">/ {max}</span>
-                        <span className="text-xs text-slate-400">({pct}%)</span>
-                </div>
-                  {series.length > 1 && <Sparkline values={series} color="#64748b" />}
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700 ease-out"
-                        style={{
-                          width: `${pct}%`,
-                          backgroundColor: severityColor,
-                          boxShadow: `0 0 8px ${severityColor}30`
-                        }}
-                      />
-                    </div>
-                  </div>
-
                   <div className="text-right">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium ${getSeverityColor(data.severity)}`}>
-                      <span className="w-1.5 h-1.5 bg-current rounded-full"></span>
+                    <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getSeverityColor(data.severity)}`}>
                       {data.severity}
-                    </span>
+                    </div>
                   </div>
                 </div>
-            </motion.div>
-          )
-        })}
+              </div>
+            )
+          })}
+        </div>
       </div>
-      </motion.div>
 
-      {/* Enhanced Key Insights */}
+      {/* Simple Key Insights */}
       {aiAnalysis.keyInsights && aiAnalysis.keyInsights.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-lime-50 to-emerald-50 border border-lime-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-lime-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-lime-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">lightbulb</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Key Insights</h3>
-                <p className="text-sm text-slate-600">Important patterns and discoveries from your assessments</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Thinking_face-bro_1.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-          </div>
-            <div className="space-y-3">
-              {aiAnalysis.keyInsights.map((insight: string, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50 hover:shadow-sm transition-shadow duration-200"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-lime-400 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-white text-xs font-bold">{index + 1}</span>
-                    </div>
-                    <span className="text-slate-700 text-sm leading-relaxed">{insight}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Key Insights</h3>
+          <ul className="space-y-2">
+            {aiAnalysis.keyInsights.map((insight: string, index: number) => (
+              <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="text-slate-400 mt-1">•</span>
+                <span>{insight}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        </motion.div>
       )}
 
-      {/* Enhanced Daily-Life Impacts */}
+      {/* Simple Daily-Life Impacts */}
       {aiAnalysis.manifestations && aiAnalysis.manifestations.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">person</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Daily-Life Impacts</h3>
-                <p className="text-sm text-slate-600">How your mental health affects your everyday experiences</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Overwhelmed-bro_1.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-          </div>
-            <div className="space-y-3">
-              {aiAnalysis.manifestations.map((manifestation: string, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50 hover:shadow-sm transition-shadow duration-200"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="material-symbols-outlined text-white text-sm">warning</span>
-                    </div>
-                    <span className="text-slate-700 text-sm leading-relaxed">{manifestation}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Daily-Life Impacts</h3>
+          <ul className="space-y-2">
+            {aiAnalysis.manifestations.map((manifestation: string, index: number) => (
+              <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="text-slate-400 mt-1">•</span>
+                <span>{manifestation}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        </motion.div>
       )}
 
-      {/* Enhanced Unconscious Patterns */}
+      {/* Simple Unconscious Patterns */}
       {aiAnalysis.unconsciousManifestations && aiAnalysis.unconsciousManifestations.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">psychology</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Unconscious Patterns</h3>
-                <p className="text-sm text-slate-600">Hidden patterns that may influence your behavior and thoughts</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Psychologist-amico.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-          </div>
-            <div className="space-y-3">
-              {aiAnalysis.unconsciousManifestations.map((manifestation: string, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50 hover:shadow-sm transition-shadow duration-200"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="material-symbols-outlined text-white text-sm">visibility_off</span>
-                    </div>
-                    <span className="text-slate-700 text-sm leading-relaxed">{manifestation}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Unconscious Patterns</h3>
+          <ul className="space-y-2">
+            {aiAnalysis.unconsciousManifestations.map((manifestation: string, index: number) => (
+              <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="text-slate-400 mt-1">•</span>
+                <span>{manifestation}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        </motion.div>
       )}
 
-      {/* Enhanced Recommendations */}
+      {/* Simple Recommendations */}
       {aiAnalysis.overallRecommendations && aiAnalysis.overallRecommendations.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">recommend</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Personalized Recommendations</h3>
-                <p className="text-sm text-slate-600">Actionable steps tailored to your mental health profile</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Peace_of_mind-bro_2.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-          </div>
-            <div className="space-y-3">
-              {aiAnalysis.overallRecommendations.map((recommendation: string, index: number) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                  className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50 hover:shadow-sm transition-shadow duration-200"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="material-symbols-outlined text-white text-sm">check_circle</span>
-                    </div>
-                    <span className="text-slate-700 text-sm leading-relaxed">{recommendation}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Recommendations</h3>
+          <ul className="space-y-2">
+            {aiAnalysis.overallRecommendations.map((recommendation: string, index: number) => (
+              <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
+                <span className="text-slate-400 mt-1">•</span>
+                <span>{recommendation}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        </motion.div>
       )}
 
-      {/* Enhanced Next Steps */}
+      {/* Simple Next Steps */}
       {aiAnalysis.nextSteps && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-lime-50 to-green-50 border border-lime-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-lime-500/5 to-green-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-lime-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">trending_up</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Your Next Steps</h3>
-                <p className="text-sm text-slate-600">Strategic guidance for your mental health journey ahead</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/personal_growth-bro_1.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.nextSteps}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Next Steps</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.nextSteps}</p>
+        </div>
       )}
 
-      {/* Enhanced Personalized Summary */}
+      {/* Simple Personalized Summary */}
       {aiAnalysis.personalizedSummary && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">person</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Personalized Summary</h3>
-                <p className="text-sm text-slate-600">Your unique mental health profile and story</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Contemplating-bro_1.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.personalizedSummary}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Personalized Summary</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.personalizedSummary}</p>
+        </div>
       )}
 
-      {/* Enhanced Patterns & Triggers */}
+      {/* Simple Patterns & Triggers */}
       {aiAnalysis.patternsAndTriggers && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">timeline</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Patterns & Triggers</h3>
-                <p className="text-sm text-slate-600">Understanding your mental health patterns and what influences them</p>
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.patternsAndTriggers}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Patterns & Triggers</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.patternsAndTriggers}</p>
+        </div>
       )}
 
-      {/* Enhanced Psychological Framework */}
+      {/* Simple Psychological Framework */}
       {aiAnalysis.psychologicalFramework && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">psychology</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Psychological Framework</h3>
-                <p className="text-sm text-slate-600">Evidence-based understanding of your mental health dynamics</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Psychologist-bro.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.psychologicalFramework}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Psychological Framework</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.psychologicalFramework}</p>
+        </div>
       )}
 
-      {/* Enhanced Strengths & Resilience */}
+      {/* Simple Strengths & Resilience */}
       {aiAnalysis.strengthsAndProtectiveFactors && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.4, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">shield</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Strengths & Resilience</h3>
-                <p className="text-sm text-slate-600">Your protective factors and inner strengths</p>
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.strengthsAndProtectiveFactors}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Strengths & Resilience</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.strengthsAndProtectiveFactors}</p>
+        </div>
       )}
 
-      {/* Enhanced Actionable Steps */}
+      {/* Simple Actionable Steps */}
       {aiAnalysis.actionableSteps && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">checklist</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Actionable Steps</h3>
-                <p className="text-sm text-slate-600">Practical steps you can take to improve your mental health</p>
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.actionableSteps}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Actionable Steps</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.actionableSteps}</p>
+        </div>
       )}
 
-      {/* Enhanced Professional Help Guidance */}
+      {/* Simple Professional Help Guidance */}
       {aiAnalysis.severityGuidance && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.6, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">health_and_safety</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">When to Seek Professional Help</h3>
-                <p className="text-sm text-slate-600">Important guidance about when to reach out for professional support</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Psychologist-cuate.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.severityGuidance}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">When to Seek Professional Help</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.severityGuidance}</p>
+        </div>
       )}
 
-      {/* Enhanced Progress Over Time */}
+      {/* Simple Progress Over Time */}
       {aiAnalysis.trendAnalysis && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.7, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-lime-50 to-emerald-50 border border-lime-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-lime-500/5 to-emerald-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-lime-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">show_chart</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Your Progress Over Time</h3>
-                <p className="text-sm text-slate-600">Tracking your mental health journey and improvements</p>
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.trendAnalysis}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Progress Over Time</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.trendAnalysis}</p>
+        </div>
       )}
 
-      {/* Enhanced Personalized Roadmap */}
+      {/* Simple Personalized Roadmap */}
       {aiAnalysis.personalizedRoadmap && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.8, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-50 to-teal-50 border border-green-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-teal-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">route</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Personalized Roadmap</h3>
-                <p className="text-sm text-slate-600">Your customized path to better mental health</p>
-              </div>
-              <div className="w-16 h-16 opacity-20">
-                <img src="/assets/Marriage_counseling-bro.svg" alt="" className="w-full h-full object-contain" />
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.personalizedRoadmap}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Personalized Roadmap</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.personalizedRoadmap}</p>
+        </div>
       )}
 
-      {/* Enhanced Supportive Message */}
+      {/* Simple Supportive Message */}
       {aiAnalysis.supportiveMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.9, duration: 0.4 }}
-          className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200/50 shadow-sm"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5" />
-          <div className="relative p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
-                <span className="material-symbols-outlined text-white text-lg">favorite</span>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-900">Supportive Message</h3>
-                <p className="text-sm text-slate-600">Words of encouragement and understanding</p>
-              </div>
-            </div>
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-white/50">
-              <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.supportiveMessage}</p>
-            </div>
-          </div>
-        </motion.div>
+        <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-3">Supportive Message</h3>
+          <p className="text-slate-700 text-sm leading-relaxed">{aiAnalysis.supportiveMessage}</p>
+        </div>
       )}
 
-      {/* Enhanced Action Buttons */}
+      {/* Simple Action Buttons */}
       {onRetake && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.0, duration: 0.4 }}
-          className="mt-12"
-        >
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8">
-            <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Ready for Next Steps?</h3>
-              <p className="text-slate-600">Continue your mental health journey with updated assessments or save your results</p>
-            </div>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={onRetake}
-                className="px-8 py-3 text-base font-medium border-2 hover:bg-slate-50 transition-all duration-200 group"
-              >
-                <span className="material-symbols-outlined text-lg mr-2 group-hover:scale-110 transition-transform duration-200">refresh</span>
-                Update Assessments
-              </Button>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={() => window.print()}
-                className="px-8 py-3 text-base font-medium bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 shadow-lg hover:shadow-xl transition-all duration-200 group"
-              >
-                <span className="material-symbols-outlined text-lg mr-2 group-hover:scale-110 transition-transform duration-200">download</span>
+        <div className="mt-8 flex justify-center gap-4">
+          <Button variant="outline" onClick={onRetake}>
+            Update Assessments
+          </Button>
+          <Button variant="primary" onClick={() => window.print()}>
             Save as PDF
           </Button>
         </div>
-          </div>
-        </motion.div>
       )}
     </div>
   )
 }
 
-// Enhanced loading component for overall assessment
+// Simple loading component for overall assessment
 export function OverallAssessmentLoading() {
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 border border-slate-200/50 shadow-lg"
-      >
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-green-500/5" />
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br from-emerald-200/20 to-green-200/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-gradient-to-tr from-teal-200/20 to-emerald-200/20 rounded-full blur-2xl" />
-
-        <div className="relative px-8 py-16 text-center">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl mb-8 shadow-xl">
-            <span className="material-symbols-outlined text-4xl text-white animate-pulse">psychology</span>
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="text-center py-12">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-2xl mb-6">
+          <span className="material-symbols-outlined text-2xl text-slate-600">psychology</span>
         </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-4">
-            Analyzing Your Journey
-          </h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto mb-8">
-            We're synthesizing all your assessments to create a comprehensive mental health profile...
+        <h1 className="text-2xl font-bold text-slate-900 mb-4">
+          Analyzing Your Results
+        </h1>
+        <p className="text-slate-600 max-w-2xl mx-auto mb-8">
+          We're processing your assessment data...
+        </p>
+        <div className="bg-white rounded-lg border border-slate-200 p-8 text-center max-w-md mx-auto">
+          <LoadingSpinner size="lg" />
+          <p className="text-slate-600 mt-4">
+            This may take a moment.
           </p>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 p-8 shadow-xl max-w-lg mx-auto"
-          >
-        <LoadingSpinner size="lg" />
-            <p className="text-slate-700 mt-6 text-lg">
-              This comprehensive analysis may take a moment as we process your complete mental health profile.
-            </p>
-            <div className="mt-6 flex items-center justify-center gap-2 text-sm text-slate-500">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-2 h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-            </div>
-          </motion.div>
+        </div>
       </div>
-      </motion.div>
     </div>
   )
 }
