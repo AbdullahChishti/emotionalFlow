@@ -31,20 +31,62 @@ interface RequestBody {
 }
 
 Deno.serve(async (req) => {
+  const cors = getCorsHeaders(req)
+
   // CORS preflight
   const preflight = handleCorsPreflight(req)
   if (preflight) return preflight
 
-  const cors = getCorsHeaders(req)
-
   try {
-    console.log('[Edge:impacts] 🚀 Function started')
-    if (req.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { ...cors, 'Content-Type': 'application/json' } })
+
+  // Health check endpoint (no auth required)
+  if (req.method === 'GET') {
+    console.log('[Edge:impacts] 🏥 Health check requested')
+    return new Response(
+      JSON.stringify({
+        status: 'healthy',
+        service: 'daily-life-impacts',
+        timestamp: new Date().toISOString(),
+        version: '1.0.0',
+        openaiConfigured: !!Deno.env.get('OPENAI_API_KEY')
+      }),
+      {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+          'Content-Type': 'application/json'
+        },
+        status: 200
+      }
+    )
+  }
+
+  console.log('[Edge:impacts] 🚀 Function started')
+  if (req.method !== 'POST') {
+      return new Response(JSON.stringify({
+        error: 'Method not allowed',
+        message: 'This endpoint only accepts POST requests',
+        method: req.method,
+        allowedMethods: ['POST']
+      }), { status: 405, headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
-    // Get request data
-    const body: RequestBody = await req.json()
+    // Get request data with better error handling
+    let body: RequestBody
+    try {
+      body = await req.json()
+    } catch (parseError) {
+      console.error('[Edge:impacts] JSON parse error:', parseError)
+      return new Response(JSON.stringify({
+        error: 'Invalid JSON',
+        message: 'Request body contains invalid JSON',
+        code: 'JSON_PARSE_ERROR'
+      }), {
+        status: 400,
+        headers: { ...cors, 'Content-Type': 'application/json' }
+      })
+    }
+
     const { assessmentData } = body
 
     console.log('[Edge:impacts] 📨 Received request:', {
@@ -52,42 +94,87 @@ Deno.serve(async (req) => {
       userId: assessmentData?.userId,
       hasAllAssessments: !!assessmentData?.allAssessments,
       allAssessmentsCount: assessmentData?.allAssessments ? Object.keys(assessmentData.allAssessments).length : 0,
-      assessmentDataKeys: assessmentData ? Object.keys(assessmentData) : []
+      assessmentDataKeys: assessmentData ? Object.keys(assessmentData) : [],
+      assessmentTypes: assessmentData?.allAssessments ? Object.keys(assessmentData.allAssessments) : [],
+      requestBodySize: JSON.stringify(body).length
     })
 
-    if (!assessmentData?.userId || !assessmentData?.allAssessments) {
-      console.error('[Edge:impacts] ❌ Invalid request data:', {
-        hasUserId: !!assessmentData?.userId,
-        hasAllAssessments: !!assessmentData?.allAssessments,
-        assessmentData
+    // Log the raw request body for debugging
+    console.log('[Edge:impacts] 📄 Raw request body:', JSON.stringify(body, null, 2))
+
+    // Detailed logging of assessment data structure
+    if (assessmentData?.allAssessments) {
+      console.log('[Edge:impacts] 📊 Assessment data details:')
+      Object.entries(assessmentData.allAssessments).forEach(([type, assessments]) => {
+        console.log(`  ${type}: ${Array.isArray(assessments) ? assessments.length : 'not array'} assessments`)
+        if (Array.isArray(assessments) && assessments.length > 0) {
+          console.log(`    First assessment:`, {
+            hasScore: 'score' in assessments[0],
+            hasLevel: 'level' in assessments[0],
+            hasSeverity: 'severity' in assessments[0],
+            hasTakenAt: 'takenAt' in assessments[0],
+            hasAssessment: 'assessment' in assessments[0],
+            assessmentTitle: assessments[0].assessment?.title
+          })
+        }
       })
-      return new Response(JSON.stringify({ 
+    }
+
+    // Comprehensive request validation
+    if (!assessmentData) {
+      console.error('[Edge:impacts] ❌ No assessment data provided')
+      return new Response(JSON.stringify({
         error: 'Invalid request data',
-        details: 'Missing userId or allAssessments',
+        message: 'assessmentData is required',
+        received: null
+      }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    if (!assessmentData.userId || typeof assessmentData.userId !== 'string' || assessmentData.userId.trim() === '') {
+      console.error('[Edge:impacts] ❌ Invalid or missing userId:', assessmentData.userId)
+      return new Response(JSON.stringify({
+        error: 'Invalid request data',
+        message: 'Valid userId is required',
         received: {
-          hasUserId: !!assessmentData?.userId,
-          hasAllAssessments: !!assessmentData?.allAssessments
+          userId: assessmentData.userId,
+          userIdType: typeof assessmentData.userId
         }
       }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
     }
 
-    // Get OpenAI key from environment
+    if (!assessmentData.allAssessments || typeof assessmentData.allAssessments !== 'object') {
+      console.error('[Edge:impacts] ❌ Invalid or missing allAssessments:', assessmentData.allAssessments)
+      return new Response(JSON.stringify({
+        error: 'Invalid request data',
+        message: 'Valid allAssessments object is required',
+        received: {
+          allAssessments: assessmentData.allAssessments,
+          allAssessmentsType: typeof assessmentData.allAssessments
+        }
+      }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    // Get OpenAI key from environment with validation
     const openaiKey = Deno.env.get('OPENAI_API_KEY')
-    if (!openaiKey) {
-      console.error('[Edge:impacts] OpenAI API key not found')
+    if (!openaiKey || openaiKey.trim() === '') {
+      console.error('[Edge:impacts] OpenAI API key not found or empty')
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Configuration error',
-          message: 'OpenAI API key not found',
-          code: 'OPENAI_KEY_MISSING'
-        }), 
-        { 
-          status: 500, 
-          headers: { 
-            ...cors, 
+          message: 'OpenAI API key is not configured',
+          code: 'OPENAI_KEY_MISSING',
+          details: {
+            hasKey: !!openaiKey,
+            keyLength: openaiKey?.length || 0
+          }
+        }),
+        {
+          status: 500,
+          headers: {
+            ...cors,
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store'
-          } 
+          }
         }
       )
     }
@@ -98,7 +185,10 @@ Deno.serve(async (req) => {
 
     // Build prompt
     const prompt = buildAnalysisPrompt(assessmentData)
+    console.log('[Edge:impacts] 🤖 Generated prompt length:', prompt.length)
+    console.log('[Edge:impacts] 📝 Prompt preview:', prompt.substring(0, 200) + '...')
 
+    console.log('[Edge:impacts] 🚀 Calling OpenAI API...')
     // Call OpenAI
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -181,24 +271,32 @@ Deno.serve(async (req) => {
 
     try {
       // Parse response
+      console.log('[Edge:impacts] 📥 OpenAI response status:', openaiResponse.status)
       const data = await openaiResponse.json()
+      console.log('[Edge:impacts] 📊 OpenAI response data:', {
+        hasChoices: !!data?.choices,
+        choicesCount: data?.choices?.length || 0,
+        hasContent: !!data?.choices?.[0]?.message?.content,
+        contentLength: data?.choices?.[0]?.message?.content?.length || 0
+      })
+
       const content = data?.choices?.[0]?.message?.content
 
       if (!content) {
         console.error('[Edge:impacts] Empty response from OpenAI')
         return new Response(
-          JSON.stringify({ 
+          JSON.stringify({
             error: 'Invalid AI response',
             message: 'OpenAI returned an empty response',
             code: 'EMPTY_RESPONSE'
-          }), 
-          { 
-            status: 502, 
-            headers: { 
-              ...cors, 
+          }),
+          {
+            status: 502,
+            headers: {
+              ...cors,
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store'
-            } 
+            }
           }
         )
       }
@@ -249,37 +347,49 @@ Deno.serve(async (req) => {
     } catch (error) {
       console.error('[Edge:impacts] Failed to process AI response:', error)
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Processing error',
           message: error instanceof Error ? error.message : 'Failed to process AI response',
           code: 'PROCESSING_ERROR'
-        }), 
-        { 
-          status: 502, 
-          headers: { 
-            ...cors, 
+        }),
+        {
+          status: 502,
+          headers: {
+            ...cors,
             'Content-Type': 'application/json',
             'Cache-Control': 'no-store'
-          } 
+          }
         }
       )
     }
 
   } catch (error) {
-    console.error('[Edge:impacts] Unexpected error:', error)
+    console.error('[Edge:impacts] Unexpected error:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+      type: typeof error,
+      constructor: error?.constructor?.name
+    })
+
+    // Return detailed error for debugging - NEVER return empty object
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Internal server error',
         message: error instanceof Error ? error.message : 'An unexpected error occurred',
-        code: 'INTERNAL_ERROR'
-      }), 
-      { 
-        status: 500, 
-        headers: { 
-          ...cors, 
+        code: 'INTERNAL_ERROR',
+        debug: {
+          errorType: typeof error,
+          hasStack: error instanceof Error && !!error.stack,
+          timestamp: new Date().toISOString()
+        }
+      }),
+      {
+        status: 500,
+        headers: {
+          ...cors,
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store'
-        } 
+        }
       }
     )
   }
@@ -295,13 +405,36 @@ function buildAnalysisPrompt(assessmentData: AssessmentData): string {
     `- Highest risk area: ${summary.highestRiskArea}\n\n` +
     "Assessment Details:\n"
 
-  // Add each assessment's details
-  Object.entries(allAssessments).forEach(([id, data]) => {
-    prompt += `${data.assessment.title}:\n` +
-      `- Score: ${data.score}\n` +
-      `- Level: ${data.level}\n` +
-      `- Severity: ${data.severity}\n` +
-      `- Date: ${new Date(data.takenAt).toLocaleDateString()}\n\n`
+  // Add each assessment's details - allAssessments is Record<string, any[]> so data is an array
+  Object.entries(allAssessments).forEach(([assessmentId, assessments]) => {
+    if (Array.isArray(assessments) && assessments.length > 0) {
+      // Use the first assessment to get the title, or fall back to formatted ID
+      const assessmentTitle = assessments[0]?.assessment?.title ||
+                              assessmentId.toUpperCase().replace(/[_-]/g, ' ')
+
+      prompt += `${assessmentTitle}:\n`
+      prompt += `- Number of assessments: ${assessments.length}\n`
+
+      // Show summary stats for this assessment type
+      const scores = assessments.map(a => a.score).filter(s => typeof s === 'number')
+      const avgScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : 'N/A'
+      const severities = assessments.map(a => a.severity).filter(s => s)
+
+      prompt += `- Average score: ${avgScore}\n`
+      prompt += `- Severity levels: ${severities.join(', ') || 'unknown'}\n`
+
+      // Show most recent assessment details
+      const mostRecent = assessments.sort((a, b) =>
+        new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime()
+      )[0]
+
+      if (mostRecent) {
+        prompt += `- Most recent: Score ${mostRecent.score}, Level: ${mostRecent.level}, Severity: ${mostRecent.severity}\n`
+        prompt += `- Date: ${new Date(mostRecent.takenAt).toLocaleDateString()}\n`
+      }
+
+      prompt += '\n'
+    }
   })
 
   prompt += "Based on this assessment data, identify:\n" +

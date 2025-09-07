@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAuth } from '@/stores/authStore'
+import { useAuth, useAuthStore } from '@/stores/authStore'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
@@ -153,6 +153,7 @@ const FETCH_TIMEOUT = 15000 // 15 seconds to avoid false timeouts
 
 export function Dashboard() {
   const { user, profile } = useAuth()
+  const authStore = useAuthStore()
   const router = useRouter()
   
   // State management
@@ -304,28 +305,58 @@ export function Dashboard() {
     return 'UNKNOWN_ERROR'
   }
 
-  // Watertight generate overall assessment with comprehensive error handling
+  // Production-safe logger utility
+  const logger = {
+    debug: (message: string, data?: any) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`[Dashboard] ${message}`, data || '')
+      }
+    },
+    warn: (message: string, data?: any) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`[Dashboard] ${message}`, data || '')
+      }
+    },
+    error: (message: string, error?: any) => {
+      console.error(`[Dashboard] ${message}`, error || '')
+    }
+  }
+
+  // COMPREHENSIVE HISTORICAL ANALYSIS - Enhanced with detailed logging
   const handleGenerateOverallAssessment = useCallback(async () => {
     // Guard clauses - prevent execution in invalid states
     if (!user?.id) {
-      console.warn('Generate insights called without valid user')
-      return
-    }
-    
-    if (isGeneratingOverall) {
-      console.warn('Generate insights called while already generating')
+      logger.warn('Life impact analysis called without valid user')
       return
     }
 
+    console.log('🚀 [COMPREHENSIVE ANALYSIS] Starting comprehensive historical analysis for user:', user.id)
+
+    // Use functional state updates to prevent race conditions
+    const canProceed = await new Promise<boolean>((resolve) => {
+      setIsGeneratingOverall(currentGenerating => {
+        if (currentGenerating) {
+          console.log('⚠️ [COMPREHENSIVE ANALYSIS] Race condition detected: already generating')
+          logger.warn('Race condition detected: already generating')
+          resolve(false)
+          return true // Don't change the state
+        }
+        console.log('✅ [COMPREHENSIVE ANALYSIS] Proceeding with analysis')
+        resolve(true)
+        return true
+      })
+    })
+
+    if (!canProceed) return
+
     // Initialize state safely
-    setIsGeneratingOverall(true)
     setOverallProgress(0)
     setShowOverallResults(true)
     setOverallAssessment(null)
-    
+
     let progressInterval: NodeJS.Timeout | null = null
     let timeoutId: NodeJS.Timeout | null = null
-    
+
     // Cleanup function to ensure state consistency
     const cleanup = () => {
       if (progressInterval) {
@@ -341,11 +372,19 @@ export function Dashboard() {
     // Error handler that creates appropriate fallback response
     const handleError = (error: any, errorType?: GenerationError) => {
       cleanup()
-      
+
       const detectedErrorType = errorType || classifyError(error)
       const errorInfo = getErrorMessage(detectedErrorType, overallRetryCount)
-      
-      console.error('Overall assessment generation failed:', {
+
+      console.error('❌ [COMPREHENSIVE ANALYSIS] Generation failed:', {
+        error: error instanceof Error ? error.message : error,
+        errorType: detectedErrorType,
+        retryCount: overallRetryCount,
+        canRetry: errorInfo.canRetry,
+        userId: user.id
+      })
+
+      logger.error('Overall assessment generation failed:', {
         error,
         errorType: detectedErrorType,
         retryCount: overallRetryCount,
@@ -360,9 +399,9 @@ export function Dashboard() {
           userId: user.id,
           assessments: [],
           assessmentCount: 0,
-          dateRange: { 
-            earliest: new Date().toISOString(), 
-            latest: new Date().toISOString() 
+          dateRange: {
+            earliest: new Date().toISOString(),
+            latest: new Date().toISOString()
           },
           totalScore: 0,
           averageScore: 0
@@ -378,7 +417,7 @@ export function Dashboard() {
           protectiveFactors: ['You\'re taking proactive steps to understand your mental health'],
           overallRiskLevel: 'low' as const,
           confidenceLevel: 0,
-          supportiveMessage: errorInfo.canRetry 
+          supportiveMessage: errorInfo.canRetry
             ? 'Don\'t worry - this is just a temporary issue. Your data is safe and we\'ll try again.'
             : 'Take a moment to complete an assessment, then we can provide personalized insights.'
         },
@@ -397,9 +436,12 @@ export function Dashboard() {
     try {
       // Pre-flight checks
       if (!hasAssessmentData) {
+        console.log('⚠️ [COMPREHENSIVE ANALYSIS] No assessment data available')
         handleError(new Error('No assessment data available'), 'NO_ASSESSMENTS')
         return
       }
+
+      console.log('📊 [COMPREHENSIVE ANALYSIS] Starting data collection for user:', user.id)
 
       // Start progress simulation
       progressInterval = setInterval(() => {
@@ -412,65 +454,170 @@ export function Dashboard() {
         })
       }, 400)
 
-      // Set multiple timeout layers for robustness
-      const GENERATION_TIMEOUT = 60000 // 60 seconds - generous for AI processing
-      
+      // Set extended timeout for comprehensive analysis
+      const GENERATION_TIMEOUT = 90000 // 90 seconds for comprehensive historical analysis
+
+      console.log('⏱️ [COMPREHENSIVE ANALYSIS] Setting timeout:', GENERATION_TIMEOUT + 'ms')
+
       timeoutId = setTimeout(() => {
-        console.warn('Overall assessment generation timeout after 60s')
-        handleError(new Error('Request timeout - analysis taking too long'), 'TIMEOUT_ERROR')
+        console.log('⏰ [COMPREHENSIVE ANALYSIS] Timeout reached after:', GENERATION_TIMEOUT + 'ms')
+        logger.warn('Overall assessment generation timeout after 90s')
+        handleError(new Error('Request timeout - comprehensive analysis taking too long'), 'TIMEOUT_ERROR')
       }, GENERATION_TIMEOUT)
 
-      // Attempt generation with timeout race
-      const generationPromise = OverallAssessmentService.generateHolisticAssessment(user.id)
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Generation timeout')), GENERATION_TIMEOUT - 5000)
-      )
+      // Collect ALL assessment data first with detailed logging
+      console.log('📋 [COMPREHENSIVE ANALYSIS] Collecting ALL assessment data...')
+      const allAssessmentData = await OverallAssessmentService.collectAllAssessmentsData(user.id)
 
-      const result = await Promise.race([generationPromise, timeoutPromise])
-      
+      console.log('📊 [COMPREHENSIVE ANALYSIS] Assessment data collected:', {
+        userId: allAssessmentData.userId,
+        totalAssessments: allAssessmentData.assessments.length,
+        assessmentTypes: [...new Set(allAssessmentData.assessments.map(a => a.assessmentId))],
+        dateRange: allAssessmentData.dateRange,
+        totalScore: allAssessmentData.totalScore,
+        averageScore: allAssessmentData.averageScore.toFixed(2)
+      })
+
+      // Log detailed assessment breakdown
+      const assessmentBreakdown = allAssessmentData.assessments.reduce((acc, assessment) => {
+        if (!acc[assessment.assessmentId]) {
+          acc[assessment.assessmentId] = []
+        }
+        acc[assessment.assessmentId].push({
+          score: assessment.score,
+          level: assessment.level,
+          severity: assessment.severity,
+          takenAt: assessment.takenAt,
+          responseCount: assessment.responses.length
+        })
+        return acc
+      }, {} as Record<string, any[]>)
+
+      console.log('📈 [COMPREHENSIVE ANALYSIS] Assessment breakdown by type:', assessmentBreakdown)
+
+      // Transform data for AI analysis with detailed logging
+      const transformedData = OverallAssessmentService['toComprehensiveHistoricalPayload'](allAssessmentData)
+
+      console.log('🔄 [COMPREHENSIVE ANALYSIS] Data transformed for AI analysis:', {
+        userId: transformedData.userId,
+        assessmentCount: transformedData.assessmentCount,
+        historicalAnalysis: transformedData.summary.historicalAnalysis,
+        assessmentTypes: Object.keys(transformedData.allAssessments),
+        dateRange: transformedData.dateRange,
+        summary: transformedData.summary
+      })
+
+      // Log what we're sending to the AI
+      console.log('🚀 [COMPREHENSIVE ANALYSIS] SENDING TO AI:', {
+        endpoint: 'daily-life-impacts',
+        dataSize: JSON.stringify(transformedData).length + ' bytes',
+        assessmentCount: transformedData.assessmentCount,
+        userId: transformedData.userId,
+        historicalFlag: transformedData.summary.historicalAnalysis,
+        timeRange: `${transformedData.dateRange.earliest} to ${transformedData.dateRange.latest}`
+      })
+
+      // Log sample of assessment data being sent
+      const sampleAssessments = Object.entries(transformedData.allAssessments).slice(0, 2).map(([type, assessments]) => ({
+        type,
+        count: assessments.length,
+        firstAssessment: assessments[0],
+        lastAssessment: assessments[assessments.length - 1]
+      }))
+
+      console.log('📋 [COMPREHENSIVE ANALYSIS] Sample assessment data being sent:', sampleAssessments)
+
+      // Attempt comprehensive historical analysis
+      const generationPromise = OverallAssessmentService.generateComprehensiveHistoricalAnalysis(user.id)
+
+      const result = await Promise.race([
+        generationPromise,
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Generation timeout')), GENERATION_TIMEOUT - 5000)
+        )
+      ])
+
+      console.log('✅ [COMPREHENSIVE ANALYSIS] AI Analysis completed successfully!')
+      console.log('📊 [COMPREHENSIVE ANALYSIS] AI Response received:', {
+        userId: result.userId,
+        hasAssessmentData: !!result.assessmentData,
+        totalAssessmentsAnalyzed: result.assessmentData?.assessmentCount,
+        hasHolisticAnalysis: !!result.holisticAnalysis,
+        riskLevel: result.holisticAnalysis?.overallRiskLevel,
+        confidenceLevel: result.holisticAnalysis?.confidenceLevel,
+        manifestationsCount: result.holisticAnalysis?.manifestations?.length,
+        unconsciousManifestationsCount: result.holisticAnalysis?.unconsciousManifestations?.length,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt
+      })
+
+      // Log detailed AI insights
+      if (result.holisticAnalysis) {
+        console.log('🧠 [COMPREHENSIVE ANALYSIS] AI Insights:', {
+          executiveSummary: result.holisticAnalysis.executiveSummary?.substring(0, 200) + '...',
+          manifestations: result.holisticAnalysis.manifestations,
+          unconsciousManifestations: result.holisticAnalysis.unconsciousManifestations,
+          riskFactors: result.holisticAnalysis.riskFactors,
+          protectiveFactors: result.holisticAnalysis.protectiveFactors,
+          supportiveMessage: result.holisticAnalysis.supportiveMessage
+        })
+      }
+
       // Success path
       cleanup()
       setOverallProgress(100)
-      
+
+      console.log('🎉 [COMPREHENSIVE ANALYSIS] Complete! Setting final results')
+
       // Brief delay to show completion
       setTimeout(() => {
         setOverallAssessment(result)
         setIsGeneratingOverall(false)
         setOverallRetryCount(0) // Reset retry count on success
+        console.log('✅ [COMPREHENSIVE ANALYSIS] UI updated with results')
       }, 500)
 
     } catch (error) {
       const errorType = classifyError(error)
       const errorInfo = getErrorMessage(errorType, overallRetryCount)
-      
+
+      console.error('❌ [COMPREHENSIVE ANALYSIS] Analysis failed:', {
+        error: error instanceof Error ? error.message : error,
+        errorType,
+        retryCount: overallRetryCount,
+        canRetry: errorInfo.canRetry
+      })
+
       // Determine if we should retry
-      const shouldRetry = errorInfo.canRetry && 
-                         overallRetryCount < 2 && 
+      const shouldRetry = errorInfo.canRetry &&
+                         overallRetryCount < 2 &&
                          ['NETWORK_ERROR', 'TIMEOUT_ERROR', 'SERVICE_ERROR', 'UNKNOWN_ERROR'].includes(errorType)
 
       if (shouldRetry) {
-        console.log(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/3)`)
+        console.log(`🔄 [COMPREHENSIVE ANALYSIS] Retrying (attempt ${overallRetryCount + 1}/3)`)
+        logger.debug(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/3)`)
         cleanup()
         setIsGeneratingOverall(false)
         setOverallRetryCount(prev => prev + 1)
-        
+
         // Exponential backoff: 2s, 4s, 8s
         const retryDelay = Math.pow(2, overallRetryCount + 1) * 1000
-        
+
         setTimeout(() => {
           handleGenerateOverallAssessment()
         }, retryDelay)
         return
       }
-      
+
       // Final failure - show error state
+      console.error('💥 [COMPREHENSIVE ANALYSIS] Final failure - showing error state')
       handleError(error, errorType)
     }
   }, [user?.id, isGeneratingOverall, hasAssessmentData, overallRetryCount])
 
   // Data fetching function (explicit userId to avoid stale closures)
   const fetchAssessmentData = useCallback(async (userId: string): Promise<{ results: Record<string, AssessmentResult>; history: AssessmentHistoryEntry[]; latest: Record<string, string> }> => {
-    console.log('[Dash] fetchAssessmentData:start', { userId })
+    logger.debug('fetchAssessmentData:start', { userId })
     if (!userId) return { results: {}, history: [], latest: {} }
 
     try {
@@ -484,8 +631,8 @@ export function Dashboard() {
       const t0 = performance.now()
       const assessmentHistory = await Promise.race([dataPromise, timeoutPromise]) as AssessmentHistoryEntry[]
       const dur = Math.round(performance.now() - t0)
-      console.log('[Dash] getAssessmentHistory:ms', dur)
-      console.log('[Dash] fetchAssessmentData:history', { count: assessmentHistory?.length || 0 })
+      logger.debug('getAssessmentHistory:ms', dur)
+      logger.debug('fetchAssessmentData:history', { count: assessmentHistory?.length || 0 })
 
       if (!assessmentHistory || assessmentHistory.length === 0) {
         return { results: {}, history: [], latest: {} }
@@ -516,10 +663,10 @@ export function Dashboard() {
 
       const latest: Record<string, string> = Object.fromEntries(Object.entries(latestTimes).map(([k, v]) => [k, v.toISOString()]))
       const payload = { results, history: assessmentHistory, latest }
-      console.log('[Dash] fetchAssessmentData:done', { resultsCount: Object.keys(results).length })
+      logger.debug('fetchAssessmentData:done', { resultsCount: Object.keys(results).length })
       return payload
     } catch (error) {
-      console.error('Error fetching assessment data:', error)
+      logger.error('Error fetching assessment data:', error)
       // Graceful fallback instead of throwing so UI doesn't hard-fail
       return { results: {}, history: [], latest: {} }
     }
@@ -530,30 +677,48 @@ export function Dashboard() {
     let isMounted = true
 
     const fetchData = async () => {
-      console.log('[Dash] effect:fetchData:enter', { userReady: !!user?.id, profileReady: !!profile, dataFetched, isFetching })
-      if (!user?.id) {
-        console.log('[Dash] effect:skip (no user)')
-        setLoading(false)
-        return
-      }
-      if (!profile) {
-        console.log('[Dash] effect:skip (no profile)')
-        setLoading(false)
-        return
-      }
-      if (dataFetched) {
-        console.log('[Dash] effect:skip (already fetched)')
-        setLoading(false)
-        return
-      }
-      if (isFetching) {
-        console.log('[Dash] effect:skip (already fetching)')
-        setLoading(false)
-        return
-      }
+    logger.debug('effect:fetchData:enter', {
+      userId: user?.id,
+      hasProfile: !!profile,
+      profileId: profile?.id,
+      dataFetched,
+      isFetching,
+      timestamp: new Date().toISOString()
+    })
 
-      setIsFetching(true)
-      console.log('[Dash] effect:fetch:start')
+    if (!user?.id) {
+      logger.debug('effect:skip (no user)')
+      setLoading(false)
+      return
+    }
+
+    // Only skip if profile is explicitly null AND user exists (not just undefined)
+    if (profile === null) {
+      logger.debug('effect:skip (profile is null, waiting for profile load)')
+      // Don't set loading to false here - let it keep loading until profile is available
+      return
+    }
+
+    if (!profile) {
+      logger.debug('effect:skip (profile undefined)')
+      setLoading(false)
+      return
+    }
+
+    if (dataFetched) {
+      logger.debug('effect:skip (already fetched)')
+      setLoading(false)
+      return
+    }
+
+    if (isFetching) {
+      logger.debug('effect:skip (already fetching)')
+      setLoading(false)
+      return
+    }
+
+    setIsFetching(true)
+    logger.debug('effect:fetch:start')
 
       try {
         // Try to load from localStorage first for immediate display
@@ -563,7 +728,7 @@ export function Dashboard() {
             const parsed = JSON.parse(storedResults)
             if (Object.keys(parsed).length > 0) {
               setHasAssessmentData(true)
-              console.log('[Dash] localStorage:used', { keys: Object.keys(parsed).length })
+              logger.debug('localStorage:used', { keys: Object.keys(parsed).length })
             }
           } catch (parseError) {
             console.warn('Failed to parse stored assessment results:', parseError)
@@ -572,21 +737,21 @@ export function Dashboard() {
         }
 
         // Fetch fresh data from database
-        console.log('[Dash] db:fetch:start')
+        logger.debug('db:fetch:start')
         const { results: freshResults, history: freshHistory, latest } = await fetchAssessmentData(user.id)
-        console.log('[Dash] db:fetch:done', { resultsCount: Object.keys(freshResults).length, historyCount: freshHistory.length })
+        logger.debug('db:fetch:done', { resultsCount: Object.keys(freshResults).length, historyCount: freshHistory.length })
 
         if (isMounted) {
           setHasAssessmentData(Object.keys(freshResults).length > 0)
           setDataFetched(true)
           setLatestMeta(latest)
-          console.log('[Dash] state:update:complete')
+          logger.debug('state:update:complete')
 
           // Build snapshot (non-blocking)
           if (user?.id) {
             Promise.resolve(buildUserSnapshot(user.id))
-              .then(snap => { setSnapshot(snap); console.log('[Dash] snapshot:ready') })
-              .catch(err => console.warn('Snapshot build failed:', err))
+              .then(snap => { setSnapshot(snap); logger.debug('snapshot:ready') })
+              .catch(err => logger.warn('Snapshot build failed:', err))
           }
 
           // Compute coverage
@@ -611,25 +776,25 @@ export function Dashboard() {
           // Update localStorage with fresh data
           try {
             localStorage.setItem('assessmentResults', JSON.stringify(freshResults))
-            console.log('[Dash] localStorage:updated')
+            logger.debug('localStorage:updated')
           } catch (storageError) {
-            console.warn('Failed to store assessment results:', storageError)
+            logger.warn('Failed to store assessment results:', storageError)
           }
         }
       } catch (error) {
-        console.error('Dashboard fetch error:', error)
+        logger.error('Dashboard fetch error:', error)
         if (isMounted) {
           // Do not hard-fail on errors; show empty state instead
           setError(null)
           setDataFetched(true)
           setHasAssessmentData(false)
-          console.log('[Dash] fetch:error:graceful-empty')
+          logger.debug('fetch:error:graceful-empty')
         }
       } finally {
         if (isMounted) {
           setLoading(false)
           setIsFetching(false)
-          console.log('[Dash] effect:fetch:finally', { loading: false, isFetching: false })
+          logger.debug('effect:fetch:finally', { loading: false, isFetching: false })
         }
       }
     }
@@ -639,9 +804,62 @@ export function Dashboard() {
     return () => {
       isMounted = false
       setIsFetching(false)
-      console.log('[Dash] cleanup')
+      logger.debug('cleanup')
     }
-  }, [user?.id, profile, retryCount, dataFetched]) // Stable dependencies to prevent infinite loops
+  }, [user?.id, profile?.id, retryCount, dataFetched]) // Use profile.id instead of profile object to stabilize dependencies
+
+  // Debug effect to track profile loading
+  useEffect(() => {
+    if (user?.id && profile !== null) {
+      logger.debug('Profile loaded successfully', {
+        userId: user.id,
+        profileId: profile?.id,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }, [user?.id, profile])
+
+  // Profile loading timeout effect - prevent infinite loading if profile fails to load
+  useEffect(() => {
+    if (!user?.id || profile !== null) return // Only run if user exists but profile is still null
+
+    const timeout = setTimeout(() => {
+      logger.warn('Profile loading timeout - forcing profile load attempt')
+      // Try to refresh the profile
+      const refreshProfile = async () => {
+        if (user?.id) {
+          try {
+            const freshProfile = await authStore.createProfile(user)
+            if (freshProfile) {
+              authStore.setProfile(freshProfile)
+              logger.debug('Profile refreshed successfully via timeout')
+            }
+          } catch (error) {
+            logger.error('Failed to refresh profile via timeout:', error)
+          }
+        }
+      }
+      refreshProfile()
+    }, 5000) // 5 second timeout
+
+    return () => clearTimeout(timeout)
+  }, [user?.id, profile, authStore])
+
+  // Page visibility effect - refresh data when user returns to tab
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.id && profile && !dataFetched && !isFetching) {
+        logger.debug('Page became visible - checking for data refresh')
+        // Reset dataFetched to trigger a refresh
+        setDataFetched(false)
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [user?.id, profile, dataFetched, isFetching])
 
   // URL parameter handling effect
   useEffect(() => {
@@ -652,13 +870,13 @@ export function Dashboard() {
       setDataFetched(false)
       setRetryCount(0)
     }
-  }, [])
+  }, []) // No cleanup needed for URL parameter effect
 
   // Loading timeout effect - prevent infinite loading and stuck navigation
   useEffect(() => {
     if (loading) {
       const timeout = setTimeout(() => {
-        console.warn('Dashboard loading timeout - forcing loaded state')
+        logger.warn('Dashboard loading timeout - forcing loaded state')
         setLoading(false)
         setIsFetching(false)
       }, 8000) // 8 second timeout to avoid perceived hang
@@ -670,29 +888,45 @@ export function Dashboard() {
   // Persist overall assessment state to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (overallAssessment) {
-        localStorage.setItem('currentOverallAssessment', JSON.stringify(overallAssessment))
-      } else {
-        localStorage.removeItem('currentOverallAssessment')
+      try {
+        if (overallAssessment) {
+          localStorage.setItem('currentOverallAssessment', JSON.stringify(overallAssessment))
+        } else {
+          localStorage.removeItem('currentOverallAssessment')
+        }
+      } catch (error) {
+        console.warn('Failed to persist overall assessment to localStorage:', error)
       }
     }
   }, [overallAssessment])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('isGeneratingOverall', isGeneratingOverall.toString())
+      try {
+        localStorage.setItem('isGeneratingOverall', isGeneratingOverall.toString())
+      } catch (error) {
+        console.warn('Failed to persist generation state to localStorage:', error)
+      }
     }
   }, [isGeneratingOverall])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('showOverallResults', showOverallResults.toString())
+      try {
+        localStorage.setItem('showOverallResults', showOverallResults.toString())
+      } catch (error) {
+        console.warn('Failed to persist results state to localStorage:', error)
+      }
     }
   }, [showOverallResults])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('overallProgress', overallProgress.toString())
+      try {
+        localStorage.setItem('overallProgress', overallProgress.toString())
+      } catch (error) {
+        console.warn('Failed to persist progress to localStorage:', error)
+      }
     }
   }, [overallProgress])
 
@@ -703,20 +937,24 @@ export function Dashboard() {
     return () => {
       // Cleanup any running intervals or timeouts when component unmounts
       if (isGeneratingOverall || showOverallResults) {
-        console.log('🚨 Dashboard unmounting during overall assessment:', {
+        logger.warn('Dashboard unmounting during overall assessment:', {
           isGeneratingOverall,
           showOverallResults,
           hasOverallAssessment: !!overallAssessment,
           timestamp: new Date().toISOString()
         })
-        
+
         // If we're generating, save the state for recovery
         if (isGeneratingOverall && typeof window !== 'undefined') {
-          localStorage.setItem('dashboardUnmountedDuringGeneration', 'true')
-          localStorage.setItem('unmountTimestamp', Date.now().toString())
+          try {
+            localStorage.setItem('dashboardUnmountedDuringGeneration', 'true')
+            localStorage.setItem('unmountTimestamp', Date.now().toString())
+          } catch (error) {
+            logger.warn('Failed to save unmount recovery data:', error)
+          }
         }
       }
-      
+
       // Clear any pending cleanup timeouts
       cleanupTimeouts.forEach(timeout => clearTimeout(timeout))
     }
@@ -724,32 +962,42 @@ export function Dashboard() {
 
   // Recovery effect - handle cases where component unmounted during generation
   useEffect(() => {
+    let recoveryTimeout: NodeJS.Timeout | null = null
+
     if (typeof window !== 'undefined') {
       const unmountedDuringGeneration = localStorage.getItem('dashboardUnmountedDuringGeneration')
       const unmountTimestamp = localStorage.getItem('unmountTimestamp')
-      
+
       if (unmountedDuringGeneration === 'true' && unmountTimestamp) {
         const timeSinceUnmount = Date.now() - parseInt(unmountTimestamp)
-        
+
         // If less than 2 minutes have passed, we might still be generating
         if (timeSinceUnmount < 120000) {
-          console.log('🔄 Recovering from unmount during generation')
+          logger.warn('🔄 Recovering from unmount during generation')
           setIsGeneratingOverall(false) // Reset generation state
           setShowOverallResults(false) // Hide results modal
           setOverallProgress(0) // Reset progress
-          
+
           // Show a brief recovery message
-          const recoveryTimeout = setTimeout(() => {
+          recoveryTimeout = setTimeout(() => {
             // Could show a toast notification here if we had one
-            console.log('✅ Dashboard state recovered after unmount')
+            logger.debug('✅ Dashboard state recovered after unmount')
           }, 1000)
-          
-          return () => clearTimeout(recoveryTimeout)
         }
-        
+
         // Clean up old recovery data
-        localStorage.removeItem('dashboardUnmountedDuringGeneration')
-        localStorage.removeItem('unmountTimestamp')
+        try {
+          localStorage.removeItem('dashboardUnmountedDuringGeneration')
+          localStorage.removeItem('unmountTimestamp')
+        } catch (error) {
+          console.warn('Failed to clean up recovery data from localStorage:', error)
+        }
+      }
+    }
+
+    return () => {
+      if (recoveryTimeout) {
+        clearTimeout(recoveryTimeout)
       }
     }
   }, [])
@@ -802,19 +1050,40 @@ export function Dashboard() {
 
   // Fetch latest overall assessment for the impact card
   useEffect(() => {
+    let isMounted = true
+    let abortController: AbortController | null = null
+
     const loadLatestOverall = async () => {
       if (!user?.id || !hasAssessmentData) return
+
+      abortController = new AbortController()
       setLoadingImpact(true)
+
       try {
         const latest = await OverallAssessmentService.getLatestHolisticAssessment(user.id)
-        setLatestOverall(latest)
+        if (isMounted && !abortController.signal.aborted) {
+          setLatestOverall(latest)
+        }
       } catch (e) {
-        console.warn('Failed to load latest overall assessment:', e)
+        if (isMounted && !abortController.signal.aborted) {
+          console.warn('Failed to load latest overall assessment:', e)
+          setLatestOverall(null)
+        }
       } finally {
-        setLoadingImpact(false)
+        if (isMounted && !abortController.signal.aborted) {
+          setLoadingImpact(false)
+        }
       }
     }
+
     loadLatestOverall()
+
+    return () => {
+      isMounted = false
+      if (abortController) {
+        abortController.abort()
+      }
+    }
   }, [user?.id, hasAssessmentData])
 
 
@@ -896,7 +1165,7 @@ export function Dashboard() {
                 }`}>
                   {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
                 </span>
-                <span>{isGeneratingOverall ? 'Creating insights...' : 'Generate insights'}</span>
+                <span>{isGeneratingOverall ? 'Analyzing your complete history...' : 'Analyze complete history'}</span>
               </div>
             </button>
             
@@ -1077,7 +1346,7 @@ export function Dashboard() {
                   }`}>
                     {isGeneratingOverall ? 'hourglass_empty' : 'auto_awesome'}
                   </span>
-                  <span>{isGeneratingOverall ? 'Generating...' : 'Generate insights'}</span>
+                  <span>{isGeneratingOverall ? 'Analyzing complete history...' : 'Analyze complete history'}</span>
                 </div>
               </button>
             </motion.div>
@@ -1196,11 +1465,15 @@ export function Dashboard() {
               console.log('🔄 Refreshing life impacts for user:', user.id)
               setLoadingImpact(true)
               try {
+                console.log('🔄 [REFRESH] Starting fresh life impacts analysis with most recent assessments...')
                 const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
-                console.log('✅ Fresh impacts received:', {
+                console.log('✅ [REFRESH] Fresh analysis completed:', {
                   hasResult: !!freshImpacts,
+                  totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
                   manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
-                  unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0
+                  unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0,
+                  riskLevel: freshImpacts?.holisticAnalysis?.overallRiskLevel,
+                  confidenceLevel: freshImpacts?.holisticAnalysis?.confidenceLevel
                 })
                 setLatestOverall(freshImpacts)
               } catch (error) {
