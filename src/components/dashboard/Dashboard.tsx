@@ -824,38 +824,47 @@ export function Dashboard() {
 
   // Auto-load life impact analysis when user logs in and has assessment data
   useEffect(() => {
-    if (user?.id && hasAssessmentData && !latestOverall && !loadingImpact && dataFetched) {
-      console.log('🔄 [AUTO_LOAD] Automatically loading life impact analysis for user:', user.id)
-      setIsAutoLoading(true)
+    if (user?.id && hasAssessmentData && !loadingImpact && dataFetched) {
+      // Check if we haven't already auto-loaded for this session
+      const autoLoadKey = `auto_loaded_life_impacts_${user.id}_${new Date().toDateString()}`
+      const alreadyAutoLoaded = sessionStorage.getItem(autoLoadKey)
 
-      // Use getFreshLifeImpacts for automatic loading, not comprehensive historical analysis
-      const loadLifeImpacts = async () => {
-        try {
-          console.log('🔄 [AUTO_LOAD] Starting fresh life impacts analysis with most recent assessments...')
-          const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
-          console.log('✅ [AUTO_LOAD] Life impacts loaded successfully:', {
-            hasResult: !!freshImpacts,
-            totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
-            manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
-            unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0,
-            riskLevel: freshImpacts?.holisticAnalysis?.overallRiskLevel,
-            confidenceLevel: freshImpacts?.holisticAnalysis?.confidenceLevel
-          })
-          setLatestOverall(freshImpacts)
-        } catch (error) {
-          console.error('❌ [AUTO_LOAD] Error loading life impacts:', {
-            error,
-            message: error instanceof Error ? error.message : 'Unknown error',
-            userId: user.id
-          })
-        } finally {
-          setIsAutoLoading(false)
+      if (!alreadyAutoLoaded) {
+        console.log('🔄 [AUTO_LOAD] Automatically loading fresh life impact analysis for user:', user.id)
+        sessionStorage.setItem(autoLoadKey, 'true')
+        setIsAutoLoading(true)
+
+        // Use getFreshLifeImpacts for automatic loading, not comprehensive historical analysis
+        const loadLifeImpacts = async () => {
+          try {
+            console.log('🔄 [AUTO_LOAD] Starting fresh life impacts analysis with most recent assessments...')
+            const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+            console.log('✅ [AUTO_LOAD] Life impacts loaded successfully:', {
+              hasResult: !!freshImpacts,
+              totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
+              manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
+              unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0,
+              riskLevel: freshImpacts?.holisticAnalysis?.overallRiskLevel,
+              confidenceLevel: freshImpacts?.holisticAnalysis?.confidenceLevel
+            })
+            setLatestOverall(freshImpacts)
+          } catch (error) {
+            console.error('❌ [AUTO_LOAD] Error loading life impacts:', {
+              error,
+              message: error instanceof Error ? error.message : 'Unknown error',
+              userId: user.id
+            })
+          } finally {
+            setIsAutoLoading(false)
+          }
         }
-      }
 
-      loadLifeImpacts()
+        loadLifeImpacts()
+      } else {
+        console.log('🔄 [AUTO_LOAD] Fresh life impacts already loaded today for user:', user.id)
+      }
     }
-  }, [user?.id, hasAssessmentData, latestOverall, loadingImpact, dataFetched])
+  }, [user?.id, hasAssessmentData, loadingImpact, dataFetched])
 
   // Profile loading timeout effect - prevent infinite loading if profile fails to load
   useEffect(() => {
@@ -1095,6 +1104,15 @@ export function Dashboard() {
     const loadLatestOverall = async () => {
       if (!user?.id || !hasAssessmentData) return
 
+      // Check if we already auto-loaded fresh data today
+      const autoLoadKey = `auto_loaded_life_impacts_${user.id}_${new Date().toDateString()}`
+      const alreadyAutoLoaded = sessionStorage.getItem(autoLoadKey)
+
+      if (alreadyAutoLoaded) {
+        console.log('🔄 [CACHED_LOAD] Skipping cached data load - fresh data already loaded today for user:', user.id)
+        return
+      }
+
       abortController = new AbortController()
       setLoadingImpact(true)
 
@@ -1115,7 +1133,10 @@ export function Dashboard() {
       }
     }
 
-    loadLatestOverall()
+    // Small delay to allow auto-load to run first
+    setTimeout(() => {
+      loadLatestOverall()
+    }, 100)
 
     return () => {
       isMounted = false
