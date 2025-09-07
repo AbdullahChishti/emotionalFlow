@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/stores/authStore'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Input } from '@/components/ui/Input'
@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import 'material-symbols/outlined.css'
 
 export function ProfileScreen() {
-  const { user, profile, refreshProfile, signOut, loading: authLoading } = useAuth()
+  const { user, profile, refreshProfile, signOut, isLoading: authLoading } = useAuthContext()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
 
