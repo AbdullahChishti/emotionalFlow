@@ -18,6 +18,7 @@ interface AssessmentQuestionProps {
   onChange: (value: number | string) => void
   questionNumber: number
   totalQuestions: number
+  showInlineProgress?: boolean
 }
 
 // Dynamic question form component - isolated from static content
@@ -27,6 +28,7 @@ interface DynamicQuestionFormProps {
   onChange: (value: number | string) => void
   questionNumber: number
   totalQuestions: number
+  showInlineProgress?: boolean
 }
 
 const DynamicQuestionForm = memo(({
@@ -34,7 +36,8 @@ const DynamicQuestionForm = memo(({
   value,
   onChange,
   questionNumber,
-  totalQuestions
+  totalQuestions,
+  showInlineProgress = false
 }: DynamicQuestionFormProps) => {
   // Memoized progress calculation
   const progress = useMemo(() => (questionNumber / totalQuestions) * 100, [questionNumber, totalQuestions])
@@ -241,38 +244,39 @@ const DynamicQuestionForm = memo(({
   }, [question.type, question.options, value, handleOptionChange])
 
   return (
-    <div className="w-full flex items-center justify-center px-6 py-12">
+    <div className="w-full flex items-center justify-center">
       <div className="w-full max-w-2xl">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6"
+          className="bg-white border border-slate-200 rounded-xl p-5"
         >
-          {/* Progress */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-slate-600">Question {questionNumber} of {totalQuestions}</div>
-              <div className="text-sm font-medium text-slate-900">{Math.round(progress)}%</div>
+          {showInlineProgress && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs text-slate-500">Question {questionNumber} of {totalQuestions}</div>
+                <div className="text-xs font-medium text-slate-600">{Math.round(progress)}%</div>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
+                <motion.div
+                  className="h-full bg-slate-900 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
-              <motion.div
-                className="h-full bg-slate-900 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.4 }}
-              />
-            </div>
-          </div>
+          )}
 
           {/* Question */}
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-slate-900 text-center">
+          <div className="mb-4">
+            <h3 className="text-[18px] font-medium text-slate-900 text-center leading-snug">
               {question.text}
             </h3>
             {question.category && (
-              <div className="mt-3 text-center">
-                <span className="inline-block px-3 py-1 rounded-full text-xs font-medium border border-slate-200 bg-white text-slate-700 capitalize">
+              <div className="mt-2 text-center">
+                <span className="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-medium border border-slate-200 bg-white text-slate-600 capitalize">
                   {question.category.replace('-', ' ')}
                 </span>
               </div>
@@ -280,12 +284,12 @@ const DynamicQuestionForm = memo(({
           </div>
 
           {/* Inputs */}
-          <div className="mb-2">
+          <div className="mb-1">
             {renderQuestionInput()}
           </div>
 
           {/* Helper */}
-          <div className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-3 text-center text-[11px] text-slate-500">
             Answer honestly. There are no right or wrong answers.
           </div>
         </motion.div>
@@ -309,7 +313,8 @@ export const AssessmentQuestionComponent = memo(({
   value,
   onChange,
   questionNumber,
-  totalQuestions
+  totalQuestions,
+  showInlineProgress = false
 }: AssessmentQuestionProps) => {
   // Memoized onChange handler to prevent unnecessary re-renders
   const memoizedOnChange = useCallback((newValue: number | string) => {
@@ -317,13 +322,14 @@ export const AssessmentQuestionComponent = memo(({
   }, [onChange])
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
+    <div className="bg-white flex items-center justify-center">
       <DynamicQuestionForm
         question={question}
         value={value}
         onChange={memoizedOnChange}
         questionNumber={questionNumber}
         totalQuestions={totalQuestions}
+        showInlineProgress={showInlineProgress}
       />
     </div>
   )

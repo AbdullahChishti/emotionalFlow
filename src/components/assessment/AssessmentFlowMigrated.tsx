@@ -331,84 +331,52 @@ export function AssessmentFlowMigrated({
 
   const renderSelection = () => (
     <motion.div
-      className="max-w-6xl mx-auto space-y-8"
+      className="max-w-3xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.25 }}
     >
-      {/* Header */}
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-      >
-        <h1 className="text-4xl font-semibold text-slate-900 mb-2">Assessments</h1>
-        <p className="text-slate-600 max-w-2xl mx-auto">
-          Evidence-based measures to understand your current state.
-        </p>
-      </motion.div>
+      {/* Minimal header */}
+      <div className="px-2 mb-4 flex items-center justify-between">
+        <h1 className="text-base font-medium text-slate-800">Choose assessment</h1>
+        <span className="text-xs text-slate-500">{assessmentIds.length} available</span>
+      </div>
 
-      {/* Assessment List */}
-      <div className="grid md:grid-cols-2 gap-6">
+      {/* Minimal list with dividers */}
+      <div className="rounded-lg border border-slate-200/60 bg-white/50 divide-y divide-slate-100 overflow-hidden">
         {assessmentIds.map((assessmentId, index) => {
           const assessment = ASSESSMENTS[assessmentId]
           const category = ASSESSMENT_CATEGORIES[assessment.category]
           const iconName = getAssessmentIconName(assessmentId)
 
           return (
-            <motion.div
+            <motion.button
               key={assessmentId}
-              className="glassmorphic rounded-2xl p-6 shadow-xl border border-white/20 hover:shadow-2xl transition-all duration-300 cursor-pointer group"
-              initial={{ opacity: 0, y: 20 }}
+              type="button"
+              className="w-full text-left px-3 py-3 flex items-center gap-3 hover:bg-slate-50/60 transition-colors"
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.1 }}
-              whileHover={{ y: -5 }}
+              transition={{ delay: 0.05 + index * 0.03 }}
               onClick={() => {
                 setCurrentAssessmentIndex(index)
                 setCurrentState('taking')
               }}
             >
-              <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-white text-2xl">
-                    {iconName}
-                  </span>
+              <span className="material-symbols-outlined text-slate-600 text-base">{iconName}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[13px] text-slate-800 truncate">{assessment.shortTitle || assessment.title}</span>
+                  <span className="text-[10px] text-slate-400">{category.name}</span>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-1">
-                    {assessment.title}
-                  </h3>
-                  <p className="text-sm text-slate-600 mb-2">
-                    {category.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {assessment.questions.length} questions • {assessment.estimatedTime} min
-                  </p>
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  {assessment.questions.length} questions • {assessment.estimatedTime}m
                 </div>
-                <span className="material-symbols-outlined text-slate-400 group-hover:text-slate-600 transition-colors duration-300">
-                  arrow_forward
-                </span>
               </div>
-            </motion.div>
+              <span className="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+            </motion.button>
           )
         })}
       </div>
-
-      {/* Start Button */}
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        <button
-          onClick={() => setCurrentState('taking')}
-          className="px-8 py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 transition-all duration-300 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 border border-emerald-500/20"
-        >
-          Start Assessments
-        </button>
-      </motion.div>
     </motion.div>
   )
 
@@ -434,46 +402,31 @@ export function AssessmentFlowMigrated({
     }
 
     return (
-      <div className="max-w-4xl mx-auto">
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-600">
-              Assessment {currentAssessmentIndex + 1} of {assessmentIds.length}
-            </span>
-            <span className="text-sm font-medium text-slate-600">
-              {Math.round(progress)}% Complete
-            </span>
+      <div className="max-w-3xl mx-auto">
+        {/* Minimal sticky header with single progress */}
+        <div className="sticky top-0 z-10 bg-white/90 backdrop-blur supports-[backdrop-filter]:backdrop-blur mb-4 border-b border-slate-100">
+          <div className="px-2 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="material-symbols-outlined text-slate-600 text-base">assignment</span>
+              <h1 className="text-sm font-medium text-slate-800 truncate">
+                {currentAssessment.title}
+              </h1>
+            </div>
+            <div className="text-xs text-slate-500 tabular-nums">
+              {currentQuestionIndex + 1}<span className="text-slate-400">/{currentAssessment.questions.length}</span>
+            </div>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-2">
-            <motion.div
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3 }}
-            />
+          <div className="px-2 pb-2">
+            <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <motion.div
+                className="bg-emerald-500 h-1.5"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                transition={{ duration: 0.4 }}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Assessment Header */}
-        <motion.div
-          className="text-center mb-8"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-2xl text-white">
-              {getAssessmentIconName(currentAssessmentId)}
-            </span>
-          </div>
-          <h1 className="text-3xl font-semibold text-slate-900 mb-2">
-            {currentAssessment.title}
-          </h1>
-          <p className="text-slate-600">
-            Question {currentQuestionIndex + 1} of {currentAssessment.questions.length}
-          </p>
-        </motion.div>
 
         {/* Question Component */}
         <motion.div
@@ -489,19 +442,20 @@ export function AssessmentFlowMigrated({
             onChange={handleAnswer}
             questionNumber={currentQuestionIndex + 1}
             totalQuestions={currentAssessment.questions.length}
+            showInlineProgress={false}
           />
         </motion.div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
+        {/* Minimal footer */}
+        <div className="flex justify-between items-center mt-4 px-1">
           <button
             onClick={onExit}
-            className="px-6 py-3 text-slate-600 hover:text-slate-800 transition-colors duration-300"
+            className="text-xs text-slate-500 hover:text-slate-700 transition-colors"
           >
-            Exit Assessment
+            Exit
           </button>
-          <div className="text-sm text-slate-500">
-            {completedQuestions} of {totalQuestions} questions completed
+          <div className="text-[11px] text-slate-500 tabular-nums">
+            {completedQuestions}<span className="text-slate-400">/{totalQuestions}</span>
           </div>
         </div>
       </div>
@@ -509,7 +463,7 @@ export function AssessmentFlowMigrated({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50/80 via-blue-50/60 to-emerald-50/40 p-6">
+    <div className="min-h-screen bg-white p-4">
       <AnimatePresence mode="wait">
         {currentState === 'selection' && (
           <motion.div

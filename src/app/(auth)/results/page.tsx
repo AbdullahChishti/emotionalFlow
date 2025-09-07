@@ -50,87 +50,56 @@ interface MultipleResultsDisplayProps {
 
 function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: MultipleResultsDisplayProps) {
   const router = useRouter()
+  const entries = Object.entries(results)
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-12">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-10"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-        >
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-slate-100 rounded-xl mb-3">
-            <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
+      <div className="container mx-auto px-6 py-8">
+        {/* Minimal header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-sm font-medium text-slate-800 tabular-nums">
+            {entries.length}<span className="text-slate-400"> results</span>
           </div>
-          <h1 className="text-3xl font-semibold text-slate-900 mb-2">Your Assessment Results</h1>
-          <p className="text-sm text-slate-600 max-w-2xl mx-auto">
-            Here's a comprehensive overview of your completed assessments and insights.
-          </p>
-        </motion.div>
+          <div className="flex items-center gap-3">
+            <button onClick={onRetake} className="text-xs text-slate-500 hover:text-slate-700">Retake</button>
+            <button onClick={onNewAssessment} className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700">
+              <span className="material-symbols-outlined text-[16px]">add</span>
+              New
+            </button>
+          </div>
+        </div>
 
-        {/* Results Grid */}
-        <div className="grid gap-6 max-w-6xl mx-auto">
-          {Object.entries(results).map(([assessmentId, result], index) => {
+        {/* Minimal divided list */}
+        <div className="rounded-lg border border-slate-200/60 bg-white/50 divide-y divide-slate-100 overflow-hidden max-w-3xl mx-auto">
+          {entries.map(([assessmentId, result], index) => {
             const assessment = ASSESSMENTS[assessmentId]
             if (!assessment) return null
-
+            const max = assessment.scoring.ranges[assessment.scoring.ranges.length - 1].max
             return (
-              <motion.div
+              <motion.button
                 key={assessmentId}
-                initial={{ opacity: 0, y: 10 }}
+                type="button"
+                className="w-full text-left px-3 py-3 flex items-center gap-3 hover:bg-slate-50/60 transition-colors"
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: index * 0.05, ease: 'easeOut' }}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
+                transition={{ delay: 0.05 + index * 0.03 }}
+                onClick={() => router.push(`/results?assessment=${assessmentId}`)}
               >
-                <div className="p-5 border-b border-slate-200 bg-slate-50">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                      <span className="material-symbols-outlined text-base text-slate-700">analytics</span>
-                    </div>
-                    <div>
-                      <h2 className="text-base font-semibold text-slate-900">{assessment.title}</h2>
-                      <p className="text-xs text-slate-600">{assessment.description}</p>
-                    </div>
+                <span className="material-symbols-outlined text-slate-600 text-base">analytics</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[13px] text-slate-800 truncate">{assessment.shortTitle || assessment.title}</span>
+                    <span className="text-[10px] text-slate-400">{result.level}</span>
+                  </div>
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Score {result.score} / {max}
                   </div>
                 </div>
-                <div className="p-5">
-                  <AssessmentResults
-                    assessment={assessment}
-                    result={result}
-                    onRetake={() => router.push(`/assessments?retake=${assessmentId}`)}
-                    onContinue={() => router.push(`/results?assessment=${assessmentId}`)}
-                    variant="summary"
-                    showActions={true}
-                    className="border-0 shadow-none bg-transparent p-0"
-                  />
-                </div>
-              </motion.div>
+                <span className="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+              </motion.button>
             )
           })}
         </div>
-
-        {/* Action Buttons */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-3 justify-center mt-8 max-w-md mx-auto"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, delay: 0.2 }}
-        >
-          <button
-            onClick={onRetake}
-            className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors font-medium text-sm"
-          >
-            Retake Assessments
-          </button>
-          <button
-            onClick={onNewAssessment}
-            className="px-5 py-2.5 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-medium text-sm"
-          >
-            Take New Assessment
-          </button>
-        </motion.div>
       </div>
     </div>
   )

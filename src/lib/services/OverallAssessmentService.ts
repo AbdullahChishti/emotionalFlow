@@ -60,6 +60,7 @@ export interface OverallAssessmentData {
 }
 
 export interface AIHolisticAnalysis {
+  // Legacy fields for backward compatibility
   executiveSummary: string
   manifestations: string[]  // Observable impacts on daily life
   unconsciousManifestations: string[]  // Subtle impacts user might not be aware of
@@ -68,6 +69,16 @@ export interface AIHolisticAnalysis {
   overallRiskLevel: 'low' | 'moderate' | 'high' | 'critical'
   confidenceLevel: number
   supportiveMessage: string
+
+  // New comprehensive analysis fields
+  personalizedSummary?: string
+  patternsAndTriggers?: string
+  psychologicalFramework?: string
+  strengthsAndProtectiveFactors?: string
+  actionableSteps?: string
+  severityGuidance?: string
+  trendAnalysis?: string
+  personalizedRoadmap?: string
 }
 
 export interface OverallAssessmentResult {
@@ -515,12 +526,27 @@ Please respond with a structured JSON object containing the requested analysis f
    * Parse holistic AI response into structured format
    */
   private static parseHolisticAIResponse(
-    aiResponse: any, 
+    aiResponse: any,
     assessmentData: OverallAssessmentData
   ): AIHolisticAnalysis {
     try {
-      // Handle different response formats
-      const analysis = aiResponse.analysis || aiResponse.data || aiResponse
+      console.log('🔍 [AI_SERVICE] Parsing AI response structure:', {
+        hasImpacts: !!aiResponse?.impacts,
+        hasData: !!aiResponse?.data,
+        hasAnalysis: !!aiResponse?.analysis,
+        responseKeys: Object.keys(aiResponse || {}),
+        impactsKeys: aiResponse?.impacts ? Object.keys(aiResponse.impacts) : []
+      })
+
+      // Handle different response formats - check for impacts first (from edge function)
+      const analysis = aiResponse.impacts || aiResponse.analysis || aiResponse.data || aiResponse
+
+      console.log('📋 [AI_SERVICE] Using analysis source:', {
+        source: aiResponse.impacts ? 'impacts' : aiResponse.analysis ? 'analysis' : aiResponse.data ? 'data' : 'direct',
+        analysisKeys: Object.keys(analysis || {}),
+        hasManifestations: !!analysis?.manifestations,
+        manifestationsCount: analysis?.manifestations?.length || 0
+      })
 
       if (typeof analysis === 'string') {
         // Parse JSON string if needed
@@ -544,34 +570,61 @@ Please respond with a structured JSON object containing the requested analysis f
    * Validate and structure AI analysis response
    */
   private static validateAndStructureAnalysis(
-    analysis: any, 
+    analysis: any,
     assessmentData: OverallAssessmentData
   ): AIHolisticAnalysis {
+      // Generate fallback content if AI provides empty arrays
+      const fallbackManifestations = this.generateFallbackManifestations(assessmentData)
+      const fallbackUnconsciousManifestations = this.generateFallbackUnconsciousManifestations(assessmentData)
+      const fallbackRiskFactors = this.generateFallbackRiskFactors(assessmentData)
+      const fallbackProtectiveFactors = this.generateFallbackProtectiveFactors(assessmentData)
+
+      const manifestations = this.sanitizeStringArray(
+        analysis?.manifestations || analysis?.impacts || [], 10, 300
+      )
+      const unconsciousManifestations = this.sanitizeStringArray(
+        analysis?.unconsciousManifestations || analysis?.subtleImpacts || [], 10, 300
+      )
+
+      console.log('🔄 [AI_SERVICE] Content validation:', {
+        hasManifestations: manifestations.length > 0,
+        hasUnconsciousManifestations: unconsciousManifestations.length > 0,
+        fallbackManifestationsCount: fallbackManifestations.length,
+        fallbackUnconsciousCount: fallbackUnconsciousManifestations.length
+      })
+
       return {
-        executiveSummary: this.sanitizeString(analysis?.executiveSummary || analysis?.summary, 2000) || 
-          'Analysis of how your mental health might be affecting your daily life.',
-        
-        manifestations: this.sanitizeStringArray(
-          analysis?.manifestations || analysis?.impacts || [], 10, 300
-        ) || [],
-        
-        unconsciousManifestations: this.sanitizeStringArray(
-          analysis?.unconsciousManifestations || analysis?.subtleImpacts || [], 10, 300
-        ) || [],
-        
-        riskFactors: this.sanitizeStringArray(analysis?.riskFactors || analysis?.risks, 8, 200) || [],
-        
+        // Legacy fields for backward compatibility
+        executiveSummary: this.sanitizeString(analysis?.executiveSummary || analysis?.summary, 2000) ||
+          this.generateFallbackExecutiveSummary(assessmentData),
+
+        manifestations: manifestations.length > 0 ? manifestations : fallbackManifestations,
+
+        unconsciousManifestations: unconsciousManifestations.length > 0 ? unconsciousManifestations : fallbackUnconsciousManifestations,
+
+        riskFactors: this.sanitizeStringArray(analysis?.riskFactors || analysis?.risks, 8, 200) || fallbackRiskFactors,
+
         protectiveFactors: this.sanitizeStringArray(
           analysis?.protectiveFactors || analysis?.strengths, 8, 200
-        ) || [],
-        
-        overallRiskLevel: this.validateRiskLevel(analysis?.overallRiskLevel || analysis?.riskLevel) || 
+        ) || fallbackProtectiveFactors,
+
+        overallRiskLevel: this.validateRiskLevel(analysis?.overallRiskLevel || analysis?.riskLevel) ||
           this.calculateRiskFromAssessments(assessmentData),
-        
+
         confidenceLevel: this.validateConfidence(analysis?.confidenceLevel) || 0.75,
-        
-        supportiveMessage: this.sanitizeString(analysis?.supportiveMessage, 500) || 
-          'Understanding how mental health affects your daily life can help you recognize and validate your experiences.'
+
+        supportiveMessage: this.sanitizeString(analysis?.supportiveMessage, 500) ||
+          'Understanding how mental health affects your daily life can help you recognize and validate your experiences.',
+
+        // New comprehensive analysis fields
+        personalizedSummary: this.sanitizeString(analysis?.personalizedSummary, 1000),
+        patternsAndTriggers: this.sanitizeString(analysis?.patternsAndTriggers, 1000),
+        psychologicalFramework: this.sanitizeString(analysis?.psychologicalFramework, 1000),
+        strengthsAndProtectiveFactors: this.sanitizeString(analysis?.strengthsAndProtectiveFactors, 1000),
+        actionableSteps: this.sanitizeString(analysis?.actionableSteps, 1000),
+        severityGuidance: this.sanitizeString(analysis?.severityGuidance, 1000),
+        trendAnalysis: this.sanitizeString(analysis?.trendAnalysis, 1000),
+        personalizedRoadmap: this.sanitizeString(analysis?.personalizedRoadmap, 1000)
       }
   }
 
@@ -1469,6 +1522,99 @@ Please respond with a structured JSON object containing the requested analysis f
       console.error('Error checking if new holistic assessment needed:', error)
       return true
     }
+  }
+
+  /**
+   * Generate fallback executive summary based on assessment data
+   */
+  private static generateFallbackExecutiveSummary(assessmentData: OverallAssessmentData): string {
+    const assessmentCount = assessmentData.assessments.length
+    const highestScore = Math.max(...assessmentData.assessments.map(a => a.score))
+    const severities = assessmentData.assessments.map(a => a.severity)
+    const mostCommonSeverity = severities.reduce((a, b, i, arr) =>
+      arr.filter(v => v === a).length >= arr.filter(v => v === b).length ? a : b, severities[0])
+
+    return `Based on your ${assessmentCount} assessment${assessmentCount > 1 ? 's' : ''}, I've identified patterns that may be influencing your daily experiences. Your highest score was ${highestScore}, with ${mostCommonSeverity} being the most common severity level. This suggests there may be areas of mental health that could benefit from attention and support.`
+  }
+
+  /**
+   * Generate fallback manifestations based on assessment data
+   */
+  private static generateFallbackManifestations(assessmentData: OverallAssessmentData): string[] {
+    const severities = assessmentData.assessments.map(a => a.severity)
+    const manifestations: string[] = []
+
+    if (severities.includes('severe') || severities.includes('moderate')) {
+      manifestations.push("You might be experiencing more intense emotional reactions to daily stressors")
+      manifestations.push("You may find that your energy levels fluctuate more noticeably throughout the day")
+      manifestations.push("You might notice changes in your sleep patterns or quality")
+    }
+
+    if (assessmentData.assessments.some(a => a.assessmentId.includes('pcl5') || a.assessmentId.includes('ptsd'))) {
+      manifestations.push("You may be more sensitive to reminders of past experiences")
+      manifestations.push("You might find yourself avoiding certain situations or places")
+    }
+
+    if (assessmentData.assessments.some(a => a.assessmentId.includes('phq9') || a.assessmentId.includes('depression'))) {
+      manifestations.push("You might be experiencing changes in your motivation for daily activities")
+      manifestations.push("You may notice shifts in your appetite or eating patterns")
+    }
+
+    if (assessmentData.assessments.some(a => a.assessmentId.includes('gad7') || a.assessmentId.includes('anxiety'))) {
+      manifestations.push("You might feel more restless or have difficulty relaxing")
+      manifestations.push("You may experience physical tension or discomfort")
+    }
+
+    // Ensure we have at least 3 manifestations
+    while (manifestations.length < 3) {
+      manifestations.push("You might be experiencing subtle changes in your daily routines and habits")
+    }
+
+    return manifestations.slice(0, 5) // Return max 5
+  }
+
+  /**
+   * Generate fallback unconscious manifestations
+   */
+  private static generateFallbackUnconsciousManifestations(assessmentData: OverallAssessmentData): string[] {
+    return [
+      "You may find yourself avoiding reminders of past experiences, even if you're not consciously aware of doing so",
+      "You might be experiencing subtle shifts in your sleep patterns, such as difficulty falling asleep or staying asleep",
+      "You may notice changes in how you perceive time or how quickly days seem to pass",
+      "You might be making different choices in social situations without realizing why"
+    ].slice(0, 3) // Return max 3
+  }
+
+  /**
+   * Generate fallback risk factors
+   */
+  private static generateFallbackRiskFactors(assessmentData: OverallAssessmentData): string[] {
+    const riskFactors: string[] = []
+
+    if (assessmentData.assessments.length > 5) {
+      riskFactors.push("Multiple assessments suggest patterns that may need attention")
+    }
+
+    if (Math.max(...assessmentData.assessments.map(a => a.score)) > 30) {
+      riskFactors.push("High scores on assessments indicate areas that may benefit from professional support")
+    }
+
+    riskFactors.push("Stress from daily life experiences")
+    riskFactors.push("Changes in routine or environment")
+
+    return riskFactors.slice(0, 3)
+  }
+
+  /**
+   * Generate fallback protective factors
+   */
+  private static generateFallbackProtectiveFactors(assessmentData: OverallAssessmentData): string[] {
+    return [
+      "You've taken the important step of assessing your mental health",
+      "Regular self-reflection and awareness of your experiences",
+      "Access to mental health resources and support systems",
+      "Commitment to understanding and improving your well-being"
+    ].slice(0, 4)
   }
 }
 

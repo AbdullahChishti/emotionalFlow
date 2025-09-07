@@ -20,6 +20,14 @@ interface AssessmentData {
 }
 
 interface LifeImpactsResponse {
+  personalizedSummary: string
+  patternsAndTriggers: string
+  psychologicalFramework: string
+  strengthsAndProtectiveFactors: string
+  actionableSteps: string
+  severityGuidance: string
+  trendAnalysis: string
+  personalizedRoadmap: string
   manifestations: string[]  // Observable impacts on daily life
   unconsciousManifestations: string[]  // Subtle impacts user might not notice
   riskLevel: 'low' | 'moderate' | 'high' | 'critical'
@@ -186,7 +194,7 @@ Deno.serve(async (req) => {
     // Build prompt
     const prompt = buildAnalysisPrompt(assessmentData)
     console.log('[Edge:impacts] 🤖 Generated prompt length:', prompt.length)
-    console.log('[Edge:impacts] 📝 Prompt preview:', prompt.substring(0, 200) + '...')
+    console.log('[Edge:impacts] 📝 FULL PROMPT being sent to AI:', prompt)
 
     console.log('[Edge:impacts] 🚀 Calling OpenAI API...')
     // Call OpenAI
@@ -201,7 +209,7 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: "You are an AI trained to identify potential impacts of mental health challenges on daily life. Your role is to help users understand how their mental health might be affecting their day-to-day experiences.\n\nCORE PRINCIPLES:\n- Focus on potential manifestations and impacts, not advice or solutions\n- Use \"you might be\" or \"you may find\" language to acknowledge individual differences\n- Be specific about daily life situations and experiences\n- Describe observable impacts rather than clinical symptoms\n- Stay grounded in everyday experiences people can relate to\n- Never diagnose or make absolute statements\n- Be honest but sensitive about difficult topics\n- Focus on understanding, not fixing\n\nIMPACT AREAS TO CONSIDER:\n- Daily routines and activities\n- Work or study performance\n- Relationships and social interactions\n- Self-perception and confidence\n- Energy and motivation levels\n- Decision-making and planning\n- Enjoyment of activities\n- Sleep and rest patterns\n- Physical sensations\n- Future outlook\n\nFORMAT GUIDELINES:\n- Each impact should be a single, clear statement\n- Start with \"You might be\" or \"You may find\"\n- Focus on the experience, not the solution\n- Be specific and relatable\n- Avoid clinical terminology\n- Keep statements concise and clear\n\nExample impacts:\n- \"You might be finding it harder to enjoy activities you used to love\"\n- \"You may notice yourself avoiding social gatherings more than usual\"\n- \"You might be experiencing more difficulty making everyday decisions\"\n- \"You may find yourself feeling overwhelmed by tasks that used to feel manageable\"\n\nOutput a JSON object with:\n- manifestations: Array of observable daily life impacts (3-5 items)\n- unconsciousManifestations: Array of subtle impacts (2-3 items)\n- riskLevel: Overall risk assessment (\"low\", \"moderate\", \"high\", \"critical\")\n- confidenceLevel: Number between 0-1 indicating confidence in analysis"
+            content: "You are an expert mental health insights analyst. Your task is to provide deeply personalized, clinically-informed insights based on assessment data. You must create comprehensive, actionable analysis that helps users understand their mental health patterns and provides clear guidance.\n\n## ANALYSIS FRAMEWORK:\n\n### 1. PERSONALIZED SUMMARY (Plain Language)\nTranslate raw scores into compassionate, human-friendly reflections that validate experiences and normalize feelings.\n\n### 2. PATTERNS & TRIGGERS\nIdentify connections across different assessments and time periods. Look for:\n- Symptom clusters that occur together\n- Environmental or situational triggers\n- Temporal patterns (time of day, day of week)\n- Interrelationships between different mental health domains\n\n### 3. PSYCHOLOGICAL MODELS\nPlace findings in context using established frameworks:\n- **CBT Model**: Thoughts → Feelings → Behaviors\n- **Stress-Vulnerability Model**: How stress interacts with personal vulnerabilities\n- **Stages of Change Model**: Pre-contemplation, contemplation, preparation, action, maintenance\n\n### 4. STRENGTHS & PROTECTIVE FACTORS\nHighlight resilience and positive indicators:\n- Coping strategies that are working\n- Support systems and relationships\n- Personal strengths and resources\n- Protective factors that buffer against symptoms\n\n### 5. ACTIONABLE SELF-HELP STEPS\nProvide evidence-based, tailored coping strategies:\n- Mindfulness for rumination\n- Behavioral activation for low motivation\n- Sleep hygiene for insomnia\n- Social skills building for isolation\n- Stress management techniques\n\n### 6. SEVERITY GUIDANCE & ESCALATION\nClear, compassionate guidance on when and how to seek help:\n- Thresholds for professional consultation\n- Crisis intervention information\n- Treatment options based on symptom profile\n- Urgency levels for different concerns\n\n### 7. VISUAL/PATTERN INSIGHTS\nDescribe trends and changes over time:\n- Symptom trajectories\n- Improvement areas\n- Worsening patterns\n- Stable vs. fluctuating symptoms\n\n### 8. PERSONALIZED ROADMAP\nCreate a 3-5 step action plan that:\n- Builds sequentially on user's current situation\n- Addresses most impactful symptoms first\n- Incorporates user's identified strengths\n- Provides measurable goals\n\n## OUTPUT FORMAT:\nYou MUST return a valid JSON object with this exact structure:\n\n{\n  \"personalizedSummary\": \"string - compassionate, human-friendly reflection of overall mental health picture\",\n  \"patternsAndTriggers\": \"string - detailed analysis of symptom patterns and triggers across assessments\",\n  \"psychologicalFramework\": \"string - explanation using CBT, stress-vulnerability, or stages of change models\",\n  \"strengthsAndProtectiveFactors\": \"string - focus on resilience and positive aspects\",\n  \"actionableSteps\": \"string - 3-5 specific, evidence-based coping strategies\",\n  \"severityGuidance\": \"string - clear guidance on when to seek professional help\",\n  \"trendAnalysis\": \"string - description of changes over time and key patterns\",\n  \"personalizedRoadmap\": \"string - 3-5 step sequential action plan\",\n  \"manifestations\": [\"array of 3-5 observable daily life impacts\"],\n  \"unconsciousManifestations\": [\"array of 2-3 subtle impacts\"],\n  \"riskLevel\": \"low|moderate|high|critical\",\n  \"confidenceLevel\": \"number 0-1\"\n}\n\n## REQUIREMENTS:\n- Be specific and concrete, not vague\n- Use empathetic, validating language\n- Ground recommendations in the assessment data\n- Avoid medical advice or diagnosis\n- Focus on patterns and trends from the data\n- Provide hope and agency\n- Make recommendations actionable and realistic\n- Consider cultural and individual context\n\n## EXAMPLE STRUCTURE:\nThe analysis should read like a comprehensive mental health report written by an experienced therapist, providing both understanding and practical next steps."
           },
           { role: 'user', content: prompt }
         ],
@@ -302,26 +310,39 @@ Deno.serve(async (req) => {
       }
 
       // Parse and validate the content
+      console.log('[Edge:impacts] 📄 Raw AI content before parsing:', content)
+
       const impacts: LifeImpactsResponse = JSON.parse(content)
-      
+      console.log('[Edge:impacts] 🔍 Parsed AI response:', impacts)
+
       if (!Array.isArray(impacts.manifestations) || !Array.isArray(impacts.unconsciousManifestations)) {
         console.error('[Edge:impacts] Invalid response format:', impacts)
+        console.error('[Edge:impacts] Manifestations type:', typeof impacts.manifestations, 'Unconscious type:', typeof impacts.unconsciousManifestations)
         return new Response(
-          JSON.stringify({ 
+          JSON.stringify({
             error: 'Invalid response format',
             message: 'AI response did not match expected format',
+            rawContent: content,
+            parsedResponse: impacts,
             code: 'INVALID_FORMAT'
-          }), 
-          { 
-            status: 502, 
-            headers: { 
-              ...cors, 
+          }),
+          {
+            status: 502,
+            headers: {
+              ...cors,
               'Content-Type': 'application/json',
               'Cache-Control': 'no-store'
-            } 
+            }
           }
         )
       }
+
+      console.log('[Edge:impacts] ✅ Response validation passed:', {
+        manifestationsCount: impacts.manifestations.length,
+        unconsciousManifestationsCount: impacts.unconsciousManifestations.length,
+        riskLevel: impacts.riskLevel,
+        confidenceLevel: impacts.confidenceLevel
+      })
 
       // Return successful response
       return new Response(
@@ -398,6 +419,18 @@ Deno.serve(async (req) => {
 function buildAnalysisPrompt(assessmentData: AssessmentData): string {
   const { allAssessments, dateRange, summary } = assessmentData
 
+  console.log('[Edge:impacts] 📊 Building prompt with data:', {
+    assessmentTypes: Object.keys(allAssessments),
+    totalAssessmentTypes: Object.keys(allAssessments).length,
+    dateRange,
+    summary,
+    sampleAssessmentData: Object.entries(allAssessments).slice(0, 1).map(([type, assessments]) => ({
+      type,
+      count: assessments.length,
+      firstItem: assessments[0]
+    }))
+  })
+
   let prompt = "Please analyze the following assessment data to identify potential impacts on the person's daily life:\n\n" +
     "Assessment Overview:\n" +
     `- Time period: ${new Date(dateRange.earliest).toLocaleDateString()} to ${new Date(dateRange.latest).toLocaleDateString()}\n` +
@@ -407,10 +440,14 @@ function buildAnalysisPrompt(assessmentData: AssessmentData): string {
 
   // Add each assessment's details - allAssessments is Record<string, any[]> so data is an array
   Object.entries(allAssessments).forEach(([assessmentId, assessments]) => {
+    console.log(`[Edge:impacts] 🔍 Processing assessment type: ${assessmentId}, count: ${assessments.length}`)
+
     if (Array.isArray(assessments) && assessments.length > 0) {
       // Use the first assessment to get the title, or fall back to formatted ID
       const assessmentTitle = assessments[0]?.assessment?.title ||
                               assessmentId.toUpperCase().replace(/[_-]/g, ' ')
+
+      console.log(`[Edge:impacts] 📋 Assessment title: "${assessmentTitle}" from data:`, assessments[0])
 
       prompt += `${assessmentTitle}:\n`
       prompt += `- Number of assessments: ${assessments.length}\n`
@@ -434,6 +471,8 @@ function buildAnalysisPrompt(assessmentData: AssessmentData): string {
       }
 
       prompt += '\n'
+    } else {
+      console.log(`[Edge:impacts] ⚠️ Skipping ${assessmentId}: not an array or empty`)
     }
   })
 

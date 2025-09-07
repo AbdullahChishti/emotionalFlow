@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/stores/authStore'
 import { getAIAssessmentExplanation, AssessmentData, AIExplanation } from '../../lib/assessment-ai'
 import { useEffect, useState, memo, useMemo } from 'react'
@@ -55,15 +56,15 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-white to-slate-50/50 rounded-3xl shadow-sm border border-slate-200/60 p-8"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-xl border border-slate-200 p-6"
     >
       <div className="text-center">
         {/* Circular progress meter */}
-        <div className="relative w-40 h-40 mx-auto mb-6">
-          <svg width="160" height="160" viewBox="0 0 160 160" className="rotate-[-90deg]">
+        <div className="relative w-28 h-28 mx-auto mb-4">
+          <svg width="112" height="112" viewBox="0 0 160 160" className="rotate-[-90deg]">
             <circle cx="80" cy="80" r={r} stroke="#e2e8f0" strokeWidth="8" fill="none" />
             <circle
               cx="80" cy="80" r={r}
@@ -73,22 +74,22 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
               strokeDasharray={`${c} ${c}`}
               strokeDashoffset={`${c - (pct / 100) * c}`}
               fill="none"
-              className="transition-all duration-1000 ease-out"
+              className="transition-all duration-700 ease-out"
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-3xl font-light text-slate-800">{score}</div>
-            <div className="text-sm text-slate-500 font-light">/ {max}</div>
+            <div className="text-2xl font-medium text-slate-800">{score}</div>
+            <div className="text-xs text-slate-500">/ {max}</div>
           </div>
         </div>
 
         {/* Score details */}
-        <div className="space-y-3">
-          <div className="text-sm text-slate-500 font-light">Overall Score</div>
-          <div className="text-4xl font-light text-slate-800">{pct}%</div>
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
-            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: stroke }} />
-            <span className="text-sm font-light text-slate-700">{result.level}</span>
+        <div className="space-y-2">
+          <div className="text-xs text-slate-500">Overall Score</div>
+          <div className="text-2xl font-semibold text-slate-800">{pct}%</div>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200">
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stroke }} />
+            <span className="text-xs text-slate-700">{result.level}</span>
           </div>
         </div>
       </div>
@@ -218,27 +219,14 @@ AIInsights.displayName = 'AIInsights'
 
 // Action Buttons Component
 const ActionButtons = memo(({ onRetake, onContinue }: { onRetake: () => void, onContinue: () => void }) => (
-  <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-    <motion.button
-      onClick={onRetake}
-      className="px-6 py-3 bg-white/80 text-zinc-700 border border-zinc-300 rounded-xl hover:bg-zinc-50 transition-all duration-300 font-semibold"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      Retake Assessment
-    </motion.button>
-    <motion.button
-      onClick={onContinue}
-      className="px-6 py-3 bg-brand-green-700 text-white rounded-xl hover:bg-brand-green-800 transition-all duration-300 font-semibold shadow-md"
-      style={{
-        backgroundColor: '#1f3d42',
-        color: '#ffffff'
-      }}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      Continue to Dashboard
-    </motion.button>
+  <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+    <Button variant="outline" size="md" className="px-5" onClick={onRetake}>
+      Retake
+    </Button>
+    <Button variant="primary" size="md" className="px-5 gap-1" onClick={onContinue}>
+      Continue
+      <span className="material-symbols-outlined text-sm">arrow_forward</span>
+    </Button>
   </div>
 ))
 
@@ -563,6 +551,145 @@ export default function AssessmentResults({
     )
   }
 
+
+  // Minimal, modern full-view
+  if (variant === 'full') {
+    return (
+      <div className="bg-white min-h-screen">
+        <div className="container mx-auto px-6 py-8 max-w-5xl">
+          {/* Minimal header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="min-w-0">
+              <h1 className="text-lg font-medium text-slate-900 truncate">{assessment.shortTitle || assessment.title}</h1>
+              <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-slate-200 bg-white">
+                  <span className="material-symbols-outlined text-[14px] text-slate-600">category</span>
+                  {assessment.category}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-slate-200 bg-white">
+                  Level: {result.level}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-slate-200 bg-white capitalize">
+                  Severity: {result.severity}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Top grid: score and summary */}
+          <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <ScoreCard assessment={assessment} result={result} />
+            </div>
+            <div className="md:col-span-2">
+              <div className="rounded-lg border border-slate-200 p-5 bg-white">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">lightbulb</span>
+                  Summary
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">{(aiExplanation && aiExplanation.summary) || result.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Details list */}
+          <div className="grid md:grid-cols-2 gap-6">
+            {result.insights && result.insights.length > 0 && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">lightbulb</span>
+                  Key Insights
+                </div>
+                <ul className="space-y-2">
+                  {result.insights.map((insight: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{insight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.nextSteps && result.nextSteps.length > 0 && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">flag</span>
+                  Next Steps
+                </div>
+                <ul className="space-y-2">
+                  {result.nextSteps.map((step: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {(aiExplanation || result.description) && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white md:col-span-2">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">psychology</span>
+                  {aiExplanation ? 'AI-Generated Explanation' : 'Assessment Explanation'}
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">{aiExplanation?.whatItMeans || result.description}</p>
+              </div>
+            )}
+
+            {aiExplanation && aiExplanation.whyItMatters && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white md:col-span-2">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">sentiment_satisfied</span>
+                  Why this matters
+                </div>
+                <p className="text-slate-600 text-sm leading-relaxed">{aiExplanation.whyItMatters}</p>
+              </div>
+            )}
+
+            {((aiExplanation?.manifestations && aiExplanation.manifestations.length > 0) || (result.manifestations && result.manifestations.length > 0)) && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white md:col-span-2">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">visibility</span>
+                  How these symptoms might show up
+                </div>
+                <ul className="space-y-2">
+                  {(aiExplanation?.manifestations || result.manifestations || []).map((item: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {((aiExplanation?.unconsciousManifestations && aiExplanation.unconsciousManifestations.length > 0) || (result.unconsciousManifestations && result.unconsciousManifestations.length > 0)) && (
+              <div className="rounded-lg border border-slate-200 p-5 bg-white md:col-span-2">
+                <div className="flex items-center gap-2 mb-2 text-slate-800 text-sm">
+                  <span className="material-symbols-outlined text-base text-slate-600">psychology_alt</span>
+                  Unconscious patterns that may show up
+                </div>
+                <ul className="space-y-2">
+                  {(aiExplanation?.unconsciousManifestations || result.unconsciousManifestations || []).map((item: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2 text-slate-600 text-sm">
+                      <span className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="md:col-span-2">
+              <ActionButtons onRetake={onRetake} onContinue={onContinue} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">

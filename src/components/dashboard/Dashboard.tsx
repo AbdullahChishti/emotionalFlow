@@ -10,6 +10,7 @@ import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/Assess
 import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
 import { OverallAssessmentService, OverallAssessmentResult } from '@/lib/services/OverallAssessmentService'
 import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
+import AssessmentSection from '@/components/dashboard/AssessmentSection'
 
 // Extended type to support error states
 interface ExtendedOverallAssessmentResult extends OverallAssessmentResult {
@@ -325,9 +326,19 @@ export function Dashboard() {
 
   // COMPREHENSIVE HISTORICAL ANALYSIS - Enhanced with detailed logging
   const handleGenerateOverallAssessment = useCallback(async () => {
+    // Log the button click and input parameters
+    console.log('🔘 [ANALYZE COMPLETE HISTORY BUTTON] Clicked!')
+    console.log('📥 [BUTTON INPUT] User object:', {
+      id: user?.id,
+      email: user?.email,
+      hasUserData: !!user,
+      userType: typeof user
+    })
+
     // Guard clauses - prevent execution in invalid states
     if (!user?.id) {
       logger.warn('Life impact analysis called without valid user')
+      console.log('❌ [BUTTON GUARD] No valid user ID, returning early')
       return
     }
 
@@ -552,6 +563,35 @@ export function Dashboard() {
         updatedAt: result.updatedAt
       })
 
+      // Log the COMPLETE return value from the Analyze Complete History button
+      console.log('🎯 [ANALYZE COMPLETE HISTORY BUTTON RETURN VALUE]:', {
+        fullResult: result,
+        assessmentData: {
+          userId: result.assessmentData?.userId,
+          assessmentCount: result.assessmentData?.assessmentCount,
+          totalScore: result.assessmentData?.totalScore,
+          averageScore: result.assessmentData?.averageScore,
+          dateRange: result.assessmentData?.dateRange
+        },
+        holisticAnalysis: {
+          executiveSummary: result.holisticAnalysis?.executiveSummary,
+          manifestations: result.holisticAnalysis?.manifestations,
+          unconsciousManifestations: result.holisticAnalysis?.unconsciousManifestations,
+          riskFactors: result.holisticAnalysis?.riskFactors,
+          protectiveFactors: result.holisticAnalysis?.protectiveFactors,
+          overallRiskLevel: result.holisticAnalysis?.overallRiskLevel,
+          confidenceLevel: result.holisticAnalysis?.confidenceLevel,
+          supportiveMessage: result.holisticAnalysis?.supportiveMessage
+        },
+        metadata: {
+          createdAt: result.createdAt,
+          updatedAt: result.updatedAt,
+          isError: result.isError,
+          errorType: result.errorType,
+          canRetry: result.canRetry
+        }
+      })
+
       // Log detailed AI insights
       if (result.holisticAnalysis) {
         console.log('🧠 [COMPREHENSIVE ANALYSIS] AI Insights:', {
@@ -560,7 +600,16 @@ export function Dashboard() {
           unconsciousManifestations: result.holisticAnalysis.unconsciousManifestations,
           riskFactors: result.holisticAnalysis.riskFactors,
           protectiveFactors: result.holisticAnalysis.protectiveFactors,
-          supportiveMessage: result.holisticAnalysis.supportiveMessage
+          supportiveMessage: result.holisticAnalysis.supportiveMessage,
+          // New comprehensive fields
+          personalizedSummary: result.holisticAnalysis.personalizedSummary?.substring(0, 200) + '...',
+          patternsAndTriggers: result.holisticAnalysis.patternsAndTriggers?.substring(0, 200) + '...',
+          psychologicalFramework: result.holisticAnalysis.psychologicalFramework?.substring(0, 200) + '...',
+          strengthsAndProtectiveFactors: result.holisticAnalysis.strengthsAndProtectiveFactors?.substring(0, 200) + '...',
+          actionableSteps: result.holisticAnalysis.actionableSteps?.substring(0, 200) + '...',
+          severityGuidance: result.holisticAnalysis.severityGuidance?.substring(0, 200) + '...',
+          trendAnalysis: result.holisticAnalysis.trendAnalysis?.substring(0, 200) + '...',
+          personalizedRoadmap: result.holisticAnalysis.personalizedRoadmap?.substring(0, 200) + '...'
         })
       }
 
@@ -572,6 +621,20 @@ export function Dashboard() {
 
       // Brief delay to show completion
       setTimeout(() => {
+        console.log('📤 [FINAL BUTTON RETURN] Setting result in UI state:', {
+          resultToUI: result,
+          resultType: typeof result,
+          hasHolisticAnalysis: !!result.holisticAnalysis,
+          assessmentCount: result.assessmentData?.assessmentCount,
+          riskLevel: result.holisticAnalysis?.overallRiskLevel,
+          // Check for new comprehensive fields
+          hasPersonalizedSummary: !!result.holisticAnalysis?.personalizedSummary,
+          hasPatternsAndTriggers: !!result.holisticAnalysis?.patternsAndTriggers,
+          hasPsychologicalFramework: !!result.holisticAnalysis?.psychologicalFramework,
+          hasActionableSteps: !!result.holisticAnalysis?.actionableSteps,
+          hasPersonalizedRoadmap: !!result.holisticAnalysis?.personalizedRoadmap
+        })
+
         setOverallAssessment(result)
         setIsGeneratingOverall(false)
         setIsAutoLoading(false) // Reset auto-loading state
@@ -1082,25 +1145,36 @@ export function Dashboard() {
     }
   }, [])
 
-  // Utility functions
-  const getGreeting = useCallback(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 17) return 'Good afternoon'
-    return 'Good evening'
-  }, [])
 
 
-  // Map level bands to badge styles (only low/mild/high are colored)
-  const getLevelBadgeClasses = useCallback((level: string) => {
-    const map: Record<string, string> = {
+  // Map level bands to badge styles, with domain-aware polarity
+  // Negative-risk domains: anxiety, depression, stress, trauma_exposure
+  // Positive-wellness domains: wellbeing, resilience (invert colors)
+  const getLevelBadgeClasses = useCallback((domainOrLevel: string, maybeLevel?: string) => {
+    const domain = (maybeLevel ? domainOrLevel : '').toLowerCase()
+    const level = (maybeLevel ? maybeLevel : domainOrLevel)?.toLowerCase()
+
+    const negativeMap: Record<string, string> = {
       low: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
       mild: 'text-amber-700 bg-amber-50 border border-amber-200',
+      moderate: 'text-orange-700 bg-orange-50 border border-orange-200',
       high: 'text-rose-700 bg-rose-50 border border-rose-200',
-      moderate: 'text-slate-700 bg-slate-50 border border-slate-200',
-      critical: 'text-slate-700 bg-slate-50 border border-slate-200'
+      critical: 'text-red-700 bg-red-50 border border-red-200'
     }
-    return map[level?.toLowerCase()] || map.moderate
+
+    const positiveMap: Record<string, string> = {
+      // Inverted: low wellbeing/resilience = red, high = green
+      low: 'text-rose-700 bg-rose-50 border border-rose-200',
+      mild: 'text-amber-700 bg-amber-50 border border-amber-200',
+      moderate: 'text-orange-700 bg-orange-50 border border-orange-200',
+      high: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
+      very_high: 'text-emerald-800 bg-emerald-50 border border-emerald-200',
+      critical: 'text-red-700 bg-red-50 border border-red-200'
+    }
+
+    const isPositive = ['wellbeing', 'resilience'].includes(domain)
+    const palette = isPositive ? positiveMap : negativeMap
+    return palette[level] || 'text-slate-700 bg-slate-50 border border-slate-200'
   }, [])
 
   // Stronger border + shadow for wellness dimension pills
@@ -1190,6 +1264,22 @@ export function Dashboard() {
       default: return key
     }
   }
+
+  const titleCase = useCallback((s: string) => s
+    ?.replace(/_/g, ' ')
+    ?.toLowerCase()
+    ?.replace(/\b\w/g, c => c.toUpperCase()) || '', [])
+
+  // Evidence strings look like: "PHQ-9:10/27"; parse into pieces for tooltip
+  const parseEvidence = useCallback((ev?: string) => {
+    if (!ev) return null
+    const [name, scorePart] = ev.split(':')
+    if (!scorePart) return { name: ev }
+    const [scoreStr, maxStr] = scorePart.split('/')
+    const score = Number(scoreStr)
+    const max = Number(maxStr)
+    return { name, score: isNaN(score) ? undefined : score, max: isNaN(max) ? undefined : max }
+  }, [])
 
   const renderHeroSection = () => (
     <div className="relative overflow-hidden">
@@ -1310,14 +1400,28 @@ export function Dashboard() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
-                    className="group relative overflow-hidden"
+                    className="group relative overflow-visible"
                   >
                     <div className={`inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/95 backdrop-blur-sm border ${getPillClasses()} transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-200/60 focus:ring-offset-2`}>
-                       <span className="text-sm text-slate-700 font-medium">{keyLabel(d.key)}</span>
-                      <span className={`text-xs px-3 py-1 rounded-full font-medium transition-colors duration-300 ${getLevelBadgeClasses(d.level)}`}>
-                        {d.level}
+                       <span className="text-sm text-slate-700 font-medium flex items-center gap-1">
+                         {keyLabel(d.key)}
+                         <a href="/help#bands" className="opacity-60 hover:opacity-100" aria-label="Band definitions" title="Band definitions">
+                           <span className="material-symbols-outlined text-[16px] align-middle">info</span>
+                         </a>
+                       </span>
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium transition-colors duration-300 ${getLevelBadgeClasses(d.key, d.level)}`} title={`${titleCase(d.level)}`}>
+                        {titleCase(d.level)}
                       </span>
                     </div>
+
+                    {/* Tooltip */}
+                    {d.evidence?.[0] && (
+                      <div className="absolute left-1/2 top-full mt-2 -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-200">
+                        <div className="px-3 py-2 text-[12px] rounded-xl bg-white/95 border border-slate-200 shadow-lg text-slate-700 whitespace-nowrap">
+                          {(() => { const e = parseEvidence(d.evidence?.[0]); return e ? `${e.name}${e.score !== undefined ? ` • ${e.score}${e.max?`/${e.max}`:''}`:''}` : '' })()}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 ))}
             </motion.div>
@@ -1794,146 +1898,8 @@ export function Dashboard() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                {/* Greeting Section */}
-                <div className="text-center mb-8">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-blue-100">
-                    <span className="material-symbols-outlined text-blue-600 text-2xl">wb_sunny</span>
-                  </div>
-                  <div className="space-y-3">
-                    <h2 className="text-xl font-medium text-slate-800 leading-tight">
-                      {getGreeting()}, {profile.display_name?.split(' ')[0] || 'there'}
-                    </h2>
-                  </div>
-                </div>
-
-                {/* Elegant Divider */}
-                <div className="flex items-center mb-8">
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-                  <div className="px-4">
-                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl flex items-center justify-center shadow-sm border border-emerald-100">
-                      <span className="material-symbols-outlined text-emerald-600 text-base">assignment_turned_in</span>
-                    </div>
-                  </div>
-                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-                </div>
-
-                {/* Assessments Section */}
-                <div>
-                  <div className="text-center mb-8">
-                    <div className="text-xl font-medium text-slate-800 mb-2">Your Wellness Assessments</div>
-                    <div className="text-sm font-light text-slate-500">Discover insights about your mental health</div>
-                  </div>
-
-                  {/* Progress Overview */}
-                  <div className="mb-8 p-6 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-sm font-semibold text-slate-800">Assessment Progress</h3>
-                        <p className="text-xs text-slate-500 mt-1">Track your mental health journey</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-slate-800">
-                          {coverage.assessed.length + coverage.stale.length}<span className="text-lg font-normal text-slate-500">/{Object.keys(ASSESSMENTS).length}</span>
-                        </div>
-                        <div className="text-xs text-slate-500">completed</div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex justify-between text-xs text-slate-600">
-                        <span>Progress</span>
-                        <span>{Math.round(((coverage.assessed.length + coverage.stale.length) / Object.keys(ASSESSMENTS).length) * 100)}%</span>
-                      </div>
-                      <div className="w-full bg-slate-200 rounded-full h-3">
-                        <div
-                          className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-3 rounded-full transition-all duration-700 ease-out"
-                          style={{ width: `${((coverage.assessed.length + coverage.stale.length) / Object.keys(ASSESSMENTS).length) * 100}%` }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Completed Assessments Section */}
-                  {(coverage.assessed.length > 0 || coverage.stale.length > 0) && (
-                    <div className="mb-8">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-emerald-800">Completed Assessments</h4>
-                        <span className="text-sm text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full font-medium">
-                          {coverage.assessed.length + coverage.stale.length} completed
-                        </span>
-                      </div>
-
-                      <div className="space-y-4">
-                        {coverage.assessed.map(id => (
-                          <div key={`completed-${id}`} className="p-5 rounded-xl bg-gradient-to-r from-emerald-50/30 to-white border border-emerald-100 hover:border-emerald-200 hover:shadow-md transition-all duration-300 cursor-pointer">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                <span className="inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-100 px-2 py-1 rounded-full">
-                                  ✓ Completed - Recent
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        {coverage.stale.map(id => (
-                          <div key={`stale-${id}`} className="p-5 rounded-xl bg-gradient-to-r from-amber-50/30 to-white border border-amber-100 hover:border-amber-200 hover:shadow-md transition-all duration-300 cursor-pointer">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                <span className="inline-flex items-center text-xs font-medium text-amber-700 bg-amber-100 px-2 py-1 rounded-full">
-                                  Update needed - Old
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Available Assessments Section */}
-                  {coverage.missing.length > 0 && (
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-slate-700">Available Assessments</h4>
-                        <span className="text-sm text-slate-500 bg-slate-100 px-3 py-1 rounded-full font-medium">
-                          {coverage.missing.length} remaining
-                        </span>
-                      </div>
-
-                      <div className="space-y-4">
-                        {coverage.missing.map(id => (
-                          <div key={`available-${id}`} className="p-5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-pointer">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h5 className="text-base font-semibold text-slate-800 mb-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</h5>
-                                <p className="text-sm text-slate-600 mb-2">{ASSESSMENTS[id]?.title || 'Mental Health Assessment'}</p>
-                                <span className="inline-flex items-center text-xs font-medium text-slate-600 bg-slate-100 px-2 py-1 rounded-full">
-                                  Available - Take now
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Empty State */}
-                  {coverage.assessed.length === 0 && coverage.stale.length === 0 && coverage.missing.length === 0 && (
-                    <div className="text-center py-16 px-6">
-                      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <span className="material-symbols-outlined text-slate-400 text-3xl">assignment</span>
-                      </div>
-                      <h4 className="text-lg font-semibold text-slate-800 mb-2">No Assessments Available</h4>
-                      <p className="text-sm text-slate-500">Check back later for new mental health assessments</p>
-                    </div>
-                  )}
-                </div>
+                {/* Assessments Section (minimal, modern) */}
+                <AssessmentSection coverage={coverage} className="mt-2" />
               </motion.div>
             </div>
           </div>

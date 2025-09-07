@@ -25,56 +25,56 @@ function SessionItem({ session, isListener }: SessionItemProps) {
   const rating = isListener ? session.listener_rating : session.speaker_rating
 
   return (
-    <div className="flex items-start space-x-4 p-4 rounded-2xl hover:bg-muted/50 transition-colors">
+    <div className="flex items-start gap-3 p-3 hover:bg-muted/40 transition-colors">
       <div className={cn(
-        "w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center",
+        "w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center",
         isListener ? 'bg-green-500/10 text-green-500' : 'bg-blue-500/10 text-blue-500'
       )}>
-        {isListener ? <Ear className="w-5 h-5" /> : <Heart className="w-5 h-5" />}
+        {isListener ? <Ear className="w-4 h-4" /> : <Heart className="w-4 h-4" />}
       </div>
       
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-semibold text-foreground">
+            <h4 className="text-[13px] font-medium text-foreground">
               {isListener ? 'Listened to someone' : 'Received support'}
             </h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {session.session_type} mode • {isListener ? session.speaker?.display_name : session.listener?.display_name || 'Anonymous'}
             </p>
           </div>
           <div className="text-right flex-shrink-0 ml-4">
-            <div className="text-xs text-muted-foreground">
+            <div className="text-[11px] text-muted-foreground">
               {formatDistanceToNow(new Date(session.created_at), { addSuffix: true })}
             </div>
           </div>
         </div>
         
-        <div className="flex items-center justify-between mt-2 text-sm">
-          <div className="flex items-center space-x-4 text-muted-foreground">
+        <div className="flex items-center justify-between mt-1 text-[13px]">
+          <div className="flex items-center gap-3 text-muted-foreground">
             {session.duration_minutes > 0 && (
-              <span className="flex items-center space-x-1.5">
-                <Clock className="w-4 h-4" />
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
                 <span>{formatDuration(session.duration_minutes)}</span>
               </span>
             )}
             
             <span className={cn(
-              "font-medium flex items-center space-x-1.5",
+              "font-medium flex items-center gap-1.5",
               isListener ? 'text-green-500' : 'text-blue-500'
             )}>
-              {isListener ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+              {isListener ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
               <span>{isListener ? '+' : '-'}{session.credits_transferred} credits</span>
             </span>
           </div>
           
           {rating && (
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-0.5">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
                   className={cn(
-                    "w-4 h-4",
+                    "w-3.5 h-3.5",
                     i < rating ? 'text-yellow-400 fill-current' : 'text-muted-foreground/30'
                   )}
                 />
@@ -115,7 +115,7 @@ export function RecentActivity({ sessions, userId }: RecentActivityProps) {
         <CardTitle>Recent Activity</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="rounded-lg border border-slate-200/60 bg-white/50 divide-y divide-slate-100 overflow-hidden">
           {sessions.map((session) => (
             <SessionItem 
               key={session.id} 
@@ -124,9 +124,9 @@ export function RecentActivity({ sessions, userId }: RecentActivityProps) {
             />
           ))}
         </div>
-        <div className="mt-6 text-center">
-          <button className="text-sm font-medium text-primary hover:underline">
-            View All Activity
+        <div className="mt-4 text-center">
+          <button className="text-xs font-medium text-primary hover:underline">
+            View all activity
           </button>
         </div>
       </CardContent>
