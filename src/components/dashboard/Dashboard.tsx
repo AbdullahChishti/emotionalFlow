@@ -1824,34 +1824,54 @@ export function Dashboard() {
                     <div className="text-sm font-light text-slate-500">Track your wellness journey</div>
                   </div>
 
-                  <div className="space-y-4">
-                    {coverage.assessed.map(id => (
-                      <div key={`ok-${id}`} className="group flex items-center gap-4 px-5 py-4 rounded-xl bg-white border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm bg-emerald-600">
-                          <span className="material-symbols-outlined text-white text-base">check</span>
-                        </div>
-                        <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                  {/* Completed Assessments */}
+                  {(coverage.assessed.length > 0 || coverage.stale.length > 0) && (
+                    <div className="mb-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
+                        <span className="text-sm font-medium text-slate-700">Completed Assessments</span>
                       </div>
-                    ))}
+                      <div className="space-y-3">
+                        {coverage.assessed.map(id => (
+                          <div key={`completed-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-emerald-50/50 border border-emerald-100 hover:bg-emerald-50 transition-all duration-200 cursor-pointer">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-emerald-600">
+                              <span className="material-symbols-outlined text-white text-sm">check</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                          </div>
+                        ))}
 
-                    {coverage.stale.map(id => (
-                      <div key={`stale-${id}`} className="group flex items-center gap-4 px-5 py-4 rounded-xl bg-white border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm" style={{ backgroundColor: '#B45309' }}>
-                          <span className="material-symbols-outlined text-white text-base">schedule</span>
-                        </div>
-                        <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                        {coverage.stale.map(id => (
+                          <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-amber-50/50 border border-amber-100 hover:bg-amber-50 transition-all duration-200 cursor-pointer">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-amber-600">
+                              <span className="material-symbols-outlined text-white text-sm">schedule</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                  )}
 
-                    {coverage.missing.map(id => (
-                      <div key={`miss-${id}`} className="group flex items-center gap-4 px-5 py-4 rounded-xl bg-white border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-                        <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm" style={{ backgroundColor: '#9CA3AF' }}>
-                          <span className="material-symbols-outlined text-slate-600 text-base">radio_button_unchecked</span>
-                        </div>
-                        <span className="text-sm font-medium text-slate-600 group-hover:text-slate-700">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                  {/* Available Assessments */}
+                  {coverage.missing.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="material-symbols-outlined text-slate-400 text-base">radio_button_unchecked</span>
+                        <span className="text-sm font-medium text-slate-600">Available Assessments</span>
                       </div>
-                    ))}
-                  </div>
+                      <div className="space-y-3">
+                        {coverage.missing.map(id => (
+                          <div key={`available-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-slate-50/50 border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-slate-300">
+                              <span className="material-symbols-outlined text-slate-500 text-sm">radio_button_unchecked</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-700">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>
