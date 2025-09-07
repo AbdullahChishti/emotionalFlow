@@ -1729,41 +1729,6 @@ export function Dashboard() {
 
 
 
-          {/* Empty state if no assessments */}
-          {!hasAssessmentData && (
-            <motion.div
-              className="max-w-3xl mx-auto text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <div className="bg-white border border-slate-200/40 rounded-3xl p-10 shadow-3xl shadow-slate-900/35">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <span className="material-symbols-outlined text-blue-600 text-2xl">self_care</span>
-                </div>
-                <h3 className="text-2xl font-light text-slate-800 mb-4">Let's begin your wellness journey</h3>
-                <p className="text-slate-600 text-lg mb-8 font-light max-w-lg mx-auto leading-relaxed">Take a moment to check in with yourself. A brief assessment helps us understand how you're feeling today.</p>
-                {/* Primary button */}
-                <button
-                  onClick={() => handleNavigate('/assessments')}
-                  className="inline-flex items-center px-5 py-3 rounded-3xl text-white font-semibold transition-all duration-300 ease-out text-base focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border border-emerald-500/20"
-                  style={{
-                    backgroundColor: '#059669',
-                    boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
-                    minHeight: '44px'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
-                  onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#065f46'}
-                  onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#047857'}
-                >
-                  <span className="material-symbols-outlined mr-3 text-xl">psychology</span>
-                  Begin assessment
-                </button>
-                <p className="text-slate-500 text-sm mt-4 font-light">Takes about 3-5 minutes</p>
-              </div>
-            </motion.div>
-          )}
 
           {/* Recent assessments removed for declutter */}
 
