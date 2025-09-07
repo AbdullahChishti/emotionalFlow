@@ -1,9 +1,10 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '@/stores/authStore'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { Navigation } from '@/components/ui/Navigation'
 import { usePathname } from 'next/navigation'
+import { handleSignOutError } from '@/lib/utils/authRedirects'
 // Database connection testing removed - handled by AssessmentManager
 
 interface AuthenticatedLayoutProps {
@@ -11,7 +12,7 @@ interface AuthenticatedLayoutProps {
 }
 
 export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
-  const { user, signOut } = useAuth()
+  const { user, signOut } = useAuthContext()
   const pathname = usePathname()
   const [currentPage, setCurrentPage] = useState('dashboard')
 
@@ -19,13 +20,13 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   React.useEffect(() => {
     if (pathname.includes('/dashboard')) setCurrentPage('dashboard')
     else if (pathname.includes('/assessments')) setCurrentPage('assessments')
+    else if (pathname.includes('/session') || pathname.includes('/meditation') || pathname.includes('/crisis-support')) {
+      setCurrentPage('therapy')
+    }
     else if (pathname.includes('/profile')) setCurrentPage('profile')
-    else if (pathname.includes('/session')) setCurrentPage('session')
     else if (pathname.includes('/wallet')) setCurrentPage('wallet')
     else if (pathname.includes('/check-in')) setCurrentPage('check-in')
-    else if (pathname.includes('/crisis-support')) setCurrentPage('crisis-support')
     else if (pathname.includes('/help')) setCurrentPage('help')
-    else if (pathname.includes('/wellness')) setCurrentPage('wellness')
     else if (pathname.includes('/community')) setCurrentPage('community')
   }, [pathname])
 
@@ -41,7 +42,17 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
         currentPage={currentPage}
         onPageChange={handleNavigation}
         user={user}
-        onSignOut={signOut}
+        onSignOut={async () => {
+          try {
+            console.log('🚪 [AUTH_LAYOUT_SIGN_OUT] AuthenticatedLayout: Calling unified sign out')
+            await signOut()
+            // AuthManager handles the redirect
+          } catch (error) {
+            console.error('❌ [AUTH_LAYOUT_SIGN_OUT_ERROR] AuthenticatedLayout: Sign out failed:', error)
+            // Fallback to redirect if sign out fails
+            handleSignOutError(error instanceof Error ? error.message : 'Unknown error')
+          }
+        }}
       />
 
       {/* Main Content Area (offset for fixed header) */}

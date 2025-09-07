@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import { AUTH_ROUTES, AUTH_REDIRECTS } from '@/lib/constants/auth'
 
 export async function middleware(request: NextRequest) {
   const res = NextResponse.next()
@@ -37,29 +38,9 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl
 
-  // Define protected routes
-  const protectedRoutes = [
-    '/dashboard',
-    '/assessments',
-    '/profile',
-    '/results',
-    '/session',
-    '/wallet',
-    '/check-in',
-    '/crisis-support',
-    '/help',
-    '/wellness',
-    '/community',
-    '/meditation',
-    '/test-chat'
-  ]
-
-  // Define public routes that authenticated users should be redirected from
-  const authRoutes = [
-    '/login',
-    '/signup',
-    '/auth/callback'
-  ]
+  // Use centralized route definitions
+  const protectedRoutes = AUTH_ROUTES.PROTECTED
+  const authRoutes = AUTH_ROUTES.PUBLIC_ONLY
 
   // Check if current path is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
@@ -69,15 +50,15 @@ export async function middleware(request: NextRequest) {
 
   // If user is not authenticated and trying to access protected route
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/login', request.url)
+    const loginUrl = new URL(AUTH_REDIRECTS.LOGIN, request.url)
     // Add the current path as a redirect parameter
-    loginUrl.searchParams.set('redirect', pathname)
+    loginUrl.searchParams.set(AUTH_REDIRECTS.REDIRECT_PARAM, pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   // If user is authenticated and trying to access auth routes (except callback)
   if (isAuthRoute && session && !pathname.includes('/auth/callback')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    return NextResponse.redirect(new URL(AUTH_REDIRECTS.DASHBOARD, request.url))
   }
 
   return res

@@ -3,7 +3,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { AuthUtils } from '@/lib/auth-utils'
+import { authManager } from '@/lib/services/AuthManager'
 
 interface AuthErrorBoundaryState {
   hasError: boolean
@@ -57,9 +57,16 @@ export class AuthErrorBoundary extends React.Component<AuthErrorBoundaryProps, A
 
   handleSignOut = async () => {
     try {
-      await AuthUtils.secureLogout('/')
+      console.log('🚪 [AUTH_ERROR_BOUNDARY] Signing out due to auth error')
+      const result = await authManager.signOut()
+      if (!result.success) {
+        console.error('❌ [AUTH_ERROR_BOUNDARY] Sign out failed:', result.error)
+        // Force redirect to home if sign out fails
+        window.location.href = '/'
+      }
     } catch (error) {
-      // Force logout even if secure logout fails
+      console.error('❌ [AUTH_ERROR_BOUNDARY] Sign out exception:', error)
+      // Force redirect even if sign out fails
       window.location.href = '/'
     }
   }
@@ -181,7 +188,7 @@ function DefaultAuthErrorFallback({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onRetry}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+                className="w-full bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 border border-emerald-500/20"
               >
                 Try Again
               </motion.button>

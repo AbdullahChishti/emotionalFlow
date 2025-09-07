@@ -39,6 +39,9 @@ export interface AssessmentContext {
 }
 
 export class AssessmentManager {
+  // Request deduplication cache
+  private static activeRequests = new Map<string, Promise<AssessmentHistoryEntry[]>>()
+
   // ==================== DATABASE OPERATIONS ====================
 
   /**
@@ -177,9 +180,34 @@ export class AssessmentManager {
   }
 
   /**
-   * Get user's assessment history
+   * Get user's assessment history with request deduplication
    */
   static async getAssessmentHistory(userId: string): Promise<AssessmentHistoryEntry[]> {
+    // Check if there's already an active request for this user
+    const cacheKey = `history_${userId}`
+    const existingRequest = this.activeRequests.get(cacheKey)
+
+    if (existingRequest) {
+      console.log(`📚 [DUPLICATE_REQUEST] Reusing existing assessment history fetch for user ${userId}`)
+      return existingRequest
+    }
+
+    // Create new request
+    const requestPromise = this.performAssessmentHistoryFetch(userId)
+    this.activeRequests.set(cacheKey, requestPromise)
+
+    // Clean up cache when request completes
+    requestPromise.finally(() => {
+      this.activeRequests.delete(cacheKey)
+    })
+
+    return requestPromise
+  }
+
+  /**
+   * Internal method to perform the actual fetch
+   */
+  private static async performAssessmentHistoryFetch(userId: string): Promise<AssessmentHistoryEntry[]> {
     console.log(`📚 Fetching assessment history for user ${userId}...`)
 
     try {

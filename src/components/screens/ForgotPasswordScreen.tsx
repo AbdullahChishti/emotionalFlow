@@ -220,14 +220,14 @@ export default function ForgotPasswordScreen() {
                   disabled={loading}
                   className="w-full text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   style={{
-                    backgroundColor: '#335f64',
-                    '--tw-ring-color': '#335f64',
+                    backgroundColor: '#059669',
+                    '--tw-ring-color': '#059669',
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     letterSpacing: '0.01em'
                   }}
                   whileHover={{
                     scale: loading ? 1 : 1.01,
-                    backgroundColor: '#2a4f52'
+                    backgroundColor: '#047857'
                   }}
                   whileTap={{ scale: loading ? 1 : 0.99 }}
                 >

@@ -180,9 +180,7 @@ export function HelpScreen() {
                         ? 'text-white shadow-lg'
                         : 'text-secondary-600 hover:bg-white/50'
                     }`}
-                    style={activeTab === tab.id ? {
-                      backgroundColor: '#335f64'
-                    } : {}}
+                    className={`${activeTab === tab.id ? 'bg-emerald-600' : ''}`}
                   >
                     <span className="material-symbols-outlined text-lg">{tab.icon}</span>
                     {tab.label}
@@ -297,14 +295,14 @@ export function HelpScreen() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
-                      onClick={() => router.push('/wellness')}
+                      onClick={() => router.push('/assessments')}
                       className="p-4 bg-white/60 rounded-2xl hover:bg-white/80 transition-colors text-left"
                     >
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="material-symbols-outlined text-primary-600">volunteer_activism</span>
-                        <span className="font-semibold text-secondary-800">Credit System</span>
+                        <span className="material-symbols-outlined text-primary-600">assessment</span>
+                        <span className="font-semibold text-secondary-800">Assessments</span>
                       </div>
-                      <p className="text-sm text-secondary-600">How earning and spending credits works</p>
+                      <p className="text-sm text-secondary-600">Track your mental health journey</p>
                     </button>
 
                     <button

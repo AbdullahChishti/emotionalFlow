@@ -35,8 +35,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           className
         )}
         style={variant === 'primary' ? {
-          backgroundColor: '#335f64',
-          '--tw-ring-color': '#335f64'
+          backgroundColor: '#059669',
+          '--tw-ring-color': '#059669'
         } : {}}
         {...props}
       >

@@ -52,7 +52,7 @@ export function BreathingExercise() {
             animate={{ scale: currentPhase.scale }}
             transition={{ duration: 1.2, ease: "easeInOut" }}
           >
-            <span className="text-3xl font-bold text-[#335f64]">{count}</span>
+            <span className="text-3xl font-bold text-emerald-600">{count}</span>
           </motion.div>
           <div className="absolute inset-0 rounded-full border-2 border-[#335f64]/20 animate-pulse" />
         </div>
@@ -67,7 +67,7 @@ export function BreathingExercise() {
           className={`px-6 py-3 rounded-2xl text-sm font-semibold transition-all duration-300 shadow-sm ${
             isActive
               ? 'bg-gradient-to-r from-red-100 to-red-200 text-red-700 hover:from-red-200 hover:to-red-300 border border-red-200/50'
-              : 'bg-gradient-to-r from-slate-100 to-slate-200 text-[#335f64] hover:from-slate-200 hover:to-slate-300 border border-slate-200/50'
+              : 'bg-gradient-to-r from-slate-100 to-slate-200 text-emerald-600 hover:from-slate-200 hover:to-slate-300 border border-slate-200/50'
           }`}
         >
           {isActive ? 'Pause' : 'Resume'}
@@ -82,7 +82,7 @@ export function GroundingExercise() {
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 max-w-md w-full text-center border border-slate-200/60 shadow-xl">
       <div className="w-16 h-16 rounded-full bg-slate-100 mx-auto mb-4 flex items-center justify-center border border-white/60">
-        <span className="material-symbols-outlined text-[#335f64] text-2xl">spa</span>
+        <span className="material-symbols-outlined text-emerald-600 text-2xl">spa</span>
       </div>
       <h3 className="text-lg font-semibold text-slate-800 mb-2">5-4-3-2-1 Grounding</h3>
       <p className="text-slate-600 text-sm mb-5">
@@ -110,7 +110,7 @@ export function JournalExercise() {
       <textarea 
         value={journalText}
         onChange={(e) => setJournalText(e.target.value)}
-        className="w-full rounded-2xl border border-slate-300/60 p-3 bg-white/90 outline-none focus:ring-2 focus:ring-[#335f64]/30 focus:border-[#335f64]/50 text-slate-800 text-sm" 
+        className="w-full rounded-2xl border border-slate-300/60 p-3 bg-white/90 outline-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600/50 text-slate-800 text-sm" 
         rows={5} 
         placeholder="Let your thoughts flow..." 
       />
@@ -188,7 +188,7 @@ export function WellnessTools({ onClose }: WellnessToolsProps) {
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 text-sm font-medium ${
                     activeTab === tool.id
-                      ? 'bg-[#335f64] text-white shadow-md'
+                      ? 'bg-emerald-600 text-white shadow-md'
                       : 'text-slate-700 hover:bg-slate-100'
                   }`}
                 >

@@ -196,6 +196,7 @@ export function Dashboard() {
   // Latest saved overall assessment for impact card
   const [latestOverall, setLatestOverall] = useState<OverallAssessmentResult | null>(null)
   const [loadingImpact, setLoadingImpact] = useState(false)
+  const [isAutoLoading, setIsAutoLoading] = useState(false)
 
   // Prevent multiple simultaneous fetches
   const [isFetching, setIsFetching] = useState(false)
@@ -573,6 +574,7 @@ export function Dashboard() {
       setTimeout(() => {
         setOverallAssessment(result)
         setIsGeneratingOverall(false)
+        setIsAutoLoading(false) // Reset auto-loading state
         setOverallRetryCount(0) // Reset retry count on success
         console.log('✅ [COMPREHENSIVE ANALYSIS] UI updated with results')
       }, 500)
@@ -598,6 +600,7 @@ export function Dashboard() {
         logger.debug(`Retrying overall assessment generation (attempt ${overallRetryCount + 1}/3)`)
         cleanup()
         setIsGeneratingOverall(false)
+        setIsAutoLoading(false)
         setOverallRetryCount(prev => prev + 1)
 
         // Exponential backoff: 2s, 4s, 8s
@@ -819,6 +822,23 @@ export function Dashboard() {
     }
   }, [user?.id, profile])
 
+  // Auto-load life impact analysis once per browser session when dashboard is ready and user has assessment data
+  useEffect(() => {
+    if (user?.id && hasAssessmentData && !latestOverall && !loadingImpact && dataFetched) {
+      const autoLoadKey = `auto_loaded_life_impacts_${user.id}`
+      const alreadyAutoLoaded = sessionStorage.getItem(autoLoadKey)
+
+      if (!alreadyAutoLoaded) {
+        console.log('🔄 [AUTO_LOAD] Automatically loading life impact analysis for user:', user.id)
+        sessionStorage.setItem(autoLoadKey, 'true')
+        setIsAutoLoading(true)
+        handleGenerateOverallAssessment()
+      } else {
+        console.log('🔄 [AUTO_LOAD] Life impact analysis already auto-loaded for this browser session')
+      }
+    }
+  }, [user?.id, hasAssessmentData, latestOverall, loadingImpact, dataFetched, handleGenerateOverallAssessment])
+
   // Profile loading timeout effect - prevent infinite loading if profile fails to load
   useEffect(() => {
     if (!user?.id || profile !== null) return // Only run if user exists but profile is still null
@@ -975,6 +995,7 @@ export function Dashboard() {
         if (timeSinceUnmount < 120000) {
           logger.warn('🔄 Recovering from unmount during generation')
           setIsGeneratingOverall(false) // Reset generation state
+          setIsAutoLoading(false) // Reset auto-loading state
           setShowOverallResults(false) // Hide results modal
           setOverallProgress(0) // Reset progress
 
@@ -1290,11 +1311,20 @@ export function Dashboard() {
     if (loadingImpact) {
       return (
         <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35">
-          <div className="animate-pulse space-y-4">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-10 h-10 bg-slate-200/60 rounded-2xl"></div>
-              <div className="h-6 w-48 bg-slate-200/60 rounded-lg"></div>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-white text-lg animate-spin">psychology</span>
             </div>
+            <div>
+              <h3 className="font-semibold text-slate-800 text-lg">
+                {isAutoLoading ? 'Analyzing Your Mental Health Journey' : 'Refreshing Analysis'}
+              </h3>
+              <p className="text-sm text-slate-600">
+                {isAutoLoading ? 'Automatically loading your personalized insights...' : 'Updating your mental health analysis...'}
+              </p>
+            </div>
+          </div>
+          <div className="animate-pulse space-y-4">
             <div className="space-y-3">
               <div className="h-4 w-full bg-slate-200/60 rounded"></div>
               <div className="h-4 w-4/5 bg-slate-200/60 rounded"></div>

@@ -3,6 +3,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { AUTH_MESSAGES, AUTH_REDIRECTS } from '@/lib/constants/auth'
 
 function createSupabaseServerClient() {
   const cookieStore = cookies()
@@ -60,7 +61,7 @@ export async function signIn(formData: FormData) {
   }
 
   // Redirect to dashboard on success
-  redirect('/dashboard')
+  redirect(AUTH_REDIRECTS.DASHBOARD)
 }
 
 // Sign up action
@@ -104,11 +105,15 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut()
 
   if (error) {
-    console.error('Sign out error:', error)
+    console.error('❌ [SERVER_ACTION_SIGNOUT_ERROR] Sign out error:', error)
+    // Still redirect even if logout fails
+  } else {
+    console.log('✅ [SERVER_ACTION_SIGNOUT_SUCCESS] User successfully logged out')
   }
 
-  // Redirect to login
-  redirect('/login?message=logged_out')
+  // Redirect to login with consistent message format
+  const redirectUrl = `${AUTH_REDIRECTS.LOGIN}?${AUTH_REDIRECTS.MESSAGE_PARAM}=${AUTH_MESSAGES.SIGNED_OUT}`
+  redirect(redirectUrl)
 }
 
 // Request password reset action

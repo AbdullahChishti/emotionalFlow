@@ -58,39 +58,7 @@ export class FlowManager {
   }
 
   // ==================== FLOW 2: LOGOUT FLOW ====================
-
-  /**
-   * Complete logout flow with state cleanup
-   */
-  static handleLogout(): void {
-    console.log('🚪 FlowManager: Starting logout flow')
-
-    try {
-      const authStore = useAuthStore.getState()
-      const assessmentStore = useAssessmentStore.getState()
-      const chatStore = useChatStore.getState()
-      const profileStore = useProfileStore.getState()
-
-      // Step 1: End any active chat session
-      if (chatStore.currentSessionId) {
-        chatStore.endCurrentSession()
-      }
-
-      // Step 2: Clear all stores
-      authStore.logout()
-      assessmentStore.resetAssessmentState()
-      chatStore.resetChatState()
-      profileStore.clearProfile()
-
-      // Step 3: Clear localStorage (handled by Zustand persist)
-
-      console.log('✅ FlowManager: Logout flow completed successfully')
-
-    } catch (error) {
-      console.error('❌ FlowManager: Logout flow failed', error)
-      // Even if cleanup fails, continue with logout
-    }
-  }
+  // Note: Logout is now handled by AuthManager.signOut() for consistency
 
   // ==================== FLOW 3: ASSESSMENT FLOW ====================
 

@@ -185,7 +185,7 @@ export function AssessmentSidebar({ variant = 'full' }: AssessmentSidebarProps) 
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#335f64] to-slate-700 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 flex items-center justify-center">
             <span className="material-symbols-outlined text-white text-lg">psychology</span>
           </div>
           <div>

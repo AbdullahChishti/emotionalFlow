@@ -52,7 +52,7 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
       {!isUser && (
         <div className="flex-shrink-0 mr-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-md border border-white/50">
-            <span className="material-symbols-outlined text-[#335f64] text-lg">psychology</span>
+            <span className="material-symbols-outlined text-emerald-600 text-lg">psychology</span>
           </div>
         </div>
       )}
@@ -267,7 +267,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
       <div className="p-4 border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-md border border-white/50">
-            <span className="material-symbols-outlined text-[#335f64] text-xl">psychology</span>
+            <span className="material-symbols-outlined text-emerald-600 text-xl">psychology</span>
           </div>
           <div>
             <h3 className="font-semibold text-slate-800">{therapistName}</h3>
@@ -306,7 +306,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
               className="flex justify-center my-3"
             >
               <div className="px-3 py-1.5 rounded-full bg-white/70 backdrop-blur-sm border border-slate-200/60 text-slate-600 text-xs flex items-center gap-2 shadow-sm">
-                <span className="material-symbols-outlined text-sm text-[#335f64]">favorite</span>
+                <span className="material-symbols-outlined text-sm text-emerald-600">favorite</span>
                 <span className="italic">{showInlineAffirmation}</span>
               </div>
             </motion.div>
@@ -324,7 +324,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-md border border-white/50">
-                  <span className="material-symbols-outlined text-[#335f64] text-lg">psychology</span>
+                  <span className="material-symbols-outlined text-emerald-600 text-lg">psychology</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-3 py-2.5 rounded-xl border border-slate-200/60 shadow-sm">
                   <div className="flex items-center gap-2">
@@ -400,7 +400,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendMessage())}
               placeholder={placeholder}
-              className="w-full border border-slate-300/60 rounded-xl px-4 py-2.5 resize-none focus:ring-2 focus:ring-[#335f64]/30 focus:border-[#335f64]/50 transition-all duration-300 outline-none bg-white/90 backdrop-blur-sm text-slate-800 placeholder:text-slate-500 font-normal text-sm shadow-sm"
+              className="w-full border border-slate-300/60 rounded-xl px-4 py-2.5 resize-none focus:ring-2 focus:ring-emerald-600/30 focus:border-emerald-600/50 transition-all duration-300 outline-none bg-white/90 backdrop-blur-sm text-slate-800 placeholder:text-slate-500 font-normal text-sm shadow-sm"
               rows={1}
               style={{ minHeight: '44px', maxHeight: '88px' }}
               disabled={isTyping}
@@ -410,7 +410,7 @@ export function ChatInterface({ therapistName }: ChatInterfaceProps) {
           <div className="flex items-center gap-2">
             <button
               className={`p-2.5 rounded-xl border transition-all duration-200 ${
-                isRecording ? 'border-[#335f64] bg-emerald-50 text-[#335f64]' : 'border-slate-300 bg-white/70 text-slate-700'
+                isRecording ? 'border-emerald-600 bg-emerald-50 text-emerald-600' : 'border-slate-300 bg-white/70 text-slate-700'
               } hover:bg-white shadow-sm`}
               onClick={() => {
                 // Voice input logic (simplified for this component)

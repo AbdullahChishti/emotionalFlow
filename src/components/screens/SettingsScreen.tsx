@@ -3,18 +3,16 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useAuth } from '@/stores/authStore'
-import { useRouter } from 'next/navigation'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 // Account deletion not yet implemented in centralized API
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
 
 export default function SettingsScreen() {
-  const { user, profile, signOut } = useAuth()
-  const router = useRouter()
+  const { user, profile, signOut } = useAuthContext()
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+  const [message] = useState('')
   const [error, setError] = useState('')
 
   const handleSignOut = async () => {
@@ -22,10 +20,10 @@ export default function SettingsScreen() {
     setError('')
     try {
       await signOut()
-      router.push('/login?message=logged_out')
-    } catch (err) {
+      // AuthProvider handles the redirect automatically
+    } catch (error) {
+      console.error('Sign out failed:', error)
       setError('Failed to sign out. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
@@ -52,8 +50,9 @@ export default function SettingsScreen() {
       // } else {
       //   setError('Failed to delete account. Please try again.')
       // }
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete account. Please try again.')
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete account. Please try again.'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }

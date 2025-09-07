@@ -37,9 +37,12 @@ export const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
 
     const variantClasses = {
       primary: `
+        bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600
+        hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700
         text-white
-        shadow-md hover:shadow-lg
-        focus:ring-offset-2
+        shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50
+        focus:ring-emerald-400/20 focus:ring-offset-2
+        border border-emerald-500/20
         ${loading ? '' : ''}
       `,
       secondary: `
@@ -50,11 +53,11 @@ export const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
         ${loading ? 'hover:bg-slate-100' : ''}
       `,
       outline: `
-        bg-transparent hover:bg-brand-600
-        text-brand-600 hover:text-white
-        border-2 border-brand-600
-        focus:ring-brand-600
-        ${loading ? 'hover:bg-transparent hover:text-brand-600' : ''}
+        bg-transparent hover:bg-emerald-600
+        text-emerald-600 hover:text-white
+        border-2 border-emerald-600
+        focus:ring-emerald-600
+        ${loading ? 'hover:bg-transparent hover:text-emerald-600' : ''}
       `,
       social: `
         bg-white hover:bg-slate-50
@@ -95,14 +98,8 @@ export const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
         ref={ref}
         className={finalClasses}
         disabled={disabled || loading}
-        style={variant === 'primary' ? {
-          backgroundColor: '#335f64',
-          '--tw-ring-color': '#335f64'
-        } : {}}
-        whileHover={variant === 'primary' && !loading ? {
-          scale: 1.02,
-          backgroundColor: '#2a4f52'
-        } : loading ? {} : { scale: 1.02 }}
+        style={{}}
+        whileHover={loading ? {} : { scale: 1.02 }}
         whileTap={loading ? {} : { scale: 0.98 }}
         {...props}
       >

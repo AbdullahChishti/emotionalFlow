@@ -117,18 +117,18 @@ export function OverallAssessmentResults({
   }
 
   return (
-    <div className={`max-w-5xl mx-auto space-y-8 ${className}`}>
+    <div className={`max-w-7xl mx-auto space-y-8 ${className}`}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-12"
       >
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl mb-6 shadow-lg">
-          <span className="material-symbols-outlined text-3xl text-blue-600">psychology</span>
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl mb-6 shadow-lg border border-emerald-100">
+          <span className="material-symbols-outlined text-3xl text-emerald-600">psychology</span>
         </div>
-        <h1 className="text-4xl font-light text-slate-900 mb-4">Your Personalized Mental Health Profile</h1>
-        <p className="text-slate-600 max-w-3xl mx-auto text-lg leading-relaxed">
+        <h1 className="text-4xl font-light text-slate-900 mb-4 tracking-tight">Your Personalized Mental Health Profile</h1>
+        <p className="text-slate-600 max-w-3xl mx-auto text-lg leading-relaxed font-light">
           A comprehensive, AI-powered analysis of your mental health assessments, designed to help you understand your patterns and take meaningful steps forward.
         </p>
       </motion.div>
@@ -138,26 +138,31 @@ export function OverallAssessmentResults({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200/60 p-8 shadow-lg"
+        className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35"
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-light text-slate-900">Your Mental Health Overview</h2>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-slate-600 text-xl">dashboard</span>
+            </div>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">Your Mental Health Overview</h2>
+          </div>
           <span className={`px-4 py-2 rounded-2xl text-sm font-medium border-2 ${getRiskColor(summary.overallRiskLevel)}`}>
             {summary.overallRiskLevel.charAt(0).toUpperCase() + summary.overallRiskLevel.slice(1)} Level
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="text-center p-6 bg-white/80 rounded-2xl border border-slate-200/40 shadow-sm">
-            <div className="text-3xl font-bold text-slate-900 mb-2">{assessmentCount}</div>
+          <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/40 hover:shadow-md transition-all duration-300">
+            <div className="text-3xl font-light text-slate-900 mb-2 tracking-tight">{assessmentCount}</div>
             <div className="text-sm text-slate-600 font-light">Assessments Completed</div>
           </div>
-          <div className="text-center p-6 bg-white/80 rounded-2xl border border-slate-200/40 shadow-sm">
-            <div className="text-3xl font-bold text-slate-900 mb-2">{summary.averageScore.toFixed(1)}</div>
+          <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/40 hover:shadow-md transition-all duration-300">
+            <div className="text-3xl font-light text-slate-900 mb-2 tracking-tight">{summary.averageScore.toFixed(1)}</div>
             <div className="text-sm text-slate-600 font-light">Average Score</div>
           </div>
-          <div className="text-center p-6 bg-white/80 rounded-2xl border border-slate-200/40 shadow-sm">
-            <div className="text-3xl font-bold text-slate-900 mb-2">
+          <div className="text-center p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/40 hover:shadow-md transition-all duration-300">
+            <div className="text-3xl font-light text-slate-900 mb-2 tracking-tight">
               {Math.ceil((new Date(dateRange.latest).getTime() - new Date(dateRange.earliest).getTime()) / (1000 * 60 * 60 * 24))}
             </div>
             <div className="text-sm text-slate-600 font-light">Days Tracked</div>
@@ -165,14 +170,14 @@ export function OverallAssessmentResults({
         </div>
 
         {aiAnalysis.summary && (
-          <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200/60 shadow-sm">
+          <div className="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl border border-emerald-200/60 shadow-lg">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 mt-1">
-                <span className="material-symbols-outlined text-blue-600">insights</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
+                <span className="material-symbols-outlined text-emerald-600 text-xl">insights</span>
               </div>
               <div>
-                <h3 className="font-semibold text-blue-900 mb-3 text-lg">What I'm Seeing in Your Patterns</h3>
-                <p className="text-blue-800 leading-relaxed text-base">{aiAnalysis.summary}</p>
+                <h3 className="font-medium text-emerald-900 mb-3 text-lg tracking-tight">What I'm Seeing in Your Patterns</h3>
+                <p className="text-emerald-800 leading-relaxed text-base font-light">{aiAnalysis.summary}</p>
               </div>
             </div>
           </div>
@@ -184,9 +189,14 @@ export function OverallAssessmentResults({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-3xl border border-slate-200/60 p-8 shadow-lg"
+        className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35"
       >
-        <h2 className="text-2xl font-light text-slate-900 mb-6">Your Assessment Results</h2>
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+            <span className="material-symbols-outlined text-slate-600 text-xl">assessment</span>
+          </div>
+          <h2 className="text-2xl font-light text-slate-900 tracking-tight">Your Assessment Results</h2>
+        </div>
         <div className="grid gap-4">
           {Object.entries(allAssessments).map(([assessmentId, data], index) => (
             <motion.div
@@ -194,14 +204,14 @@ export function OverallAssessmentResults({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + index * 0.1 }}
-              className="flex items-center justify-between p-6 bg-gradient-to-r from-slate-50 to-slate-100/50 rounded-2xl border border-slate-200/40 hover:shadow-md transition-all duration-300"
+              className="flex items-center justify-between p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/40 hover:shadow-md hover:border-slate-300/60 transition-all duration-300"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="material-symbols-outlined text-slate-600">assessment</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-white to-slate-50 rounded-2xl flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-slate-600 text-xl">analytics</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 text-lg">{data.assessment?.title || assessmentId.toUpperCase()}</h3>
+                  <h3 className="font-medium text-slate-900 text-lg tracking-tight">{data.assessment?.title || assessmentId.toUpperCase()}</h3>
                   <p className="text-slate-600 font-light">Score: {data.score} • {data.level}</p>
                 </div>
               </div>
@@ -221,11 +231,11 @@ export function OverallAssessmentResults({
           transition={{ delay: 0.4 }}
           className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl border border-indigo-200/60 p-8 shadow-lg"
         >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center shadow-sm">
               <span className="material-symbols-outlined text-indigo-600 text-xl">lightbulb</span>
             </div>
-            <h2 className="text-2xl font-light text-slate-900">Key Insights About Your Patterns</h2>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">Key Insights About Your Patterns</h2>
           </div>
           <div className="space-y-4">
             {aiAnalysis.keyInsights.map((insight, index) => (
@@ -234,12 +244,12 @@ export function OverallAssessmentResults({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
-                className="flex items-start gap-4 p-4 bg-white/80 rounded-2xl border border-indigo-200/40"
+                className="flex items-start gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-indigo-200/40 shadow-sm hover:shadow-md transition-all duration-300"
               >
-                <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
                   <span className="text-indigo-600 text-sm font-bold">{index + 1}</span>
                 </div>
-                <p className="text-slate-700 leading-relaxed text-base">{insight}</p>
+                <p className="text-slate-700 leading-relaxed text-base font-light">{insight}</p>
               </motion.div>
             ))}
           </div>
@@ -252,24 +262,28 @@ export function OverallAssessmentResults({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-2xl border border-slate-200 p-6"
+          className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35"
         >
-          <div className="flex items-center gap-3 mb-6">
-            <span className="material-symbols-outlined text-slate-600 text-xl">person</span>
-            <h2 className="text-xl font-medium text-slate-900">How This Might Impact Your Life</h2>
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-slate-600 text-xl">person</span>
+            </div>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">How This Might Impact Your Life</h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {aiAnalysis.manifestations.map((manifestation, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
-                className="flex items-start gap-3 p-4 rounded-lg bg-slate-50"
+                className="flex items-start gap-4 p-6 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-3xl border border-slate-200/40"
               >
-                <span className="material-symbols-outlined text-slate-500 text-sm mt-0.5">arrow_right</span>
-                <p className="text-slate-700 leading-relaxed text-sm">{manifestation}</p>
+                <div className="w-8 h-8 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
+                  <span className="material-symbols-outlined text-slate-600 text-sm">arrow_right</span>
+                </div>
+                <p className="text-slate-700 leading-relaxed text-base font-light">{manifestation}</p>
               </motion.div>
             ))}
           </div>
@@ -284,11 +298,11 @@ export function OverallAssessmentResults({
           transition={{ delay: 0.6 }}
           className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl border border-purple-200/60 p-8 shadow-lg"
         >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center shadow-sm">
               <span className="material-symbols-outlined text-purple-600 text-xl">psychology</span>
             </div>
-            <h2 className="text-2xl font-light text-slate-900">Patterns You Might Not Notice</h2>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">Patterns You Might Not Notice</h2>
           </div>
           <div className="grid gap-4">
             {aiAnalysis.unconsciousManifestations.map((manifestation, index) => (
@@ -297,12 +311,12 @@ export function OverallAssessmentResults({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 + index * 0.1 }}
-                className="flex items-start gap-4 p-4 bg-white/80 rounded-2xl border border-purple-200/40"
+                className="flex items-start gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-purple-200/40 shadow-sm hover:shadow-md transition-all duration-300"
               >
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
                   <span className="material-symbols-outlined text-purple-600 text-sm">lightbulb</span>
                 </div>
-                <p className="text-slate-700 leading-relaxed text-base">{manifestation}</p>
+                <p className="text-slate-700 leading-relaxed text-base font-light">{manifestation}</p>
               </motion.div>
             ))}
           </div>
@@ -317,11 +331,11 @@ export function OverallAssessmentResults({
           transition={{ delay: 0.7 }}
           className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl border border-green-200/60 p-8 shadow-lg"
         >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center shadow-sm">
               <span className="material-symbols-outlined text-green-600 text-xl">recommend</span>
             </div>
-            <h2 className="text-2xl font-light text-slate-900">Personalized Recommendations for You</h2>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">Personalized Recommendations for You</h2>
           </div>
           <div className="grid gap-4">
             {aiAnalysis.overallRecommendations.map((recommendation, index) => (
@@ -330,12 +344,12 @@ export function OverallAssessmentResults({
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.8 + index * 0.1 }}
-                className="flex items-start gap-4 p-4 bg-white/80 rounded-2xl border border-green-200/40"
+                className="flex items-start gap-4 p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-green-200/40 shadow-sm hover:shadow-md transition-all duration-300"
               >
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0 mt-1 shadow-sm">
                   <span className="material-symbols-outlined text-green-600 text-sm">check_circle</span>
                 </div>
-                <p className="text-slate-700 leading-relaxed text-base">{recommendation}</p>
+                <p className="text-slate-700 leading-relaxed text-base font-light">{recommendation}</p>
               </motion.div>
             ))}
           </div>
@@ -350,14 +364,14 @@ export function OverallAssessmentResults({
           transition={{ delay: 0.8 }}
           className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl border border-orange-200/60 p-8 shadow-lg"
         >
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center shadow-sm">
               <span className="material-symbols-outlined text-orange-600 text-xl">trending_up</span>
             </div>
-            <h2 className="text-2xl font-light text-slate-900">Your Next Steps</h2>
+            <h2 className="text-2xl font-light text-slate-900 tracking-tight">Your Next Steps</h2>
           </div>
-          <div className="p-6 bg-white/80 rounded-2xl border border-orange-200/40">
-            <p className="text-slate-700 leading-relaxed text-lg">{aiAnalysis.nextSteps}</p>
+          <div className="p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-orange-200/40 shadow-sm">
+            <p className="text-slate-700 leading-relaxed text-lg font-light">{aiAnalysis.nextSteps}</p>
           </div>
         </motion.div>
       )}
@@ -371,12 +385,12 @@ export function OverallAssessmentResults({
           className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-3xl border border-blue-200/60 p-8 shadow-lg"
         >
           <div className="flex items-start gap-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0 mt-2">
-              <span className="material-symbols-outlined text-blue-600 text-2xl">favorite</span>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center flex-shrink-0 mt-2 shadow-lg border border-blue-200/40">
+              <span className="material-symbols-outlined text-blue-600 text-3xl">favorite</span>
             </div>
             <div>
-              <h3 className="font-semibold text-blue-900 mb-4 text-xl">A Message of Support</h3>
-              <p className="text-blue-800 leading-relaxed text-lg">{aiAnalysis.supportiveMessage}</p>
+              <h3 className="font-medium text-blue-900 mb-4 text-xl tracking-tight">A Message of Support</h3>
+              <p className="text-blue-800 leading-relaxed text-lg font-light">{aiAnalysis.supportiveMessage}</p>
             </div>
           </div>
         </motion.div>
@@ -388,21 +402,26 @@ export function OverallAssessmentResults({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center pt-8"
+          className="flex flex-col sm:flex-row gap-6 justify-center pt-12"
         >
           <button
             onClick={onRetake}
-            className="px-8 py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-2xl hover:from-slate-700 hover:to-slate-800 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-slate-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border border-transparent"
           >
-            <span className="material-symbols-outlined mr-2">refresh</span>
-            Update Your Assessments
+            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl">refresh</span>
+              <span>Update Your Assessments</span>
+            </div>
           </button>
           <button
             onClick={() => window.print()}
-            className="px-8 py-4 bg-white border-2 border-slate-300 text-slate-700 rounded-2xl hover:border-slate-400 hover:bg-slate-50 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="group px-8 py-4 rounded-3xl font-semibold text-base bg-white/95 backdrop-blur-sm border border-slate-200 text-slate-700 transition-all duration-300 ease-out hover:bg-white hover:shadow-3xl hover:shadow-slate-900/20 hover:border-slate-300 focus:outline-none focus:ring-4 focus:ring-slate-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98]"
           >
-            <span className="material-symbols-outlined mr-2">print</span>
-            Save as PDF
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-xl">print</span>
+              <span>Save as PDF</span>
+            </div>
           </button>
         </motion.div>
       )}

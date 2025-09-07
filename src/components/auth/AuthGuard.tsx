@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/stores/authStore'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { AUTH_REDIRECTS } from '@/lib/constants/auth'
 
 interface AuthGuardProps {
   children: React.ReactNode
@@ -32,7 +33,7 @@ export function AuthGuard({
     if (shouldRedirect && !isRedirecting) {
       setIsRedirecting(true)
 
-      const redirectPath = redirectTo || (requireAuth ? '/login' : '/dashboard')
+      const redirectPath = redirectTo || (requireAuth ? AUTH_REDIRECTS.LOGIN : AUTH_REDIRECTS.DASHBOARD)
 
       // Add current path as redirect parameter for login
       const finalRedirect = requireAuth && !isAuthenticated
@@ -45,19 +46,7 @@ export function AuthGuard({
   }, [isAuthenticated, isInitialized, isLoading, requireAuth, redirectTo, router, pathname, isRedirecting])
 
   // Show loading state while checking authentication
-  // TEMPORARY: Add timeout to prevent infinite loading
-  const [hasTimedOut, setHasTimedOut] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      console.log('🛡️ AuthGuard: Timeout reached, forcing initialization')
-      setHasTimedOut(true)
-    }, 5000) // 5 second timeout
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  if ((!isInitialized || isLoading) && !hasTimedOut) {
+  if (!isInitialized || isLoading) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="text-center">

@@ -76,7 +76,7 @@ export function AssessmentFlowMigrated({
           </p>
           <button
             onClick={onExit}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-8 py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 transition-all duration-300 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 border border-emerald-500/20"
           >
             Return to Dashboard
           </button>
@@ -105,7 +105,7 @@ export function AssessmentFlowMigrated({
           </p>
           <button
             onClick={onExit}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="px-8 py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 transition-all duration-300 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 border border-emerald-500/20"
           >
             Return to Dashboard
           </button>
@@ -370,7 +370,7 @@ export function AssessmentFlowMigrated({
               }}
             >
               <div className="flex items-start space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                   <span className="material-symbols-outlined text-white text-2xl">
                     {iconName}
                   </span>
@@ -404,7 +404,7 @@ export function AssessmentFlowMigrated({
       >
         <button
           onClick={() => setCurrentState('taking')}
-          className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+          className="px-8 py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 transition-all duration-300 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 border border-emerald-500/20"
         >
           Start Assessments
         </button>
@@ -447,7 +447,7 @@ export function AssessmentFlowMigrated({
           </div>
           <div className="w-full bg-slate-200 rounded-full h-2">
             <motion.div
-              className="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.3 }}
@@ -462,7 +462,7 @@ export function AssessmentFlowMigrated({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="material-symbols-outlined text-2xl text-white">
               {getAssessmentIconName(currentAssessmentId)}
             </span>
@@ -545,7 +545,7 @@ export function AssessmentFlowMigrated({
           exit={{ opacity: 0 }}
         >
           <div className="glassmorphic rounded-2xl p-8 shadow-2xl border border-white/20 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             </div>
             <h2 className="text-xl font-semibold text-slate-900 mb-2">

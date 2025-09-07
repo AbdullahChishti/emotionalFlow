@@ -6,7 +6,9 @@ import Link from 'next/link'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/stores/authStore'
+import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/analytics'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -17,22 +19,22 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [hasNavigated, setHasNavigated] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, isLoading: authLoading, isAuthenticated, signIn } = useAuth()
+  const { user, isLoading, isAuthenticated, isOnline, currentError, signIn, clearError } = useAuthContext()
 
-  // Handle URL parameters and redirect when authenticated
+  // Handle URL parameters
   useEffect(() => {
-    track('signin_view')
-    
     // Check for URL parameters
     const message = searchParams.get('message')
     const errorParam = searchParams.get('error')
-    
+
     if (message === 'email_confirmed') {
       setSuccessMessage('Email confirmed successfully! Please sign in with your credentials.')
     }
-    
+
     if (errorParam) {
       switch (errorParam) {
         case 'auth_failed':
@@ -48,48 +50,177 @@ export default function LoginScreen() {
           setError('An error occurred. Please try again.')
       }
     }
-    
+  }, [searchParams])
+
+  // Separate effect for auto-redirect with improved race condition handling
+  useEffect(() => {
     // Only auto-redirect if user is already logged in (not from email confirmation)
-    if (isAuthenticated && user && !message) {
-      router.push('/dashboard')
+    // and we haven't already navigated during this session
+    const message = searchParams.get('message')
+    
+    if (isAuthenticated && user && !message && !loading && !isSubmitting && !hasNavigated) {
+      console.log('🔄 AUTH DEBUG: User already authenticated, redirecting to dashboard')
+      // Add small delay to ensure all state updates are complete
+      const redirectTimer = setTimeout(() => {
+        setHasNavigated(true)
+        router.push('/dashboard')
+      }, 100)
+      
+      return () => clearTimeout(redirectTimer)
     }
-  }, [user, router, searchParams])
+  }, [user, isAuthenticated, loading, isSubmitting, hasNavigated, router, searchParams])
+
+  // Handle context errors separately to avoid dependency issues
+  useEffect(() => {
+    if (currentError && !loading) {
+      setError(currentError.userMessage)
+    }
+  }, [currentError, loading])
+
+  // Clear context errors when component unmounts
+  useEffect(() => {
+    return () => {
+      if (currentError) {
+        clearError()
+      }
+    }
+  }, [currentError, clearError])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // CRITICAL DEBUG: Prevent double submission
+    if (isSubmitting || loading) {
+      console.log('🚫 AUTH DEBUG: Form already submitting, blocking duplicate request')
+      return
+    }
+
+    const formSessionId = Math.random().toString(36).substr(2, 9)
+
+    // CRITICAL DEBUG: First attempt login issue - form submission start
+    console.log('🔑 AUTH DEBUG: Login form submitted', {
+      hasEmail: !!email,
+      hasPassword: !!password,
+      isAuthenticated,
+      hasUser: !!user,
+      formSessionId
+    })
+
+    // Prevent sign-in if user is already authenticated
+    if (isAuthenticated && user) {
+      console.log('🚫 AUTH DEBUG: User already authenticated, redirecting to dashboard')
+      router.push('/dashboard')
+      return
+    }
+
     if (!email || !password) {
+      console.log('⚠️ AUTH DEBUG: Form validation failed - missing fields')
       setError('Please fill in all fields')
       return
     }
 
+    // CRITICAL DEBUG: Starting authentication process
+    console.log('⏳ AUTH DEBUG: Starting authentication process')
+    setIsSubmitting(true)
     setLoading(true)
     setError('')
 
     try {
-      track('signin_submit', { method: 'password' })
+      // CRITICAL DEBUG: About to call authentication
+      console.log('🔐 AUTH DEBUG: Calling authentication with', email.replace(/(.{2}).*@/, '$1***@'))
+
+      const signInStartTime = Date.now()
       const result = await signIn(email, password)
+      const signInDuration = Date.now() - signInStartTime
+
+      // CRITICAL DEBUG: Authentication result
+      console.log('📈 AUTH DEBUG: Authentication result', {
+        success: result.success,
+        hasError: !!result.error,
+        duration: `${signInDuration}ms`,
+        errorCode: result.error?.code
+      })
 
       if (!result.success) {
-        setError(result.error || 'Login failed')
-        track('signin_error', { message: result.error })
+        // CRITICAL DEBUG: Authentication failed
+        console.error('❌ AUTH DEBUG: Authentication failed', {
+          error: result.error?.message,
+          errorCode: result.error?.code,
+          duration: `${signInDuration}ms`
+        })
+
+        // Handle specific error types
+        if (result.error?.code === 'INVALID_CREDENTIALS') {
+          setError(result.error.userMessage)
+        } else if (result.error?.code === 'EMAIL_NOT_CONFIRMED') {
+          setError(result.error.userMessage)
+        } else if (result.error?.code === 'TOO_MANY_ATTEMPTS') {
+          setError(result.error.userMessage)
+        } else if (result.error?.code === 'NETWORK_ERROR' || result.error?.code === 'TIMEOUT_ERROR') {
+          setError(result.error.userMessage)
+        } else if (result.error?.code === 'SERVICE_UNAVAILABLE') {
+          setError(result.error.userMessage)
+        } else {
+          setError(result.error?.userMessage || 'Login failed')
+        }
       } else {
-        track('signin_success', { method: 'password' })
-        // Navigation will be handled by useEffect when user state updates
+        // CRITICAL DEBUG: Authentication successful
+        console.log('✅ AUTH DEBUG: Authentication successful', {
+          duration: `${signInDuration}ms`
+        })
+        
+        // CRITICAL FIX: Handle navigation directly after successful authentication
+        // This prevents the race condition where useEffect might not trigger immediately
+        console.log('🚀 AUTH DEBUG: Initiating navigation to dashboard')
+        
+        // Add small delay to ensure all state updates propagate
+        setTimeout(() => {
+          console.log('🔄 AUTH DEBUG: Redirecting to dashboard after successful authentication')
+          setHasNavigated(true)
+          router.push('/dashboard')
+        }, 150) // Slightly longer delay to ensure all auth state updates are complete
       }
-    } catch (err) {
-      setError('An unexpected error occurred')
-      track('signin_error', { message: 'unexpected' })
+    } catch (error) {
+      // CRITICAL DEBUG: Unexpected error during authentication with enhanced recovery
+      console.error('❌ AUTH DEBUG: Unexpected error during authentication', error instanceof Error ? error.message : error)
+      
+      // CRITICAL: Enhanced error recovery
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
+      
+      if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+        setError('Network connection issue. Please check your internet and try again.')
+      } else if (errorMessage.includes('timeout')) {
+        setError('Request timed out. Please try again.')
+      } else if (errorMessage.includes('Service temporarily unavailable')) {
+        setError('Service is temporarily unavailable. Please wait a moment and try again.')
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
-      setLoading(false)
+      // CRITICAL DEBUG: Form submission completed
+      console.log('🏁 AUTH DEBUG: Form submission completed')
+
+      // Ensure both states are always reset
+      setTimeout(() => {
+        setIsSubmitting(false)
+        setLoading(false)
+      }, 0)
     }
   }
 
   const handleGoogleSignIn = async () => {
+    if (isSubmitting || loading) {
+      console.log('🚫 AUTH DEBUG: Google sign-in already in progress')
+      return
+    }
+
+    // CRITICAL DEBUG: Starting Google authentication
+    console.log('🔐 AUTH DEBUG: Starting Google authentication')
+    setIsSubmitting(true)
     setLoading(true)
     setError('')
 
     try {
-      track('sso_click', { provider: 'google' })
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -98,9 +229,16 @@ export default function LoginScreen() {
       })
 
       if (error) throw error
-    } catch (error: any) {
-      setError(error.message)
-      setLoading(false)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      console.error('❌ AUTH DEBUG: Google authentication failed', errorMessage)
+      setError(errorMessage)
+    } finally {
+      // Ensure both states are always reset
+      setTimeout(() => {
+        setIsSubmitting(false)
+        setLoading(false)
+      }, 0)
     }
   }
 
@@ -113,7 +251,7 @@ export default function LoginScreen() {
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Glassmorphic Background Elements */}
         <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-white to-white z-0" />
-        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] bg-center opacity-[0.03] z-0" style={{ backgroundSize: '300px' }} />
+        {/* Pattern background removed - file not found */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
 
@@ -256,6 +394,20 @@ export default function LoginScreen() {
               </motion.div>
             )}
 
+            {/* Network Status Indicator */}
+            {!isOnline && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-700 text-sm"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg">wifi_off</span>
+                  <span>You appear to be offline. Please check your internet connection.</span>
+                </div>
+              </motion.div>
+            )}
+
             {/* Error Message */}
             {error && (
               <motion.div
@@ -263,7 +415,26 @@ export default function LoginScreen() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
               >
-                {error}
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined text-lg mt-0.5">error</span>
+                  <div>
+                    <p className="font-medium">{error}</p>
+                    {currentError?.suggestedAction && (
+                      <p className="text-xs mt-1 opacity-80">{currentError.suggestedAction}</p>
+                    )}
+                    {currentError?.canRetry && (
+                      <button
+                        onClick={() => {
+                          setError('')
+                          clearError()
+                        }}
+                        className="text-xs underline hover:no-underline mt-2"
+                      >
+                        Try again
+                      </button>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -390,25 +561,29 @@ export default function LoginScreen() {
               >
                 <motion.button
                   type="submit"
-                  disabled={loading}
-                  className="w-full text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  disabled={loading || isSubmitting || !isOnline}
+                  className="w-full bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 text-white font-semibold py-3.5 rounded-xl transition-all duration-200 shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 focus:outline-none focus-visible:ring-2 focus:ring-emerald-400/20 focus-visible:ring-offset-2 focus-visible:ring-offset-white border border-emerald-500/20"
                   style={{
-                    backgroundColor: '#335f64',
-                    '--tw-ring-color': '#335f64',
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     letterSpacing: '0.01em'
                   }}
                   whileHover={{
-                    scale: loading ? 1 : 1.01,
-                    backgroundColor: '#2a4f52'
+                    scale: (loading || isSubmitting || !isOnline) ? 1 : 1.01
                   }}
-                  whileTap={{ scale: loading ? 1 : 0.99 }}
+                  whileTap={{ scale: (loading || isSubmitting || !isOnline) ? 1 : 0.99 }}
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
-                    {loading ? (
+                    {(loading || isSubmitting) ? (
                       <>
                         <LoadingSpinner size="sm" />
                         <span>Signing in...</span>
+                      </>
+                    ) : !isOnline ? (
+                      <>
+                        <span className="material-symbols-outlined text-xl">
+                          wifi_off
+                        </span>
+                        <span>No internet connection</span>
                       </>
                     ) : (
                       <>
@@ -440,14 +615,14 @@ export default function LoginScreen() {
                 <motion.button
                   type="button"
                   onClick={handleGoogleSignIn}
-                  disabled={loading}
+                  disabled={loading || isSubmitting || !isOnline}
                   className="w-full bg-white hover:bg-slate-50 border border-gray-200 text-slate-700 font-semibold py-3.5 rounded-xl transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 relative overflow-hidden group"
                   style={{
                     fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
                     letterSpacing: '0.01em'
                   }}
-                  whileHover={{ scale: loading ? 1 : 1.01 }}
-                  whileTap={{ scale: loading ? 1 : 0.99 }}
+                  whileHover={{ scale: (loading || isSubmitting || !isOnline) ? 1 : 1.01 }}
+                  whileTap={{ scale: (loading || isSubmitting || !isOnline) ? 1 : 0.99 }}
                 >
                   <span className="absolute inset-0 bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative z-10 flex items-center justify-center gap-3">
@@ -494,7 +669,7 @@ export default function LoginScreen() {
               transition={{ delay: 0.45 }}
             >
               <p className="text-gray-600 text-sm font-normal">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link
                   href="/signup"
                   className="text-slate-700 hover:text-slate-800 font-medium transition-colors relative group"

@@ -10,37 +10,7 @@ import { useChatStore } from '@/stores/chatStore'
 import { useProfileStore } from '@/stores/profileStore'
 
 export class AuthUtils {
-  /**
-   * Secure logout with complete cleanup
-   */
-  static async secureLogout(redirectTo: string = '/'): Promise<void> {
-    console.log('🔐 AuthUtils: Starting secure logout flow')
-
-    try {
-      // Clear all local storage
-      this.clearLocalStorage()
-
-      // Clear all stores
-      this.clearAllStores()
-
-      // Sign out from Supabase with timeout
-      await this.supabaseSignOut()
-
-      // Force page reload to clear any cached state
-      console.log('✅ AuthUtils: Secure logout completed')
-      window.location.href = redirectTo
-
-    } catch (error) {
-      console.error('❌ AuthUtils: Secure logout failed', error)
-
-      // Even if logout fails, clear what we can
-      this.clearLocalStorage()
-      this.clearAllStores()
-
-      // Force redirect anyway
-      window.location.href = redirectTo
-    }
-  }
+  // Note: secureLogout moved to AuthManager.signOut() for consistency
 
   /**
    * Clear all authentication-related local storage

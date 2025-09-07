@@ -43,7 +43,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
       w-full px-4 py-3
       bg-white/90 border border-slate-300 rounded-xl
       text-slate-900 placeholder-slate-500
-      focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-brand-600
+      focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-emerald-600
       transition-all duration-200
       disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed
       ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}

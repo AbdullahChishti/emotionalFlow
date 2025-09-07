@@ -1,6 +1,7 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { AUTH_MESSAGES, AUTH_REDIRECTS } from '@/lib/constants/auth'
 
 export default async function LogoutPage() {
   const cookieStore = cookies()
@@ -39,12 +40,13 @@ export default async function LogoutPage() {
   const { error } = await supabase.auth.signOut()
 
   if (error) {
-    console.error('Logout error:', error.message)
+    console.error('❌ [SERVER_LOGOUT_ERROR] Logout error:', error.message)
   } else {
-    console.log('User successfully logged out')
+    console.log('✅ [SERVER_LOGOUT_SUCCESS] User successfully logged out')
   }
 
-  // Redirect to login page
-  redirect('/login?message=logged_out')
+  // Redirect to login page with consistent message format
+  const redirectUrl = `${AUTH_REDIRECTS.LOGIN}?${AUTH_REDIRECTS.MESSAGE_PARAM}=${AUTH_MESSAGES.SIGNED_OUT}`
+  redirect(redirectUrl)
 }
 
