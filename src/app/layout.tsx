@@ -3,6 +3,7 @@ import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 import { GlobalErrorBoundary } from '@/components/common/GlobalErrorBoundary'
 import { ColorThemeProvider } from '@/components/providers/ColorThemeProvider'
+import { AuthProvider } from '@/components/providers/AuthProvider'
 
 // Setup the fonts
 const inter = Inter({ subsets: ['latin'] })
@@ -32,9 +33,11 @@ export default function RootLayout({
       {/* Apply the fonts to the body */}
       <body className={`${inter.className} ${poppins.variable}`}>
         <GlobalErrorBoundary>
-          <ColorThemeProvider>
-            {children}
-          </ColorThemeProvider>
+          <AuthProvider>
+            <ColorThemeProvider>
+              {children}
+            </ColorThemeProvider>
+          </AuthProvider>
         </GlobalErrorBoundary>
       </body>
     </html>

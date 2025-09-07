@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 interface AuthGuardProps {
@@ -18,15 +18,16 @@ export function AuthGuard({
   redirectTo,
   fallback
 }: AuthGuardProps) {
-  const { user, loading } = useAuth()
+  const { user, isAuthenticated, isLoading, isInitialized } = useAuthContext()
   const router = useRouter()
   const pathname = usePathname()
   const [isRedirecting, setIsRedirecting] = useState(false)
 
   useEffect(() => {
-    if (loading) return
+    // Wait for auth to initialize
+    if (!isInitialized || isLoading) return
 
-    const shouldRedirect = requireAuth ? !user : !!user
+    const shouldRedirect = requireAuth ? !isAuthenticated : isAuthenticated
 
     if (shouldRedirect && !isRedirecting) {
       setIsRedirecting(true)
@@ -34,33 +35,34 @@ export function AuthGuard({
       const redirectPath = redirectTo || (requireAuth ? '/login' : '/dashboard')
 
       // Add current path as redirect parameter for login
-      const finalRedirect = requireAuth && !user
+      const finalRedirect = requireAuth && !isAuthenticated
         ? `${redirectPath}?redirect=${encodeURIComponent(pathname)}`
         : redirectPath
 
+      console.log('🛡️ AuthGuard: Redirecting to', finalRedirect)
       router.push(finalRedirect)
     }
-  }, [user, loading, requireAuth, redirectTo, router, pathname, isRedirecting])
+  }, [isAuthenticated, isInitialized, isLoading, requireAuth, redirectTo, router, pathname, isRedirecting])
 
   // Show loading state while checking authentication
-  if (loading) {
+  if (!isInitialized || isLoading) {
     return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-zinc-700 font-medium">Verifying authentication...</p>
+          <p className="mt-4 text-slate-700 font-medium">Verifying authentication...</p>
         </div>
       </div>
     )
   }
 
   // Show fallback if redirecting or authentication check failed
-  if (isRedirecting || (requireAuth && !user) || (!requireAuth && user)) {
+  if (isRedirecting || (requireAuth && !isAuthenticated) || (!requireAuth && isAuthenticated)) {
     return fallback || (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-green-50 via-white to-brand-green-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="mt-4 text-zinc-700 font-medium">Redirecting...</p>
+          <p className="mt-4 text-slate-700 font-medium">Redirecting...</p>
         </div>
       </div>
     )
@@ -71,10 +73,18 @@ export function AuthGuard({
 
 // Convenience wrapper for protected routes
 export function ProtectedRoute({ children, ...props }: Omit<AuthGuardProps, 'requireAuth'>) {
-  return <AuthGuard requireAuth={true} {...props}>{children}</AuthGuard>
+  return (
+    <AuthGuard requireAuth={true} {...props}>
+      {children}
+    </AuthGuard>
+  )
 }
 
-// Convenience wrapper for public-only routes
-export function PublicOnlyRoute({ children, ...props }: Omit<AuthGuardProps, 'requireAuth'>) {
-  return <AuthGuard requireAuth={false} {...props}>{children}</AuthGuard>
+// Convenience wrapper for public routes (redirect if authenticated)
+export function PublicRoute({ children, ...props }: Omit<AuthGuardProps, 'requireAuth'>) {
+  return (
+    <AuthGuard requireAuth={false} {...props}>
+      {children}
+    </AuthGuard>
+  )
 }

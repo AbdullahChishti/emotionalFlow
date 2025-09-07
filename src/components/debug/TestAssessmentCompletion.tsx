@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { FlowManager } from '@/lib/services/FlowManager'
 import { AssessmentResult } from '@/types'
 import { useRouter } from 'next/navigation'

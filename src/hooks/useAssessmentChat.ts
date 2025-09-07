@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChatPersonalizationService, ChatMessage, ChatSession, ChatResponse } from '@/lib/chat-personalization'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 
 export interface UseAssessmentChatReturn {
   // Session management

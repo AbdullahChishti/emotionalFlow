@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { Input } from '@/components/ui/Input'

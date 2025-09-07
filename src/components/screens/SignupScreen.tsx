@@ -3,8 +3,8 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 
 // Remove unused LoadingSpinner import - now handled by AuthButton
 // import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -28,6 +28,7 @@ export default function SignupScreen() {
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
   const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const router = useRouter()
+  const { signUp } = useAuthContext()
 
   // Validation functions
   const validateField = (name: string, value: string) => {
@@ -122,22 +123,14 @@ export default function SignupScreen() {
     setFieldErrors({})
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: {
-            display_name: displayName.trim(),
-          }
-        }
-      })
+      const result = await signUp(email.trim(), password, displayName.trim())
 
-      if (error) {
-        // Handle specific Supabase errors
-        if (error.message.includes('already registered')) {
+      if (!result.success) {
+        // Handle specific errors
+        if (result.error?.includes('already registered')) {
           setFieldErrors({ email: 'This email is already registered' })
         } else {
-          setError(error.message)
+          setError(result.error || 'Signup failed')
         }
       } else {
         // Show success message instead of redirecting

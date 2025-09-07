@@ -30,11 +30,22 @@ export default function AssessmentsPage() {
     // Temporarily cache results for immediate access while database operations complete
     // Results page will prioritize database data and use this as fallback only
     try {
-      localStorage.setItem('assessmentResults', JSON.stringify(results))
+      const resultsString = JSON.stringify(results)
+      localStorage.setItem('assessmentResults', resultsString)
+      console.log('💾 Results cached to localStorage:', {
+        stringLength: resultsString.length,
+        keys: Object.keys(results),
+        sampleResult: results[Object.keys(results)[0]]
+      })
+      
       if (userProfile) {
         localStorage.setItem('userProfile', JSON.stringify(userProfile))
+        console.log('💾 User profile cached to localStorage')
       }
-      console.log('💾 Results cached to localStorage')
+      
+      // Verify the data was saved correctly
+      const verifyResults = localStorage.getItem('assessmentResults')
+      console.log('🔍 Verification - localStorage contains:', verifyResults ? 'data' : 'nothing')
     } catch (error) {
       console.warn('Failed to cache assessment results:', error)
     }

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { getAIAssessmentExplanation } from '@/lib/assessment-ai'
 import { AssessmentData, AIExplanation } from '@/lib/assessment-ai'
 import { ReportHeader } from './ReportHeader'

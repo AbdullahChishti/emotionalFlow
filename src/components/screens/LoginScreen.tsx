@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 import { track } from '@/lib/analytics'
 
 // Material Symbols icons import
@@ -20,7 +19,7 @@ export default function LoginScreen() {
   const [successMessage, setSuccessMessage] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading: authLoading } = useAuth()
+  const { user, isLoading: authLoading, isAuthenticated, signIn } = useAuthContext()
 
   // Handle URL parameters and redirect when authenticated
   useEffect(() => {
@@ -51,7 +50,7 @@ export default function LoginScreen() {
     }
     
     // Only auto-redirect if user is already logged in (not from email confirmation)
-    if (user && !message) {
+    if (isAuthenticated && user && !message) {
       router.push('/dashboard')
     }
   }, [user, router, searchParams])
@@ -68,18 +67,14 @@ export default function LoginScreen() {
 
     try {
       track('signin_submit', { method: 'password' })
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const result = await signIn(email, password)
 
-      if (error) {
-        setError(error.message)
-        track('signin_error', { message: error.message })
+      if (!result.success) {
+        setError(result.error || 'Login failed')
+        track('signin_error', { message: result.error })
       } else {
         track('signin_success', { method: 'password' })
         // Navigation will be handled by useEffect when user state updates
-        // The AuthProvider will update the user state, triggering the redirect
       }
     } catch (err) {
       setError('An unexpected error occurred')

@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * Performance Optimization Utilities
  * Provides memoization, virtualization, and performance monitoring

@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'

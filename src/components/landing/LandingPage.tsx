@@ -8,7 +8,7 @@ import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
 import { ASSESSMENTS } from '@/data/assessments'
 import { AssessmentManager } from '@/lib/services/AssessmentManager'
 // Auth is optional on landing; guard access
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 
 
 

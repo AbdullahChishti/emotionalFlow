@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { AssessmentManager } from '@/lib/services/AssessmentManager'
 import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { ASSESSMENTS } from '@/data/assessments'
@@ -322,13 +322,23 @@ export default function ResultsPage() {
   }, [user?.id, createAssessmentResult])
 
   const fetchFromStorage = useCallback((assessmentId?: string): any => {
+    console.log('🔍 ResultsPage: fetchFromStorage called with assessmentId:', assessmentId)
     const storedResults = safeGetFromStorage('assessmentResults')
-    if (!storedResults || typeof storedResults !== 'object') return null
+    console.log('🔍 ResultsPage: storedResults from localStorage:', storedResults)
+    
+    if (!storedResults || typeof storedResults !== 'object') {
+      console.log('❌ ResultsPage: No valid stored results found')
+      return null
+    }
 
     if (assessmentId) {
-      return storedResults[assessmentId] || null
+      const result = storedResults[assessmentId] || null
+      console.log(`🔍 ResultsPage: Single assessment result for ${assessmentId}:`, result)
+      return result
     } else {
-      return Object.keys(storedResults).length > 0 ? storedResults : null
+      const results = Object.keys(storedResults).length > 0 ? storedResults : null
+      console.log('🔍 ResultsPage: Multiple assessment results:', results)
+      return results
     }
   }, [])
 
@@ -356,36 +366,27 @@ export default function ResultsPage() {
       const assessmentParam = targetParam ?? searchParams.get('assessment')
       let result: any = null
       
-      // Try database first, then localStorage as fallback
-      console.log('🔍 ResultsPage: Trying database fetch...')
-      try {
-        result = await fetchFromDatabase(assessmentParam || undefined, user.id)
-        console.log('✅ ResultsPage: Database fetch successful:', result)
-        setUsingFallback(false)
+      // Check localStorage first for immediate results, then try database
+      console.log('🔍 ResultsPage: Checking localStorage first...')
+      result = fetchFromStorage(assessmentParam || undefined)
+      
+      if (result) {
+        console.log('✅ ResultsPage: Found results in localStorage, using them immediately')
+        setUsingFallback(true)
         setSyncError(null)
-      } catch (dbError) {
-        console.error('❌ ResultsPage: Database fetch failed:', dbError)
-        console.log('🔄 ResultsPage: Falling back to localStorage...')
-        result = fetchFromStorage(assessmentParam || undefined)
-        console.log('✅ ResultsPage: localStorage result:', result)
-        setUsingFallback(!!result)
-
-        // If still no data from localStorage, try to extract from user profile one more time
-        if (!result) {
-          console.log('🔄 ResultsPage: No localStorage data, trying profile extraction...')
-          try {
-            const profile = await AssessmentManager.getLatestUserProfile(user.id)
-            console.log('✅ ResultsPage: Got user profile:', !!profile?.profile_data)
-            if (profile?.profile_data) {
-              // This will be handled by the updated fetchFromDatabase function
-              result = await fetchFromDatabase(assessmentParam || undefined, user.id)
-              console.log('✅ ResultsPage: Profile extraction successful:', result)
-              setUsingFallback(false)
-            }
-          } catch (profileError) {
-            console.warn('❌ ResultsPage: Profile extraction failed:', profileError)
-            setUsingFallback(false)
-          }
+      } else {
+        console.log('🔍 ResultsPage: No localStorage results, trying database fetch...')
+        try {
+          // Add a small delay to allow background database operations to complete
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          result = await fetchFromDatabase(assessmentParam || undefined, user.id)
+          console.log('✅ ResultsPage: Database fetch successful:', result)
+          setUsingFallback(false)
+          setSyncError(null)
+        } catch (dbError) {
+          console.error('❌ ResultsPage: Database fetch failed:', dbError)
+          console.log('🔄 ResultsPage: No results found in database or localStorage')
+          result = null
         }
       }
 

@@ -122,9 +122,10 @@ export class AssessmentManager {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
+        // Use upsert to handle unique constraint on user_id
         const { data, error } = await supabase
           .from('user_assessment_profiles')
-          .insert({
+          .upsert({
             user_id: userId,
             profile_data: userProfile as any,
             trauma_history: userProfile.traumaHistory as any,
@@ -132,7 +133,11 @@ export class AssessmentManager {
             resilience_data: userProfile.resilience as any,
             risk_factors: userProfile.riskFactors as any,
             preferences: userProfile.preferences as any,
-            personalization_data: personalizationData as any
+            personalization_data: personalizationData as any,
+            last_assessed: new Date().toISOString()
+          }, {
+            onConflict: 'user_id',
+            ignoreDuplicates: false
           })
           .select()
           .single()
@@ -223,22 +228,47 @@ export class AssessmentManager {
    */
   static async getLatestUserProfile(userId: string): Promise<UserAssessmentProfileRow | null> {
     try {
+      console.log(`🔍 Fetching latest user profile for user: ${userId}`)
+      
       const { data, error } = await supabase
         .from('user_assessment_profiles')
         .select('*')
         .eq('user_id', userId)
         .order('last_assessed', { ascending: false })
         .limit(1)
-        .single()
 
       if (error) {
-        console.error('Error fetching latest user profile:', error)
+        console.error('❌ Error fetching latest user profile:', {
+          error,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDetails: error.details,
+          userId
+        })
         return null
       }
 
-      return data
+      // Handle case where no profile exists
+      if (!data || data.length === 0) {
+        console.log(`ℹ️ No user profile found for user: ${userId}`)
+        return null
+      }
+
+      const profile = data[0] // Get the first (and only) result
+      console.log(`✅ Successfully fetched user profile:`, {
+        hasData: !!profile,
+        profileId: profile?.id,
+        lastAssessed: profile?.last_assessed
+      })
+
+      return profile
     } catch (error) {
-      console.error('Error fetching latest user profile:', error)
+      console.error('💥 Exception fetching latest user profile:', {
+        error,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        errorStack: error instanceof Error ? error.stack : undefined,
+        userId
+      })
       return null
     }
   }

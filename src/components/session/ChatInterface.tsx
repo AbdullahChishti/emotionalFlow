@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/analytics'
 import { ChatPersonalizationService } from '@/lib/chat-personalization'
 import { CHAT_CONFIG, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import 'material-symbols/outlined.css'
 
 interface Message {

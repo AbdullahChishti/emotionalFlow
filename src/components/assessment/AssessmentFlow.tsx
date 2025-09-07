@@ -20,7 +20,7 @@ import { AssessmentQuestionComponent } from './AssessmentQuestion'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
 import { ASSESSMENT_ICONS } from '@/data/assessment-icons'
 // Assessment operations handled by AssessmentManager
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { UserProfile } from '@/types'
 
 // Material Symbols icons import

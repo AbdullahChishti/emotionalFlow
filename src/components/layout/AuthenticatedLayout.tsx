@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAuth } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { Navigation } from '@/components/ui/Navigation'
 import { BackButton } from '@/components/ui/BackButton'
 import { usePathname } from 'next/navigation'
