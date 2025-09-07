@@ -321,10 +321,14 @@ export const useAuthStore = create<AuthState>()(
       initialize: async () => {
         try {
           console.log('🚀 Auth Store: Initializing')
+          console.log('🔧 Environment check:')
+          console.log('NEXT_PUBLIC_SUPABASE_URL:', !!process.env.NEXT_PUBLIC_SUPABASE_URL)
+          console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
           set({ isLoading: true, isInitialized: false })
 
           // Check if we should skip auth in development
-          const skipAuth = typeof window !== 'undefined' && 
+          const skipAuth = typeof window !== 'undefined' &&
                           window.location.search.includes('skip_auth=true')
 
           if (skipAuth) {
@@ -352,11 +356,32 @@ export const useAuthStore = create<AuthState>()(
             return
           }
 
-          // Get current session
-          const { data, error } = await supabase.auth.getSession()
+          // Get current session with timeout
+          console.log('🔐 Auth Store: Checking current session...')
+          let sessionData = null
+          let sessionError = null
 
-          if (error) {
-            console.error('❌ Auth Store: Session check failed', error.message)
+          try {
+            // Add timeout to prevent hanging
+            const sessionPromise = supabase.auth.getSession()
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Session check timeout')), 10000)
+            )
+
+            const sessionResult = await Promise.race([sessionPromise, timeoutPromise])
+            sessionData = sessionResult.data
+            sessionError = sessionResult.error
+            console.log('🔐 Auth Store: Session check response received', {
+              hasSession: !!sessionData?.session,
+              hasError: !!sessionError
+            })
+          } catch (exception) {
+            console.error('❌ Auth Store: Session check exception:', exception)
+            sessionError = { message: exception.message || 'Session check failed with exception' }
+          }
+
+          if (sessionError) {
+            console.error('❌ Auth Store: Session check failed', sessionError.message)
             set({
               user: null,
               profile: null,
@@ -367,17 +392,17 @@ export const useAuthStore = create<AuthState>()(
             return
           }
 
-          if (data.session?.user) {
+          if (sessionData.session?.user) {
             console.log('✅ Auth Store: Found active session')
             set({
-              user: data.session.user,
+              user: sessionData.session.user,
               isAuthenticated: true,
               isLoading: false,
               isInitialized: true
             })
 
             // Fetch profile
-            const profile = await get().createProfile(data.session.user)
+            const profile = await get().createProfile(sessionData.session.user)
             if (profile) {
               set({ profile })
             }
@@ -424,8 +449,10 @@ export const useAuthStore = create<AuthState>()(
           })
 
           console.log('✅ Auth Store: Initialization complete')
+          console.log('📊 Final state:', { user: !!sessionData.session?.user, isAuthenticated: !!sessionData.session?.user, isLoading: false, isInitialized: true })
         } catch (error) {
           console.error('❌ Auth Store: Initialization failed', error)
+          console.log('📊 Error state:', { isLoading: false, isInitialized: true })
           set({
             user: null,
             profile: null,

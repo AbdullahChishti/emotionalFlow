@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuthContext } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 interface AuthGuardProps {
@@ -18,7 +18,7 @@ export function AuthGuard({
   redirectTo,
   fallback
 }: AuthGuardProps) {
-  const { user, isAuthenticated, isLoading, isInitialized } = useAuthContext()
+  const { user, isAuthenticated, isLoading, isInitialized } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [isRedirecting, setIsRedirecting] = useState(false)
@@ -45,7 +45,19 @@ export function AuthGuard({
   }, [isAuthenticated, isInitialized, isLoading, requireAuth, redirectTo, router, pathname, isRedirecting])
 
   // Show loading state while checking authentication
-  if (!isInitialized || isLoading) {
+  // TEMPORARY: Add timeout to prevent infinite loading
+  const [hasTimedOut, setHasTimedOut] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('🛡️ AuthGuard: Timeout reached, forcing initialization')
+      setHasTimedOut(true)
+    }, 5000) // 5 second timeout
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  if ((!isInitialized || isLoading) && !hasTimedOut) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <div className="text-center">
