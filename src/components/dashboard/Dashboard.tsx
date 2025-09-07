@@ -897,16 +897,48 @@ export function Dashboard() {
     if (typeof window === 'undefined') return
 
     const handleVisibilityChange = () => {
-      if (!document.hidden && user?.id && profile && !dataFetched && !isFetching) {
+      if (!document.hidden && user?.id && profile) {
         logger.debug('Page became visible - checking for data refresh')
-        // Reset dataFetched to trigger a refresh
-        setDataFetched(false)
+
+        // Reset assessment data if not fetched
+        if (!dataFetched && !isFetching) {
+          setDataFetched(false)
+        }
+
+        // Check if Life Impact Analysis data is missing and auto-reload if needed
+        if (hasAssessmentData && !latestOverall && !loadingImpact && !isAutoLoading) {
+          console.log('🔄 [VISIBILITY] Life Impact Analysis data missing, auto-reloading...')
+          // Use the same auto-load logic but without the daily session check
+          const loadLifeImpacts = async () => {
+            setIsAutoLoading(true)
+            try {
+              console.log('🔄 [VISIBILITY] Starting fresh life impacts analysis...')
+              const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+              console.log('✅ [VISIBILITY] Life impacts reloaded successfully:', {
+                hasResult: !!freshImpacts,
+                totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
+                manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
+                unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0
+              })
+              setLatestOverall(freshImpacts)
+            } catch (error) {
+              console.error('❌ [VISIBILITY] Error reloading life impacts:', {
+                error,
+                message: error instanceof Error ? error.message : 'Unknown error',
+                userId: user.id
+              })
+            } finally {
+              setIsAutoLoading(false)
+            }
+          }
+          loadLifeImpacts()
+        }
       }
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [user?.id, profile, dataFetched, isFetching])
+  }, [user?.id, profile, dataFetched, isFetching, hasAssessmentData, latestOverall, loadingImpact, isAutoLoading])
 
   // URL parameter handling effect
   useEffect(() => {

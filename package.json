@@ -16,6 +16,7 @@
     "inspect-assessments": "tsx scripts/inspect-assessment-data.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.50.2",
     "chart.js": "^4.5.0",
     "clsx": "^2.1.1",
