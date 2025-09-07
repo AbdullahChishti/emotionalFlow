@@ -16,15 +16,7 @@
     "inspect-assessments": "tsx scripts/inspect-assessment-data.ts"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.4",
-    "@react-three/fiber": "^9.3.0",
-    "@supabase/auth-ui-react": "^0.4.7",
-    "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.50.2",
-    "@tsparticles/engine": "^3.8.1",
-    "@tsparticles/react": "^3.0.0",
-    "@tsparticles/slim": "^3.8.1",
-    "@types/uuid": "^10.0.0",
     "chart.js": "^4.5.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -32,7 +24,6 @@
     "lucide-react": "^0.524.0",
     "material-symbols": "^0.34.1",
     "next": "15.3.4",
-    "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
@@ -40,9 +31,6 @@
     "recharts": "^3.0.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.179.1",
-    "tsparticles": "^3.8.1",
-    "uuid": "^11.1.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

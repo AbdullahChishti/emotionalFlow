@@ -1,8 +1,6 @@
 'use client'
 
 import { AuthenticatedLayout } from '@/components/layout/AuthenticatedLayout'
-import { useAuthContext } from '@/components/providers/AuthProvider'
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { usePathname } from 'next/navigation'
 import { ProtectedRoute } from '@/components/auth/AuthGuard'
 
@@ -35,5 +33,3 @@ export default function AuthLayout({
   )
 }
 
-// Import the onboarding flow here to avoid circular imports
-import { EnhancedOnboardingFlow } from '@/components/auth/EnhancedOnboardingFlow'

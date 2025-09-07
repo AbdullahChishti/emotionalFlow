@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { AssessmentFlow } from '@/components/assessment/AssessmentFlow'
+import { AssessmentFlowMigrated as AssessmentFlow } from '@/components/assessment/AssessmentFlowMigrated'
 import AssessmentHistory from '@/components/assessment/AssessmentHistory'
 import { useRouter } from 'next/navigation'
 import { ASSESSMENTS, ASSESSMENT_CATEGORIES } from '@/data/assessments'

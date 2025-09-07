@@ -3,7 +3,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '@/stores/authStore'
 import { Navigation } from '@/components/ui/Navigation'
-import { BackButton } from '@/components/ui/BackButton'
 import { usePathname } from 'next/navigation'
 // Database connection testing removed - handled by AssessmentManager
 

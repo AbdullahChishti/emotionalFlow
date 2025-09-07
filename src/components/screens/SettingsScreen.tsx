@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useAuth } from '@/stores/authStore'
 import { useRouter } from 'next/navigation'
-import { AuthDataService } from '@/lib/services/AuthDataService'
+// Account deletion not yet implemented in centralized API
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -38,17 +38,20 @@ export default function SettingsScreen() {
     setLoading(true)
     setError('')
     try {
-      // Use AuthDataService for centralized account deletion
-      const success = await AuthDataService.deleteAccount(user?.id!)
+      // TODO: Implement account deletion in centralized API
+      // For now, show a message that this feature is coming soon
+      setError('Account deletion feature is coming soon. Please contact support for assistance.')
 
-      if (success) {
-        setMessage('Account deleted successfully.')
-        setTimeout(() => {
-          router.push('/login?message=account_deleted')
-        }, 2000)
-      } else {
-        setError('Failed to delete account. Please try again.')
-      }
+      // Uncomment when implemented:
+      // const success = await useAppDataStore.getState().deleteAccount(user?.id!)
+      // if (success) {
+      //   setMessage('Account deleted successfully.')
+      //   setTimeout(() => {
+      //     router.push('/login?message=account_deleted')
+      //   }, 2000)
+      // } else {
+      //   setError('Failed to delete account. Please try again.')
+      // }
     } catch (err: any) {
       setError(err.message || 'Failed to delete account. Please try again.')
     } finally {

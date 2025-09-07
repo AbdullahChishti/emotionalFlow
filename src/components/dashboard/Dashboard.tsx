@@ -3,15 +3,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '@/stores/authStore'
-import { supabase } from '@/lib/supabase'
-import { Profile, MoodEntry, ListeningSession } from '@/types'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
-import { UserProfile } from '@/data/assessment-integration'
 import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
 import { OverallAssessmentService, OverallAssessmentResult } from '@/lib/services/OverallAssessmentService'
+import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
 
 // Extended type to support error states
 interface ExtendedOverallAssessmentResult extends OverallAssessmentResult {
@@ -26,7 +24,6 @@ declare global {
     lastGenerateInsightsClick?: number
   }
 }
-import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -153,8 +150,6 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
 
 // Constants to prevent magic numbers
 const FETCH_TIMEOUT = 15000 // 15 seconds to avoid false timeouts
-const RETRY_DELAY = 2000 // 2 seconds
-const MAX_RETRIES = 1
 
 export function Dashboard() {
   const { user, profile } = useAuth()
@@ -162,13 +157,11 @@ export function Dashboard() {
   
   // State management
   const [loading, setLoading] = useState(true)
-  const [assessmentResults, setAssessmentResults] = useState<Record<string, AssessmentResult>>({})
   const [hasAssessmentData, setHasAssessmentData] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
   const [dataFetched, setDataFetched] = useState(false)
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null)
   const [whyOpen, setWhyOpen] = useState(false)
-  const [history, setHistory] = useState<AssessmentHistoryEntry[]>([])
   const [latestMeta, setLatestMeta] = useState<Record<string, string>>({})
   const [coverage, setCoverage] = useState<{ assessed: string[]; missing: string[]; stale: string[] }>({ assessed: [], missing: [], stale: [] })
 
@@ -287,7 +280,6 @@ export function Dashboard() {
     if (!error) return 'UNKNOWN_ERROR'
     
     const errorMessage = error.message?.toLowerCase() || ''
-    const errorString = error.toString?.()?.toLowerCase() || ''
     
     // Check for specific error patterns
     if (errorMessage.includes('no assessments') || errorMessage.includes('assessment history')) {
@@ -333,7 +325,6 @@ export function Dashboard() {
     
     let progressInterval: NodeJS.Timeout | null = null
     let timeoutId: NodeJS.Timeout | null = null
-    let currentErrorType: GenerationError | null = null
     
     // Cleanup function to ensure state consistency
     const cleanup = () => {
@@ -571,7 +562,6 @@ export function Dashboard() {
           try {
             const parsed = JSON.parse(storedResults)
             if (Object.keys(parsed).length > 0) {
-              setAssessmentResults(parsed)
               setHasAssessmentData(true)
               console.log('[Dash] localStorage:used', { keys: Object.keys(parsed).length })
             }
@@ -587,10 +577,8 @@ export function Dashboard() {
         console.log('[Dash] db:fetch:done', { resultsCount: Object.keys(freshResults).length, historyCount: freshHistory.length })
 
         if (isMounted) {
-          setAssessmentResults(freshResults)
           setHasAssessmentData(Object.keys(freshResults).length > 0)
           setDataFetched(true)
-          setHistory(freshHistory)
           setLatestMeta(latest)
           console.log('[Dash] state:update:complete')
 
@@ -710,7 +698,7 @@ export function Dashboard() {
 
   // Enhanced cleanup effect for overall assessment generation
   useEffect(() => {
-    let cleanupTimeouts: NodeJS.Timeout[] = []
+    const cleanupTimeouts: NodeJS.Timeout[] = []
     
     return () => {
       // Cleanup any running intervals or timeouts when component unmounts
@@ -774,25 +762,6 @@ export function Dashboard() {
     return 'Good evening'
   }, [])
 
-  const getFormattedDate = useCallback(() => {
-    return new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  }, [])
-
-  const getSeverityColor = useCallback((severity: string) => {
-    const colors = {
-      normal: 'text-green-600 bg-green-100',
-      mild: 'text-emerald-600 bg-emerald-100',
-      moderate: 'text-amber-600 bg-amber-100',
-      severe: 'text-orange-600 bg-orange-100',
-      critical: 'text-red-600 bg-red-100'
-    }
-    return colors[severity as keyof typeof colors] || 'text-slate-600 bg-slate-100'
-  }, [])
 
   // Map level bands to badge styles (only low/mild/high are colored)
   const getLevelBadgeClasses = useCallback((level: string) => {
@@ -812,12 +781,6 @@ export function Dashboard() {
     return 'border-slate-300 hover:border-slate-400 shadow-sm hover:shadow-md'
   }, [])
 
-  const getMaxScore = useCallback((assessmentId: string) => {
-    const assessment = ASSESSMENTS[assessmentId]
-    if (!assessment) return 100
-    const lastRange = assessment.scoring.ranges[assessment.scoring.ranges.length - 1]
-    return lastRange?.max ?? 100
-  }, [])
 
   const formatRelative = useCallback((iso?: string) => {
     if (!iso) return ''
@@ -836,10 +799,6 @@ export function Dashboard() {
     return `${mo}mo ago`
   }, [])
 
-  const truncate = useCallback((text: string, len = 120) => {
-    if (!text) return ''
-    return text.length > len ? `${text.slice(0, len).trim()}…` : text
-  }, [])
 
   // Fetch latest overall assessment for the impact card
   useEffect(() => {

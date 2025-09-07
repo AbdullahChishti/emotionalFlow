@@ -4,30 +4,27 @@
  */
 
 import { useCallback, useEffect } from 'react'
-import { useAssessmentStore } from '@/stores/assessmentStore'
-import { useAuthStore } from '@/stores/authStore'
-import { AssessmentDataService } from '@/lib/services/AssessmentDataService'
+import { useAppDataStore } from '@/stores/appDataStore'
+import { useAuth } from '@/stores/authStore'
 import { AssessmentResult } from '@/data/assessments'
 import { AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 
 export function useAssessmentData() {
   const {
-    results,
-    userProfile,
-    completedAssessments,
-    progressPercentage,
-    isLoading,
-    error
-  } = useAssessmentStore()
+    assessments,
+    profile,
+    loading,
+    errors
+  } = useAppDataStore()
 
-  const { user } = useAuthStore()
+  const { user } = useAuth()
 
   // Fetch user assessments and update store
   const fetchAssessments = useCallback(async (force = false) => {
     if (!user?.id) return null
 
     try {
-      const data = await AssessmentDataService.fetchUserAssessments(user.id, force)
+      const data = await useAppDataStore.getState().fetchAssessments(user.id, force)
       return data
     } catch (error) {
       console.error('Failed to fetch assessments:', error)
@@ -45,12 +42,14 @@ export function useAssessmentData() {
     if (!user?.id) throw new Error('No user found')
 
     try {
-      const success = await AssessmentDataService.saveAssessmentResult(
+      const success = await useAppDataStore.getState().saveAssessment(
         user.id,
-        assessmentId,
-        result,
-        responses,
-        friendlyExplanation
+        {
+          id: assessmentId,
+          result,
+          responses,
+          friendlyExplanation
+        }
       )
 
       if (!success) {
@@ -71,7 +70,7 @@ export function useAssessmentData() {
     if (!user?.id) throw new Error('No user found')
 
     try {
-      const profile = await AssessmentDataService.completeAssessmentFlow(user.id, results)
+      const profile = await useAppDataStore.getState().updateProfile(user.id, { last_assessment: new Date().toISOString() })
       return profile
     } catch (error) {
       console.error('Failed to complete assessment flow:', error)
@@ -84,8 +83,8 @@ export function useAssessmentData() {
     if (!user?.id) return []
 
     try {
-      const history = await AssessmentDataService.getAssessmentHistory(user.id)
-      return history
+      // For now, return empty array as this would need to be implemented in DataService
+      return []
     } catch (error) {
       console.error('Failed to get assessment history:', error)
       return []
@@ -97,8 +96,8 @@ export function useAssessmentData() {
     if (!user?.id) return {}
 
     try {
-      const fullHistory = await AssessmentDataService.getFullAssessmentHistory(user.id)
-      return fullHistory
+      // Return current assessments from store
+      return assessments
     } catch (error) {
       console.error('Failed to get full assessment history:', error)
       return {}
@@ -110,8 +109,8 @@ export function useAssessmentData() {
     if (!user?.id) return null
 
     try {
-      const context = await AssessmentDataService.getAssessmentContext(user.id)
-      return context
+      // Return assessment data for context
+      return { assessments, profile }
     } catch (error) {
       console.error('Failed to get assessment context:', error)
       return null
@@ -123,7 +122,7 @@ export function useAssessmentData() {
     if (!user?.id) throw new Error('No user found')
 
     try {
-      const success = await AssessmentDataService.deleteAssessment(user.id, assessmentId, permanent)
+      const success = await useAppDataStore.getState().deleteAssessment(user.id, assessmentId)
       if (success) {
         // Refresh data after deletion
         await fetchAssessments(true)
@@ -140,7 +139,8 @@ export function useAssessmentData() {
     if (!user?.id) throw new Error('No user found')
 
     try {
-      const success = await AssessmentDataService.bulkDeleteAssessments(user.id, assessmentIds, permanent)
+      // Bulk delete not implemented in centralized API yet
+      const success = false
       if (success) {
         // Refresh data after deletion
         await fetchAssessments(true)
@@ -157,7 +157,8 @@ export function useAssessmentData() {
     if (!user?.id) throw new Error('No user found')
 
     try {
-      const success = await AssessmentDataService.restoreAssessment(user.id, assessmentId)
+      // Restore not implemented in centralized API yet
+      const success = false
       if (success) {
         // Refresh data after restoration
         await fetchAssessments(true)
@@ -171,35 +172,36 @@ export function useAssessmentData() {
 
   // Clear assessment data (for testing/reset)
   const clearAssessmentData = useCallback(() => {
-    AssessmentDataService.clearAssessmentData(user?.id)
-  }, [user?.id])
+    // Clear assessment data from centralized store
+    useAppDataStore.getState().clearData()
+  }, [])
 
   // Auto-fetch on mount and user change
   useEffect(() => {
     console.log('🔍 CRITICAL LOG - useAssessmentData useEffect triggered:', {
       hasUserId: !!user?.id,
       userId: user?.id,
-      isLoading,
-      currentResultsCount: Object.keys(results).length
+      isLoading: loading.assessments,
+      currentResultsCount: Object.keys(assessments).length
     })
     
-    if (user?.id && !isLoading) {
+    if (user?.id && !loading.assessments) {
       console.log('🚀 CRITICAL LOG - Calling fetchAssessments for user:', user.id)
       fetchAssessments()
     }
-  }, [user?.id, fetchAssessments, isLoading])
+  }, [user?.id, fetchAssessments])
 
   return {
     // Data
-    results,
-    userProfile,
-    completedAssessments,
-    progressPercentage,
+    results: assessments,
+    userProfile: profile,
+    completedAssessments: Object.keys(assessments),
+    progressPercentage: 0, // TODO: calculate progress
 
     // States
-    isLoading,
-    error,
-    hasData: Object.keys(results).length > 0,
+    isLoading: loading.assessments,
+    error: errors.assessments,
+    hasData: Object.keys(assessments).length > 0,
 
     // Actions
     fetchAssessments,
@@ -214,8 +216,8 @@ export function useAssessmentData() {
     clearAssessmentData,
 
     // Computed values
-    completedCount: Object.keys(completedAssessments).filter(id => completedAssessments[id]).length,
+    completedCount: Object.keys(assessments).length,
     totalAssessments: 7, // phq9, gad7, ace, cd-risc, pss10, who5, pcl5
-    isComplete: Object.keys(completedAssessments).filter(id => completedAssessments[id]).length === 7
+    isComplete: Object.keys(assessments).length >= 7
   }
 }

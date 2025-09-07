@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuthContext } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 
 // Remove unused LoadingSpinner import - now handled by AuthButton
 // import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -28,7 +28,7 @@ export default function SignupScreen() {
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
   const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const router = useRouter()
-  const { signUp } = useAuthContext()
+  const { signUp } = useAuth()
 
   // Validation functions
   const validateField = (name: string, value: string) => {

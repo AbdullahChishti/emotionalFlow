@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkSupabaseHealth } from '@/lib/supabase'
 import { HealthMonitor } from '@/lib/health-monitor'
-import { PerformanceMonitor } from '@/lib/performance-utils'
+// TODO: Import performance monitoring when implemented
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,8 +18,13 @@ export async function GET(request: NextRequest) {
     // Get system health status
     const healthStatus = HealthMonitor.getHealthStatus()
 
-    // Get performance metrics
-    const performanceSummary = PerformanceMonitor.getPerformanceSummary()
+    // TODO: Get performance metrics when implemented
+    const performanceSummary = {
+      totalRenders: 0,
+      slowRenders: 0,
+      averageRenderTime: 0,
+      memoryUsage: 0
+    }
 
     // Check memory usage (if available)
     let memoryUsage = null

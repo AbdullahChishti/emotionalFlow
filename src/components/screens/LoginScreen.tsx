@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuthContext } from '@/components/providers/AuthProvider'
+import { useAuth } from '@/stores/authStore'
 import { track } from '@/lib/analytics'
 
 // Material Symbols icons import
@@ -19,7 +19,7 @@ export default function LoginScreen() {
   const [successMessage, setSuccessMessage] = useState('')
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, isLoading: authLoading, isAuthenticated, signIn } = useAuthContext()
+  const { user, isLoading: authLoading, isAuthenticated, signIn } = useAuth()
 
   // Handle URL parameters and redirect when authenticated
   useEffect(() => {
