@@ -1393,9 +1393,9 @@ export function Dashboard() {
                     <span className={`material-symbols-outlined text-lg ${
                       isGeneratingOverall ? 'animate-spin' : ''
                     }`}>
-                      {isGeneratingOverall ? 'hourglass_empty' : 'auto_awesome'}
+                      {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
                     </span>
-                    <span>{isGeneratingOverall ? 'Analyzing complete history...' : 'Analyze complete history'}</span>
+                    <span>{isGeneratingOverall ? 'Analyzing your mental health journey...' : 'Get Started'}</span>
                   </div>
                 </button>
 
