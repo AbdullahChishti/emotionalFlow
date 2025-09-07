@@ -1383,9 +1383,9 @@ export function Dashboard() {
               <div className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <span className="material-symbols-outlined text-slate-400 text-2xl">psychology</span>
               </div>
-              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Life Impact Analysis</h3>
+              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Unconscious Manifestations</h3>
               <p className="text-slate-500 text-base mb-8 leading-relaxed font-light">
-                Get personalized insights about how your mental health might be affecting your daily life.
+                Discover how your mental health patterns might be manifesting unconsciously in your daily life, relationships, and well-being.
               </p>
               <div className="relative group">
                 <button
@@ -1453,7 +1453,7 @@ export function Dashboard() {
               <span className="material-symbols-outlined text-slate-600 text-xl">psychology</span>
             </div>
             <div>
-              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Life Impact Analysis</h3>
+              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Unconscious Manifestations</h3>
               <div className="relative group">
                 <p className="text-sm text-slate-500 cursor-help hover:text-slate-700 transition-colors duration-300 font-light flex items-center gap-1">
                   <span>Based on all your assessments</span>
@@ -1466,9 +1466,9 @@ export function Dashboard() {
                       <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-slate-900 mb-1">Comprehensive Analysis</h4>
+                      <h4 className="text-sm font-medium text-slate-900 mb-1">Unconscious Manifestations</h4>
                       <p className="text-xs text-slate-600 leading-relaxed font-light">
-                        We analyze every assessment you've completed to create a personalized summary of how your mental health patterns might be impacting your daily life, relationships, work, and overall well-being.
+                        These insights reveal how your mental health patterns might be manifesting unconsciously in your daily life, relationships, work, and overall well-being. Understanding these patterns can help you recognize and address them proactively.
                       </p>
                     </div>
                   </div>
