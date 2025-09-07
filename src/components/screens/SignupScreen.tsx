@@ -25,60 +25,10 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({})
-  const [touched, setTouched] = useState<{[key: string]: boolean}>({})
   const router = useRouter()
   const { signUp } = useAuth()
 
-  // Validation functions
-  const validateField = (name: string, value: string) => {
-    const errors: {[key: string]: string} = {}
-
-    switch (name) {
-      case 'displayName':
-        if (!value.trim()) {
-          errors.displayName = 'Full name is required'
-        } else if (value.trim().length < 2) {
-          errors.displayName = 'Full name must be at least 2 characters'
-        }
-        break
-
-      case 'email':
-        if (!value.trim()) {
-          errors.email = 'Email is required'
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          errors.email = 'Please enter a valid email address'
-        }
-        break
-
-      case 'password':
-        if (!value) {
-          errors.password = 'Password is required'
-        } else if (value.length < 6) {
-          errors.password = 'Password must be at least 6 characters'
-        } else if (!/(?=.*[a-z])(?=.*[A-Z])/.test(value)) {
-          errors.password = 'Password must contain both uppercase and lowercase letters'
-        } else if (!/(?=.*\d)/.test(value)) {
-          errors.password = 'Password must contain at least one number'
-        }
-        break
-    }
-
-    return errors
-  }
-
-  const validateForm = () => {
-    const errors: {[key: string]: string} = {}
-
-    Object.assign(errors, validateField('displayName', displayName))
-    Object.assign(errors, validateField('email', email))
-    Object.assign(errors, validateField('password', password))
-
-    setFieldErrors(errors)
-    return Object.keys(errors).length === 0
-  }
-
-  // Handle field changes with validation
+  // Handle field changes
   const handleFieldChange = (field: string, value: string) => {
     const setter = {
       displayName: setDisplayName,
@@ -89,49 +39,19 @@ export default function SignupScreen() {
     if (setter) {
       setter(value)
     }
-
-    // Clear field error when user starts typing
-    if (fieldErrors[field]) {
-      setFieldErrors(prev => ({ ...prev, [field]: '' }))
-    }
-  }
-
-  const handleFieldBlur = (field: string, value: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }))
-    const errors = validateField(field, value)
-    setFieldErrors(prev => ({ ...prev, ...errors }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Mark all fields as touched for validation display
-    setTouched({
-      displayName: true,
-      email: true,
-      password: true
-    })
-
-    // Validate entire form
-    if (!validateForm()) {
-      setError('Please correct the errors below')
-      return
-    }
-
     setLoading(true)
     setError('')
-    setFieldErrors({})
 
     try {
       const result = await signUp(email.trim(), password, displayName.trim())
 
       if (!result.success) {
-        // Handle specific errors
-        if (result.error?.includes('already registered')) {
-          setFieldErrors({ email: 'This email is already registered' })
-        } else {
-          setError(result.error || 'Signup failed')
-        }
+        setError(result.error || 'Signup failed')
       } else {
         // Show success message instead of redirecting
         setSuccess(true)
@@ -344,11 +264,8 @@ export default function SignupScreen() {
                 type="text"
                 value={displayName}
                 onChange={(e) => handleFieldChange('displayName', e.target.value)}
-                onBlur={(e) => handleFieldBlur('displayName', e.target.value)}
                 placeholder="Enter your full name"
-                required
                 disabled={loading}
-                error={touched.displayName ? fieldErrors.displayName : undefined}
               />
 
               <FormField
@@ -356,23 +273,16 @@ export default function SignupScreen() {
                 type="email"
                 value={email}
                 onChange={(e) => handleFieldChange('email', e.target.value)}
-                onBlur={(e) => handleFieldBlur('email', e.target.value)}
                 placeholder="Enter your email"
-                required
                 disabled={loading}
-                error={touched.email ? fieldErrors.email : undefined}
               />
 
               <PasswordInput
                 label="Password"
                 value={password}
                 onChange={(e) => handleFieldChange('password', e.target.value)}
-                onBlur={(e) => handleFieldBlur('password', e.target.value)}
                 placeholder="Create a password"
-                required
                 disabled={loading}
-                error={touched.password ? fieldErrors.password : undefined}
-                showStrengthIndicator
               />
 
 
@@ -383,7 +293,7 @@ export default function SignupScreen() {
                   size="lg"
                   loading={loading}
                   fullWidth
-                  disabled={loading || Object.keys(fieldErrors).length > 0}
+                  disabled={loading}
                   icon={<span className="material-symbols-outlined text-xl">rocket_launch</span>}
                 >
                   {loading ? 'Creating account...' : 'Create account'}
