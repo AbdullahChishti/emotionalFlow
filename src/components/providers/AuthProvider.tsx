@@ -115,14 +115,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(async (email: string, password: string, displayName: string) => {
     setCurrentError(null) // Clear any previous errors
 
-    const result = await authManager.signUp(email, password, displayName)
+    console.log('🚀 [AUTH_PROVIDER_SIGNUP] Starting signup process', {
+      email: email.replace(/(.{2}).*@/, '$1***@'),
+      displayName: displayName.substring(0, 2) + '***',
+      hasPassword: !!password
+    })
 
-    if (!result.success && result.error) {
-      console.error('❌ AUTH DEBUG: Sign up failed:', result.error.message)
-      setCurrentError(result.error)
+    try {
+      const result = await authManager.signUp(email, password, displayName)
+
+      console.log('📋 [AUTH_PROVIDER_SIGNUP] Signup result:', {
+        success: result.success,
+        hasError: !!result.error,
+        errorType: result.error ? typeof result.error : 'none',
+        hasUser: !!result.user
+      })
+
+      if (!result.success && result.error) {
+        console.error('❌ AUTH_PROVIDER_SIGNUP: Sign up failed:', {
+          error: result.error,
+          errorType: typeof result.error,
+          message: typeof result.error === 'string' ? result.error : result.error.message
+        })
+        setCurrentError(result.error)
+      } else {
+        console.log('✅ AUTH_PROVIDER_SIGNUP: Sign up successful')
+      }
+
+      return result
+    } catch (unexpectedError) {
+      console.error('💥 AUTH_PROVIDER_SIGNUP: Unexpected error:', unexpectedError)
+      const errorMessage = unexpectedError instanceof Error ? unexpectedError.message : 'Unknown error'
+      setCurrentError(errorMessage)
+      return { success: false, error: errorMessage }
     }
-
-    return result
   }, [])
 
   const signOut = useCallback(async () => {

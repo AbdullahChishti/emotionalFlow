@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -25,8 +25,21 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [isOnline, setIsOnline] = useState(true)
   const router = useRouter()
   const { signUp } = useAuth()
+
+  // Check network connectivity
+  useEffect(() => {
+    const checkOnline = () => setIsOnline(navigator.onLine)
+    checkOnline()
+    window.addEventListener('online', checkOnline)
+    window.addEventListener('offline', checkOnline)
+    return () => {
+      window.removeEventListener('online', checkOnline)
+      window.removeEventListener('offline', checkOnline)
+    }
+  }, [])
 
   // Handle field changes
   const handleFieldChange = (field: string, value: string) => {
@@ -44,20 +57,79 @@ export default function SignupScreen() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Basic validation before API call
+    if (!email.trim()) {
+      setError('Email is required')
+      return
+    }
+    if (!password.trim()) {
+      setError('Password is required')
+      return
+    }
+    if (!displayName.trim()) {
+      setError('Full name is required')
+      return
+    }
+
+    // Check network connectivity first
+    if (!isOnline) {
+      setError('You appear to be offline. Please check your internet connection and try again.')
+      return
+    }
+
     setLoading(true)
     setError('')
+
+    console.log('🚀 [SIGNUP_DEBUG] Starting signup process', {
+      email: email.trim(),
+      displayName: displayName.trim(),
+      hasPassword: !!password.trim(),
+      isOnline
+    })
 
     try {
       const result = await signUp(email.trim(), password, displayName.trim())
 
+      console.log('📋 [SIGNUP_DEBUG] Signup result received', {
+        success: result.success,
+        hasError: !!result.error,
+        errorMessage: result.error,
+        hasUser: !!result.user
+      })
+
       if (!result.success) {
-        setError(result.error || 'Signup failed')
+        // Show specific error messages
+        if (result.error?.includes('already registered') || result.error?.includes('already in use')) {
+          setError('This email is already registered. Please try signing in instead.')
+        } else if (result.error?.includes('password')) {
+          setError('Password does not meet requirements. Please choose a stronger password.')
+        } else if (result.error?.includes('email')) {
+          setError('Please enter a valid email address.')
+        } else if (result.error?.includes('network') || result.error?.includes('connection')) {
+          setError('Network error. Please check your internet connection and try again.')
+        } else {
+          setError(`Signup failed: ${result.error}`)
+        }
       } else {
         // Show success message instead of redirecting
+        console.log('✅ [SIGNUP_DEBUG] Signup successful')
         setSuccess(true)
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.')
+      console.error('💥 [SIGNUP_DEBUG] Unexpected error during signup:', err)
+
+      // Show more specific error information
+      if (err instanceof Error) {
+        if (err.message.includes('fetch')) {
+          setError('Network error: Unable to connect to the server. Please check your internet connection.')
+        } else if (err.message.includes('timeout')) {
+          setError('Request timed out. Please try again.')
+        } else {
+          setError(`Error: ${err.message}`)
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -293,10 +365,10 @@ export default function SignupScreen() {
                   size="lg"
                   loading={loading}
                   fullWidth
-                  disabled={loading}
+                  disabled={loading || !isOnline}
                   icon={<span className="material-symbols-outlined text-xl">rocket_launch</span>}
                 >
-                  {loading ? 'Creating account...' : 'Create account'}
+                  {!isOnline ? 'No internet connection' : loading ? 'Creating account...' : 'Create account'}
                 </AuthButton>
               </div>
               </fieldset>
