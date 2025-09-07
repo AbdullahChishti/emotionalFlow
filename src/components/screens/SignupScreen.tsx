@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/stores/authStore'
+import { useAuthContext } from '@/components/providers/AuthProvider'
 
 // Remove unused LoadingSpinner import - now handled by AuthButton
 // import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -27,7 +27,7 @@ export default function SignupScreen() {
   const [success, setSuccess] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
   const router = useRouter()
-  const { signUp } = useAuth()
+  const { signUp } = useAuthContext()
 
   // Check network connectivity
   useEffect(() => {
