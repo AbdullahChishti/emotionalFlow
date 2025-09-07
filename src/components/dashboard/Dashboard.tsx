@@ -1414,32 +1414,55 @@ export function Dashboard() {
                     e.preventDefault()
                     e.stopPropagation()
 
-                    if (isGeneratingOverall || !hasAssessmentData || !user?.id) return
+                    if (isAutoLoading || !hasAssessmentData || !user?.id) return
 
                     if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) return
 
                     window.lastGenerateInsightsClick = Date.now()
-                    handleGenerateOverallAssessment()
+                    setIsAutoLoading(true)
+                    // Use getFreshLifeImpacts for initial loading, not comprehensive analysis
+                    const loadLifeImpacts = async () => {
+                      try {
+                        console.log('🔄 [GET_STARTED] Starting fresh life impacts analysis for user:', user.id)
+                        const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+                        console.log('✅ [GET_STARTED] Life impacts loaded successfully:', {
+                          hasResult: !!freshImpacts,
+                          totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
+                          manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
+                          unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0
+                        })
+                        setLatestOverall(freshImpacts)
+                      } catch (error) {
+                        console.error('❌ [GET_STARTED] Error loading life impacts:', {
+                          error,
+                          message: error instanceof Error ? error.message : 'Unknown error',
+                          userId: user.id
+                        })
+                      } finally {
+                        setIsAutoLoading(false)
+                      }
+                    }
+                    loadLifeImpacts()
                   }}
-                  disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
+                  disabled={isAutoLoading || !hasAssessmentData || !user?.id}
                   className={`group px-6 py-3 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent ${
-                    isGeneratingOverall || !hasAssessmentData || !user?.id
+                    isAutoLoading || !hasAssessmentData || !user?.id
                       ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
                       : 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className={`material-symbols-outlined text-lg ${
-                      isGeneratingOverall ? 'animate-spin' : ''
+                      isAutoLoading ? 'animate-spin' : ''
                     }`}>
-                      {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
+                      {isAutoLoading ? 'hourglass_empty' : 'psychology'}
                     </span>
-                    <span>{isGeneratingOverall ? 'Analyzing your mental health journey...' : 'Get Started'}</span>
+                    <span>{isAutoLoading ? 'Discovering your unconscious patterns...' : 'Get Started'}</span>
                   </div>
                 </button>
 
                 {/* Tooltip for disabled state */}
-                {!hasAssessmentData && !isGeneratingOverall && user?.id && (
+                {!hasAssessmentData && !isAutoLoading && user?.id && (
                   <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2 w-72 p-3 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-2xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                     <div className="flex items-start gap-3">
                       <div className="w-8 h-8 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
