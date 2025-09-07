@@ -1824,29 +1824,63 @@ export function Dashboard() {
                     <div className="text-sm font-light text-slate-500">Track your wellness journey</div>
                   </div>
 
+                  {/* Progress Summary */}
+                  <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-slate-700">Assessment Progress</span>
+                      <span className="text-sm font-semibold text-slate-600">
+                        {coverage.assessed.length + coverage.stale.length} of {Object.keys(ASSESSMENTS).length} completed
+                      </span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div
+                        className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${((coverage.assessed.length + coverage.stale.length) / Object.keys(ASSESSMENTS).length) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
                   {/* Completed Assessments */}
                   {(coverage.assessed.length > 0 || coverage.stale.length > 0) && (
                     <div className="mb-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="material-symbols-outlined text-emerald-600 text-base">check_circle</span>
-                        <span className="text-sm font-medium text-slate-700">Completed Assessments</span>
-                      </div>
-                      <div className="space-y-3">
-                        {coverage.assessed.map(id => (
-                          <div key={`completed-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-emerald-50/50 border border-emerald-100 hover:bg-emerald-50 transition-all duration-200 cursor-pointer">
-                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-emerald-600">
-                              <span className="material-symbols-outlined text-white text-sm">check</span>
+                      <div className="flex items-center justify-between mb-4 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white text-sm">check_circle</span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-semibold text-emerald-800">Assessments Taken</span>
+                            <div className="text-xs text-emerald-600 font-medium">
+                              {coverage.assessed.length + coverage.stale.length} completed
                             </div>
-                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-emerald-700">
+                            {coverage.assessed.length + coverage.stale.length}
+                          </div>
+                          <div className="text-xs text-emerald-600">taken</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 ml-4">
+                        {coverage.assessed.map(id => (
+                          <div key={`completed-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-white border border-emerald-100 hover:bg-emerald-25 hover:border-emerald-200 transition-all duration-200 cursor-pointer shadow-sm">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-emerald-600 shadow-sm">
+                              <span className="material-symbols-outlined text-white text-xs">check</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800 flex-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                            <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full">Recent</span>
                           </div>
                         ))}
 
                         {coverage.stale.map(id => (
-                          <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-amber-50/50 border border-amber-100 hover:bg-amber-50 transition-all duration-200 cursor-pointer">
-                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-amber-600">
-                              <span className="material-symbols-outlined text-white text-sm">schedule</span>
+                          <div key={`stale-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-white border border-amber-100 hover:bg-amber-25 hover:border-amber-200 transition-all duration-200 cursor-pointer shadow-sm">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-amber-600 shadow-sm">
+                              <span className="material-symbols-outlined text-white text-xs">schedule</span>
                             </div>
-                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                            <span className="text-sm font-medium text-slate-700 group-hover:text-slate-800 flex-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                            <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded-full">Update needed</span>
                           </div>
                         ))}
                       </div>
@@ -1856,20 +1890,47 @@ export function Dashboard() {
                   {/* Available Assessments */}
                   {coverage.missing.length > 0 && (
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="material-symbols-outlined text-slate-400 text-base">radio_button_unchecked</span>
-                        <span className="text-sm font-medium text-slate-600">Available Assessments</span>
-                      </div>
-                      <div className="space-y-3">
-                        {coverage.missing.map(id => (
-                          <div key={`available-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-slate-50/50 border border-slate-100 hover:bg-slate-50 transition-all duration-200 cursor-pointer">
-                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-slate-300">
-                              <span className="material-symbols-outlined text-slate-500 text-sm">radio_button_unchecked</span>
+                      <div className="flex items-center justify-between mb-4 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-slate-400 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-white text-sm">radio_button_unchecked</span>
+                          </div>
+                          <div>
+                            <span className="text-sm font-semibold text-slate-700">Assessments Not Taken</span>
+                            <div className="text-xs text-slate-500 font-medium">
+                              {coverage.missing.length} available
                             </div>
-                            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-700">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-slate-600">
+                            {coverage.missing.length}
+                          </div>
+                          <div className="text-xs text-slate-500">remaining</div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 ml-4">
+                        {coverage.missing.map(id => (
+                          <div key={`available-${id}`} className="group flex items-center gap-4 px-4 py-3 rounded-lg bg-white border border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all duration-200 cursor-pointer shadow-sm">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-slate-300 shadow-sm">
+                              <span className="material-symbols-outlined text-slate-500 text-xs">radio_button_unchecked</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-600 group-hover:text-slate-700 flex-1">{(ASSESSMENTS[id]?.shortTitle || id.toUpperCase())}</span>
+                            <span className="text-xs text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-full">Not taken</span>
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+
+                  {/* Empty state when no assessments are available */}
+                  {coverage.assessed.length === 0 && coverage.stale.length === 0 && coverage.missing.length === 0 && (
+                    <div className="text-center py-8">
+                      <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span className="material-symbols-outlined text-slate-400 text-xl">assignment</span>
+                      </div>
+                      <p className="text-sm text-slate-500 font-light">No assessments available</p>
                     </div>
                   )}
                 </div>
