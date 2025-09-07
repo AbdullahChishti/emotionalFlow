@@ -196,6 +196,27 @@ export function Dashboard() {
   const [overallRetryCount, setOverallRetryCount] = useState(0)
   // Latest saved overall assessment for impact card
   const [latestOverall, setLatestOverall] = useState<OverallAssessmentResult | null>(null)
+
+  // Refresh overall assessment data when tab becomes active
+  const refreshOverallAssessment = useCallback(async () => {
+    if (!user?.id || !hasAssessmentData) return
+
+    try {
+      console.log('🔄 Refreshing overall assessment data...')
+      const latest = await OverallAssessmentService.getLatestHolisticAssessment(user.id)
+
+      if (latest && (!overallAssessment || latest.updatedAt > overallAssessment.updatedAt)) {
+        console.log('✅ Found newer overall assessment data, updating state')
+        setOverallAssessment(latest)
+      } else if (!latest && overallAssessment) {
+        console.log('⚠️ No assessment data found in database, keeping local state')
+      } else {
+        console.log('ℹ️ Assessment data is up to date')
+      }
+    } catch (error) {
+      console.warn('Failed to refresh overall assessment:', error)
+    }
+  }, [user?.id, hasAssessmentData, overallAssessment])
   const [loadingImpact, setLoadingImpact] = useState(false)
   const [isAutoLoading, setIsAutoLoading] = useState(false)
 
@@ -1071,6 +1092,32 @@ export function Dashboard() {
       }
     }
   }, [overallProgress])
+
+  // Listen for tab visibility changes and refresh data when tab becomes active
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.id && hasAssessmentData) {
+        console.log('👁️ Tab became visible, checking for updated assessment data...')
+        refreshOverallAssessment()
+      }
+    }
+
+    // Also check on window focus (more reliable for some browsers)
+    const handleWindowFocus = () => {
+      if (user?.id && hasAssessmentData) {
+        console.log('🎯 Window focused, checking for updated assessment data...')
+        refreshOverallAssessment()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleWindowFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleWindowFocus)
+    }
+  }, [user?.id, hasAssessmentData, refreshOverallAssessment])
 
   // Enhanced cleanup effect for overall assessment generation
   useEffect(() => {

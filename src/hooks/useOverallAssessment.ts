@@ -69,6 +69,25 @@ export function useOverallAssessment() {
 
   const [overallRetryCount, setOverallRetryCount] = useState(0)
 
+  // Refresh assessment data from database
+  const refreshAssessmentData = useCallback(async () => {
+    if (!user?.id) return
+
+    try {
+      console.log('🔄 Refreshing assessment data from database...')
+      const latest = await OverallAssessmentService.getLatestHolisticAssessment(user.id)
+
+      if (latest && (!overallAssessment || latest.updatedAt > overallAssessment.updatedAt)) {
+        console.log('✅ Found newer assessment data, updating state')
+        setOverallAssessment(latest)
+      } else {
+        console.log('ℹ️ Assessment data is up to date')
+      }
+    } catch (error) {
+      console.warn('Failed to refresh assessment data:', error)
+    }
+  }, [user?.id, overallAssessment])
+
   // Classify error type for better handling
   const classifyError = useCallback((error: any): GenerationError => {
     if (!error) return 'UNKNOWN_ERROR'
@@ -347,6 +366,31 @@ export function useOverallAssessment() {
     }
   }, [overallProgress])
 
+  // Listen for tab visibility changes and refresh data when tab becomes active
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user?.id) {
+        console.log('👁️ Tab became visible, refreshing assessment data...')
+        refreshAssessmentData()
+      }
+    }
+
+    const handleWindowFocus = () => {
+      if (user?.id) {
+        console.log('🎯 Window focused, refreshing assessment data...')
+        refreshAssessmentData()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    window.addEventListener('focus', handleWindowFocus)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      window.removeEventListener('focus', handleWindowFocus)
+    }
+  }, [user?.id, refreshAssessmentData])
+
   return {
     // State
     overallAssessment,
@@ -359,6 +403,7 @@ export function useOverallAssessment() {
     generateOverallAssessment,
     setShowOverallResults,
     setOverallAssessment,
+    refreshAssessmentData,
 
     // Computed
     hasOverallAssessment: !!overallAssessment,
