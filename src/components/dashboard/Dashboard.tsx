@@ -1489,7 +1489,7 @@ export function Dashboard() {
                     }`}>
                       {isAutoLoading ? 'hourglass_empty' : 'psychology'}
                     </span>
-                    <span>{isAutoLoading ? 'Discovering your unconscious patterns...' : 'Get Started'}</span>
+                    <span>{isAutoLoading ? 'Analysing your unconscious patterns...' : 'Analyse my unconscious patterns'}</span>
                   </div>
                 </button>
 
@@ -1502,7 +1502,7 @@ export function Dashboard() {
                       </div>
                       <div>
                         <p className="text-sm text-slate-700 leading-relaxed font-light">
-                          This feature is only available once you have completed an assessment. Take an assessment first to unlock comprehensive analysis.
+                          This feature is only available once you have completed an assessment. Take an assessment first to unlock analysis of your unconscious patterns.
                         </p>
                       </div>
                     </div>
