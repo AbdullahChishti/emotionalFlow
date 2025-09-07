@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, forwardRef, InputHTMLAttributes } from 'react'
+import React, { useState, forwardRef, InputHTMLAttributes, useId } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface PasswordInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
@@ -72,7 +72,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     const strength = getPasswordStrength(password)
 
-    const fieldId = `password-${Math.random().toString(36).substr(2, 9)}`
+    const fieldId = useId()
     const errorId = error ? `${fieldId}-error` : undefined
 
     return (

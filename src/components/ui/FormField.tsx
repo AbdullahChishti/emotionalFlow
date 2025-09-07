@@ -1,6 +1,6 @@
 'use client'
 
-import React, { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes } from 'react'
+import React, { forwardRef, InputHTMLAttributes, TextareaHTMLAttributes, useId } from 'react'
 import { motion } from 'framer-motion'
 
 interface BaseFormFieldProps {
@@ -35,7 +35,7 @@ export const FormField = forwardRef<HTMLInputElement | HTMLTextAreaElement, Form
     multiline,
     ...props
   }, ref) => {
-    const fieldId = `field-${Math.random().toString(36).substr(2, 9)}`
+    const fieldId = useId()
     const errorId = error ? `${fieldId}-error` : undefined
     const hintId = hint ? `${fieldId}-hint` : undefined
 
