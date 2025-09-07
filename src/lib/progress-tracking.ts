@@ -283,8 +283,7 @@ export class ProgressTrackingService {
           priority: 'high',
           category: 'emotional_wellbeing',
           timestamp: new Date(),
-          actionable: true,
-          actionUrl: '/crisis-support'
+          actionable: false
         })
       }
     }

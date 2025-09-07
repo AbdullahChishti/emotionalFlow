@@ -132,12 +132,6 @@ export function QuickActions({ profile, currentMood, onMoodUpdate, onNavigate }:
           >
             Update Mood
           </button>
-          <button
-            onClick={() => onNavigate?.('/crisis-support')}
-            className="px-4 py-3 bg-white/60 hover:bg-white/80 rounded-2xl text-sm font-medium text-secondary-600 hover:text-secondary-900 transition-colors"
-          >
-            Crisis Support
-          </button>
       </div>
 
       {/* Mood Selector Modal */}

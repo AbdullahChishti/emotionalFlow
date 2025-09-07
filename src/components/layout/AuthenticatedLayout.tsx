@@ -20,7 +20,7 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
   React.useEffect(() => {
     if (pathname.includes('/dashboard')) setCurrentPage('dashboard')
     else if (pathname.includes('/assessments')) setCurrentPage('assessments')
-    else if (pathname.includes('/session') || pathname.includes('/meditation') || pathname.includes('/crisis-support')) {
+    else if (pathname.includes('/session') || pathname.includes('/meditation')) {
       setCurrentPage('therapy')
     }
     else if (pathname.includes('/profile')) setCurrentPage('profile')

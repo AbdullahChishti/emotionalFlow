@@ -92,7 +92,6 @@ export type SessionMode =
   | 'voice-chat'
   | 'video-chat'
   | 'guided-meditation'
-  | 'crisis-support'
 
 export interface SessionState {
   id: string

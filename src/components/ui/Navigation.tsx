@@ -74,12 +74,6 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                       Meditation
                     </div>
                   </Link>
-                  <Link href="/crisis-support" className="block px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 last:rounded-b-lg">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-lg">emergency</span>
-                      Crisis Support
-                    </div>
-                  </Link>
                 </div>
               </div>
               <button

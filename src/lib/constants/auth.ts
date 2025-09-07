@@ -49,7 +49,6 @@ export const AUTH_ROUTES = {
     '/session',
     '/wallet',
     '/check-in',
-    '/crisis-support',
     '/help',
     '/community',
     '/meditation',

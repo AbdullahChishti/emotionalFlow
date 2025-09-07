@@ -327,16 +327,6 @@ export function HelpScreen() {
                       <p className="text-sm text-secondary-600">Building emotional awareness habits</p>
                     </button>
 
-                    <button
-                      onClick={() => router.push('/crisis-support')}
-                      className="p-4 bg-white/60 rounded-2xl hover:bg-white/80 transition-colors text-left"
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="material-symbols-outlined text-primary-600">verified_user</span>
-                        <span className="font-semibold text-secondary-800">Safety & Privacy</span>
-                      </div>
-                      <p className="text-sm text-secondary-600">Your well-being and privacy matter</p>
-                    </button>
                   </div>
                 </div>
 
