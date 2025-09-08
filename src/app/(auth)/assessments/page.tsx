@@ -127,14 +127,65 @@ export default function AssessmentsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-full">
-              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-              <span className="text-sm font-medium text-blue-800 tracking-wide">
-                Professional Grade • Clinical Assessment • Evidence-Based
-              </span>
-              <div className="flex items-center">
-                <span className="material-symbols-outlined text-blue-600 text-base">verified</span>
+            <div className="relative group">
+              {/* Main Badge Container */}
+              <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border border-emerald-200/60 rounded-full shadow-lg shadow-emerald-100/50 backdrop-blur-sm">
+                {/* Professional Grade Indicator */}
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <div className="w-3 h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full shadow-sm"></div>
+                    <div className="absolute inset-0 w-3 h-3 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full animate-pulse opacity-75"></div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-700 tracking-wider uppercase">
+                    Professional
+                  </span>
+                </div>
+
+                {/* Separator */}
+                <div className="w-px h-4 bg-gradient-to-b from-emerald-300 to-teal-300"></div>
+
+                {/* Main Text */}
+                <span className="text-sm font-semibold text-slate-700 tracking-wide">
+                  Clinical Assessment • Evidence-Based
+                </span>
+
+                {/* Verified Badge */}
+                <div className="flex items-center gap-1.5 ml-1">
+                  <div className="relative">
+                    {/* Premium Gold Badge Background */}
+                    <div className="w-6 h-6 bg-gradient-to-br from-amber-400 via-yellow-400 to-amber-500 rounded-full shadow-sm flex items-center justify-center">
+                      {/* Inner Gold Ring */}
+                      <div className="w-4 h-4 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-full flex items-center justify-center">
+                        {/* Checkmark Icon */}
+                        <svg
+                          className="w-2.5 h-2.5 text-white drop-shadow-sm"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Subtle Glow Effect */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-br from-amber-400/30 to-yellow-400/30 rounded-full blur-sm opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                  </div>
+
+                  {/* Verified Text */}
+                  <span className="text-xs font-bold text-amber-600 tracking-wider uppercase">
+                    Verified
+                  </span>
+                </div>
               </div>
+
+              {/* Premium Border Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 via-teal-400/20 to-cyan-400/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
           </motion.div>
         </motion.div>

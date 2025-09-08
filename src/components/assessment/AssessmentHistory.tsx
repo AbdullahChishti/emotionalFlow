@@ -6,12 +6,13 @@
 'use client'
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '@/hooks/useApp'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { assessmentService } from '@/services/AssessmentService'
 
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
@@ -28,6 +29,14 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean
+    entry: AssessmentHistoryEntry | null
+  }>({
+    isOpen: false,
+    entry: null
+  })
   const mountedRef = useRef(false)
 
   const loadHistory = useCallback(async () => {
@@ -143,6 +152,76 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     })
   }
 
+  // Confirmation Dialog Component
+  const ConfirmDeleteDialog = ({ entry, isOpen, onConfirm, onCancel }: {
+    entry: AssessmentHistoryEntry | null
+    isOpen: boolean
+    onConfirm: () => void
+    onCancel: () => void
+  }) => (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onCancel}
+        >
+          <motion.div
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <span className="material-symbols-outlined text-red-600">delete</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Delete Assessment</h3>
+            </div>
+
+            {/* Content */}
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <strong>{entry?.assessmentTitle}</strong>?
+              This action cannot be undone.
+            </p>
+
+            {/* Actions */}
+            <div className="flex gap-3">
+              <motion.button
+                onClick={onCancel}
+                className="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                onClick={onConfirm}
+                className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={deletingId === entry?.id}
+              >
+                {deletingId === entry?.id ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Deleting...
+                  </div>
+                ) : (
+                  'Delete'
+                )}
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+
   const handleAssessmentClick = (entry: AssessmentHistoryEntry) => {
     // Navigate to results page with assessment ID - results page will fetch data from database
     const target = `/results?assessment=${encodeURIComponent(entry.assessmentId)}`
@@ -152,6 +231,42 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       window.location.href = target
     }
   }
+
+  const handleDeleteClick = useCallback((entry: AssessmentHistoryEntry, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card click navigation
+    setDeleteDialog({ isOpen: true, entry })
+  }, [])
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (!deleteDialog.entry || !user?.id) return
+
+    setDeletingId(deleteDialog.entry.id)
+
+    try {
+      // Call AssessmentService delete method
+      await assessmentService.deleteAssessment(user.id, deleteDialog.entry.assessmentId)
+
+      // Refresh local history
+      await loadHistory()
+
+      // Close dialog
+      setDeleteDialog({ isOpen: false, entry: null })
+
+      // Optional: Show success message
+      console.log('Assessment deleted successfully')
+
+    } catch (error) {
+      console.error('Delete failed:', error)
+      // Optional: Show error message
+      console.error('Failed to delete assessment')
+    } finally {
+      setDeletingId(null)
+    }
+  }, [deleteDialog.entry, user?.id, loadHistory])
+
+  const handleDeleteCancel = useCallback(() => {
+    setDeleteDialog({ isOpen: false, entry: null })
+  }, [])
 
   // Loading skeleton
   const renderSkeleton = () => (
@@ -211,6 +326,14 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
 
   return (
     <div className={`${className}`}>
+      {/* Confirmation Dialog */}
+      <ConfirmDeleteDialog
+        entry={deleteDialog.entry}
+        isOpen={deleteDialog.isOpen}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
+
       {/* Minimal Header */}
       <motion.div
         className="text-center mb-12"
@@ -263,7 +386,25 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                   whileTap={{ scale: 0.99 }}
                 >
                   <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-6">
+                    {/* Delete Button - Only visible on hover */}
+                    <motion.button
+                      className="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-50 rounded-full transition-all duration-200 mr-2"
+                      onClick={(e) => handleDeleteClick(entry, e)}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      disabled={deletingId === entry.id}
+                      aria-label={`Delete ${entry.assessmentTitle} assessment`}
+                    >
+                      {deletingId === entry.id ? (
+                        <div className="w-5 h-5 border-2 border-red-300 border-t-red-600 rounded-full animate-spin"></div>
+                      ) : (
+                        <span className="material-symbols-outlined text-red-500 text-lg">
+                          delete_outline
+                        </span>
+                      )}
+                    </motion.button>
+
+                    <div className="flex items-start space-x-6 flex-1">
                       <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors duration-200">
                         <span className="material-symbols-outlined text-xl text-gray-600 transition-colors duration-200">
                           {getAssessmentIcon(entry.assessmentId)}
