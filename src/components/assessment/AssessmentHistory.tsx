@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'
@@ -21,7 +21,8 @@ interface AssessmentHistoryProps {
 }
 
 export default function AssessmentHistory({ className = '' }: AssessmentHistoryProps) {
-  const { user, loading: authLoading } = useAuth()
+  const { auth } = useApp()
+  const { user, isLoading: authLoading } = auth
   const router = useRouter()
   const [assessmentHistory, setAssessmentHistory] = useState<AssessmentHistoryEntry[]>([])
   const [loading, setLoading] = useState(true)

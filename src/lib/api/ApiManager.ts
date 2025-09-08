@@ -234,11 +234,22 @@ export class ApiManager {
     const opts = { ...DEFAULT_OPTIONS, ...options }
     const startTime = Date.now()
 
+    console.log(`🔍 APIMANAGER TRACE: call() starting for context: ${context}`)
+    console.log(`🔍 APIMANAGER TRACE: Options:`, {
+      validateAuth: opts.validateAuth,
+      timeout: opts.timeout,
+      maxRetries: opts.maxRetries,
+      cache: opts.cache
+    })
+
     try {
       // Validate auth if required
       if (opts.validateAuth) {
+        console.log(`🔍 APIMANAGER TRACE: Validating authentication...`)
         const authValid = await this.validateAuth()
+        console.log(`🔍 APIMANAGER TRACE: Auth validation result:`, authValid)
         if (!authValid) {
+          console.error(`🔍 APIMANAGER TRACE: Authentication failed`)
           throw new Error('Authentication failed - please log in again')
         }
       }
@@ -247,6 +258,8 @@ export class ApiManager {
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => reject(new Error('Request timeout')), opts.timeout)
       })
+
+      console.log(`🔍 APIMANAGER TRACE: Starting operation with retry logic...`)
 
       // Race between operation and timeout
       const result = await Promise.race([
@@ -260,6 +273,8 @@ export class ApiManager {
         timeoutPromise
       ])
 
+      console.log(`🔍 APIMANAGER TRACE: Operation completed successfully`)
+
       return {
         data: result,
         error: null,
@@ -268,6 +283,11 @@ export class ApiManager {
         timestamp: Date.now() - startTime
       }
     } catch (error) {
+      console.error(`🔍 APIMANAGER TRACE: Operation failed:`, {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        context
+      })
       await this.handleError(error, context)
       return {
         data: null,
@@ -386,14 +406,77 @@ export class ApiManager {
     data: any,
     options: ApiOptions = {}
   ): Promise<ApiResponse<T>> {
+    console.log(`🔍 APIMANAGER TRACE: supabaseInsert called for table: ${table}`)
+    console.log(`🔍 APIMANAGER TRACE: Insert data:`, {
+      dataKeys: Object.keys(data),
+      sampleData: data,
+      hasValidateAuth: options.validateAuth,
+      optionsKeys: Object.keys(options)
+    })
+
     return this.call(
       async () => {
+        console.log(`🔍 APIMANAGER TRACE: About to call supabase.from(${table}).insert()`)
+        console.log(`🔍 APIMANAGER TRACE: Insert data being sent:`, {
+          table,
+          dataKeys: Object.keys(data),
+          dataValues: data,
+          user_id: data.user_id,
+          assessment_id: data.assessment_id,
+          hasRequiredFields: {
+            user_id: !!data.user_id,
+            assessment_id: !!data.assessment_id,
+            score: data.score !== undefined,
+            responses: !!data.responses
+          }
+        })
+        
         const { data: result, error } = await this.supabase
           .from(table)
           .insert(data)
           .select()
 
-        if (error) throw error
+        console.log(`🔍 APIMANAGER TRACE: Supabase insert response:`, {
+          hasResult: !!result,
+          resultLength: Array.isArray(result) ? result.length : (result ? 1 : 0),
+          hasError: !!error,
+          errorMessage: error?.message,
+          errorCode: error?.code,
+          errorDetails: error?.details,
+          errorHint: error?.hint,
+          errorStatus: error?.status,
+          // Check if this is a foreign key error
+          isForeignKeyError: error?.message?.includes('foreign key') || error?.message?.includes('violates') || error?.code === '23503'
+        })
+
+        if (error) {
+          console.error(`🔍 APIMANAGER TRACE: Supabase error details:`, {
+            error,
+            message: error?.message,
+            code: error?.code,
+            details: error?.details,
+            hint: error?.hint,
+            statusCode: error?.statusCode,
+            status: error?.status,
+            // Get all properties including non-enumerable ones
+            allProperties: Object.getOwnPropertyNames(error),
+            allValues: Object.getOwnPropertyNames(error).map(key => ({
+              key,
+              value: (error as any)[key]
+            })),
+            // Try different ways to stringify
+            jsonStringify: JSON.stringify(error),
+            stringifiedWithProps: JSON.stringify(error, Object.getOwnPropertyNames(error)),
+            // Check for specific Supabase error patterns
+            isPostgrestError: error?.constructor?.name === 'PostgrestError',
+            isAuthError: error?.constructor?.name === 'AuthError',
+            isNetworkError: error?.constructor?.name === 'Error' && error?.message?.includes('fetch'),
+            // Raw error object inspection
+            errorPrototype: Object.getPrototypeOf(error),
+            errorPrototypeName: Object.getPrototypeOf(error)?.constructor?.name
+          })
+          throw error
+        }
         return result as T
       },
       options,

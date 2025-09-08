@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useAuth, useAuthStore } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter } from 'next/navigation'
 import { AssessmentResult, ASSESSMENTS } from '@/data/assessments'
@@ -11,6 +11,7 @@ import { buildUserSnapshot, Snapshot } from '@/lib/snapshot'
 import { OverallAssessmentService, OverallAssessmentResult } from '@/lib/services/OverallAssessmentService'
 import { OverallAssessmentResults, OverallAssessmentLoading } from '@/components/assessment/OverallAssessmentResults'
 import AssessmentSection from '@/components/dashboard/AssessmentSection'
+import { profileService } from '@/services/ProfileService'
 
 // Extended type to support error states
 interface ExtendedOverallAssessmentResult extends OverallAssessmentResult {
@@ -153,8 +154,8 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
 const FETCH_TIMEOUT = 15000 // 15 seconds to avoid false timeouts
 
 export function Dashboard() {
-  const { user, profile } = useAuth()
-  const authStore = useAuthStore()
+  const { auth, profile } = useApp()
+  const { user } = auth
   const router = useRouter()
   
   // State management
@@ -783,7 +784,23 @@ export function Dashboard() {
     if (profile === null) {
       logger.debug('effect:skip (profile is null, waiting for profile load)')
       // Don't set loading to false here - let it keep loading until profile is available
-      return
+      // But add a timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        // Use functional update to avoid stale closure issues
+        setLoading(currentLoading => {
+          if (currentLoading && isMounted) {
+            logger.warn('Profile loading timeout - proceeding without profile')
+            return false
+          }
+          return currentLoading
+        })
+      }, 8000) // 8 second timeout
+
+      // Store timeout ID for cleanup
+      return () => {
+        clearTimeout(timeoutId)
+        isMounted = false
+      }
     }
 
     if (!profile) {
@@ -960,13 +977,21 @@ export function Dashboard() {
       const refreshProfile = async () => {
         if (user?.id) {
           try {
-            const freshProfile = await authStore.createProfile(user)
-            if (freshProfile) {
-              authStore.setProfile(freshProfile)
-              logger.debug('Profile refreshed successfully via timeout')
-            }
+            logger.debug('Profile loading timeout - attempting to load/create profile')
+            await profile.loadProfile(user.id)
+            logger.debug('Profile loaded successfully via timeout')
           } catch (error) {
-            logger.error('Failed to refresh profile via timeout:', error)
+            logger.error('Failed to load profile via timeout:', error)
+            // If profile loading fails, try to create a basic profile
+            try {
+              await profile.createProfile(user.id, {
+                email: user.email,
+                display_name: user.email?.split('@')[0] || 'New User'
+              })
+              logger.debug('Profile created successfully via timeout')
+            } catch (createError) {
+              logger.error('Failed to create profile via timeout:', createError)
+            }
           }
         }
       }
@@ -974,7 +999,7 @@ export function Dashboard() {
     }, 5000) // 5 second timeout
 
     return () => clearTimeout(timeout)
-  }, [user?.id, profile, authStore])
+  }, [user?.id, profile, auth])
 
   // Page visibility effect - refresh data when user returns to tab
   useEffect(() => {

@@ -15,8 +15,7 @@ import {
 } from '@/data/assessments'
 import { AssessmentQuestionComponent } from './AssessmentQuestion'
 import { glassVariants, glassAnimations } from '@/styles/glassmorphic-design-system'
-import { useAuth } from '@/stores/authStore'
-import { useAppDataStore } from '@/stores/appDataStore'
+import { useApp } from '@/hooks/useApp'
 import { UserProfile } from '@/types'
 
 // Material Symbols icons import
@@ -39,14 +38,9 @@ export function AssessmentFlowMigrated({
   userProfile,
   onProfileEnhancement
 }: AssessmentFlowMigratedProps) {
-  const { user } = useAuth()
-  
-  // Use centralized data store
-  const {
-    saveAssessment,
-    loading,
-    errors
-  } = useAppDataStore()
+  const { auth, assessment } = useApp()
+  const { user } = auth
+  const { saveAssessment, assessmentsLoading: loading } = assessment
 
   // Local state for UI flow
   const [currentState, setCurrentState] = useState<AssessmentState>('selection')
@@ -58,6 +52,7 @@ export function AssessmentFlowMigrated({
   const [results, setResults] = useState<Record<string, AssessmentResult>>({})
   const [savingResults, setSavingResults] = useState(false)
   const [saveStartAt, setSaveStartAt] = useState<number | null>(null)
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   // Validate assessmentIds and currentAssessmentIndex
   if (!assessmentIds || assessmentIds.length === 0) {
@@ -274,10 +269,27 @@ export function AssessmentFlowMigrated({
       // Use centralized API to save assessments
       if (user && resultsToProcess) {
         try {
-          console.log('💾 AssessmentFlowMigrated: Saving assessments using centralized API...')
+          console.log('💾 SAVE TRACE: AssessmentFlowMigrated starting save process')
+          console.log('💾 SAVE TRACE: User details:', {
+            userId: user.id,
+            email: user.email,
+            isAuthenticated: !!user
+          })
+          console.log('💾 SAVE TRACE: Results to process:', {
+            count: Object.keys(resultsToProcess).length,
+            assessmentIds: Object.keys(resultsToProcess),
+            sampleResult: resultsToProcess[Object.keys(resultsToProcess)[0]]
+          })
           
           // Save each assessment result using the centralized store
-          const savePromises = Object.entries(resultsToProcess).map(([assessmentId, result]) => {
+          const savePromises = Object.entries(resultsToProcess).map(([assessmentId, result], index) => {
+            console.log(`💾 SAVE TRACE: Preparing assessment ${index + 1}/${Object.keys(resultsToProcess).length}:`, {
+              assessmentId,
+              originalResult: result,
+              hasResponses: !!result.responses,
+              responseCount: Object.keys(result.responses || {}).length
+            })
+
             const assessmentResult: AssessmentResult = {
               id: `${user.id}-${assessmentId}-${Date.now()}`,
               assessmentId,
@@ -288,27 +300,72 @@ export function AssessmentFlowMigrated({
               completedAt: new Date().toISOString(),
               interpretation: result.interpretation || 'No interpretation available'
             }
+
+            console.log(`💾 SAVE TRACE: Transformed assessment ${assessmentId}:`, assessmentResult)
             
-            return saveAssessment(user.id, assessmentResult)
+            console.log(`💾 SAVE TRACE: Calling saveAssessment(${user.id}, assessmentResult)`)
+            return saveAssessment(user.id, assessmentResult).then(result => {
+              console.log(`💾 SAVE TRACE: saveAssessment result for ${assessmentId}:`, result)
+              // Check if result is false (failed save)
+              if (result === false) {
+                console.error(`💾 SAVE TRACE: saveAssessment returned false for ${assessmentId} - treating as error`)
+                throw new Error(`Assessment ${assessmentId} save failed - service returned false`)
+              }
+              return result
+            }).catch(error => {
+              console.error(`💾 SAVE TRACE: saveAssessment error for ${assessmentId}:`, error)
+              throw error
+            })
           })
+
+          console.log(`💾 SAVE TRACE: Created ${savePromises.length} save promises, waiting for completion...`)
 
           // Wait for all saves to complete
           const saveResults = await Promise.allSettled(savePromises)
+          
+          console.log('💾 SAVE TRACE: All save promises settled:', saveResults.map((result, index) => ({
+            index,
+            status: result.status,
+            value: result.status === 'fulfilled' ? result.value : undefined,
+            reason: result.status === 'rejected' ? result.reason : undefined
+          })))
           
           // Log results
           const successful = saveResults.filter(result => result.status === 'fulfilled').length
           const failed = saveResults.filter(result => result.status === 'rejected').length
           
-          console.log(`✅ AssessmentFlowMigrated: Saved ${successful} assessments, ${failed} failed`)
+          console.log(`💾 SAVE TRACE: Final results - Saved ${successful} assessments, ${failed} failed`)
           
           if (failed > 0) {
-            console.warn('⚠️ Some assessments failed to save:', saveResults.filter(r => r.status === 'rejected'))
+            console.error('💾 SAVE TRACE: Failed assessments details:', saveResults
+              .filter(r => r.status === 'rejected')
+              .map((result, index) => ({
+                index,
+                error: result.reason,
+                message: result.reason?.message,
+                stack: result.reason?.stack?.split('\n').slice(0, 3)
+              }))
+            )
           }
         } catch (error) {
-          console.error('❌ AssessmentFlowMigrated: Failed to save assessments:', error)
+          console.error('💾 SAVE TRACE: Exception in save process:', {
+            error,
+            message: error?.message,
+            stack: error?.stack?.split('\n').slice(0, 5)
+          })
+          setErrors(prev => ({
+            ...prev,
+            assessments: 'Failed to save assessment results. Please try again.'
+          }))
         } finally {
-          console.log('🔄 AssessmentFlowMigrated: Background processing finished')
+          console.log('💾 SAVE TRACE: Background processing finished')
         }
+      } else {
+        console.warn('💾 SAVE TRACE: Save skipped - missing user or results:', {
+          hasUser: !!user,
+          hasResults: !!resultsToProcess,
+          resultsCount: resultsToProcess ? Object.keys(resultsToProcess).length : 0
+        })
       }
 
       console.log('🎯 Calling onComplete callback immediately (non-blocking) with:', {
@@ -316,6 +373,9 @@ export function AssessmentFlowMigrated({
         userProfile: userProfile ? 'provided' : 'default'
       })
       onComplete(resultsToProcess, userProfile || defaultProfile)
+
+      // Clear any previous errors on successful completion
+      setErrors({})
     }
   }
 

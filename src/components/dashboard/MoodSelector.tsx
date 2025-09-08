@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 // Material Symbols icons import
 import 'material-symbols/outlined.css'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { supabase } from '@/lib/supabase'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
@@ -14,7 +14,8 @@ interface MoodSelectorProps {
 }
 
 export function MoodSelector({ onClose, onMoodSubmitted }: MoodSelectorProps) {
-  const { user } = useAuth()
+  const { auth } = useApp()
+  const { user } = auth
   const [moodScore, setMoodScore] = useState(5)
   const [seekingSupport, setSeekingSupport] = useState(false)
   const [willingToListen, setWillingToListen] = useState(true)

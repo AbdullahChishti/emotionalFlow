@@ -122,13 +122,21 @@ export class DataService {
   }
 
   static async saveAssessment(userId: string, assessment: any): Promise<boolean> {
-    console.log(`💾 DataService: Saving assessment ${assessment.assessmentId || assessment.id} for user ${userId}`)
+    console.log(`🔍 DATASERVICE TRACE: Starting saveAssessment`)
+    console.log(`🔍 DATASERVICE TRACE: Input params:`, {
+      userId,
+      assessmentId: assessment.assessmentId || assessment.id,
+      assessmentKeys: Object.keys(assessment),
+      hasResult: !!assessment.result,
+      hasResponses: !!assessment.responses
+    })
 
     // Handle different AssessmentResult object structures
     let assessmentData: any = {}
 
     // Handle structure from useAssessmentData hook: { id, result, responses, friendlyExplanation }
     if (assessment.result && assessment.responses) {
+      console.log(`🔍 DATASERVICE TRACE: Using structure 1 (useAssessmentData hook)`)
       const result = assessment.result
       assessmentData = {
         user_id: userId,
@@ -154,6 +162,7 @@ export class DataService {
     }
     // Handle structure from AssessmentFlowMigrated: { assessmentId, title, score, responses, completedAt, ... }
     else {
+      console.log(`🔍 DATASERVICE TRACE: Using structure 2 (AssessmentFlowMigrated)`)
       assessmentData = {
         user_id: userId,
         assessment_id: assessment.assessmentId || assessment.id?.split('-')[1] || 'unknown',
@@ -177,6 +186,21 @@ export class DataService {
       }
     }
 
+    console.log(`🔍 DATASERVICE TRACE: Transformed assessment data:`, {
+      user_id: assessmentData.user_id,
+      assessment_id: assessmentData.assessment_id,
+      assessment_title: assessmentData.assessment_title,
+      score: assessmentData.score,
+      level: assessmentData.level,
+      severity: assessmentData.severity,
+      responsesKeys: Object.keys(assessmentData.responses || {}),
+      responsesCount: Object.keys(assessmentData.responses || {}).length,
+      hasResultData: !!assessmentData.result_data,
+      hasFriendlyExplanation: !!assessmentData.friendly_explanation
+    })
+
+    console.log(`🔍 DATASERVICE TRACE: Calling api.insert with validateAuth: true`)
+
     const response = await api.insert<AssessmentHistoryEntry>(
       'assessment_results',
       assessmentData,
@@ -185,12 +209,23 @@ export class DataService {
       }
     )
 
+    console.log(`🔍 DATASERVICE TRACE: api.insert response:`, {
+      success: response.success,
+      hasData: !!response.data,
+      hasError: !!response.error,
+      errorMessage: response.error?.message,
+      errorCode: response.error?.code
+    })
+
     if (!response.success) {
-      console.error('❌ DataService: Failed to save assessment:', response.error)
+      console.error('❌ DATASERVICE TRACE: Failed to save assessment:', {
+        error: response.error,
+        fullResponse: response
+      })
       return false
     }
 
-    console.log('✅ DataService: Assessment saved successfully')
+    console.log('✅ DATASERVICE TRACE: Assessment saved successfully:', response.data)
     return true
   }
 

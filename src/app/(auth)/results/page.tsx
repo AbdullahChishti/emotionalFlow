@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { AssessmentManager } from '@/lib/services/AssessmentManager'
 import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { ASSESSMENTS } from '@/data/assessments'
@@ -106,7 +106,8 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
 }
 
 export default function ResultsPage() {
-  const { user } = useAuth()
+  const { auth } = useApp()
+  const { user } = auth
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
@@ -283,11 +284,9 @@ export default function ResultsPage() {
           }
         }
       })
+      }
       return latest
-    } else {
-      return {}
     }
-  }
   }, [user?.id, createAssessmentResult])
 
   const fetchFromStorage = useCallback((assessmentId?: string): any => {

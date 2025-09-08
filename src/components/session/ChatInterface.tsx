@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/analytics'
 import { ChatPersonalizationService } from '@/lib/chat-personalization'
 import { CHAT_CONFIG, getRandomPlaceholder, getRandomSuggestion } from '@/lib/chat-config'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import 'material-symbols/outlined.css'
 
 interface Message {
@@ -98,7 +98,8 @@ const TherapeuticMessage = ({ message }: { message: Message }) => {
 }
 
 export function ChatInterface({ therapistName }: ChatInterfaceProps) {
-  const { user: authUser } = useAuth()
+  const { auth } = useApp()
+  const { user: authUser } = auth
   const [messages, setMessages] = useState<Message[]>([])
   const [sessionReady, setSessionReady] = useState(false)
   const [sessionError, setSessionError] = useState<string | null>(null)

@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 
 export function AuthDebugPanel() {
-  const { user, profile, isAuthenticated, isLoading, isInitialized } = useAuth()
+  const { auth } = useApp()
+  const { user, profile, isAuthenticated, isLoading, isInitialized } = auth
 
   return (
     <div className="fixed top-4 right-4 bg-black/80 text-white p-4 rounded-lg text-sm font-mono z-50 max-w-md">

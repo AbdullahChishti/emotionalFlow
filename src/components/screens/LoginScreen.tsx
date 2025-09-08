@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useAuth } from '@/stores/authStore'
 import { supabase } from '@/lib/supabase'
 import { track } from '@/lib/analytics'
 import { useAuthContext } from '@/components/providers/AuthProvider'
@@ -143,26 +142,8 @@ export default function LoginScreen() {
 
       if (!result.success) {
         // CRITICAL DEBUG: Authentication failed
-        console.error('❌ AUTH DEBUG: Authentication failed', {
-          error: result.error?.message,
-          errorCode: result.error?.code,
-          duration: `${signInDuration}ms`
-        })
-
-        // Handle specific error types
-        if (result.error?.code === 'INVALID_CREDENTIALS') {
-          setError(result.error.userMessage)
-        } else if (result.error?.code === 'EMAIL_NOT_CONFIRMED') {
-          setError(result.error.userMessage)
-        } else if (result.error?.code === 'TOO_MANY_ATTEMPTS') {
-          setError(result.error.userMessage)
-        } else if (result.error?.code === 'NETWORK_ERROR' || result.error?.code === 'TIMEOUT_ERROR') {
-          setError(result.error.userMessage)
-        } else if (result.error?.code === 'SERVICE_UNAVAILABLE') {
-          setError(result.error.userMessage)
-        } else {
-          setError(result.error?.userMessage || 'Login failed')
-        }
+        console.error('❌ AUTH DEBUG: Authentication failed', result.error || 'No error object')
+        setError(result.error?.userMessage || 'An unknown error occurred.')
       } else {
         // CRITICAL DEBUG: Authentication successful
         console.log('✅ AUTH DEBUG: Authentication successful', {

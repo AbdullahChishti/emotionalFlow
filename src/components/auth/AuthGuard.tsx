@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { AUTH_REDIRECTS } from '@/lib/constants/auth'
 
@@ -19,7 +19,8 @@ export function AuthGuard({
   redirectTo,
   fallback
 }: AuthGuardProps) {
-  const { user, isAuthenticated, isLoading, isInitialized } = useAuth()
+  const { auth } = useApp()
+  const { user, isAuthenticated, isLoading, isInitialized } = auth
   const router = useRouter()
   const pathname = usePathname()
   const [isRedirecting, setIsRedirecting] = useState(false)

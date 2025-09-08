@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ASSESSMENTS } from '@/data/assessments'
 import { getAssessmentIcon } from '@/data/assessment-icons'
 import { useAssessmentData } from '@/hooks/useAssessmentData'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 
 type UserProfile = Database['public']['Tables']['user_assessment_profiles']['Row'] | null
 type OverallAssessment = Database['public']['Tables']['overall_assessments']['Row']
@@ -27,7 +27,8 @@ interface AssessmentManagementProps {
 }
 
 export function AssessmentManagement({ onClose, className = '' }: AssessmentManagementProps) {
-  const { user } = useAuth()
+  const { auth } = useApp()
+  const { user } = auth
   const { deleteAssessment, bulkDeleteAssessments, restoreAssessment } = useAssessmentData()
   const [summary, setSummary] = useState<AssessmentSummary | null>(null)
   const [loading, setLoading] = useState(true)

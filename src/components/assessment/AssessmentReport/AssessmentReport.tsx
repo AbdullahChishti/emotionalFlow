@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { getAIAssessmentExplanation } from '@/lib/assessment-ai'
 import { AssessmentData, AIExplanation } from '@/lib/assessment-ai'
 import { ReportHeader } from './ReportHeader'
@@ -27,7 +27,8 @@ export function AssessmentReport({
   showActions = true,
   className = ''
 }: AssessmentReportProps) {
-  const { user } = useAuth()
+  const { auth } = useApp()
+  const { user } = auth
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

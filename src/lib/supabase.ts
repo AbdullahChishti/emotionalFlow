@@ -22,7 +22,12 @@ let supabaseInstance: SupabaseClient<Database> | null = null
  */
 export function getSupabaseClient(): SupabaseClient<Database> {
   if (!supabaseInstance) {
-    console.log('🚀 Initializing Supabase client...')
+    console.log('🚀 [SUPABASE] Initializing Supabase client...', {
+      url: supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'MISSING',
+      anonKey: supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'MISSING',
+      timestamp: new Date().toISOString()
+    })
+    
     supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -36,7 +41,14 @@ export function getSupabaseClient(): SupabaseClient<Database> {
         }
       }
     })
-    console.log('✅ Supabase client initialized successfully')
+    
+    console.log('✅ [SUPABASE] Supabase client initialized successfully:', {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      flowType: 'pkce',
+      timestamp: new Date().toISOString()
+    })
   }
 
   return supabaseInstance

@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Navigation } from '@/components/ui/Navigation'
 import Hero from '@/components/landing/Hero'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 
 
 
@@ -241,7 +241,8 @@ const ChatExperienceSection = () => {
 
 
 export default function LandingPage() {
-  const { user, profile } = useAuth()
+  const { auth } = useApp()
+  const { user, profile } = auth
   const router = useRouter()
 
   // Redirect authenticated users to dashboard

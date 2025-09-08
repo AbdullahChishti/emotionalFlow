@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { useAssessmentStore } from '@/stores/assessmentStore'
+import { useApp } from '@/hooks/useApp'
 import { ASSESSMENTS, ASSESSMENT_CATEGORIES } from '@/data/assessments'
 import { supabase } from '@/lib/supabase'
 
@@ -21,7 +21,9 @@ interface AssessmentSidebarProps {
 }
 
 export function AssessmentSidebar({ variant = 'full' }: AssessmentSidebarProps) {
-  const { userProfile, completedAssessments } = useAssessmentStore()
+  const { auth, assessment } = useApp()
+  const { profile: userProfile } = auth
+  const { assessments: completedAssessments } = assessment
   const [assessmentItems, setAssessmentItems] = useState<AssessmentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
 

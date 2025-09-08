@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
-import { useAuth } from '@/stores/authStore'
+import { useApp } from '@/hooks/useApp'
 import { getAIAssessmentExplanation, AssessmentData, AIExplanation } from '../../lib/assessment-ai'
 import { useEffect, useState, memo, useMemo } from 'react'
 
@@ -253,7 +253,8 @@ export default function AssessmentResults({
     )
   }
 
-  const { user } = useAuth()
+  const { auth } = useApp()
+  const { user } = auth
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(preGeneratedAI || null)
   const [isAILoading, setIsAILoading] = useState(false) // Loading state specifically for AI content
   const [hasAIData, setHasAIData] = useState(!!preGeneratedAI)

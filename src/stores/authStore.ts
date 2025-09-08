@@ -104,7 +104,25 @@ export const useAuthStore = create<AuthState>()(
         profile: state.profile,
         isAuthenticated: state.isAuthenticated,
         // Don't persist error, loading, or initialized states
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        console.log('🔄 [AUTH_STORE] Rehydrating auth state from localStorage:', {
+          hasState: !!state,
+          hasUser: !!state?.user,
+          hasProfile: !!state?.profile,
+          isAuthenticated: state?.isAuthenticated,
+          userId: state?.user?.id,
+          userEmail: state?.user?.email,
+          profileDisplayName: state?.profile?.display_name,
+          timestamp: new Date().toISOString()
+        })
+        
+        if (state) {
+          console.log('✅ [AUTH_STORE] Auth state rehydration completed successfully')
+        } else {
+          console.log('ℹ️ [AUTH_STORE] No auth state to rehydrate (fresh start)')
+        }
+      }
     }
   )
 )
