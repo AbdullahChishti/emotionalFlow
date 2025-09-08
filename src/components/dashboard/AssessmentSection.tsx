@@ -93,14 +93,9 @@ function Row({
 
 const AssessmentSection: React.FC<AssessmentSectionProps> = ({ coverage, className = '', loading = false }) => {
   const router = useRouter()
-  const handleAssessmentClick = (id: string, status: 'completed' | 'stale' | 'available') => {
-    if (status === 'completed' || status === 'stale') {
-      // Navigate to results
-      router.push(`/results?assessment=${encodeURIComponent(id)}`)
-    } else {
-      // Navigate to take assessment
-      router.push(`/assessments/${id}`)
-    }
+  const handleAssessmentClick = (_id: string, _status: 'completed' | 'stale' | 'available') => {
+    // Always navigate to the assessments page
+    router.push('/assessments')
   }
 
   const totalCompleted = coverage.assessed.length + coverage.stale.length

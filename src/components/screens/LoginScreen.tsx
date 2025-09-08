@@ -642,37 +642,6 @@ export default function LoginScreen() {
               </ul>
             </div>
 
-            {/* Footer */}
-            <motion.div 
-              className="text-center pt-6 border-t border-gray-100 mt-8"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-            >
-              <p className="text-gray-600 text-sm font-normal">
-                Don&apos;t have an account?{' '}
-                <Link
-                  href="/signup"
-                  className="text-slate-700 hover:text-slate-800 font-medium transition-colors relative group"
-                  style={{ 
-                    color: '#1f3d42',
-                    textUnderlineOffset: '2px',
-                    textDecoration: 'none',
-                    borderBottom: '1px solid transparent',
-                    transition: 'all 0.2s ease',
-                    paddingBottom: '1px'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderBottomColor = '#1f3d42';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderBottomColor = 'transparent';
-                  }}
-                >
-                  Sign up
-                </Link>
-              </p>
-            </motion.div>
           </motion.div>
         </div>
       </div>

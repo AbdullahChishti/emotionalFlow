@@ -193,7 +193,7 @@ export function useOverallAssessment() {
 
     let progressInterval: NodeJS.Timeout | null = null
     let timeoutId: NodeJS.Timeout | null = null
-    let currentErrorType: GenerationError | null = null
+    const currentErrorType: GenerationError | null = null
 
     // Cleanup function to ensure state consistency
     const cleanup = () => {

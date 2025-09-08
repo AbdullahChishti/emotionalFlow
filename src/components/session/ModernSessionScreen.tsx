@@ -38,10 +38,19 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
 
   return (
     <div className="bg-white relative overflow-hidden h-[calc(100dvh-6rem-1.5rem)] lg:h-[calc(100dvh-7rem-1.5rem)]">
-      {/* Subtle background decorations */}
-      <div className="absolute inset-0 pointer-events-none opacity-40">
-        <div className="absolute top-20 left-10 w-32 h-32 border-l-2 border-t-2 border-slate-400/15 rounded-tl-full" />
-        <div className="absolute top-40 right-20 w-24 h-24 border-r-2 border-b-2 border-slate-500/20 rounded-br-full" />
+      {/* Ultra-sophisticated Background Layers */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Primary geometric pattern */}
+        <div className="absolute top-16 left-8 w-36 h-36 border-l-2 border-t-2 border-slate-300/20 rounded-tl-2xl opacity-60" />
+        <div className="absolute top-32 right-16 w-28 h-28 border-r-2 border-b-2 border-slate-400/15 rounded-br-2xl opacity-40" />
+
+        {/* Secondary subtle patterns */}
+        <div className="absolute bottom-24 left-1/4 w-20 h-20 border-l border-t border-slate-200/30 rounded-tl-xl opacity-30" />
+        <div className="absolute top-1/3 right-1/3 w-16 h-16 border-r border-b border-slate-300/20 rounded-br-lg opacity-25" />
+
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/5 via-transparent to-slate-100/10" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-50/5 to-slate-100/8" />
       </div>
 
       <motion.div
@@ -50,98 +59,279 @@ export function ModernSessionScreen({ onNavigate, matchedUser }: ModernSessionSc
         transition={{ duration: 0.6 }}
         className="relative z-10 h-full flex flex-col"
       >
-        {/* Header with session controls */}
-        <div className="flex-shrink-0 p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-semibold text-slate-800">Therapy Session</h1>
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                <span>Active</span>
-              </div>
-            </div>
+        {/* Ultra-refined Header with Sophisticated Design */}
+        <motion.div
+          className="flex-shrink-0 p-6 border-b border-slate-200/80 bg-white/95 backdrop-blur-md relative"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          {/* Subtle header background pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-2 right-8 w-24 h-24 border-r border-b border-slate-300 rounded-br-lg"></div>
+            <div className="absolute bottom-1 left-12 w-16 h-16 border-l border-t border-slate-200 rounded-tl-md"></div>
+          </div>
 
-            <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => {
+          <div className="max-w-7xl mx-auto flex items-center justify-between relative z-10">
+            <motion.div
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  className="w-10 h-10 bg-gradient-to-br from-blue-50 via-blue-100 to-indigo-50 rounded-xl flex items-center justify-center shadow-sm relative"
+                  whileHover={{
+                    scale: 1.05,
+                    rotate: 2,
+                    boxShadow: "0 20px 40px -12px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.1)"
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    ease: [0.25, 0.1, 0.25, 1],
+                    boxShadow: { duration: 0.25 }
+                  }}
+                >
+                  <svg className="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-indigo-500/5 rounded-xl"></div>
+                </motion.div>
+                <div>
+                  <h1 className="text-2xl font-light text-slate-800 tracking-tight">
+                    Therapy Session
+                  </h1>
+                  <p className="text-sm text-slate-500 font-medium">
+                    with {therapistName}
+                  </p>
+                </div>
+              </div>
+
+              <motion.div
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200/60 text-emerald-700 text-sm font-medium shadow-sm"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div
+                  className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-sm"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <span>Active Session</span>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              className="flex items-center gap-4"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <motion.button
+                onClick={() => {
                   setShowWellnessTools(true)
                   track('tools_toggle', { action: 'open' })
-                      }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white/70 hover:bg-white border border-slate-200/60 rounded-lg text-slate-700 text-sm font-medium transition-all duration-200 shadow-sm"
+                }}
+                className="inline-flex items-center gap-3 px-5 py-2.5 bg-white/80 hover:bg-white border border-slate-200/60 rounded-xl text-slate-700 text-sm font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                  <motion.div
+                    className="w-5 h-5 flex items-center justify-center"
+                    whileHover={{ rotate: 8, scale: 1.1 }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                  >
+                    <motion.svg
+                      className="w-4 h-4 text-slate-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      whileHover={{ fill: "rgba(100, 116, 139, 0.1)" }}
+                      transition={{ duration: 0.2 }}
                     >
-                <span className="material-symbols-outlined text-base">spa</span>
-                      <span>Wellness Tools</span>
-                    </button>
-              
-              <div className="px-3 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg border border-slate-200/70">
-                        {formatTime(timeElapsed)}
-                      </div>
-              
-                      <button
-                        onClick={() => setShowEndModal(true)}
-                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-colors"
-                      >
-                        End Session
-                      </button>
-                    </div>
-                  </div>
-                    </div>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </motion.svg>
+                  </motion.div>
+                <span>Wellness Tools</span>
+              </motion.button>
 
-        {/* Main content - Two columns */}
-        <div className="flex-1 overflow-hidden">
-          <div className="max-w-7xl mx-auto h-full grid grid-cols-[260px_1fr] gap-6 p-6">
-            {/* Left Column - Subtle assessment access indicator */}
-            <div className="relative h-full overflow-y-auto">
-              <AssessmentSidebar variant="compact" />
-              <div className="absolute right-[-12px] top-0 bottom-0 w-px bg-slate-200/80" />
-            </div>
+              <motion.div
+                className="px-4 py-2.5 bg-gradient-to-r from-slate-50 to-slate-100 text-slate-700 text-sm font-semibold rounded-xl border border-slate-200/70 shadow-sm"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                  </svg>
+                  <span className="font-mono tracking-wide">{formatTime(timeElapsed)}</span>
+                </div>
+              </motion.div>
 
-            {/* Right Column - Chat Interface */}
-            <div className="min-w-0 h-full overflow-hidden">
-              <ChatInterface therapistName={therapistName} />
-            </div>
+              <motion.button
+                onClick={() => setShowEndModal(true)}
+                className="px-5 py-2.5 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white text-sm font-medium rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <span>End Session</span>
+              </motion.button>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Ultra-refined Main Content Area */}
+        <motion.div
+          className="flex-1 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <div className="max-w-7xl mx-auto h-full grid grid-cols-[280px_1fr] gap-8 p-8">
+            {/* Enhanced Left Column - Assessment Sidebar */}
+            <motion.div
+              className="relative h-full overflow-y-auto bg-gradient-to-b from-white to-slate-50/30 rounded-2xl border border-slate-200/50 shadow-sm"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-white/60 to-slate-50/20 rounded-2xl"></div>
+              <div className="relative z-10 p-6">
+                <AssessmentSidebar variant="compact" />
+              </div>
+              <div className="absolute right-[-16px] top-8 bottom-8 w-px bg-gradient-to-b from-transparent via-slate-300 to-transparent shadow-sm" />
+            </motion.div>
+
+            {/* Enhanced Right Column - Chat Interface */}
+            <motion.div
+              className="min-w-0 h-full bg-white rounded-2xl border border-slate-200/50 shadow-sm overflow-hidden"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+            >
+              <div className="h-full relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/20 to-white rounded-2xl"></div>
+                <div className="relative z-10 h-full">
+                  <ChatInterface therapistName={therapistName} />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
       </motion.div>
 
-      {/* End Session Modal */}
+      {/* Ultra-refined End Session Modal */}
       <AnimatePresence>
         {showEndModal && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-6"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl border border-slate-200/60"
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              className="bg-white/98 backdrop-blur-lg rounded-3xl p-10 max-w-md w-full text-center shadow-2xl border border-slate-200/50 relative overflow-hidden"
             >
-              <div className="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg border border-white/60">
-                <span className="material-symbols-outlined text-[#335f64] text-3xl">psychology</span>
+              {/* Subtle background pattern */}
+              <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-8 right-8 w-16 h-16 border-r border-b border-slate-300 rounded-br-lg"></div>
+                <div className="absolute bottom-6 left-6 w-12 h-12 border-l border-t border-slate-200 rounded-tl-md"></div>
               </div>
 
-              <h2 className="text-2xl font-semibold text-slate-800 mb-3">Complete Your Session?</h2>
-              <p className="text-slate-600 mb-8 text-base leading-relaxed">
-                You've shared <span className="font-semibold text-slate-800">{formatTime(timeElapsed)}</span> of meaningful conversation.
-              </p>
+              <div className="relative z-10">
+                {/* Enhanced Icon */}
+                <motion.div
+                  className="w-24 h-24 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/80 relative"
+                  initial={{ scale: 0.8, rotate: -10 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <motion.div
+                    className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-lg relative"
+                    whileHover={{ rotate: 3, scale: 1.05 }}
+                    transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 to-indigo-500/5 rounded-xl"></div>
+                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </motion.div>
+                </motion.div>
 
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setShowEndModal(false)}
-                  className="flex-1 py-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-sm font-semibold rounded-2xl transition-all duration-300 hover:from-slate-200 hover:to-slate-300 shadow-sm"
+                {/* Enhanced Typography */}
+                <motion.h2
+                  className="text-2xl font-light text-slate-800 mb-4 tracking-tight"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                  Continue
-                </button>
-                <button
-                  onClick={handleEndSession}
-                  className="flex-1 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white text-sm font-semibold rounded-2xl transition-all duration-300 hover:from-slate-800 hover:to-slate-900 shadow-lg"
+                  Complete Your Session?
+                </motion.h2>
+
+                <motion.div
+                  className="flex items-center justify-center gap-2 text-slate-600 mb-8 text-base leading-relaxed"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                  End Session
-                </button>
+                  <span>You've shared</span>
+                  <span className="font-semibold text-slate-800 bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-1 rounded-full border border-blue-200/50">
+                    {formatTime(timeElapsed)}
+                  </span>
+                  <span>of meaningful conversation.</span>
+                </motion.div>
+
+                {/* Enhanced Action Buttons */}
+                <motion.div
+                  className="flex gap-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                  <motion.button
+                    onClick={() => setShowEndModal(false)}
+                    className="flex-1 py-4 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-700 text-sm font-semibold rounded-2xl transition-all duration-300 hover:from-slate-200 hover:to-slate-300 shadow-lg hover:shadow-xl border border-slate-200/60"
+                    whileHover={{
+                      scale: 1.015,
+                      y: -2,
+                      boxShadow: "0 20px 40px -12px rgba(100, 116, 139, 0.25), 0 8px 16px -4px rgba(100, 116, 139, 0.15), 0 0 0 1px rgba(100, 116, 139, 0.1)"
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{
+                      duration: 0.32,
+                      ease: [0.25, 0.1, 0.25, 1],
+                      boxShadow: { duration: 0.28 }
+                    }}
+                  >
+                    Continue Session
+                  </motion.button>
+                  <motion.button
+                    onClick={handleEndSession}
+                    className="flex-1 py-4 bg-gradient-to-r from-slate-600 to-slate-700 text-white text-sm font-semibold rounded-2xl transition-all duration-300 hover:from-slate-700 hover:to-slate-800 shadow-lg hover:shadow-xl"
+                    whileHover={{
+                      scale: 1.015,
+                      y: -2,
+                      boxShadow: "0 20px 40px -12px rgba(100, 116, 139, 0.25), 0 8px 16px -4px rgba(100, 116, 139, 0.15), 0 0 0 1px rgba(51, 65, 85, 0.2)"
+                    }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{
+                      duration: 0.32,
+                      ease: [0.25, 0.1, 0.25, 1],
+                      boxShadow: { duration: 0.28 }
+                    }}
+                  >
+                    End Session
+                  </motion.button>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>

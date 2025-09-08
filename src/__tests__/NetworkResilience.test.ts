@@ -274,7 +274,7 @@ describe('NetworkResilience', () => {
     })
 
     it('should handle exponential backoff', async () => {
-      let delays: number[] = []
+      const delays: number[] = []
       const originalSetTimeout = global.setTimeout
 
       global.setTimeout = vi.fn().mockImplementation((callback, delay) => {

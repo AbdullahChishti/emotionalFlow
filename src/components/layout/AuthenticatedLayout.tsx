@@ -63,14 +63,6 @@ export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 bg-white/50 backdrop-blur-sm border-t border-white/20">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-zinc-600">
-            © 2024 MindWell. Your personal therapy companion.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

@@ -364,7 +364,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                 Take your first assessment to begin tracking your journey
               </p>
               <motion.button
-                onClick={() => window.location.href = '/assessments'}
+                onClick={() => router.push('/assessments')}
                 className="px-8 py-3 bg-gray-900 text-white rounded-full text-sm font-medium hover:bg-gray-800 transition-colors duration-200"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

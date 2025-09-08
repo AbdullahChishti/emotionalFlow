@@ -48,7 +48,7 @@ export function track(event: AnalyticsEvent, props: EventProps = {}): void {
   }
 
   // Console log for dev visibility
-  // eslint-disable-next-line no-console
+   
   console.log(`[analytics] ${event}`, payload)
 
   // Dispatch a CustomEvent for any listeners

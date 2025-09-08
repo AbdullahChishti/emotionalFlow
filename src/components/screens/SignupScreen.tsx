@@ -386,20 +386,6 @@ export default function SignupScreen() {
               </div>
             )}
 
-            {/* Footer */}
-            {!success && (
-              <div className="text-center pt-5 border-t border-slate-200/50 mt-6">
-                <p className="text-body text-slate-700">
-                  Already have an account?{' '}
-                  <Link
-                    href="/login"
-                    className="text-slate-700 hover:text-slate-900 font-semibold transition-colors"
-                  >
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            )}
           </motion.div>
         </div>
       </div>

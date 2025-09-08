@@ -60,24 +60,78 @@ function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
 
   return (
     <motion.div
-      className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-6 hover:bg-white hover:shadow-3xl hover:shadow-slate-900/40 hover:border-slate-300/60 transition-all duration-300 group"
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      whileHover={{ y: -2 }}
+      className="group relative bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-3xl p-6 shadow-lg shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-500 overflow-hidden"
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.6,
+        ease: [0.25, 0.1, 0.25, 1],
+        delay: Math.random() * 0.2
+      }}
+      whileHover={{
+        y: -4,
+        scale: 1.02,
+        transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+      }}
+      whileTap={{ scale: 0.98 }}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="w-10 h-10 bg-slate-50/80 rounded-2xl flex items-center justify-center group-hover:bg-slate-100/80 transition-colors duration-300">
-          <span className="material-symbols-outlined text-slate-600 text-xl">{icon}</span>
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/30 via-transparent to-teal-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500">
+        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-200/50 to-transparent rounded-full transform translate-x-8 -translate-y-8"></div>
+        <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-200/50 to-transparent rounded-full transform -translate-x-6 translate-y-6"></div>
         </div>
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-5">
+          <motion.div
+            className="w-12 h-12 bg-gradient-to-br from-slate-50/90 to-slate-100/90 rounded-2xl flex items-center justify-center shadow-sm shadow-slate-200/50 group-hover:shadow-lg group-hover:shadow-slate-300/50 transition-all duration-300"
+            whileHover={{
+              scale: 1.1,
+              rotate: 5,
+              transition: { duration: 0.2 }
+            }}
+          >
+            <span className="material-symbols-outlined text-slate-600 text-xl group-hover:text-slate-700 transition-colors duration-300">{icon}</span>
+          </motion.div>
         {trend && (
-          <span className={`material-symbols-outlined text-sm ${trendColors[trend]}`}>
+            <motion.span
+              className={`material-symbols-outlined text-sm px-2 py-1 rounded-full ${trendColors[trend]} bg-white/80 backdrop-blur-sm shadow-sm`}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              whileHover={{ scale: 1.1 }}
+            >
             {trend === 'up' ? 'trending_up' : trend === 'down' ? 'trending_down' : 'trending_flat'}
-          </span>
+            </motion.span>
         )}
       </div>
-      <div className="text-2xl font-light text-slate-900 mb-2 tracking-tight">{value}</div>
-      <div className="text-sm text-slate-500 font-light">{label}</div>
+
+        <motion.div
+          className="text-3xl font-light text-slate-900 mb-3 tracking-tight"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          {value}
+        </motion.div>
+
+        <motion.div
+          className="text-sm text-slate-500 font-medium tracking-wide"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          {label}
+        </motion.div>
+      </div>
+
+      {/* Subtle shine effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
+      </div>
     </motion.div>
   )
 }
@@ -121,31 +175,84 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
       onClick={onClick}
       disabled={disabled || loading}
       className={`
-        flex items-center gap-4 p-6 rounded-3xl border transition-all duration-300 w-full min-h-[100px]
+        group relative flex items-center gap-4 p-6 rounded-3xl border transition-all duration-500 w-full min-h-[100px] overflow-hidden
         ${currentVariant.base} ${currentVariant.hover}
         ${disabled || loading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}
         focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2
+        shadow-lg hover:shadow-2xl hover:shadow-slate-900/20
       `}
-      whileHover={!disabled && !loading ? { y: -2, scale: 1.01 } : {}}
+      whileHover={!disabled && !loading ? {
+        y: -4,
+        scale: 1.02,
+        transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+      } : {}}
       whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.6,
+        ease: [0.25, 0.1, 0.25, 1],
+        delay: Math.random() * 0.3
+      }}
     >
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${currentVariant.icon}`}>
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+      {/* Subtle shine effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
+      </div>
+
+      <motion.div
+        className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${currentVariant.icon} group-hover:shadow-lg transition-all duration-300`}
+        whileHover={!disabled && !loading ? {
+          scale: 1.1,
+          rotate: 5,
+          transition: { duration: 0.2 }
+        } : {}}
+      >
         {loading ? (
-          <span className="material-symbols-outlined text-xl animate-spin">refresh</span>
+          <motion.span
+            className="material-symbols-outlined text-xl animate-spin"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            refresh
+          </motion.span>
         ) : (
           <span className="material-symbols-outlined text-xl">{icon}</span>
         )}
-      </div>
-      <div className="text-left flex-1 min-w-0">
-        <div className="font-medium text-base mb-1 tracking-tight">{label}</div>
-        <div className={`text-sm font-light leading-relaxed ${currentVariant.description}`}>
+      </motion.div>
+
+      <div className="text-left flex-1 min-w-0 relative z-10">
+        <motion.div
+          className="font-semibold text-lg mb-2 tracking-tight"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          {label}
+        </motion.div>
+        <motion.div
+          className={`text-sm font-light leading-relaxed ${currentVariant.description}`}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           {description}
+        </motion.div>
         </div>
-      </div>
-      <span className="material-symbols-outlined text-xl flex-shrink-0 opacity-40">arrow_forward</span>
+
+      <motion.span
+        className="material-symbols-outlined text-xl flex-shrink-0 opacity-40 group-hover:opacity-60 transition-all duration-300"
+        whileHover={!disabled && !loading ? {
+          x: 4,
+          scale: 1.1,
+          transition: { duration: 0.2 }
+        } : {}}
+      >
+        arrow_forward
+      </motion.span>
     </motion.button>
   )
 }
@@ -1365,20 +1472,45 @@ export function Dashboard() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="mb-6"
+              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              className="mb-8"
             >
-              <h1 className="text-3xl md:text-4xl font-extralight text-slate-900 mb-6 leading-tight tracking-tight">
+              <div className="relative">
+                {/* Refined background accent */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/20 via-slate-50/10 to-teal-50/20 rounded-xl blur-lg -z-10"></div>
+
+                <motion.h1
+                  className="text-3xl md:text-4xl font-light text-slate-900 mb-4 leading-tight tracking-tight"
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                >
                 Your Wellness Journey
-              </h1>
+                </motion.h1>
+                <motion.div
+                  className="mt-2"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                >
               <p className="text-slate-600 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-light">
                 {hasAssessmentData
                   ? "Discover insights from your assessments and create a personalized path forward."
                   : "Begin your journey to better mental health with a personalized assessment."
                 }
               </p>
+                </motion.div>
+
+                {/* Subtle accent line */}
+                <motion.div
+                  className="mt-6 mx-auto w-20 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"
+                  initial={{ scaleX: 0, opacity: 0 }}
+                  animate={{ scaleX: 1, opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                ></motion.div>
+              </div>
             </motion.div>
           </div>
 
@@ -1389,69 +1521,53 @@ export function Dashboard() {
             className="flex flex-col sm:flex-row gap-4 mb-12 justify-center max-w-2xl mx-auto"
           >
             {/* Primary Action */}
-            <div className="relative group">
+            <motion.div
+              className="relative group"
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-
-                  if (isGeneratingOverall || !hasAssessmentData || !user?.id) return
-
-                  if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) return
-
-                  window.lastGenerateInsightsClick = Date.now()
-                  handleGenerateOverallAssessment()
-                }}
-                disabled={isGeneratingOverall || !hasAssessmentData || !user?.id}
-                className={`
-                  group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base
+                onClick={() => router.push('/assessments')}
+                className="group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base
                   transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2
                   transform hover:scale-[1.02] active:scale-[0.98] border border-transparent
-                  ${isGeneratingOverall || !hasAssessmentData || !user?.id
-                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
-                    : 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20'
-                  }
-                `}
+                  bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center justify-center gap-3">
-                  <span className={`material-symbols-outlined text-xl ${
-                    isGeneratingOverall ? 'animate-spin' : ''
-                  }`}>
-                    {isGeneratingOverall ? 'hourglass_empty' : 'psychology'}
-                  </span>
-                  <span>{isGeneratingOverall ? 'Analyzing your complete history...' : 'Analyze Complete History'}</span>
+                  <span className="material-symbols-outlined text-xl">psychology</span>
+                  <span>Take Assessments</span>
                 </div>
               </button>
 
-              {/* Tooltip for disabled state */}
-              {!hasAssessmentData && !isGeneratingOverall && user?.id && (
+              {/* Enhanced tooltip */}
                 <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2 w-72 p-3 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-2xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-slate-600 text-base">info</span>
+                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-emerald-600 text-base">psychology</span>
                     </div>
                     <div>
                       <p className="text-sm text-slate-700 leading-relaxed font-light">
-                        This feature is only available once you have completed an assessment. Take an assessment first to unlock comprehensive analysis.
+                      Take evidence-based assessments to understand your mental health and get personalized insights.
                       </p>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
+            </motion.div>
             
             {/* Secondary Actions */}
             <div className="flex gap-3">
-              <button
+              <motion.button
                 onClick={() => handleNavigate('/session')}
                 className="group px-6 py-4 rounded-3xl bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 font-semibold transition-all duration-300 ease-out hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40 focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98]"
+                whileHover={{ y: -1 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-lg">spa</span>
                   <span className="hidden sm:inline">Wellness Session</span>
                 </div>
-              </button>
+              </motion.button>
             </div>
           </motion.div>
 
@@ -1474,17 +1590,28 @@ export function Dashboard() {
                     transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
                     className="group relative overflow-visible"
                   >
-                    <div className={`inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/95 backdrop-blur-sm border ${getPillClasses()} transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-200/60 focus:ring-offset-2`}>
+                    <motion.div
+                      className={`inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/95 backdrop-blur-sm border ${getPillClasses()} transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-slate-200/60 focus:ring-offset-2`}
+                      whileHover={{ y: -1, scale: 1.01 }}
+                      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                    >
                        <span className="text-sm text-slate-700 font-medium flex items-center gap-1">
                          {keyLabel(d.key)}
-                         <a href="/help#bands" className="opacity-60 hover:opacity-100" aria-label="Band definitions" title="Band definitions">
+                         <motion.a
+                           href="/help#bands"
+                           className="opacity-60 hover:opacity-100 transition-opacity duration-200"
+                           aria-label="Band definitions"
+                           title="Band definitions"
+                           whileHover={{ scale: 1.1 }}
+                           transition={{ duration: 0.2 }}
+                         >
                            <span className="material-symbols-outlined text-[16px] align-middle">info</span>
-                         </a>
+                         </motion.a>
                        </span>
                       <span className={`text-xs px-3 py-1 rounded-full font-medium transition-colors duration-300 ${getLevelBadgeClasses(d.key, d.level)}`} title={`${titleCase(d.level)}`}>
                         {titleCase(d.level)}
                       </span>
-                    </div>
+                    </motion.div>
 
                     {/* Tooltip */}
                     {d.evidence?.[0] && (
@@ -1602,113 +1729,91 @@ export function Dashboard() {
 
     if (!latestOverall) {
       return (
-        <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35">
+        <motion.div
+          className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+        >
           <div className="text-center max-w-sm mx-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+              <motion.div
+                className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              >
                 <span className="material-symbols-outlined text-slate-400 text-2xl">psychology</span>
-              </div>
-              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Unconscious Manifestations</h3>
+              </motion.div>
+              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Unlock Your Unconscious Patterns</h3>
               <p className="text-slate-500 text-base mb-8 leading-relaxed font-light">
-                Discover how your mental health patterns might be manifesting unconsciously in your daily life, relationships, and well-being.
+                Complete your assessments to discover how your mental health patterns manifest unconsciously in your daily life, relationships, and well-being.
               </p>
               <div className="relative group">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-
-                    if (isAutoLoading || !hasAssessmentData || !user?.id) return
-
-                    if (window.lastGenerateInsightsClick && Date.now() - window.lastGenerateInsightsClick < 2000) return
-
-                    window.lastGenerateInsightsClick = Date.now()
-                    setIsAutoLoading(true)
-                    // Use getFreshLifeImpacts for initial loading, not comprehensive analysis
-                    const loadLifeImpacts = async () => {
-                      try {
-                        console.log('🔄 [GET_STARTED] Starting fresh life impacts analysis for user:', user.id)
-                        const freshImpacts = await OverallAssessmentService.getFreshLifeImpacts(user.id)
-                        console.log('✅ [GET_STARTED] Life impacts loaded successfully:', {
-                          hasResult: !!freshImpacts,
-                          totalAssessmentsAnalyzed: freshImpacts?.assessmentData?.assessmentCount || 0,
-                          manifestationsCount: freshImpacts?.holisticAnalysis?.manifestations?.length || 0,
-                          unconsciousCount: freshImpacts?.holisticAnalysis?.unconsciousManifestations?.length || 0
-                        })
-                        setLatestOverall(freshImpacts)
-                      } catch (error) {
-                        console.error('❌ [GET_STARTED] Error loading life impacts:', {
-                          error,
-                          message: error instanceof Error ? error.message : 'Unknown error',
-                          userId: user.id
-                        })
-                      } finally {
-                        setIsAutoLoading(false)
-                      }
-                    }
-                    loadLifeImpacts()
-                  }}
-                  disabled={isAutoLoading || !hasAssessmentData || !user?.id}
-                  className={`group px-6 py-3 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-transparent ${
-                    isAutoLoading || !hasAssessmentData || !user?.id
-                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
-                      : 'bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20'
-                  }`}
+                <motion.button
+                  onClick={() => router.push('/assessments')}
+                  className="group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border border-transparent bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20"
+                  whileHover={{ y: -1 }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className={`material-symbols-outlined text-lg ${
-                      isAutoLoading ? 'animate-spin' : ''
-                    }`}>
-                      {isAutoLoading ? 'hourglass_empty' : 'psychology'}
-                    </span>
-                    <span>{isAutoLoading ? 'Analysing your unconscious patterns...' : 'Analyse my unconscious patterns'}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative flex items-center gap-3">
+                    <span className="material-symbols-outlined text-xl">psychology</span>
+                    <span>Start Assessment Journey</span>
                   </div>
-                </button>
+                </motion.button>
 
-                {/* Tooltip for disabled state */}
-                {!hasAssessmentData && !isAutoLoading && user?.id && (
+                {/* Enhanced tooltip */}
                   <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2 w-72 p-3 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-2xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="material-symbols-outlined text-slate-600 text-base">info</span>
+                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <span className="material-symbols-outlined text-emerald-600 text-base">psychology</span>
                       </div>
                       <div>
                         <p className="text-sm text-slate-700 leading-relaxed font-light">
-                          This feature is only available once you have completed an assessment. Take an assessment first to unlock analysis of your unconscious patterns.
+                        Begin your assessment journey to unlock deep insights into your unconscious mental health patterns and discover how they manifest in your daily life.
                         </p>
                       </div>
                     </div>
                   </div>
-                )}
               </div>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
       )
     }
 
     return (
-      <div className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35 hover:shadow-3xl hover:shadow-slate-900/45 transition-all duration-300">
-        {/* Header */}
         <motion.div
+        className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35 hover:shadow-3xl hover:shadow-slate-900/45 transition-all duration-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        whileHover={{ y: -1 }}
+      >
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
           className="flex items-start justify-between mb-8"
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm">
+            <motion.div
+              className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
               <span className="material-symbols-outlined text-slate-600 text-xl">psychology</span>
-            </div>
+            </motion.div>
             <div>
-              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Unconscious Manifestations</h3>
+              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Analyze Your Unconscious Patterns</h3>
               <div className="relative group">
                 <p className="text-sm text-slate-500 cursor-help hover:text-slate-700 transition-colors duration-300 font-light flex items-center gap-1">
-                  <span>Based on all your assessments</span>
+                  <span>AI-powered insights from your complete assessment history</span>
                   <span className="material-symbols-outlined text-sm opacity-60 group-hover:opacity-100 transition-opacity">info</span>
                 </p>
                 {/* Modern tooltip */}
@@ -1718,9 +1823,9 @@ export function Dashboard() {
                       <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-slate-900 mb-1">Unconscious Manifestations</h4>
+                      <h4 className="text-sm font-medium text-slate-900 mb-1">Unconscious Pattern Analysis</h4>
                       <p className="text-xs text-slate-600 leading-relaxed font-light">
-                        These insights reveal how your mental health patterns might be manifesting unconsciously in your daily life, relationships, work, and overall well-being. Understanding these patterns can help you recognize and address them proactively.
+                        Explore AI-powered insights that reveal how your mental health patterns manifest unconsciously in your daily life, relationships, and overall well-being. Understanding these patterns helps you recognize and address them proactively.
                       </p>
                     </div>
                   </div>
@@ -1790,12 +1895,12 @@ export function Dashboard() {
 
         {/* Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           className="flex gap-4"
         >
-          <button
+          <motion.button
             onClick={async () => {
               if (!user?.id) return
               console.log('🔄 Refreshing life impacts for user:', user.id)
@@ -1828,6 +1933,8 @@ export function Dashboard() {
                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-sm border-slate-200'
                 : 'bg-white/95 backdrop-blur-sm border border-emerald-200 text-emerald-600 hover:bg-emerald-50/80 hover:border-emerald-300 hover:shadow-3xl hover:shadow-emerald-200/40'
             }`}
+            whileHover={!loadingImpact ? { y: -1 } : {}}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <div className="flex items-center justify-center gap-2">
               <span className={`material-symbols-outlined text-base ${loadingImpact ? 'animate-spin' : ''}`}>
@@ -1835,19 +1942,21 @@ export function Dashboard() {
               </span>
               <span>{loadingImpact ? 'Refreshing...' : 'Refresh'}</span>
             </div>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             onClick={() => { if (latestOverall) setOverallAssessment(latestOverall); setShowOverallResults(true) }}
             className="flex-1 group px-5 py-3 rounded-3xl font-semibold text-sm bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white transition-all duration-300 ease-out hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 hover:shadow-3xl hover:shadow-emerald-900/50 focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] shadow-3xl border border-emerald-500/20"
+            whileHover={{ y: -1 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           >
             <div className="flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-base">open_in_new</span>
-              <span>View details</span>
+              <span>Explore Unconscious Insights</span>
             </div>
-          </button>
+          </motion.button>
         </motion.div>
-      </div>
+      </motion.div>
     )
   }
 
@@ -1856,91 +1965,385 @@ export function Dashboard() {
   // Loading state
   if (loading) {
     return (
-      <div className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins">
+      <motion.div
+        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+      >
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
-          <div className="animate-pulse space-y-8 md:space-y-10">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-teal-50 rounded-2xl mx-auto mb-4"></div>
-              <div className="h-8 w-80 bg-teal-50 rounded-lg mx-auto mb-3" />
-              <div className="h-4 w-64 bg-teal-50 rounded mx-auto" />
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-7xl mx-auto">
+          <motion.div
+            className="space-y-8 md:space-y-10"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.div
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <motion.div
+                className="w-20 h-20 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-teal-200/30"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.span
+                  className="material-symbols-outlined text-teal-600 text-3xl"
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  psychology
+                </motion.span>
+              </motion.div>
+
+              <motion.h1
+                className="text-3xl md:text-4xl font-light text-slate-900 mb-4 tracking-tight"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                Loading your dashboard
+              </motion.h1>
+
+              <motion.p
+                className="text-slate-600 font-light text-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.8 }}
+              >
+                Personalizing your wellness experience...
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start max-w-7xl mx-auto"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               <div className="lg:col-span-8 xl:col-span-9 space-y-8">
-                <div className="h-64 bg-teal-50 rounded-2xl" />
-                <div className="h-48 bg-teal-50 rounded-2xl" />
+                <motion.div
+                  className="h-64 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-3xl shadow-sm"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  style={{
+                    backgroundSize: '200% 200%'
+                  }}
+                />
+                <motion.div
+                  className="h-48 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl shadow-sm"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "linear",
+                    delay: 0.5
+                  }}
+                  style={{
+                    backgroundSize: '200% 200%'
+                  }}
+                />
               </div>
               <div className="lg:col-span-4 xl:col-span-3">
-                <div className="h-96 bg-teal-50 rounded-2xl" />
+                <motion.div
+                  className="h-96 bg-gradient-to-br from-teal-50 via-emerald-50 to-teal-50 rounded-3xl shadow-sm"
+                  animate={{
+                    backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                  }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "linear",
+                    delay: 1
+                  }}
+                  style={{
+                    backgroundSize: '200% 200%'
+                  }}
+                />
               </div>
+            </motion.div>
+
+            {/* Enhanced progress indicator */}
+            <motion.div
+              className="flex justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.0 }}
+            >
+              <div className="flex gap-3">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-3 h-3 bg-gradient-to-r from-teal-400 to-emerald-400 rounded-full"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 1, 0.6]
+                    }}
+                    transition={{
+                      duration: 1.8,
+                      repeat: Infinity,
+                      delay: i * 0.3,
+                      ease: "easeInOut"
+                    }}
+                  />
+                ))}
             </div>
+            </motion.div>
+          </motion.div>
           </div>
-        </div>
-      </div>
+      </motion.div>
     )
   }
 
   // Error state
   if (error && !loading) {
     return (
-      <div className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins">
+      <motion.div
+        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+      >
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
-          <div className="text-center py-12 max-w-lg mx-auto">
-            <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="material-symbols-outlined text-rose-500 text-2xl">error</span>
+          <motion.div
+            className="text-center py-12 max-w-lg mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.div
+              className="relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-rose-50 to-pink-50 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-rose-200/30 relative">
+                <motion.span
+                  className="material-symbols-outlined text-rose-500 text-3xl"
+                  animate={{
+                    rotate: [0, -10, 10, 0],
+                    scale: [1, 0.95, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  error
+                </motion.span>
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-400/5 to-pink-500/5 rounded-3xl"></div>
             </div>
-            <h2 className="text-2xl font-light text-slate-800 mb-4">Something went wrong</h2>
-            <p className="text-slate-600 font-light mb-8 leading-relaxed">{error}</p>
-            <button
+            </motion.div>
+
+            <motion.h2
+              className="text-3xl font-light text-slate-800 mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Something went wrong
+            </motion.h2>
+
+            <motion.p
+              className="text-slate-600 font-light mb-8 leading-relaxed text-lg"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              {error}
+            </motion.p>
+
+            <motion.button
               onClick={() => {
                 setError(null)
                 setDataFetched(false)
                 setRetryCount(0)
                 setLoading(true)
               }}
-              className="inline-flex items-center px-5 py-3 rounded-xl text-white font-medium transition-all duration-200 text-base focus:outline-none focus:ring-2 focus:ring-[#FED7AA] focus:ring-offset-2"
-              style={{
-                backgroundColor: '#B45309',
-                boxShadow: '0 2px 6px rgba(16, 24, 40, 0.06)',
-                minHeight: '44px'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#92400E'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B45309'}
-              onMouseDown={(e) => e.currentTarget.style.backgroundColor = '#78350F'}
-              onMouseUp={(e) => e.currentTarget.style.backgroundColor = '#92400E'}
+              className="inline-flex items-center px-6 py-3 rounded-2xl bg-gradient-to-r from-slate-600 to-slate-700 text-white font-semibold transition-all duration-300 ease-out text-base focus:outline-none focus:ring-4 focus:ring-slate-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] shadow-3xl hover:shadow-3xl hover:shadow-slate-900/50 hover:from-slate-700 hover:to-slate-800 border border-slate-500/20"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <span className="material-symbols-outlined mr-3 text-xl">refresh</span>
+              <span className="material-symbols-outlined mr-3 text-lg">refresh</span>
               Try again
-            </button>
+            </motion.button>
+
+            {/* Subtle error indicator */}
+            <motion.div
+              className="flex justify-center gap-2 mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-rose-400 rounded-full"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
           </div>
-        </div>
-      </div>
+      </motion.div>
     )
   }
 
   // Profile not ready state
   if (!profile) {
     return (
-      <div className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins">
+      <motion.div
+        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+      >
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
-          <div className="text-center py-12 max-w-lg mx-auto">
-            <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <span className="material-symbols-outlined text-teal-600 text-2xl animate-pulse">person</span>
+          <motion.div
+            className="text-center py-12 max-w-lg mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <motion.div
+              className="relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="w-20 h-20 bg-gradient-to-br from-teal-50 to-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-teal-200/30 relative">
+                <motion.span
+                  className="material-symbols-outlined text-teal-600 text-3xl"
+                  animate={{
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  person
+                </motion.span>
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-400/5 to-emerald-500/5 rounded-3xl"></div>
             </div>
-            <h2 className="text-2xl font-light text-slate-800 mb-4">Preparing your space...</h2>
-            <p className="text-slate-600 font-light leading-relaxed">We're setting up your personalized wellness dashboard.</p>
+            </motion.div>
+
+            <motion.h2
+              className="text-3xl font-light text-slate-800 mb-6 tracking-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              Preparing your space
+            </motion.h2>
+
+            <motion.p
+              className="text-slate-600 font-light leading-relaxed text-lg mb-8"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              We're setting up your personalized wellness dashboard with care and attention.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
+            >
             <LoadingSpinner size="lg" className="mt-8" />
+            </motion.div>
+
+            {/* Subtle progress dots */}
+            <motion.div
+              className="flex justify-center gap-2 mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 1.2 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 bg-teal-400 rounded-full"
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.2,
+                    ease: "easeInOut"
+                  }}
+                />
+              ))}
+            </motion.div>
+          </motion.div>
           </div>
-        </div>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins">
-      <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
-        <div className="space-y-8 md:space-y-10">
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 items-start">
+    <motion.div
+      className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins relative overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-emerald-100/30 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/30 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-slate-100/10 via-transparent to-slate-100/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
+        <motion.div
+          className="space-y-10 md:space-y-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          {/* Enhanced Main Content Grid */}
+          <motion.div
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-8xl mx-auto"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             {/* Left Column - Main Content (70%) */}
             <div className="lg:col-span-8 xl:col-span-9 space-y-8">
               {/* Snapshot Hero */}
@@ -1974,7 +2377,7 @@ export function Dashboard() {
                 <AssessmentSection coverage={coverage} className="mt-2" />
               </motion.div>
             </div>
-          </div>
+          </motion.div>
 
 
 
@@ -2009,13 +2412,53 @@ export function Dashboard() {
                 className="bg-white rounded-3xl shadow-3xl shadow-slate-900/40 max-w-6xl w-full max-h-[90vh] overflow-hidden border border-slate-200/40"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-slate-200">
-                  <h2 className="text-xl font-light text-slate-900 tracking-tight">
+                {/* Enhanced Header */}
+                <motion.div
+                  className="relative flex items-center justify-between p-6 border-b border-slate-200/60 bg-gradient-to-r from-slate-50/50 via-white to-slate-50/50"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
+                  {/* Subtle background pattern */}
+                  <div className="absolute inset-0 opacity-30">
+                    <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-emerald-100/40 to-transparent rounded-full transform -translate-x-16 -translate-y-16"></div>
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-teal-100/40 to-transparent rounded-full transform translate-x-12 -translate-y-12"></div>
+                  </div>
+
+                  <div className="relative z-10 flex items-center gap-4">
+                    <motion.div
+                      className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl flex items-center justify-center shadow-sm"
+                      whileHover={{ scale: 1.05, rotate: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span className="material-symbols-outlined text-emerald-600 text-lg">
+                        {isGeneratingOverall ? 'psychology' : 'analytics'}
+                      </span>
+                    </motion.div>
+                    <div>
+                      <motion.h2
+                        className="text-2xl font-light text-slate-900 tracking-tight"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                      >
                     {isGeneratingOverall ? 'Generating Your Insights' : 'Your Personalized Mental Health Profile'}
-                  </h2>
+                      </motion.h2>
                   {!isGeneratingOverall && (
-                    <button
+                        <motion.p
+                          className="text-sm text-slate-600 font-light mt-1"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.3, duration: 0.5 }}
+                        >
+                          AI-powered analysis of your mental wellness journey
+                        </motion.p>
+                      )}
+                    </div>
+                  </div>
+
+                  {!isGeneratingOverall && (
+                    <motion.button
                       onClick={() => {
                         setShowOverallResults(false)
                         setOverallAssessment(null)
@@ -2027,12 +2470,14 @@ export function Dashboard() {
                           localStorage.removeItem('overallProgress')
                         }
                       }}
-                      className="p-1.5 hover:bg-emerald-50 rounded-xl transition-all duration-200"
+                      className="relative z-10 p-2 hover:bg-slate-100/80 rounded-xl transition-all duration-200 group"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      <span className="material-symbols-outlined text-emerald-600 text-lg">close</span>
-                    </button>
+                      <span className="material-symbols-outlined text-slate-500 text-lg group-hover:text-slate-700 transition-colors">close</span>
+                    </motion.button>
                   )}
-                </div>
+                </motion.div>
 
                 {/* Content */}
                 <div className="overflow-y-auto max-h-[calc(90vh-100px)]">
@@ -2048,24 +2493,102 @@ export function Dashboard() {
                         </p>
                       </div>
 
-                      {/* Progress Bar */}
-                      <div className="max-w-sm mx-auto">
-                        <div className="flex justify-between text-sm text-slate-600 mb-4 font-light">
-                          <span>Progress</span>
-                          <span>{Math.round(overallProgress)}%</span>
+                      {/* Enhanced Progress Bar */}
+                      <motion.div
+                        className="max-w-sm mx-auto"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
+                      >
+                        <div className="flex justify-between text-sm text-slate-600 mb-6 font-medium">
+                          <motion.span
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.4, duration: 0.3 }}
+                          >
+                            Analysis Progress
+                          </motion.span>
+                          <motion.span
+                            className="font-semibold text-emerald-600"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.4, duration: 0.3 }}
+                          >
+                            {Math.round(overallProgress)}%
+                          </motion.span>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+
+                        {/* Enhanced progress container */}
+                        <div className="relative w-full bg-slate-100/80 rounded-2xl h-3 overflow-hidden shadow-inner">
+                          {/* Animated background */}
                           <motion.div
-                            className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full"
+                            className="absolute inset-0 bg-gradient-to-r from-emerald-200/30 via-teal-200/30 to-emerald-200/30 rounded-2xl"
+                            animate={{
+                              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
+                            }}
+                            transition={{
+                              duration: 3,
+                              repeat: Infinity,
+                              ease: "linear"
+                            }}
+                            style={{
+                              backgroundSize: '200% 200%'
+                            }}
+                          />
+
+                          {/* Main progress bar */}
+                          <motion.div
+                            className="relative h-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 rounded-2xl shadow-sm"
                             initial={{ width: 0 }}
                             animate={{ width: `${overallProgress}%` }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                          />
+                            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                          >
+                            {/* Animated shine effect */}
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent rounded-2xl"
+                              animate={{
+                                x: ['-100%', '100%']
+                              }}
+                              transition={{
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 0.5
+                              }}
+                            />
+                          </motion.div>
+
+                          {/* Pulsing effect at the end */}
+                          {overallProgress > 0 && (
+                            <motion.div
+                              className="absolute top-0 h-full w-8 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl opacity-60"
+                              animate={{
+                                x: `${overallProgress - 8}%`,
+                                scale: [1, 1.2, 1],
+                                opacity: [0.6, 1, 0.6]
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                              style={{
+                                left: `${overallProgress}%`,
+                                transform: 'translateX(-100%)'
+                              }}
+                            />
+                          )}
                         </div>
-                        <p className="text-sm text-slate-500 mt-6 font-light">
-                          This usually takes 10-30 seconds
-                        </p>
-                      </div>
+
+                        <motion.p
+                          className="text-sm text-slate-500 mt-6 font-light text-center"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.6, duration: 0.5 }}
+                        >
+                          ✨ AI is analyzing your mental wellness patterns...
+                        </motion.p>
+                      </motion.div>
                     </div>
                   ) : overallAssessment ? (
                     overallAssessment.isError ? (
@@ -2215,8 +2738,9 @@ export function Dashboard() {
             </motion.div>
           )}
 
+        </motion.div>
         </div>
-      </div>
-    </div>
+    </motion.div>
   )
 }
+

@@ -1170,15 +1170,633 @@ export const PCL5_ASSESSMENT: Assessment = {
   }
 }
 
-// Export all assessments
-export const ASSESSMENTS: Record<string, Assessment> = {
-  ace: ACE_QUESTIONNAIRE,
-  phq9: PHQ9_ASSESSMENT,
-  gad7: GAD7_ASSESSMENT,
-  'cd-risc': CDRISC_ASSESSMENT,
-  pss10: PSS10_ASSESSMENT,
-  who5: WHO5_ASSESSMENT,
-  pcl5: PCL5_ASSESSMENT
+// AUDIT (Alcohol Use Disorders Identification Test)
+export const AUDIT_ASSESSMENT: Assessment = {
+  id: 'audit',
+  title: 'Alcohol Use Disorders Identification Test (AUDIT)',
+  shortTitle: 'AUDIT',
+  description: 'A 10-item screening tool developed by the World Health Organization to assess alcohol consumption, drinking behaviors, and alcohol-related problems.',
+  instructions: 'Please circle the number that best describes your answer to each question. Be sure to answer each question.',
+  category: 'wellbeing',
+  estimatedTime: 2,
+  isValid: true,
+  source: 'World Health Organization',
+  citations: ['Saunders et al., 1993'],
+
+  questions: [
+    {
+      id: 'audit_1',
+      text: 'How often do you have a drink containing alcohol?',
+      type: 'multiple-choice',
+      options: ['Never', 'Monthly or less', '2-4 times a month', '2-3 times a week', '4 or more times a week']
+    },
+    {
+      id: 'audit_2',
+      text: 'How many drinks containing alcohol do you have on a typical day when you are drinking?',
+      type: 'multiple-choice',
+      options: ['1 or 2', '3 or 4', '5 or 6', '7 to 9', '10 or more']
+    },
+    {
+      id: 'audit_3',
+      text: 'How often do you have six or more drinks on one occasion?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_4',
+      text: 'How often during the last year have you found that you were not able to stop drinking once you had started?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_5',
+      text: 'How often during the last year have you failed to do what was normally expected from you because of drinking?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_6',
+      text: 'How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_7',
+      text: 'How often during the last year have you had a feeling of guilt or remorse after drinking?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_8',
+      text: 'How often during the last year have you been unable to remember what happened the night before because you had been drinking?',
+      type: 'multiple-choice',
+      options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily']
+    },
+    {
+      id: 'audit_9',
+      text: 'Have you or someone else been injured as a result of your drinking?',
+      type: 'multiple-choice',
+      options: ['No', 'Yes, but not in the last year', 'Yes, during the last year']
+    },
+    {
+      id: 'audit_10',
+      text: 'Has a relative or friend or a doctor or other health worker been concerned about your drinking or suggested you cut down?',
+      type: 'multiple-choice',
+      options: ['No', 'Yes, but not in the last year', 'Yes, during the last year']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score < 8 ? 'Low risk' :
+             score < 16 ? 'Medium risk' :
+             score < 20 ? 'High risk' : 'Very high risk',
+      description: `Your AUDIT score is ${score} out of 40. This indicates ${score < 8 ? 'low risk drinking patterns' : score < 16 ? 'medium risk drinking patterns' : score < 20 ? 'high risk drinking patterns' : 'very high risk drinking patterns that may indicate alcohol dependence'}.`,
+      severity: score < 8 ? 'normal' :
+                score < 16 ? 'mild' :
+                score < 20 ? 'moderate' : 'severe',
+      recommendations: score >= 16 ? [
+        'Consider speaking with a healthcare provider about your alcohol use',
+        'Consider reducing alcohol consumption',
+        'Consider joining a support group like AA if appropriate',
+        'Practice moderation strategies and alternative coping mechanisms'
+      ] : score >= 8 ? [
+        'Monitor your alcohol consumption patterns',
+        'Consider setting limits on drinking occasions',
+        'Practice moderation and mindful drinking'
+      ] : [
+        'Continue healthy drinking patterns',
+        'Maintain awareness of alcohol consumption',
+        'Use alcohol as a social lubricant rather than coping mechanism'
+      ],
+      insights: [
+        'AUDIT is a validated screening tool for harmful drinking patterns',
+        'Scores of 8+ suggest potentially harmful drinking',
+        'The test assesses both quantity and consequences of drinking',
+        'Regular screening can help identify drinking patterns early'
+      ],
+      nextSteps: score >= 16 ? [
+        'Schedule a consultation with a healthcare provider',
+        'Consider alcohol treatment programs if appropriate',
+        'Track your drinking patterns for a week',
+        'Learn about alcohol dependence and recovery options'
+      ] : score >= 8 ? [
+        'Track your drinking for the next month',
+        'Set personal limits for alcohol consumption',
+        'Consider talking with friends or family about drinking patterns'
+      ] : [
+        'Continue healthy habits',
+        'Stay informed about alcohol-related health information',
+        'Support others who may be struggling with alcohol'
+      ],
+      manifestations: score >= 20 ? [
+        'Signs of alcohol dependence or addiction',
+        'Significant impact on daily functioning',
+        'Health problems related to alcohol use',
+        'Relationship difficulties due to drinking',
+        'Legal or financial problems from alcohol use',
+        'Strong cravings and loss of control over drinking'
+      ] : score >= 16 ? [
+        'Harmful drinking patterns affecting health',
+        'Increased risk of alcohol-related accidents',
+        'Some negative consequences from drinking',
+        'Difficulty moderating alcohol consumption',
+        'Drinking more than intended on occasions'
+      ] : score >= 8 ? [
+        'Risky drinking patterns on some occasions',
+        'Occasional heavy drinking sessions',
+        'Some negative consequences from drinking',
+        'Increased risk compared to low-risk drinkers'
+      ] : [
+        'Low-risk drinking patterns',
+        'Healthy relationship with alcohol',
+        'Minimal risk of alcohol-related problems',
+        'Good control over drinking behaviors'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 7, label: 'Low Risk', description: 'Low risk drinking patterns', severity: 'normal', recommendations: ['Continue healthy habits'] },
+      { min: 8, max: 15, label: 'Medium Risk', description: 'Risky drinking patterns', severity: 'mild', recommendations: ['Monitor consumption', 'Consider moderation'] },
+      { min: 16, max: 19, label: 'High Risk', description: 'Harmful drinking patterns', severity: 'moderate', recommendations: ['Seek professional consultation'] },
+      { min: 20, max: 40, label: 'Very High Risk', description: 'Possible alcohol dependence', severity: 'severe', recommendations: ['Seek immediate professional help'] }
+    ]
+  }
+}
+
+// DAST-10 (Drug Abuse Screening Test)
+export const DAST10_ASSESSMENT: Assessment = {
+  id: 'dast10',
+  title: 'Drug Abuse Screening Test (DAST-10)',
+  shortTitle: 'DAST-10',
+  description: 'A 10-item self-report instrument that can be used to screen for drug abuse and dependence.',
+  instructions: 'Please answer the following questions about your drug use. Answer "Yes" or "No" to each question.',
+  category: 'wellbeing',
+  estimatedTime: 2,
+  isValid: true,
+  source: 'Harvey Skinner, PhD',
+  citations: ['Skinner, 1982'],
+
+  questions: [
+    {
+      id: 'dast10_1',
+      text: 'Have you used drugs other than those required for medical reasons?',
+      type: 'yes-no',
+      category: 'drug-use'
+    },
+    {
+      id: 'dast10_2',
+      text: 'Do you use more than one drug at a time?',
+      type: 'yes-no',
+      category: 'polysubstance-use'
+    },
+    {
+      id: 'dast10_3',
+      text: 'Are you always able to stop using drugs when you want to?',
+      type: 'yes-no',
+      category: 'loss-of-control'
+    },
+    {
+      id: 'dast10_4',
+      text: 'Have you ever had blackouts or flashbacks as a result of drug use?',
+      type: 'yes-no',
+      category: 'blackouts-flashbacks'
+    },
+    {
+      id: 'dast10_5',
+      text: 'Do you ever feel bad or guilty about your drug use?',
+      type: 'yes-no',
+      category: 'guilt-remorse'
+    },
+    {
+      id: 'dast10_6',
+      text: 'Does your spouse (or parents) ever complain about your involvement with drugs?',
+      type: 'yes-no',
+      category: 'family-concerns'
+    },
+    {
+      id: 'dast10_7',
+      text: 'Have you neglected your family because of your use of drugs?',
+      type: 'yes-no',
+      category: 'family-neglect'
+    },
+    {
+      id: 'dast10_8',
+      text: 'Have you engaged in illegal activities in order to obtain drugs?',
+      type: 'yes-no',
+      category: 'illegal-activities'
+    },
+    {
+      id: 'dast10_9',
+      text: 'Have you ever experienced withdrawal symptoms (felt sick) when you stopped taking drugs?',
+      type: 'yes-no',
+      category: 'withdrawal'
+    },
+    {
+      id: 'dast10_10',
+      text: 'Have you had medical problems as a result of your drug use (e.g., memory loss, hepatitis, convulsions, bleeding)?',
+      type: 'yes-no',
+      category: 'medical-problems'
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score === 0 ? 'No drug problems' :
+             score <= 2 ? 'Low level' :
+             score <= 4 ? 'Intermediate level' :
+             score <= 6 ? 'Substantial level' :
+             score <= 8 ? 'Severe level' : 'Extreme level',
+      description: `Your DAST-10 score is ${score} out of 10. This indicates ${score === 0 ? 'no significant drug-related problems' : score <= 2 ? 'low level drug-related problems' : score <= 4 ? 'intermediate level drug-related problems' : score <= 6 ? 'substantial level drug-related problems' : score <= 8 ? 'severe level drug-related problems' : 'extreme level drug-related problems'}.`,
+      severity: score === 0 ? 'normal' :
+                score <= 2 ? 'mild' :
+                score <= 4 ? 'moderate' :
+                score <= 6 ? 'severe' : 'critical',
+      recommendations: score >= 3 ? [
+        'Consider speaking with a healthcare provider about your drug use',
+        'Consider substance use treatment options',
+        'Build healthy coping strategies to replace drug use',
+        'Consider support groups or counseling'
+      ] : score >= 1 ? [
+        'Monitor your drug use patterns',
+        'Consider the impact of drug use on your life',
+        'Practice moderation and alternative coping strategies'
+      ] : [
+        'Continue healthy lifestyle choices',
+        'Stay informed about substance use issues',
+        'Support others who may be struggling with substance use'
+      ],
+      insights: [
+        'DAST-10 screens for drug abuse and dependence',
+        'Higher scores indicate more severe drug-related problems',
+        'The test covers various aspects of drug use consequences',
+        'Early identification can prevent escalation of drug problems'
+      ],
+      nextSteps: score >= 3 ? [
+        'Schedule an appointment with a substance use specialist',
+        'Consider drug treatment programs',
+        'Learn about recovery options and support systems',
+        'Track your drug use patterns'
+      ] : score >= 1 ? [
+        'Monitor your drug use over the next month',
+        'Consider speaking with a trusted healthcare provider',
+        'Learn about healthy coping strategies'
+      ] : [
+        'Continue healthy habits',
+        'Stay informed about substance use health information',
+        'Support others in maintaining healthy lifestyles'
+      ],
+      manifestations: score >= 6 ? [
+        'Severe drug dependence or addiction',
+        'Significant negative consequences from drug use',
+        'Health problems related to drug use',
+        'Legal problems from drug-related activities',
+        'Relationship and family problems',
+        'Loss of control over drug use',
+        'Withdrawal symptoms when attempting to stop'
+      ] : score >= 3 ? [
+        'Moderate drug-related problems',
+        'Some negative consequences from drug use',
+        'Family or relationship concerns about drug use',
+        'Possible legal issues related to drug use',
+        'Health concerns from drug use',
+        'Difficulty controlling drug use'
+      ] : score >= 1 ? [
+        'Mild drug-related concerns',
+        'Occasional negative consequences from drug use',
+        'Some awareness of drug use problems',
+        'Early signs of drug-related issues'
+      ] : [
+        'No significant drug-related problems',
+        'Healthy relationship with substances',
+        'Low risk of substance use disorders',
+        'Good control over substance use'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 0, label: 'No Drug Problems', description: 'No significant drug-related problems', severity: 'normal', recommendations: ['Continue healthy habits'] },
+      { min: 1, max: 2, label: 'Low Level', description: 'Low level drug-related problems', severity: 'mild', recommendations: ['Monitor use', 'Consider moderation'] },
+      { min: 3, max: 4, label: 'Intermediate Level', description: 'Intermediate level drug-related problems', severity: 'moderate', recommendations: ['Seek consultation'] },
+      { min: 5, max: 6, label: 'Substantial Level', description: 'Substantial level drug-related problems', severity: 'severe', recommendations: ['Seek professional help'] },
+      { min: 7, max: 8, label: 'Severe Level', description: 'Severe level drug-related problems', severity: 'severe', recommendations: ['Seek immediate professional help'] },
+      { min: 9, max: 10, label: 'Extreme Level', description: 'Extreme level drug-related problems', severity: 'critical', recommendations: ['Seek immediate professional intervention'] }
+    ]
+  }
+}
+
+// Temporarily remove ASSESSMENTS export - will be added at end of file
+
+// ISI (Insomnia Severity Index)
+export const ISI_ASSESSMENT: Assessment = {
+  id: 'isi',
+  title: 'Insomnia Severity Index (ISI)',
+  shortTitle: 'ISI',
+  description: 'A brief screening measure of insomnia severity and its impact on daytime functioning.',
+  instructions: 'Please rate the severity of your insomnia problem(s) in the past two weeks. For each question, please indicate the appropriate number to indicate your average response.',
+  category: 'wellbeing',
+  estimatedTime: 2,
+  isValid: true,
+  source: 'Charles M. Morin, PhD',
+  citations: ['Morin, 1993'],
+
+  questions: [
+    {
+      id: 'isi_1',
+      text: 'Difficulty falling asleep',
+      type: 'likert-5',
+      options: ['None', 'Mild', 'Moderate', 'Severe', 'Very severe']
+    },
+    {
+      id: 'isi_2',
+      text: 'Difficulty staying asleep',
+      type: 'likert-5',
+      options: ['None', 'Mild', 'Moderate', 'Severe', 'Very severe']
+    },
+    {
+      id: 'isi_3',
+      text: 'Problems waking up too early',
+      type: 'likert-5',
+      options: ['None', 'Mild', 'Moderate', 'Severe', 'Very severe']
+    },
+    {
+      id: 'isi_4',
+      text: 'How satisfied/dissatisfied are you with your current sleep pattern?',
+      type: 'likert-5',
+      options: ['Very satisfied', 'Satisfied', 'Moderately satisfied', 'Dissatisfied', 'Very dissatisfied']
+    },
+    {
+      id: 'isi_5',
+      text: 'How noticeable to others do you think your sleep problem is in terms of impairing the quality of your life?',
+      type: 'likert-5',
+      options: ['Not at all noticeable', 'A little', 'Somewhat', 'Much', 'Very much noticeable']
+    },
+    {
+      id: 'isi_6',
+      text: 'How worried/distressed are you about your current sleep problem?',
+      type: 'likert-5',
+      options: ['Not at all worried', 'A little', 'Somewhat', 'Much', 'Very much worried']
+    },
+    {
+      id: 'isi_7',
+      text: 'To what extent do you consider your sleep problem to interfere with your daily functioning (e.g. daytime fatigue, mood, ability to function at work/daily chores, concentration, memory, mood, etc.) currently?',
+      type: 'likert-5',
+      options: ['Not at all interfering', 'A little', 'Somewhat', 'Much', 'Very much interfering']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number) => ({
+      score,
+      level: score <= 7 ? 'No clinically significant insomnia' :
+             score <= 14 ? 'Subthreshold insomnia' :
+             score <= 21 ? 'Clinical insomnia (moderate)' : 'Clinical insomnia (severe)',
+      description: `Your ISI score is ${score} out of 28. This indicates ${score <= 7 ? 'no clinically significant insomnia' : score <= 14 ? 'subthreshold insomnia' : score <= 21 ? 'moderate clinical insomnia' : 'severe clinical insomnia'}.`,
+      severity: score <= 7 ? 'normal' :
+                score <= 14 ? 'mild' :
+                score <= 21 ? 'moderate' : 'severe',
+      recommendations: score >= 15 ? [
+        'Consider speaking with a healthcare provider about your sleep difficulties',
+        'Practice good sleep hygiene habits',
+        'Consider cognitive behavioral therapy for insomnia (CBT-I)',
+        'Limit caffeine and screen time before bed'
+      ] : score >= 8 ? [
+        'Monitor your sleep patterns',
+        'Practice better sleep hygiene',
+        'Consider relaxation techniques before bed',
+        'Maintain consistent sleep schedule'
+      ] : [
+        'Continue healthy sleep habits',
+        'Maintain consistent sleep schedule',
+        'Practice good sleep hygiene'
+      ],
+      insights: [
+        'ISI is a validated measure of insomnia severity',
+        'Sleep problems can significantly impact mental health',
+        'Good sleep hygiene is essential for mental wellness',
+        'CBT-I is the gold standard treatment for chronic insomnia'
+      ],
+      nextSteps: score >= 15 ? [
+        'Schedule a consultation with a sleep specialist',
+        'Consider CBT-I therapy',
+        'Track your sleep patterns for a week',
+        'Learn about sleep hygiene and relaxation techniques'
+      ] : score >= 8 ? [
+        'Track your sleep for the next week',
+        'Implement better sleep hygiene practices',
+        'Consider relaxation techniques before bed',
+        'Maintain consistent sleep and wake times'
+      ] : [
+        'Continue healthy sleep habits',
+        'Stay informed about sleep health',
+        'Share good sleep practices with others'
+      ],
+      manifestations: score >= 22 ? [
+        'Severe sleep onset and maintenance difficulties',
+        'Extreme daytime fatigue and impairment',
+        'Significant distress about sleep problems',
+        'Marked interference with daily functioning',
+        'Very noticeable sleep problems affecting quality of life',
+        'High levels of worry about sleep',
+        'Severe impact on work, concentration, and mood'
+      ] : score >= 15 ? [
+        'Moderate sleep difficulties',
+        'Noticeable daytime fatigue',
+        'Some distress about sleep problems',
+        'Moderate interference with daily activities',
+        'Sleep problems affecting quality of life',
+        'Moderate worry about sleep',
+        'Some impact on concentration and mood'
+      ] : score >= 8 ? [
+        'Mild sleep difficulties',
+        'Occasional daytime fatigue',
+        'Some concern about sleep problems',
+        'Mild interference with daily activities',
+        'Sleep problems somewhat noticeable',
+        'Mild worry about sleep',
+        'Some impact on daily functioning'
+      ] : [
+        'Good sleep quality',
+        'Minimal sleep difficulties',
+        'Satisfaction with sleep patterns',
+        'Good daytime functioning',
+        'Healthy sleep habits',
+        'Low levels of sleep-related worry'
+      ]
+    }),
+
+    ranges: [
+      { min: 0, max: 7, label: 'No Insomnia', description: 'No clinically significant insomnia', severity: 'normal', recommendations: ['Maintain healthy sleep habits'] },
+      { min: 8, max: 14, label: 'Subthreshold Insomnia', description: 'Mild sleep difficulties', severity: 'mild', recommendations: ['Improve sleep hygiene', 'Monitor sleep patterns'] },
+      { min: 15, max: 21, label: 'Clinical Insomnia (Moderate)', description: 'Moderate insomnia', severity: 'moderate', recommendations: ['Seek professional consultation', 'Consider CBT-I'] },
+      { min: 22, max: 28, label: 'Clinical Insomnia (Severe)', description: 'Severe insomnia', severity: 'severe', recommendations: ['Seek immediate professional help'] }
+    ]
+  }
+}
+
+// MDQ (Mood Disorder Questionnaire)
+export const MDQ_ASSESSMENT: Assessment = {
+  id: 'mdq',
+  title: 'Mood Disorder Questionnaire (MDQ)',
+  shortTitle: 'MDQ',
+  description: 'A brief self-report instrument designed to help detect bipolar disorder. It focuses on symptoms of mania/hypomania.',
+  instructions: 'Please answer each question to the best of your ability. This questionnaire should be completed by patients themselves.',
+  category: 'wellbeing',
+  estimatedTime: 3,
+  isValid: true,
+  source: 'Robert M.A. Hirschfeld, MD',
+  citations: ['Hirschfeld et al., 2000'],
+
+  questions: [
+    {
+      id: 'mdq_1',
+      text: 'Has there ever been a period of time when you were not your usual self and... you felt so good or so hyper that other people thought you were not your normal self or you were so hyper that you got into trouble?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_2',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were so irritable that you shouted at people or started fights or arguments?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_3',
+      text: 'Has there ever been a period of time when you were not your usual self and... you felt much more self-confident than usual?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_4',
+      text: 'Has there ever been a period of time when you were not your usual self and... you got much less sleep than usual and found you didn\'t really miss it?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_5',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were much more talkative or spoke much faster than usual?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_6',
+      text: 'Has there ever been a period of time when you were not your usual self and... thoughts raced through your head or you couldn\'t slow your mind down?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_7',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were so easily distracted by things around you that you had trouble concentrating or staying on track?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_8',
+      text: 'Has there ever been a period of time when you were not your usual self and... you had much more energy than usual?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_9',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were much more active or did many more things than usual?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_10',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were much more social or outgoing than usual, for example, you telephoned friends in the middle of the night?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_11',
+      text: 'Has there ever been a period of time when you were not your usual self and... you were much more interested in sex than usual?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_12',
+      text: 'Has there ever been a period of time when you were not your usual self and... you did things that were unusual for you or that other people might have thought were excessive, foolish, or risky?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_13',
+      text: 'Has there ever been a period of time when you were not your usual self and... spending money got you or your family into trouble?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_14',
+      text: 'If you checked YES to more than one of the above, have several of these ever happened during the same period of time?',
+      type: 'yes-no'
+    },
+    {
+      id: 'mdq_15',
+      text: 'How much of a problem did any of these cause you - like being unable to work; having family, money or legal troubles; getting into arguments or fights?',
+      type: 'multiple-choice',
+      options: ['No problem', 'Minor problem', 'Moderate problem', 'Serious problem']
+    }
+  ],
+
+  scoring: {
+    interpretation: (score: number, responses: Record<string, number>) => {
+      // MDQ scoring: 7+ "yes" answers + occurring in same time period + moderate/severe problem
+      const symptomCount = Object.values(responses).filter(val => val === 1).length;
+      const samePeriod = responses['mdq_14'] === 1;
+      const problemLevel = responses['mdq_15'] >= 2; // Moderate or serious problem
+
+      const positiveScreen = symptomCount >= 7 && samePeriod && problemLevel;
+
+      return {
+        score,
+        level: positiveScreen ? 'Positive screen for bipolar disorder' : 'Negative screen',
+        description: positiveScreen
+          ? `Your responses suggest a positive screen for bipolar disorder. You reported ${symptomCount} symptoms occurring in the same time period, causing moderate to serious problems.`
+          : `Your responses suggest a negative screen for bipolar disorder. You reported ${symptomCount} symptoms.`,
+        severity: positiveScreen ? 'moderate' : 'normal',
+        recommendations: positiveScreen ? [
+          'Consider speaking with a mental health professional experienced in mood disorders',
+          'Be evaluated for bipolar disorder or other mood disorders',
+          'Track your mood patterns and energy levels',
+          'Consider the impact of mood episodes on your life'
+        ] : [
+          'Continue monitoring your mood patterns',
+          'If mood symptoms develop, consider professional consultation',
+          'Maintain healthy lifestyle habits',
+          'Learn about mood disorder symptoms'
+        ],
+        insights: [
+          'MDQ is a validated screening tool for bipolar disorder',
+          'A positive screen suggests further evaluation is needed',
+          'Bipolar disorder often goes undiagnosed, especially bipolar II',
+          'Early identification can lead to better treatment outcomes'
+        ],
+        nextSteps: positiveScreen ? [
+          'Schedule an evaluation with a psychiatrist',
+          'Keep a mood diary to track patterns',
+          'Consider genetic and family history of mood disorders',
+          'Learn about bipolar disorder treatment options'
+        ] : [
+          'Monitor mood patterns over time',
+          'Learn about bipolar disorder symptoms',
+          'Consider periodic screening if family history exists',
+          'Maintain mental health awareness'
+        ],
+        manifestations: positiveScreen ? [
+          'Periods of elevated mood, energy, and decreased need for sleep',
+          'Increased irritability or agitation',
+          'Racing thoughts and rapid speech',
+          'Impulsive or risky behaviors',
+          'Increased social activity and confidence',
+          'Decreased need for sleep without fatigue',
+          'Periods of depression alternating with manic symptoms',
+          'Significant impact on work, relationships, and finances'
+        ] : [
+          'Normal mood fluctuations',
+          'Stable energy levels',
+          'No significant periods of elevated mood or mania',
+          'Healthy sleep patterns',
+          'Appropriate social and behavioral patterns',
+          'No significant mood-related impairment'
+        ]
+      };
+    },
+
+    ranges: [
+      { min: 0, max: 6, label: 'Negative Screen', description: 'Does not suggest bipolar disorder', severity: 'normal', recommendations: ['Continue monitoring mood', 'Maintain healthy habits'] },
+      { min: 7, max: 15, label: 'Positive Screen', description: 'Suggests possible bipolar disorder', severity: 'moderate', recommendations: ['Seek professional evaluation', 'Track mood patterns'] }
+    ]
+  }
 }
 
 // Assessment flow configuration
@@ -1190,8 +1808,12 @@ export const ASSESSMENT_FLOW = {
   // Add-on assessments for specific conditions
   trauma_followup: ['pcl5'], // Triggered if ACE score >= 4 or PCL-5 if trauma indicated
   resilience: ['cd-risc'], // Optional resilience assessment
+  // Substance use screening (safe additions)
+  substance_screening: ['audit', 'dast10'], // Alcohol and drug screening
+  // Sleep and mood screening (safe additions)
+  sleep_mood_screening: ['isi', 'mdq'], // Insomnia and bipolar screening
   // Comprehensive assessment (all assessments)
-  comprehensive: ['ace', 'phq9', 'gad7', 'pss10', 'who5', 'pcl5', 'cd-risc']
+  comprehensive: ['ace', 'phq9', 'gad7', 'pss10', 'who5', 'pcl5', 'cd-risc', 'audit', 'dast10', 'isi', 'mdq']
 }
 
 // Category information
@@ -1238,6 +1860,21 @@ export const ASSESSMENT_CATEGORIES = {
     severity: 'low',
     clinical: false
   }
+}
+
+// Export all assessments
+export const ASSESSMENTS: Record<string, Assessment> = {
+  ace: ACE_QUESTIONNAIRE,
+  phq9: PHQ9_ASSESSMENT,
+  gad7: GAD7_ASSESSMENT,
+  'cd-risc': CDRISC_ASSESSMENT,
+  pss10: PSS10_ASSESSMENT,
+  who5: WHO5_ASSESSMENT,
+  pcl5: PCL5_ASSESSMENT,
+  audit: AUDIT_ASSESSMENT,
+  dast10: DAST10_ASSESSMENT,
+  isi: ISI_ASSESSMENT,
+  mdq: MDQ_ASSESSMENT
 }
 
 export default ASSESSMENTS
