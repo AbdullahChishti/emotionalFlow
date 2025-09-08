@@ -1482,12 +1482,12 @@ export function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/20 via-slate-50/10 to-teal-50/20 rounded-xl blur-lg -z-10"></div>
 
                 <motion.h1
-                  className="text-3xl md:text-4xl font-light text-slate-900 mb-4 leading-tight tracking-tight"
+                  className="text-4xl md:text-5xl font-light text-slate-900 mb-6 leading-tight tracking-tight"
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                Your Wellness Journey
+                  Your <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">Wellness Journey</span>
                 </motion.h1>
                 <motion.div
                   className="mt-2"
@@ -1495,7 +1495,7 @@ export function Dashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-              <p className="text-slate-600 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto font-light">
+              <p className="text-slate-700 text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto font-light">
                 {hasAssessmentData
                   ? "Discover insights from your assessments and create a personalized path forward."
                   : "Begin your journey to better mental health with a personalized assessment."
@@ -1730,56 +1730,270 @@ export function Dashboard() {
     if (!latestOverall) {
       return (
         <motion.div
-          className="bg-white/80 backdrop-blur-sm border border-slate-200/40 rounded-3xl p-8 shadow-3xl shadow-slate-900/35"
-          initial={{ opacity: 0, y: 20 }}
+          className="relative bg-white/98 backdrop-blur-xl rounded-[2rem] p-12 border border-slate-200/30 shadow-2xl shadow-slate-900/[0.08] overflow-hidden"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ duration: 1.2, delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+          whileHover={{ 
+            scale: 1.005,
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.12)"
+          }}
         >
-          <div className="text-center max-w-sm mx-auto">
+          {/* Johnny Ive inspired minimal background layers */}
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-50/40 via-white/20 to-slate-50/40 rounded-[2rem]"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/60 to-transparent rounded-[2rem]"></div>
+
+          {/* Subtle geometric accent */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-slate-100/20 to-transparent rounded-full transform translate-x-16 -translate-y-16"></div>
+
+          <div className="relative z-10 text-center max-w-xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              transition={{ duration: 1.0, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}
             >
+              {/* Refined Icon Container - Johnny Ive minimal approach */}
               <motion.div
-                className="w-16 h-16 bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}
+                className="mb-10"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: [0.23, 1, 0.32, 1] }}
               >
-                <span className="material-symbols-outlined text-slate-400 text-2xl">psychology</span>
-              </motion.div>
-              <h3 className="text-xl font-light text-slate-900 mb-4 tracking-tight">Unlock Your Unconscious Patterns</h3>
-              <p className="text-slate-500 text-base mb-8 leading-relaxed font-light">
-                Complete your assessments to discover how your mental health patterns manifest unconsciously in your daily life, relationships, and well-being.
-              </p>
-              <div className="relative group">
-                <motion.button
-                  onClick={() => router.push('/assessments')}
-                  className="group relative overflow-hidden px-8 py-4 rounded-3xl font-semibold text-base transition-all duration-300 ease-out focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transform hover:scale-[1.02] active:scale-[0.98] border border-transparent bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white shadow-3xl hover:shadow-3xl hover:shadow-emerald-900/50 hover:from-emerald-700 hover:via-emerald-800 hover:to-emerald-700 border-emerald-500/20"
-                  whileHover={{ y: -1 }}
-                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                <motion.div
+                  className="w-24 h-24 bg-gradient-to-b from-white via-slate-50/90 to-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-slate-900/[0.08] border border-slate-200/50 relative overflow-hidden"
+                  whileHover={{ 
+                    scale: 1.08,
+                    rotate: 2,
+                    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.15)"
+                  }}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="relative flex items-center gap-3">
-                    <span className="material-symbols-outlined text-xl">psychology</span>
-                    <span>Start Assessment Journey</span>
-                  </div>
+                  {/* Subtle inner highlight - signature Ive detail */}
+                  <div className="absolute inset-[1px] bg-gradient-to-b from-white/80 via-transparent to-white/40 rounded-full"></div>
+                  
+                  <motion.span
+                    className="material-symbols-outlined text-slate-700 text-4xl relative z-10 font-light"
+                    animate={{
+                      scale: [1, 1.02, 1]
+                    }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    psychology
+                  </motion.span>
+                </motion.div>
+              </motion.div>
+
+              {/* Johnny Ive's Design Philosophy: Simplicity, Depth, and Refinement */}
+              <motion.div
+                className="relative mb-12"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.0, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              >
+                {/* Ultra-refined background with depth */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/20 rounded-3xl blur-3xl -z-10 opacity-60"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-emerald-50/10 rounded-3xl -z-10"></div>
+
+                {/* Subtle accent pattern */}
+                <div className="absolute top-6 right-6 w-20 h-20 border border-emerald-200/30 rounded-full opacity-20"></div>
+                <div className="absolute bottom-8 left-8 w-16 h-16 border border-teal-200/20 rounded-full opacity-15"></div>
+
+                <div className="relative px-8 py-6">
+                  {/* Ultra-polished title with gradient refinement */}
+                  <motion.div
+                    className="text-center mb-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                  >
+                    <h3 className="text-3xl md:text-4xl font-light text-slate-900 tracking-[-0.015em] leading-[1.05] mb-2">
+                      Discover Your{' '}
+                      <span className="relative">
+                        <span className="bg-gradient-to-r from-emerald-700 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
+                          Unconscious
+                        </span>
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-pulse opacity-60"></span>
+                      </span>
+                      <br />
+                      <span className="text-2xl md:text-3xl font-light text-slate-700 tracking-[-0.01em]">
+                        Patterns
+                      </span>
+                    </h3>
+
+                    {/* Minimalist accent line */}
+                    <motion.div
+                      className="w-16 h-px bg-gradient-to-r from-transparent via-emerald-300 to-transparent mx-auto mt-4"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1, opacity: 1 }}
+                      transition={{ duration: 0.8, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                    ></motion.div>
+                  </motion.div>
+
+                  {/* Refined description with perfect typography */}
+                  <motion.p
+                    className="text-slate-600 text-lg font-light leading-relaxed max-w-2xl mx-auto tracking-[-0.005em] text-center"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+                  >
+                    Unlock AI-powered insights that reveal how your mental wellness{' '}
+                    <span className="text-emerald-700 font-normal">manifests</span>{' '}
+                    in daily life, relationships, and personal growth.
+                    <br />
+                    <span className="text-slate-500 text-base font-light mt-2 block">
+                      Understanding these patterns helps you recognize and address them proactively.
+                    </span>
+                  </motion.p>
+                </div>
+
+                {/* Ultra-refined shadow system */}
+                <div className="absolute -inset-2 bg-gradient-to-br from-emerald-100/5 via-transparent to-teal-100/5 rounded-3xl blur-xl opacity-40 -z-20"></div>
+                <div className="absolute -inset-4 bg-gradient-to-br from-slate-100/3 via-transparent to-slate-100/3 rounded-4xl blur-2xl opacity-30 -z-20"></div>
+              </motion.div>
+
+              {/* Johnny Ive inspired CTA Button */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <motion.button
+                  disabled={loadingImpact}
+                  className={`group relative inline-flex items-center gap-4 px-8 py-4 bg-gradient-to-b from-white via-slate-50/95 to-white border border-slate-200/60 rounded-2xl shadow-lg shadow-slate-900/[0.08] overflow-hidden ${
+                    loadingImpact ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'
+                  }`}
+                  whileHover={loadingImpact ? {} : {
+                    scale: 1.02,
+                    y: -2,
+                    boxShadow: "0 20px 40px -12px rgba(0, 0, 0, 0.15)"
+                  }}
+                  whileTap={loadingImpact ? {} : { scale: 0.98 }}
+                  transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                  onClick={async () => {
+                    try {
+                      console.log('🔘 [DAILY IMPACTS BUTTON] Clicked - calling daily-life-impacts edge function!')
+
+                      // Clear any previous comprehensive analysis data
+                      setOverallAssessment(null)
+                      if (typeof window !== 'undefined') {
+                        localStorage.removeItem('currentOverallAssessment')
+                      }
+
+                      // Set loading state
+                      setLoadingImpact(true)
+
+                      console.log('🚀 [DAILY IMPACTS] Calling getFreshLifeImpacts (daily-life-impacts edge function)...')
+                      const result = await OverallAssessmentService.getFreshLifeImpacts(user.id)
+                      console.log('✅ [DAILY IMPACTS] Daily impacts analysis completed:', {
+                        hasResult: !!result,
+                        manifestationsCount: result?.holisticAnalysis?.manifestations?.length || 0,
+                        unconsciousCount: result?.holisticAnalysis?.unconsciousManifestations?.length || 0,
+                        riskLevel: result?.holisticAnalysis?.overallRiskLevel
+                      })
+
+                      if (result) {
+                        setLatestOverall(result)
+                        setOverallAssessment(result)
+                        // Scroll to the analysis section after a delay
+                        setTimeout(() => {
+                          document.getElementById('unconscious-patterns-section')?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                          })
+                        }, 1000)
+                      }
+                      } catch (error) {
+                      console.error('❌ [DAILY IMPACTS] Error generating daily life impacts:', error)
+                      setLatestOverall(null)
+                      setOverallAssessment(null)
+                      } finally {
+                        setLoadingImpact(false)
+                      }
+                    }
+                  }
+                >
+                  {/* Subtle hover effect background */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-50/0 via-slate-50/40 to-slate-50/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Inner highlight border - Ive detail */}
+                  <div className="absolute inset-[1px] bg-gradient-to-b from-white/60 via-transparent to-white/20 rounded-2xl opacity-60"></div>
+                  
+                  <motion.div
+                    className="w-6 h-6 bg-gradient-to-b from-slate-600 to-slate-700 rounded-full flex items-center justify-center relative z-10"
+                    animate={loadingImpact ? { rotate: 360 } : { scale: [1, 1.05, 1] }}
+                    transition={loadingImpact ? {
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear"
+                    } : {
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-white text-sm font-light">
+                      {loadingImpact ? 'refresh' : 'psychology'}
+                    </span>
+                  </motion.div>
+
+                  <span className="text-slate-800 font-medium text-lg tracking-[-0.01em] relative z-10">
+                    {loadingImpact ? 'Analyzing...' : 'Analyze Unconscious Patterns'}
+                  </span>
+
+                  {/* Loading dots when analyzing */}
+                  {loadingImpact && (
+                    <motion.div
+                      className="flex gap-1 relative z-10"
+                      animate={{
+                        opacity: [0.4, 1, 0.4]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="w-1 h-1 bg-slate-500 rounded-full"></div>
+                      <div className="w-1 h-1 bg-slate-600 rounded-full"></div>
+                      <div className="w-1 h-1 bg-slate-500 rounded-full"></div>
+                    </motion.div>
+                  )}
+
+                  {/* Minimal activity indicator when not loading */}
+                  {!loadingImpact && (
+                    <motion.div
+                      className="flex gap-1 relative z-10"
+                      animate={{
+                        opacity: [0.4, 0.8, 0.4]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
+                      <div className="w-1 h-1 bg-slate-500 rounded-full"></div>
+                      <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
+                    </motion.div>
+                  )}
                 </motion.button>
 
-                {/* Enhanced tooltip */}
-                  <div className="absolute left-1/2 top-full mt-3 -translate-x-1/2 w-72 p-3 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-2xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
-                    <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-emerald-600 text-base">psychology</span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-700 leading-relaxed font-light">
-                        Begin your assessment journey to unlock deep insights into your unconscious mental health patterns and discover how they manifest in your daily life.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-              </div>
+                {/* Subtle descriptive text */}
+                <motion.p
+                  className="text-slate-500 text-sm font-light mt-4 tracking-[-0.01em]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
+                >
+                  AI-powered analysis of your complete wellness journey
+                </motion.p>
+              </motion.div>
             </motion.div>
           </div>
         </motion.div>
@@ -1794,64 +2008,206 @@ export function Dashboard() {
         transition={{ duration: 0.6, delay: 0.1 }}
         whileHover={{ y: -1 }}
       >
-        {/* Header */}
+        {/* Ultra-Sophisticated Enhanced Header */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex items-start justify-between mb-8"
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+          className="relative bg-gradient-to-br from-white via-slate-50/50 to-white rounded-3xl p-8 mb-8 border border-slate-200/40 shadow-lg shadow-slate-900/5 overflow-hidden"
+          whileHover={{ scale: 1.01 }}
         >
-          <div className="flex items-center gap-4">
-            <motion.div
-              className="w-12 h-12 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center shadow-sm"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}
-            >
-              <span className="material-symbols-outlined text-slate-600 text-xl">psychology</span>
-            </motion.div>
-            <div>
-              <h3 className="text-xl font-light text-slate-900 mb-2 tracking-tight">Analyze Your Unconscious Patterns</h3>
+          {/* Multi-layered sophisticated background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-transparent to-indigo-50/20 rounded-3xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-slate-50/30 to-transparent rounded-3xl"></div>
+
+          {/* Floating decorative elements */}
+          <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-100/40 to-transparent rounded-full transform translate-x-6 -translate-y-6"></div>
+          <div className="absolute bottom-0 left-0 w-12 h-12 bg-gradient-to-tr from-indigo-100/40 to-transparent rounded-full transform -translate-x-4 translate-y-4"></div>
+
+          <div className="relative z-10 flex items-start justify-between">
+            <div className="flex items-center gap-6">
+              {/* Enhanced Icon Container */}
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <motion.div
+                  className="w-16 h-16 bg-gradient-to-br from-blue-100 via-indigo-100 to-blue-100 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-200/50 relative overflow-hidden"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  {/* Subtle shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent rounded-3xl"></div>
+
+                  <motion.span
+                    className="material-symbols-outlined text-blue-600 text-3xl relative z-10"
+                    animate={{
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 2, -2, 0]
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    psychology
+                  </motion.span>
+                </motion.div>
+
+                {/* Decorative animated ring */}
+                <motion.div
+                  className="absolute left-1/2 top-1/2 w-16 h-16 border-2 border-blue-200/50 rounded-3xl transform -translate-x-1/2 -translate-y-1/2"
+                  animate={{
+                    scale: [1, 1.15, 1],
+                    opacity: [0.3, 0.8, 0.3]
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 2
+                  }}
+                ></motion.div>
+              </motion.div>
+
+              <div className="flex-1">
+                {/* Enhanced Typography */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <h3 className="text-2xl md:text-3xl font-light text-slate-900 mb-3 tracking-tight leading-tight">
+                    Analyze Your <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">Unconscious Patterns</span>
+                  </h3>
+                </motion.div>
+
+                {/* Enhanced Description with AI Badge */}
+                <motion.div
+                  className="mb-4"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
               <div className="relative group">
-                <p className="text-sm text-slate-500 cursor-help hover:text-slate-700 transition-colors duration-300 font-light flex items-center gap-1">
-                  <span>AI-powered insights from your complete assessment history</span>
-                  <span className="material-symbols-outlined text-sm opacity-60 group-hover:opacity-100 transition-opacity">info</span>
-                </p>
-                {/* Modern tooltip */}
-                <div className="absolute left-0 top-full mt-3 w-80 p-4 bg-white/95 backdrop-blur-sm border border-slate-200/40 rounded-3xl shadow-3xl shadow-slate-900/35 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="material-symbols-outlined text-blue-600 text-lg">psychology</span>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/40 rounded-2xl">
+                        <motion.span
+                          className="material-symbols-outlined text-emerald-600 text-sm"
+                          animate={{ rotate: [0, 360] }}
+                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                        >
+                          auto_mode
+                        </motion.span>
+                        <span className="text-xs font-semibold text-emerald-700">AI-Powered</span>
+                      </div>
+                      <p className="text-slate-600 text-base cursor-help hover:text-slate-800 transition-colors duration-300 font-light">
+                        Insights from your complete assessment history
+                      </p>
+                      <motion.span
+                        className="material-symbols-outlined text-emerald-500 text-base opacity-60 group-hover:opacity-100 transition-opacity cursor-help"
+                        whileHover={{ scale: 1.2, rotate: 15 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        info
+                      </motion.span>
                     </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-slate-900 mb-1">Unconscious Pattern Analysis</h4>
-                      <p className="text-xs text-slate-600 leading-relaxed font-light">
-                        Explore AI-powered insights that reveal how your mental health patterns manifest unconsciously in your daily life, relationships, and overall well-being. Understanding these patterns helps you recognize and address them proactively.
+
+                    {/* Ultra-Sophisticated Enhanced Tooltip */}
+                    <motion.div
+                      className="absolute left-0 top-full mt-4 w-96 p-5 bg-white/95 backdrop-blur-xl border border-slate-200/50 rounded-3xl shadow-3xl shadow-slate-900/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-500 z-50 pointer-events-none"
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex items-start gap-4 mb-4">
+                        <motion.div
+                          className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <span className="material-symbols-outlined text-emerald-600 text-xl">psychology</span>
+                        </motion.div>
+                        <div className="flex-1">
+                          <h4 className="text-base font-semibold text-slate-900 mb-2">Unconscious Pattern Analysis</h4>
+                          <p className="text-sm text-slate-600 leading-relaxed font-light">
+                            Explore AI-powered insights that reveal how your mental health patterns manifest unconsciously in your daily life, relationships, and overall well-being. Understanding these patterns helps you recognize and address them proactively.
                       </p>
                     </div>
                   </div>
-                  <div className="border-t border-slate-200/50 pt-3">
-                    <div className="flex items-center gap-2 text-xs text-slate-500">
-                      <span className="material-symbols-outlined text-xs">verified</span>
-                      AI-powered insights from your complete assessment history
+
+                      {/* Decorative accent line */}
+                      <motion.div
+                        className="border-t border-emerald-200/40 pt-4"
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                      >
+                        <div className="flex items-center justify-center gap-3 text-sm text-emerald-600 font-medium">
+                          <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                          Powered by advanced AI algorithms
+                          <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></span>
                     </div>
+                      </motion.div>
+                    </motion.div>
                   </div>
-                </div>
-              </div>
+                </motion.div>
+
+                {/* Enhanced Update Timestamp */}
               {updatedAt && (
-                <p className="text-sm text-slate-400 mt-2 font-light">Updated {formatRelative(updatedAt)}</p>
+                  <motion.div
+                    className="flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                  >
+                    <motion.span
+                      className="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    ></motion.span>
+                    <p className="text-sm text-slate-500 font-light">
+                      Updated {formatRelative(updatedAt)}
+                    </p>
+                  </motion.div>
               )}
             </div>
           </div>
+
+            {/* Enhanced Risk Badge */}
           {risk && (
+              <motion.div
+                className="flex-shrink-0"
+                initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+              >
             <motion.span
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className={`text-sm font-medium px-3 py-1.5 rounded-xl ${getLevelBadgeClasses(risk)}`}
-            >
+                  className={`inline-flex items-center gap-2 text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-lg ${getLevelBadgeClasses(risk)}`}
+                  whileHover={{ scale: 1.05, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <motion.span
+                    className="w-2 h-2 rounded-full bg-current animate-pulse"
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  ></motion.span>
               {risk} risk
+                  <motion.span
+                    className="material-symbols-outlined text-xs"
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                  >
+                    trending_flat
             </motion.span>
+                </motion.span>
+              </motion.div>
           )}
+          </div>
         </motion.div>
 
         {/* Content */}
@@ -2442,7 +2798,7 @@ export function Dashboard() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
                       >
-                    {isGeneratingOverall ? 'Generating Your Insights' : 'Your Personalized Mental Health Profile'}
+                    {isGeneratingOverall ? 'Analyzing Daily Life Impacts' : 'Daily Life Impact Analysis'}
                       </motion.h2>
                   {!isGeneratingOverall && (
                         <motion.p
@@ -2451,7 +2807,7 @@ export function Dashboard() {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.3, duration: 0.5 }}
                         >
-                          AI-powered analysis of your mental wellness journey
+                          How your mental wellness affects your daily experiences
                         </motion.p>
                       )}
                     </div>
@@ -2487,9 +2843,9 @@ export function Dashboard() {
                         <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
                           <span className="material-symbols-outlined text-2xl text-emerald-600 animate-spin">psychology</span>
                         </div>
-                        <h3 className="text-xl font-light text-slate-900 mb-3 tracking-tight">Generating Your Insights</h3>
+                        <h3 className="text-xl font-light text-slate-900 mb-3 tracking-tight">Analyzing Daily Life Impacts</h3>
                         <p className="text-slate-600 text-base leading-relaxed font-light max-w-md mx-auto">
-                          We're analyzing your assessments to create personalized insights...
+                          We're analyzing how your mental wellness patterns affect your daily life...
                         </p>
                       </div>
 
@@ -2586,7 +2942,7 @@ export function Dashboard() {
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.6, duration: 0.5 }}
                         >
-                          ✨ AI is analyzing your mental wellness patterns...
+                          ✨ AI is analyzing your daily life impact patterns...
                         </motion.p>
                       </motion.div>
                     </div>

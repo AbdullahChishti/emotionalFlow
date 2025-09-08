@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -224,195 +224,400 @@ export default function LoginScreen() {
   }
 
   return (
-    <div className="relative min-h-screen isolate overflow-hidden flex">
-      <div className="absolute inset-0 hero-radial" />
-      <div aria-hidden className="pointer-events-none absolute -top-10 -left-10 h-48 w-48 rounded-full bg-accent-300/40 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute top-1/3 -right-8 h-36 w-36 rounded-full bg-slate-100/60 blur-2xl" />
-      {/* Left Side - Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        {/* Glassmorphic Background Elements */}
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-white to-white z-0" />
-        {/* Pattern background removed - file not found */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
+    <motion.div
+      className="relative min-h-screen isolate overflow-hidden flex"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+    >
+      {/* Ultra-sophisticated multi-layered background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
 
-        {/* SVG Illustration */}
+      {/* Enhanced floating decorative elements */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -top-10 -left-10 h-48 w-48 rounded-full bg-gradient-to-br from-emerald-100/20 to-teal-50/10 blur-3xl"
+          animate={{
+            y: [0, -15, 0],
+            x: [0, 10, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 -right-8 h-36 w-36 rounded-full bg-gradient-to-br from-teal-100/15 to-green-50/8 blur-2xl"
+          animate={{
+            y: [0, 12, 0],
+            x: [0, -8, 0],
+            scale: [1, 0.9, 1]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-1/4 w-24 w-24 h-24 rounded-full bg-gradient-to-br from-green-100/10 to-emerald-50/5 blur-lg"
+          animate={{
+            rotate: [0, 180, 360],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      </div>
+      {/* Ultra-Sophisticated Left Side - Illustration */}
+      <motion.div
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        {/* Multi-layered sophisticated backgrounds */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-white z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
+
+        {/* Enhanced floating decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-3xl"
+            animate={{
+              y: [0, -20, 0],
+              x: [0, 15, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-teal-100/15 to-green-50/8 rounded-full blur-3xl"
+            animate={{
+              y: [0, 15, 0],
+              x: [0, -10, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-br from-green-100/10 to-emerald-50/5 rounded-full blur-2xl"
+            animate={{
+              rotate: [0, 180, 360],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
+
+        {/* Enhanced SVG Illustration */}
         <div className="relative z-10 flex items-center justify-center w-full p-12">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-lg"
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="relative w-full max-w-lg"
           >
-            <img
+            {/* Multi-layered background effects */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-slate-200/80 to-slate-400/60 rounded-3xl transform rotate-3 shadow-2xl"></div>
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-3xl border border-slate-200/40 shadow-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-3xl"></div>
+
+            {/* Subtle gradient orb */}
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl"></div>
+
+            <motion.img
               src="/assets/Peace_of_mind-bro_2.svg"
               alt="Peace of mind illustration"
-              className="w-full h-auto drop-shadow-2xl"
+              className="relative w-full h-auto drop-shadow-2xl"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.5 }}
             />
           </motion.div>
         </div>
 
-        {/* Inspirational Text Overlay */}
+        {/* Ultra-Sophisticated Inspirational Text Overlay */}
         <div className="absolute bottom-12 left-12 right-12 z-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="glassmorphic rounded-2xl p-6 text-center"
+            transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative"
           >
-            <div className="space-y-3 mb-6">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.6 }}
-                className="text-center"
-              >
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-teal-400"></div>
-                  <span className="text-lg font-light text-slate-600 tracking-wide">
-                    Find <span className="text-emerald-600 font-medium">calm</span> in the chaos.
-                  </span>
-                  <div className="w-2 h-2 rounded-full bg-teal-400"></div>
-                </div>
-              </motion.div>
+            {/* Multi-layered background with depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/90 to-white/95 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 shadow-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl"></div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="flex items-center justify-center gap-1 text-xs text-slate-400"
-              >
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300"></span>
-                  Safe
-                </span>
-                <span className="mx-1">•</span>
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-300"></span>
-                  Compassionate
-                </span>
-                <span className="mx-1">•</span>
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-300"></span>
-                  Supportive
-                </span>
-              </motion.div>
+            {/* Subtle gradient orb */}
+            <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl animate-pulse"></div>
+
+            <div className="relative p-6 text-center">
+              <div className="space-y-4 mb-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8, duration: 0.6 }}
+                  className="text-center"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <motion.div
+                      className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"
+                      whileHover={{ scale: 1.2 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <span className="text-lg font-light text-slate-600 tracking-wide">
+                      Find <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">calm</span> in the chaos.
+                      <span className="ml-2 text-slate-500 font-light text-sm">
+                        Safe • Compassionate • Supportive
+                      </span>
+                    </span>
+                    <motion.div
+                      className="w-2 h-2 rounded-full bg-gradient-to-r from-teal-400 to-green-400"
+                      whileHover={{ scale: 1.2 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12">
-        {/* Back to Home Button */}
-        <Link 
-          href="/" 
-          className="absolute top-6 left-6 z-10 group"
-        >
+      {/* Ultra-Sophisticated Right Side - Login Form */}
+      <motion.div
+        className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12"
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        {/* Enhanced Back to Home Button */}
+        <Link href="/" className="absolute top-6 left-6 z-10 group">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full border border-white/20 shadow-lg transition-all duration-300 text-zinc-700 hover:text-zinc-900"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white/80 to-slate-50/80 hover:from-white/90 hover:to-slate-50/90 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-lg hover:shadow-xl transition-all duration-300 text-slate-700 hover:text-slate-900"
           >
-            <span className="material-symbols-outlined text-lg">arrow_back</span>
+            <motion.span
+              className="material-symbols-outlined text-lg"
+              whileHover={{ x: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              arrow_back
+            </motion.span>
             <span className="text-sm font-medium">Back to Home</span>
           </motion.button>
         </Link>
 
-        {/* Mobile Background Elements */}
+        {/* Enhanced Mobile Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none lg:hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-3xl"
+            animate={{
+              y: [0, -20, 0],
+              x: [0, 15, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-teal-100/15 to-green-50/8 rounded-full blur-3xl"
+            animate={{
+              y: [0, 15, 0],
+              x: [0, -10, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3
+            }}
+          />
         </div>
 
         <div className="relative w-full max-w-md">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="glassmorphic rounded-3xl p-8 shadow-2xl border border-white/20"
+            transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative overflow-hidden rounded-3xl p-8 shadow-2xl"
           >
-            {/* Header */}
+            {/* Multi-layered sophisticated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/90 to-white/95"></div>
+            <div className="absolute inset-0 bg-white/80 backdrop-blur-xl border border-slate-200/50 shadow-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+
+            {/* Subtle gradient orbs */}
+            <div className="absolute -top-20 -left-20 w-32 h-32 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-2xl animate-pulse"></div>
+            <div className="absolute -bottom-20 -right-20 w-24 h-24 bg-gradient-to-br from-teal-100/20 to-green-50/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+
+            <div className="relative z-10">
+            {/* Ultra-Sophisticated Header */}
             <div className="text-center mb-10">
               <Link href="/" className="inline-block">
                 <motion.div
-                  className="flex items-center justify-center gap-3 mb-7"
+                  className="flex items-center justify-center gap-4 mb-7"
                   whileHover={{ scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
                 >
-                  <span
-                    className="material-symbols-outlined text-5xl"
-                    style={{ 
-                      color: '#1f3d42',
-                      fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
-                    }}
+                  {/* Enhanced psychology icon */}
+                  <motion.div
+                    className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg"
+                    whileHover={{ rotate: 5, scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    psychology_alt
-                  </span>
-                  <h1
-                    className="text-4xl font-bold tracking-tight bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent"
-                    style={{
-                      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-                      letterSpacing: '-0.025em',
-                      lineHeight: '1.2'
-                    }}
+                    <span
+                      className="material-symbols-outlined text-white text-2xl"
+                      style={{
+                        fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                      }}
+                    >
+                      psychology_alt
+                    </span>
+                  </motion.div>
+
+                  {/* Enhanced typography */}
+                  <motion.h1
+                    className="text-4xl font-light tracking-tight text-slate-700"
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6 }}
                   >
-                    MindWell
-                  </h1>
+                    Mind<span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">Well</span>
+                  </motion.h1>
                 </motion.div>
               </Link>
-              {/* Welcome text removed as per request */}
             </div>
 
-            {/* Success Message */}
+            {/* Ultra-Sophisticated Success Message */}
             {successMessage && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm"
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                className="relative mb-6 overflow-hidden rounded-2xl"
               >
-                {successMessage}
-              </motion.div>
-            )}
+                {/* Multi-layered background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-emerald-50/90 to-green-50/95"></div>
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm border border-green-200/60 shadow-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-green-50/20 to-transparent"></div>
 
-            {/* Network Status Indicator */}
-            {!isOnline && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-yellow-700 text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-lg">wifi_off</span>
-                  <span>You appear to be offline. Please check your internet connection.</span>
+                <div className="relative p-4 flex items-start gap-3">
+                  <motion.div
+                    className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="material-symbols-outlined text-white text-lg">check_circle</span>
+                  </motion.div>
+                  <div className="flex-1">
+                    <p className="text-green-800 font-medium mb-1">Success!</p>
+                    <p className="text-green-700 text-sm">{successMessage}</p>
+                  </div>
                 </div>
               </motion.div>
             )}
 
-            {/* Error Message */}
+            {/* Ultra-Sophisticated Network Status Indicator */}
+            {!isOnline && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                className="relative mb-6 overflow-hidden rounded-2xl"
+              >
+                {/* Multi-layered background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-50 via-amber-50/90 to-yellow-50/95"></div>
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm border border-yellow-200/60 shadow-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-50/20 to-transparent"></div>
+
+                <div className="relative p-4 flex items-start gap-3">
+                  <motion.div
+                    className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="material-symbols-outlined text-white text-lg">wifi_off</span>
+                  </motion.div>
+                  <div className="flex-1">
+                    <p className="text-yellow-800 font-medium mb-1">Connection Issue</p>
+                    <p className="text-yellow-700 text-sm">You appear to be offline. Please check your internet connection.</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Ultra-Sophisticated Error Message */}
             {error && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                className="relative mb-6 overflow-hidden rounded-2xl"
               >
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-lg mt-0.5">error</span>
-                  <div>
-                    <p className="font-medium">{error}</p>
+                {/* Multi-layered background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-red-50 via-rose-50/90 to-red-50/95"></div>
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm border border-red-200/60 shadow-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-red-50/20 to-transparent"></div>
+
+                {/* Subtle animated gradient orb */}
+                <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-red-100/20 to-rose-50/10 rounded-full blur-xl animate-pulse"></div>
+
+                <div className="relative p-4 flex items-start gap-3">
+                  <motion.div
+                    className="w-8 h-8 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="material-symbols-outlined text-white text-lg">error</span>
+                  </motion.div>
+                  <div className="flex-1">
+                    <p className="text-red-800 font-medium mb-1">Login Error</p>
+                    <p className="text-red-700 text-sm mb-2">{error}</p>
                     {currentError?.suggestedAction && (
-                      <p className="text-xs mt-1 opacity-80">{currentError.suggestedAction}</p>
+                      <p className="text-red-600 text-xs opacity-80 mb-2">{currentError.suggestedAction}</p>
                     )}
                     {currentError?.canRetry && (
-                      <button
+                      <motion.button
                         onClick={() => {
                           setError('')
                           clearError()
                         }}
-                        className="text-xs underline hover:no-underline mt-2"
+                        className="text-xs text-red-600 hover:text-red-700 font-medium px-3 py-1 bg-red-50 hover:bg-red-100 rounded-full transition-colors duration-300"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
                         Try again
-                      </button>
+                      </motion.button>
                     )}
                   </div>
                 </div>
@@ -642,9 +847,10 @@ export default function LoginScreen() {
               </ul>
             </div>
 
+            </div>
           </motion.div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
