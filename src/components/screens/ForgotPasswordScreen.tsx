@@ -83,7 +83,7 @@ export default function ForgotPasswordScreen() {
       {/* Left Side - Illustration */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-white z-0" />
-        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] bg-center opacity-[0.03] z-0" style={{ backgroundSize: '300px' }} />
+        {/* Pattern removed - causing 404 */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-slate-200/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
 

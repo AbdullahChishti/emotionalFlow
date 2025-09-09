@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+// Image import removed - using regular img tag for SVG
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
@@ -175,23 +175,6 @@ export function Hero({ variant = 'B' }: Props) {
                 </div>
               </div>
 
-              {/* Enhanced testimonial */}
-              <motion.figure
-                className="mt-8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.2 }}
-              >
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-slate-50/80 to-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50"></div>
-                  <blockquote className="relative italic text-slate-700 p-6 text-center">
-                    <span className="text-2xl text-slate-400 mb-2 block">"</span>
-                    I felt heard and calmer in minutes.
-                    <span className="text-2xl text-slate-400 mt-2 block">"</span>
-                    <cite className="text-sm text-slate-600 font-medium mt-4 block">— Amina, 27</cite>
-                  </blockquote>
-                </div>
-              </motion.figure>
 
               <motion.p
                 className="text-sm leading-6 text-slate-500 text-center mt-6"
@@ -225,13 +208,10 @@ export function Hero({ variant = 'B' }: Props) {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.5 }}
               >
-                <Image
+                <img
                   src="/assets/Psychologist-rafiki_1.svg"
                   alt="Warm, inclusive therapy illustration"
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 560px"
-                  className="relative rounded-3xl object-cover shadow-lg"
+                  className="w-full h-full object-contain rounded-3xl shadow-lg"
                 />
               </motion.div>
             </div>

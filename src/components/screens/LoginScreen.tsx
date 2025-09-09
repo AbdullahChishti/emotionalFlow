@@ -356,61 +356,76 @@ export default function LoginScreen() {
           </motion.div>
         </div>
 
-        {/* Ultra-Sophisticated Inspirational Text Overlay */}
-        <div className="absolute bottom-12 left-12 right-12 z-20">
+        {/* Johnny Ive-inspired Text Overlay */}
+        <div className="absolute bottom-20 left-16 right-16 z-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: 1.0, 
+              ease: [0.25, 0.1, 0.25, 1],
+              type: "spring",
+              stiffness: 100,
+              damping: 20
+            }}
+            className="text-center"
           >
-            {/* Multi-layered background with depth */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/90 to-white/95 rounded-2xl"></div>
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-xl rounded-2xl border border-slate-200/50 shadow-xl"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl"></div>
-
-            {/* Subtle gradient orb */}
-            <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl animate-pulse"></div>
-
-            <div className="relative p-6 text-center">
-              <div className="space-y-4 mb-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.6 }}
-                  className="text-center"
+            <div className="relative">
+              {/* Subtle background blur for depth */}
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-sm rounded-3xl -m-4"></div>
+              
+              {/* Refined typography with perfect spacing */}
+              <p 
+                className="relative text-3xl font-extralight text-slate-800 leading-tight tracking-wide" 
+                style={{ 
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '200'
+                }}
+              >
+                Every step forward is a{' '}
+                <span 
+                  className="relative inline-block"
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: '300'
+                  }}
                 >
-                  <div className="flex items-center justify-center gap-3">
-                    <motion.div
-                      className="w-2 h-2 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"
-                      whileHover={{ scale: 1.2 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    <span className="text-lg font-light text-slate-600 tracking-wide">
-                      Find <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">calm</span> in the chaos.
-                      <span className="ml-2 text-slate-500 font-light text-sm">
-                        Safe • Compassionate • Supportive
-                      </span>
-                    </span>
-                    <motion.div
-                      className="w-2 h-2 rounded-full bg-gradient-to-r from-teal-400 to-green-400"
-                      whileHover={{ scale: 1.2 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </div>
-                </motion.div>
-              </div>
+                  victory
+                </span>
+                {' '}worth celebrating.
+              </p>
+              
+              {/* Subtle underline accent */}
+              <motion.div
+                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent"
+                initial={{ width: 0 }}
+                animate={{ width: '60%' }}
+                transition={{ duration: 1.5, delay: 1.8, ease: "easeOut" }}
+              />
             </div>
           </motion.div>
         </div>
+
       </motion.div>
 
-      {/* Ultra-Sophisticated Right Side - Login Form */}
+      {/* Johnny Ive-inspired Right Side - Login Form */}
       <motion.div
-        className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12"
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 lg:px-16"
+        initial={{ opacity: 0, x: 60, scale: 0.98 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ 
+          duration: 1.0, 
+          delay: 0.4, 
+          ease: [0.25, 0.1, 0.25, 1],
+          type: "spring",
+          stiffness: 120,
+          damping: 25
+        }}
       >
         {/* Enhanced Back to Home Button */}
         <Link href="/" className="absolute top-6 left-6 z-10 group">
@@ -461,21 +476,32 @@ export default function LoginScreen() {
           />
         </div>
 
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-lg">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-            className="relative overflow-hidden rounded-3xl p-8 shadow-2xl"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.0, 
+              delay: 0.6, 
+              ease: [0.25, 0.1, 0.25, 1],
+              type: "spring",
+              stiffness: 100,
+              damping: 20
+            }}
+            className="relative overflow-hidden rounded-2xl p-10 shadow-2xl"
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            }}
           >
-            {/* Multi-layered sophisticated background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/90 to-white/95"></div>
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-xl border border-slate-200/50 shadow-xl"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
-
-            {/* Subtle gradient orbs */}
-            <div className="absolute -top-20 -left-20 w-32 h-32 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-2xl animate-pulse"></div>
-            <div className="absolute -bottom-20 -right-20 w-24 h-24 bg-gradient-to-br from-teal-100/20 to-green-50/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            {/* Ultra-subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 pointer-events-none"></div>
+            
+            {/* Refined ambient lighting */}
+            <div className="absolute -top-32 -left-32 w-64 h-64 bg-gradient-to-br from-emerald-50/30 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-32 -right-32 w-48 h-48 bg-gradient-to-br from-teal-50/20 to-transparent rounded-full blur-3xl"></div>
 
             <div className="relative z-10">
             {/* Ultra-Sophisticated Header */}
@@ -823,6 +849,36 @@ export default function LoginScreen() {
                 </motion.button>
               </motion.div>
             </form>
+
+            {/* Sign Up Link */}
+            <motion.div 
+              className="mt-6 text-center"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <p className="text-sm text-slate-600 mb-3">
+                Don't have an account?{' '}
+                <Link
+                  href="/signup"
+                  className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200"
+                  style={{ 
+                    textUnderlineOffset: '2px',
+                    textDecoration: 'none',
+                    borderBottom: '1px solid transparent',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderBottomColor = '#059669';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderBottomColor = 'transparent';
+                  }}
+                >
+                  Create one now
+                </Link>
+              </p>
+            </motion.div>
 
             {/* Trust */}
             <div className="mt-5 space-y-2 text-[13px] leading-[22px] text-ink-600/90" aria-label="Trust and privacy">

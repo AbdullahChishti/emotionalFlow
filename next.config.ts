@@ -18,7 +18,8 @@ const nextConfig: NextConfig = {
       // Allow inline styles for Tailwind and emotion runtime, plus Google Fonts
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       // Connect to Supabase and OpenAI endpoints for Edge Functions
-      "connect-src 'self' https://*.supabase.co https://api.openai.com",
+      // Allow localhost for local development
+      "connect-src 'self' https://*.supabase.co https://api.openai.com http://localhost:* ws://localhost:*",
       // Allow images from self, data/blob URIs, and Google-hosted images
       "img-src 'self' data: blob: https://lh3.googleusercontent.com",
       // Fonts from self, data URIs, and Google Fonts

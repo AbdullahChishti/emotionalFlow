@@ -171,62 +171,158 @@ export default function SignupScreen() {
         </motion.div>
       </div>
 
-      {/* Left Side - Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden order-1 lg:order-1">
-        {/* Redesigned soothing background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100" />
-        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_10%_10%,rgba(51,95,100,0.12),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(40%_40%_at_90%_60%,rgba(51,95,100,0.10),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[url('/images/pattern.svg')] bg-center opacity-[0.035]" style={{ backgroundSize: '320px' }} />
-        <div className="absolute -top-16 -left-10 w-[28rem] h-[28rem] bg-slate-200/20 rounded-[3rem] blur-3xl rotate-6" />
-        <div className="absolute -bottom-20 -right-10 w-[24rem] h-[24rem] bg-slate-300/20 rounded-[4rem] blur-3xl -rotate-6" />
+      {/* Ultra-Sophisticated Left Side - Illustration */}
+      <motion.div
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        {/* Multi-layered sophisticated backgrounds */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-white z-0"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
 
-        {/* Illustration */}
-        <div className="relative z-10 flex items-center justify-center w-full p-10">
+        {/* Enhanced floating decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-3xl"
+            animate={{
+              y: [0, -20, 0],
+              x: [0, 15, 0],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-teal-100/15 to-green-50/8 rounded-full blur-2xl"
+            animate={{
+              y: [0, 15, 0],
+              x: [0, -10, 0],
+              scale: [1, 0.9, 1]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-br from-green-100/10 to-emerald-50/5 rounded-full blur-2xl"
+            animate={{
+              rotate: [0, 180, 360],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
+
+        {/* Enhanced SVG Illustration */}
+        <div className="relative z-10 flex items-center justify-center w-full p-12">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-md"
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="relative w-full max-w-lg"
           >
-            <img
+            {/* Multi-layered background effects */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-slate-200/80 to-slate-400/60 rounded-3xl transform rotate-3 shadow-2xl"></div>
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-3xl border border-slate-200/40 shadow-xl"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-3xl"></div>
+
+            {/* Subtle gradient orb */}
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl"></div>
+
+            <motion.img
               src="/assets/Mental_health-bro_2.svg"
               alt="Mental health and wellness illustration"
-              className="w-full h-auto drop-shadow-xl"
+              className="relative w-full h-auto drop-shadow-2xl"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.5 }}
             />
           </motion.div>
         </div>
-        {/* Compact benefits card */}
-        <div className="absolute bottom-10 left-10 right-10 z-20">
+        {/* Johnny Ive-inspired Text Overlay */}
+        <div className="absolute bottom-20 left-16 right-16 z-20">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="glassmorphic rounded-2xl p-4"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: 1.0, 
+              ease: [0.25, 0.1, 0.25, 1],
+              type: "spring",
+              stiffness: 100,
+              damping: 20
+            }}
+            className="text-center"
           >
-            <div className="flex items-center justify-center gap-4 text-sm text-slate-900/90 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">shield_lock</span>
-                <span>Private & secure</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">ecg_heart</span>
-                <span>Evidence-based</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">spa</span>
-                <span>Gentle by design</span>
-              </div>
+            <div className="relative">
+              {/* Subtle background blur for depth */}
+              <div className="absolute inset-0 bg-white/5 backdrop-blur-sm rounded-3xl -m-4"></div>
+              
+              {/* Refined typography with perfect spacing */}
+              <p 
+                className="relative text-3xl font-extralight text-slate-800 leading-tight tracking-wide" 
+                style={{ 
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '200'
+                }}
+              >
+                Your journey to{' '}
+                <span 
+                  className="relative inline-block"
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: '300'
+                  }}
+                >
+                  wellness
+                </span>
+                {' '}starts here.
+              </p>
+              
+              {/* Subtle underline accent */}
+              <motion.div
+                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent"
+                initial={{ width: 0 }}
+                animate={{ width: '60%' }}
+                transition={{ duration: 1.5, delay: 1.8, ease: "easeOut" }}
+              />
             </div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Right Side - Signup Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 py-8 lg:px-12 relative order-2 lg:order-2">
+      {/* Johnny Ive-inspired Right Side - Signup Form */}
+      <motion.div 
+        className="w-full lg:w-1/2 flex items-center justify-center px-6 py-12 lg:px-16 relative order-2 lg:order-2"
+        initial={{ opacity: 0, x: 60, scale: 0.98 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        transition={{ 
+          duration: 1.0, 
+          delay: 0.4, 
+          ease: [0.25, 0.1, 0.25, 1],
+          type: "spring",
+          stiffness: 120,
+          damping: 25
+        }}
+      >
         {/* Subtle gradient texture behind form */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white/60 via-slate-50/40 to-white/60" />
-        <div className="absolute inset-0 -z-10 bg-[url('/images/pattern.svg')] bg-center opacity-[0.03]" style={{ backgroundSize: '300px' }} />
+        {/* Pattern removed - causing 404 */}
         {/* Back to Home Button */}
         <Link 
           href="/" 
@@ -255,48 +351,79 @@ export default function SignupScreen() {
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-slate-300/15 rounded-full blur-3xl"></div>
         </div>
 
-        <div className="relative w-full max-w-md mx-auto px-4 sm:px-6">
+        <div className="relative w-full max-w-lg mx-auto px-4 sm:px-6">
           <motion.div
             id="main-content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: 0.5,
-              ease: "easeOut",
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ 
+              duration: 1.0, 
+              delay: 0.6, 
+              ease: [0.25, 0.1, 0.25, 1],
               type: "spring",
-              stiffness: 120,
+              stiffness: 100,
               damping: 20
             }}
-            style={{ willChange: 'transform, opacity' }}
-            className="glassmorphic rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl border border-white/20"
+            style={{ 
+              willChange: 'transform, opacity',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+            }}
+            className="relative overflow-hidden rounded-2xl p-10 shadow-2xl"
             role="main"
             aria-labelledby="signup-heading"
           >
-            {/* Header */}
-            <div className="text-center mb-6">
-              <Link href="/" className="inline-block">
-                <motion.div
-                  className="flex items-center justify-center gap-3 mb-5"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 25,
-                    duration: 0.2
-                  }}
-                  style={{ willChange: 'transform' }}
-                >
-                  <span className="material-symbols-outlined text-4xl text-slate-700">
-                    psychology_alt
-                  </span>
-                  <h1 className="text-heading-1 text-slate-900">
-                    MindWell
-                  </h1>
-                </motion.div>
-              </Link>
-              <h1 id="signup-heading" className="text-heading-2 text-slate-900 mb-3">Join your wellness community</h1>
-              <p className="text-body text-slate-600">Start your journey to better mental health</p>
-            </div>
+            {/* Ultra-subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 pointer-events-none"></div>
+            
+            {/* Refined ambient lighting */}
+            <div className="absolute -top-32 -left-32 w-64 h-64 bg-gradient-to-br from-emerald-50/30 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-32 -right-32 w-48 h-48 bg-gradient-to-br from-teal-50/20 to-transparent rounded-full blur-3xl"></div>
+            <div className="relative z-10">
+              {/* Johnny Ive-inspired Header */}
+              <div className="text-center mb-10">
+                <Link href="/" className="inline-block">
+                  <motion.div
+                    className="flex items-center justify-center gap-4 mb-7"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 25,
+                      duration: 0.2
+                    }}
+                    style={{ willChange: 'transform' }}
+                  >
+                    <motion.div
+                      className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg"
+                      whileHover={{ rotate: 5, scale: 1.05 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <span
+                        className="material-symbols-outlined text-white text-2xl"
+                        style={{
+                          fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                        }}
+                      >
+                        psychology_alt
+                      </span>
+                    </motion.div>
+
+                    <motion.h1
+                      className="text-4xl font-light tracking-tight text-slate-700"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.6 }}
+                    >
+                      Mind<span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">Well</span>
+                    </motion.h1>
+                  </motion.div>
+                </Link>
+                <h1 id="signup-heading" className="text-2xl font-light text-slate-900 mb-3 tracking-tight">Join your wellness community</h1>
+                <p className="text-lg text-slate-600 font-light tracking-wide">Start your journey to better mental health</p>
+              </div>
 
             {/* Success Message */}
             {success && (
@@ -370,6 +497,36 @@ export default function SignupScreen() {
                 >
                   {!isOnline ? 'No internet connection' : loading ? 'Creating account...' : 'Create account'}
                 </AuthButton>
+
+                {/* Login Link */}
+                <motion.div 
+                  className="text-center"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <p className="text-sm text-slate-600">
+                    Already have an account?{' '}
+                    <Link
+                      href="/login"
+                      className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200"
+                      style={{ 
+                        textUnderlineOffset: '2px',
+                        textDecoration: 'none',
+                        borderBottom: '1px solid transparent',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.borderBottomColor = '#059669';
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.borderBottomColor = 'transparent';
+                      }}
+                    >
+                      Sign in here
+                    </Link>
+                  </p>
+                </motion.div>
               </div>
               </fieldset>
             </form>
@@ -386,9 +543,10 @@ export default function SignupScreen() {
               </div>
             )}
 
+            </div>
           </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
     </>
   )
