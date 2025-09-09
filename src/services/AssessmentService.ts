@@ -151,19 +151,35 @@ export class AssessmentService extends BaseService {
   /**
    * Delete assessment
    */
-  async deleteAssessment(userId: string, assessmentId: string): Promise<void> {
-    this.logOperation('deleteAssessment', { userId, assessmentId })
+  async deleteAssessment(userId: string, assessmentId: string, permanent = false): Promise<boolean> {
+    this.logOperation('deleteAssessment', { userId, assessmentId, permanent })
     this.validateRequired({ userId, assessmentId }, ['userId', 'assessmentId'])
 
-    await this.executeApiCall(
-      () => this.apiManager.supabaseDelete('assessment_results', {
-        user_id: userId,
-        assessment_id: assessmentId
-      }),
-      'delete assessment'
-    )
+    try {
+      console.log('🗑️ AssessmentService: Deleting assessment', { userId, assessmentId, permanent })
 
-    this.logOperation('deleteAssessment.success', { userId, assessmentId })
+      const response = await fetch(`/api/assessments/${assessmentId}?permanent=${permanent}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${(await this.apiManager.supabase.auth.getSession()).data.session?.access_token}`
+        }
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Failed to delete assessment: ${errorData.error || response.statusText}`)
+      }
+
+      const result = await response.json()
+      console.log('✅ AssessmentService: Assessment deleted successfully', result)
+
+      this.logOperation('deleteAssessment.success', { userId, assessmentId, permanent })
+      return true
+    } catch (error) {
+      console.error('❌ AssessmentService: Failed to delete assessment:', error)
+      this.logOperation('deleteAssessment.error', { userId, assessmentId, error: error.message })
+      return false
+    }
   }
 
   /**

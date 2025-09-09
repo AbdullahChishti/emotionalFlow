@@ -174,13 +174,18 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
 
     try {
       // Call AssessmentService delete method
-      await assessmentService.deleteAssessment(user.id, deleteDialog.entry.assessmentId)
+      const success = await assessmentService.deleteAssessment(user.id, deleteDialog.entry.assessmentId)
 
-      // Refresh local history
-      await loadHistory()
+      if (success) {
+        // Refresh local history
+        await loadHistory()
 
-      // Close dialog
-      setDeleteDialog({ isOpen: false, entry: null })
+        // Close dialog
+        setDeleteDialog({ isOpen: false, entry: null })
+      } else {
+        console.error('Failed to delete assessment')
+        setError('Failed to delete assessment. Please try again.')
+      }
 
       // Optional: Show success message
       console.log('Assessment deleted successfully')
