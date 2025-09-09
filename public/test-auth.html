@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindWell Auth Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #6366f1;
+        }
+        .success { border-left-color: #10b981; background-color: #f0fdf4; }
+        .error { border-left-color: #ef4444; background-color: #fef2f2; }
+        .warning { border-left-color: #f59e0b; background-color: #fffbeb; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #5855eb; }
+        button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 MindWell Authentication Test</h1>
+        <p>This page tests if your Supabase authentication is working properly from the browser.</p>
+
+        <div class="test-section">
+            <h3>🔗 Connection Test</h3>
+            <button onclick="testConnection()">Test Supabase Connection</button>
+            <div id="connection-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Authentication Test</h3>
+            <button onclick="testAuth()">Test Authentication</button>
+            <div id="auth-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📧 Email Test</h3>
+            <p>Email: <input type="email" id="test-email" value="test@example.com" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;"></p>
+            <p>Password: <input type="password" id="test-password" value="TestPassword123!" style="padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;"></p>
+            <button onclick="testSignup()">Test Signup</button>
+            <button onclick="testSignin()">Test Signin</button>
+            <div id="email-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Status</h3>
+            <div id="status">Ready to test...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+        // Initialize Supabase client with the same config as your app
+        const supabase = createClient(
+            'http://127.0.0.1:54321',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+        )
+
+        window.testConnection = async function() {
+            const resultDiv = document.getElementById('connection-result')
+            resultDiv.innerHTML = '<div class="loading"></div> Testing connection...'
+
+            try {
+                // Test basic connection by trying to get health status
+                const response = await fetch('http://127.0.0.1:54321/rest/v1/', {
+                    method: 'GET',
+                    headers: {
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+                    }
+                })
+
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="result success">✅ Supabase connection successful!</div>'
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Connection failed: ${response.status} ${response.statusText}</div>`
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Connection error: ${error.message}</div>`
+            }
+        }
+
+        window.testAuth = async function() {
+            const resultDiv = document.getElementById('auth-result')
+            resultDiv.innerHTML = '<div class="loading"></div> Testing authentication endpoint...'
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: 'nonexistent@example.com',
+                    password: 'test123'
+                })
+
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        resultDiv.innerHTML = '<div class="result success">✅ Authentication endpoint working! (Expected invalid credentials)</div>'
+                    } else {
+                        resultDiv.innerHTML = `<div class="result warning">⚠️ Unexpected auth error: ${error.message}</div>`
+                    }
+                } else {
+                    resultDiv.innerHTML = '<div class="result success">✅ Authentication successful</div>'
+                }
+            } catch (error) {
+                if (error.message === 'Failed to fetch') {
+                    resultDiv.innerHTML = `<div class="result error">❌ "Failed to fetch" error - this was the original issue!</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Auth error: ${error.message}</div>`
+                }
+            }
+        }
+
+        window.testSignup = async function() {
+            const resultDiv = document.getElementById('email-result')
+            const email = document.getElementById('test-email').value
+            const password = document.getElementById('test-password').value
+
+            resultDiv.innerHTML = '<div class="loading"></div> Testing signup...'
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            display_name: 'Test User'
+                        }
+                    }
+                })
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="result warning">⚠️ Signup error: ${error.message}</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="result success">✅ Signup successful! Check http://127.0.0.1:54324 for the welcome email.</div>`
+                }
+            } catch (error) {
+                if (error.message === 'Failed to fetch') {
+                    resultDiv.innerHTML = `<div class="result error">❌ "Failed to fetch" error during signup!</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Signup error: ${error.message}</div>`
+                }
+            }
+        }
+
+        window.testSignin = async function() {
+            const resultDiv = document.getElementById('email-result')
+            const email = document.getElementById('test-email').value
+            const password = document.getElementById('test-password').value
+
+            resultDiv.innerHTML = '<div class="loading"></div> Testing signin...'
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                })
+
+                if (error) {
+                    resultDiv.innerHTML = `<div class="result warning">⚠️ Signin error: ${error.message}</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="result success">✅ Signin successful! User authenticated.</div>`
+                }
+            } catch (error) {
+                if (error.message === 'Failed to fetch') {
+                    resultDiv.innerHTML = `<div class="result error">❌ "Failed to fetch" error during signin!</div>`
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">❌ Signin error: ${error.message}</div>`
+                }
+            }
+        }
+
+        // Update status
+        document.getElementById('status').innerHTML = '✅ Test page loaded successfully. Click the buttons above to test authentication.'
+    </script>
+</body>
+</html>
