@@ -98,10 +98,39 @@ export default function SignupScreen() {
       })
 
       if (!result.success) {
-        // Show specific error messages
-        const errorMessage = typeof result.error === 'string' ? result.error : String(result.error || 'Unknown error')
+        // Extract error message properly from object or string
+        let errorMessage = 'Unknown error'
         
-        console.log('🔍 [SIGNUP_DEBUG] Error message received:', errorMessage)
+        if (typeof result.error === 'string') {
+          errorMessage = result.error
+        } else if (result.error && typeof result.error === 'object') {
+          // Handle error objects - try common properties
+          if (result.error.message) {
+            errorMessage = result.error.message
+          } else if (result.error.error_description) {
+            errorMessage = result.error.error_description
+          } else if (result.error.msg) {
+            errorMessage = result.error.msg
+          } else {
+            // Try to stringify the object and extract meaningful parts
+            const errorStr = JSON.stringify(result.error)
+            console.log('🔍 [SIGNUP_DEBUG] Full error object:', result.error)
+            console.log('🔍 [SIGNUP_DEBUG] Stringified error:', errorStr)
+            
+            // Look for common error patterns in the stringified object
+            if (errorStr.includes('already registered') || errorStr.includes('already in use')) {
+              errorMessage = 'User already registered'
+            } else if (errorStr.includes('password')) {
+              errorMessage = 'Password does not meet requirements'
+            } else if (errorStr.includes('email')) {
+              errorMessage = 'Invalid email address'
+            } else {
+              errorMessage = 'Signup failed'
+            }
+          }
+        }
+        
+        console.log('🔍 [SIGNUP_DEBUG] Processed error message:', errorMessage)
         
         // Check for duplicate email errors (case insensitive)
         if (errorMessage.toLowerCase().includes('already registered') || 

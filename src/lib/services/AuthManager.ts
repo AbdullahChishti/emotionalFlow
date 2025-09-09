@@ -554,12 +554,35 @@ export class AuthManager {
           operationId,
           error: error.message,
           errorCode: error.status,
-          fullError: error
+          fullError: error,
+          errorType: typeof error,
+          errorKeys: error ? Object.keys(error) : []
         })
         authStore.setLoading(false)
         
-        // Ensure we return the exact error message from Supabase
-        const errorMessage = error.message || 'Signup failed'
+        // Extract error message properly
+        let errorMessage = 'Signup failed'
+        
+        if (error.message) {
+          errorMessage = error.message
+        } else if (error.error_description) {
+          errorMessage = error.error_description
+        } else if (error.msg) {
+          errorMessage = error.msg
+        } else if (typeof error === 'string') {
+          errorMessage = error
+        } else {
+          // Try to extract meaningful message from error object
+          const errorStr = JSON.stringify(error)
+          if (errorStr.includes('already registered') || errorStr.includes('already in use')) {
+            errorMessage = 'User already registered'
+          } else if (errorStr.includes('password')) {
+            errorMessage = 'Password does not meet requirements'
+          } else if (errorStr.includes('email')) {
+            errorMessage = 'Invalid email address'
+          }
+        }
+        
         console.log('🔍 [AUTH_MANAGER_SIGNUP_ERROR] Returning error message:', errorMessage)
         return { success: false, error: errorMessage }
       }
