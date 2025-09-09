@@ -99,16 +99,18 @@ export default function SignupScreen() {
 
       if (!result.success) {
         // Show specific error messages
-        if (result.error?.includes('already registered') || result.error?.includes('already in use')) {
+        const errorMessage = typeof result.error === 'string' ? result.error : String(result.error || 'Unknown error')
+        
+        if (errorMessage.includes('already registered') || errorMessage.includes('already in use')) {
           setError('This email is already registered. Please try signing in instead.')
-        } else if (result.error?.includes('password')) {
+        } else if (errorMessage.includes('password')) {
           setError('Password does not meet requirements. Please choose a stronger password.')
-        } else if (result.error?.includes('email')) {
+        } else if (errorMessage.includes('email')) {
           setError('Please enter a valid email address.')
-        } else if (result.error?.includes('network') || result.error?.includes('connection')) {
+        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
           setError('Network error. Please check your internet connection and try again.')
         } else {
-          setError(`Signup failed: ${result.error}`)
+          setError(`Signup failed: ${errorMessage}`)
         }
       } else {
         // Show success message instead of redirecting
@@ -120,12 +122,14 @@ export default function SignupScreen() {
 
       // Show more specific error information
       if (err instanceof Error) {
-        if (err.message.includes('fetch')) {
+        const errorMessage = typeof err.message === 'string' ? err.message : String(err.message || 'Unknown error')
+        
+        if (errorMessage.includes('fetch')) {
           setError('Network error: Unable to connect to the server. Please check your internet connection.')
-        } else if (err.message.includes('timeout')) {
+        } else if (errorMessage.includes('timeout')) {
           setError('Request timed out. Please try again.')
         } else {
-          setError(`Error: ${err.message}`)
+          setError(`Error: ${errorMessage}`)
         }
       } else {
         setError('An unexpected error occurred. Please try again.')
