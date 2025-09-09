@@ -993,6 +993,77 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
             ))}
           </div>
         )}
+
+        {/* Delete Confirmation Dialog */}
+        <AnimatePresence>
+          {deleteDialog.isOpen && (
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <motion.div
+                className="bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200/60 shadow-2xl max-w-md w-full p-6"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-red-600 text-xl">
+                      warning
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">
+                      Delete Assessment
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      This action cannot be undone
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <p className="text-slate-700">
+                    Are you sure you want to delete your{' '}
+                    <span className="font-medium text-slate-900">
+                      {deleteDialog.entry?.assessmentTitle}
+                    </span>{' '}
+                    assessment?
+                  </p>
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={handleDeleteCancel}
+                    className="px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                    disabled={deletingId === deleteDialog.entry?.id}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    disabled={deletingId === deleteDialog.entry?.id}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {deletingId === deleteDialog.entry?.id ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Deleting...
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   )
