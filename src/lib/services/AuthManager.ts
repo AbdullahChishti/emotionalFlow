@@ -560,9 +560,10 @@ export class AuthManager {
         })
         authStore.setLoading(false)
         
-        // Extract error message properly
+        // Extract error message properly from Supabase error structure
         let errorMessage = 'Signup failed'
         
+        // Handle Supabase error object structure: { code: "user_already_exists", message: "User already registered" }
         if (error.message) {
           errorMessage = error.message
         } else if (error.error_description) {
@@ -572,7 +573,7 @@ export class AuthManager {
         } else if (typeof error === 'string') {
           errorMessage = error
         } else {
-          // Try to extract meaningful message from error object
+          // Fallback: try to extract meaningful message from error object
           const errorStr = JSON.stringify(error)
           if (errorStr.includes('already registered') || errorStr.includes('already in use')) {
             errorMessage = 'User already registered'

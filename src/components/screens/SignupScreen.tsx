@@ -104,7 +104,9 @@ export default function SignupScreen() {
         if (typeof result.error === 'string') {
           errorMessage = result.error
         } else if (result.error && typeof result.error === 'object') {
-          // Handle error objects - try common properties
+          console.log('🔍 [SIGNUP_DEBUG] Full error object:', result.error)
+          
+          // Handle Supabase error object structure: { code: "user_already_exists", message: "User already registered" }
           if (result.error.message) {
             errorMessage = result.error.message
           } else if (result.error.error_description) {
@@ -112,9 +114,8 @@ export default function SignupScreen() {
           } else if (result.error.msg) {
             errorMessage = result.error.msg
           } else {
-            // Try to stringify the object and extract meaningful parts
+            // Fallback: try to stringify the object and extract meaningful parts
             const errorStr = JSON.stringify(result.error)
-            console.log('🔍 [SIGNUP_DEBUG] Full error object:', result.error)
             console.log('🔍 [SIGNUP_DEBUG] Stringified error:', errorStr)
             
             // Look for common error patterns in the stringified object
