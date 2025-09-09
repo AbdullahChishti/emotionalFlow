@@ -553,10 +553,15 @@ export class AuthManager {
         console.error('❌ [AUTH_MANAGER_SIGNUP_FAILED] Supabase sign up failed', {
           operationId,
           error: error.message,
-          errorCode: error.status
+          errorCode: error.status,
+          fullError: error
         })
         authStore.setLoading(false)
-        return { success: false, error: error.message }
+        
+        // Ensure we return the exact error message from Supabase
+        const errorMessage = error.message || 'Signup failed'
+        console.log('🔍 [AUTH_MANAGER_SIGNUP_ERROR] Returning error message:', errorMessage)
+        return { success: false, error: errorMessage }
       }
 
       if (data.user) {
@@ -564,8 +569,16 @@ export class AuthManager {
           operationId,
           userId: data.user.id,
           userEmail: data.user.email,
-          needsEmailConfirmation: !data.session
+          needsEmailConfirmation: !data.session,
+          identitiesLength: data.user.identities?.length || 0
         })
+
+        // Check if user has no identities (indicates email already registered)
+        if (data.user.identities && data.user.identities.length === 0) {
+          console.log('⚠️ [AUTH_MANAGER_SIGNUP_DUPLICATE] Empty identities array - email already registered')
+          authStore.setLoading(false)
+          return { success: false, error: 'User already registered' }
+        }
 
         // Set user data (but not authenticated until email confirmed)
         authStore.setUser(data.user)

@@ -101,13 +101,25 @@ export default function SignupScreen() {
         // Show specific error messages
         const errorMessage = typeof result.error === 'string' ? result.error : String(result.error || 'Unknown error')
         
-        if (errorMessage.includes('already registered') || errorMessage.includes('already in use')) {
+        console.log('🔍 [SIGNUP_DEBUG] Error message received:', errorMessage)
+        
+        // Check for duplicate email errors (case insensitive)
+        if (errorMessage.toLowerCase().includes('already registered') || 
+            errorMessage.toLowerCase().includes('already in use') ||
+            errorMessage.toLowerCase().includes('user already registered') ||
+            errorMessage.toLowerCase().includes('email already exists') ||
+            errorMessage.toLowerCase().includes('duplicate key') ||
+            errorMessage.toLowerCase().includes('unique constraint')) {
           setError('This email is already registered. Please try signing in instead.')
-        } else if (errorMessage.includes('password')) {
+        } else if (errorMessage.toLowerCase().includes('password')) {
           setError('Password does not meet requirements. Please choose a stronger password.')
-        } else if (errorMessage.includes('email')) {
+        } else if (errorMessage.toLowerCase().includes('email') && 
+                   (errorMessage.toLowerCase().includes('invalid') || 
+                    errorMessage.toLowerCase().includes('format'))) {
           setError('Please enter a valid email address.')
-        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+        } else if (errorMessage.toLowerCase().includes('network') || 
+                   errorMessage.toLowerCase().includes('connection') ||
+                   errorMessage.toLowerCase().includes('fetch')) {
           setError('Network error. Please check your internet connection and try again.')
         } else {
           setError(`Signup failed: ${errorMessage}`)
