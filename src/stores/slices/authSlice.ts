@@ -103,7 +103,7 @@ export const createAuthSlice: StateCreator<
   },
 
   signUp: async (email, password, displayName) => {
-    const { setLoading, setError, setUser, setAuthenticated } = get()
+    const { setLoading, setError, setUser, setAuthenticated, loadProfile } = get()
 
     setLoading(true)
     setError(null)
@@ -123,6 +123,14 @@ export const createAuthSlice: StateCreator<
       return { success: false, error: { message: 'Sign up failed - no user data', userMessage: 'Sign up failed. Please try again.' } } as SignUpResult
     }
 
+    // CRITICAL: When email confirmation is disabled, user is immediately logged in
+    // We need to ensure the session is properly established
+    console.log('✅ [AUTH_SLICE] Signup successful, user immediately logged in:', {
+      userId: result.user.id,
+      userEmail: result.user.email,
+      timestamp: new Date().toISOString()
+    })
+
     setUser(result.user)
     setAuthenticated(true)
 
@@ -134,8 +142,13 @@ export const createAuthSlice: StateCreator<
         avatar_url: (result.user as any).user_metadata?.avatar_url,
         username: displayName.toLowerCase().replace(/\s+/g, '_'),
       })
-      await get().loadProfile(result.user.id)
+      
+      // Load profile after successful creation
+      await loadProfile(result.user.id)
+      
+      console.log('✅ [AUTH_SLICE] Profile created and loaded successfully')
     } catch (profileError) {
+      console.error('⚠️ [AUTH_SLICE] Profile creation failed (non-critical):', profileError)
       // Non-critical error, user is still signed up
     }
 

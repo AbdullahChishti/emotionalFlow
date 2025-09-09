@@ -143,38 +143,59 @@ export class ApiManager {
   }
 
   /**
-   * Centralized authentication validation
+   * Centralized authentication validation with retry for immediate login scenarios
    */
   private async validateAuth(): Promise<boolean> {
-    try {
-      const { data: { session }, error } = await this.supabase.auth.getSession()
-      
-      if (error) {
-        console.error('❌ Auth validation failed:', error)
-        return false
-      }
-      
-      if (!session) {
-        console.warn('⚠️ No active session found')
-        return false
-      }
-      
-      // Check if session is expired
-      const now = Math.floor(Date.now() / 1000)
-      if (session.expires_at && session.expires_at < now) {
-        console.warn('⚠️ Session expired, attempting refresh...')
-        const { error: refreshError } = await this.supabase.auth.refreshSession()
-        if (refreshError) {
-          console.error('❌ Session refresh failed:', refreshError)
+    const maxRetries = 3
+    const retryDelay = 1000 // 1 second
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const { data: { session }, error } = await this.supabase.auth.getSession()
+        
+        if (error) {
+          console.error(`❌ Auth validation failed (attempt ${attempt}):`, error)
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, retryDelay))
+            continue
+          }
           return false
         }
+        
+        if (!session) {
+          console.warn(`⚠️ No active session found (attempt ${attempt})`)
+          if (attempt < maxRetries) {
+            // Wait a bit for session to be established (common after signup)
+            await new Promise(resolve => setTimeout(resolve, retryDelay))
+            continue
+          }
+          return false
+        }
+        
+        // Check if session is expired
+        const now = Math.floor(Date.now() / 1000)
+        if (session.expires_at && session.expires_at < now) {
+          console.warn('⚠️ Session expired, attempting refresh...')
+          const { error: refreshError } = await this.supabase.auth.refreshSession()
+          if (refreshError) {
+            console.error('❌ Session refresh failed:', refreshError)
+            return false
+          }
+        }
+        
+        console.log(`✅ Auth validation successful (attempt ${attempt})`)
+        return true
+      } catch (error) {
+        console.error(`❌ Auth validation error (attempt ${attempt}):`, error)
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+          continue
+        }
+        return false
       }
-      
-      return true
-    } catch (error) {
-      console.error('❌ Auth validation error:', error)
-      return false
     }
+    
+    return false
   }
 
   /**

@@ -64,7 +64,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(async (email: string, password: string, displayName: string) => {
     const result = await store.signUp(email, password, displayName)
     if (result.success && result.user) {
+      // CRITICAL: When email confirmation is disabled, user is immediately logged in
+      // We need to ensure the session is properly synchronized
+      console.log('🔄 [AUTH_PROVIDER] Signup successful, ensuring session sync...')
+      
+      // Wait a moment for the session to be fully established
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Force a session refresh to ensure authentication state is correct
+      await store.refreshSession()
+      
+      // Load profile after session is established
       await store.loadProfile(result.user.id)
+      
+      console.log('✅ [AUTH_PROVIDER] Session sync completed')
     }
     return result
   }, [store])
