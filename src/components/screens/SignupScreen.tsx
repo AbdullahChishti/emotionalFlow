@@ -106,8 +106,10 @@ export default function SignupScreen() {
         } else if (result.error && typeof result.error === 'object') {
           console.log('🔍 [SIGNUP_DEBUG] Full error object:', result.error)
           
-          // Handle Supabase error object structure: { code: "user_already_exists", message: "User already registered" }
-          if (result.error.message) {
+          // Handle AuthError object structure: { userMessage: "This email is already registered...", message: "...", code: "USER_ALREADY_EXISTS" }
+          if (result.error.userMessage) {
+            errorMessage = result.error.userMessage
+          } else if (result.error.message) {
             errorMessage = result.error.message
           } else if (result.error.error_description) {
             errorMessage = result.error.error_description
@@ -166,7 +168,17 @@ export default function SignupScreen() {
       if (err instanceof Error) {
         const errorMessage = typeof err.message === 'string' ? err.message : String(err.message || 'Unknown error')
         
-        if (errorMessage.includes('fetch')) {
+        console.log('🔍 [SIGNUP_DEBUG] Catch block error message:', errorMessage)
+        
+        // Check for duplicate email errors in catch block too
+        if (errorMessage.toLowerCase().includes('already registered') || 
+            errorMessage.toLowerCase().includes('already in use') ||
+            errorMessage.toLowerCase().includes('user already registered') ||
+            errorMessage.toLowerCase().includes('email already exists') ||
+            errorMessage.toLowerCase().includes('duplicate key') ||
+            errorMessage.toLowerCase().includes('unique constraint')) {
+          setError('This email is already registered. Please try signing in instead.')
+        } else if (errorMessage.includes('fetch')) {
           setError('Network error: Unable to connect to the server. Please check your internet connection.')
         } else if (errorMessage.includes('timeout')) {
           setError('Request timed out. Please try again.')
@@ -174,7 +186,22 @@ export default function SignupScreen() {
           setError(`Error: ${errorMessage}`)
         }
       } else {
-        setError('An unexpected error occurred. Please try again.')
+        // Handle non-Error objects in catch block (including AuthError objects)
+        console.log('🔍 [SIGNUP_DEBUG] Catch block error object:', err)
+        
+        // Check if it's an AuthError object with userMessage
+        if (err && typeof err === 'object' && err.userMessage) {
+          setError(err.userMessage)
+        } else {
+          const errorStr = JSON.stringify(err)
+          console.log('🔍 [SIGNUP_DEBUG] Catch block stringified error:', errorStr)
+          
+          if (errorStr.includes('already registered') || errorStr.includes('already in use')) {
+            setError('This email is already registered. Please try signing in instead.')
+          } else {
+            setError('An unexpected error occurred. Please try again.')
+          }
+        }
       }
     } finally {
       setLoading(false)

@@ -25,6 +25,7 @@ export const AUTH_ERROR_CODES = {
   EMAIL_NOT_CONFIRMED: 'EMAIL_NOT_CONFIRMED',
   ACCOUNT_DISABLED: 'ACCOUNT_DISABLED',
   TOO_MANY_ATTEMPTS: 'TOO_MANY_ATTEMPTS',
+  USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
 
   // Session errors
   SESSION_EXPIRED: 'SESSION_EXPIRED',
@@ -113,6 +114,16 @@ export const AUTH_ERRORS: Record<string, AuthError> = {
     canRetry: false,
     suggestedAction: 'Wait a few minutes and try again',
     severity: 'medium'
+  },
+
+  [AUTH_ERROR_CODES.USER_ALREADY_EXISTS]: {
+    code: AUTH_ERROR_CODES.USER_ALREADY_EXISTS,
+    title: 'Account Already Exists',
+    message: 'An account with this email already exists.',
+    userMessage: 'This email is already registered. Please try signing in instead.',
+    canRetry: false,
+    suggestedAction: 'Try signing in instead',
+    severity: 'low'
   },
 
   [AUTH_ERROR_CODES.SESSION_EXPIRED]: {
@@ -247,6 +258,13 @@ export function classifySupabaseError(error: any): AuthError {
   // Service unavailable
   if (status === 503 || status === 502 || message.includes('service unavailable')) {
     return AUTH_ERRORS[AUTH_ERROR_CODES.SERVICE_UNAVAILABLE]
+  }
+
+  // User already exists
+  if (message.includes('already registered') || message.includes('already in use') || 
+      message.includes('user already exists') || message.includes('email already exists') ||
+      error.code === 'user_already_exists') {
+    return AUTH_ERRORS[AUTH_ERROR_CODES.USER_ALREADY_EXISTS]
   }
 
   // Unauthorized
