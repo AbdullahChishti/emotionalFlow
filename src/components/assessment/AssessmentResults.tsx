@@ -59,9 +59,16 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-xl border border-slate-200 p-6"
+      className="rounded-xl p-6"
+      style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(16, 185, 129, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+      }}
     >
-      <div className="text-center">
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-xl"></div>
+      <div className="relative z-10 text-center">
         {/* Circular progress meter */}
         <div className="relative w-28 h-28 mx-auto mb-4">
           <svg width="112" height="112" viewBox="0 0 160 160" className="rotate-[-90deg]">
@@ -78,18 +85,71 @@ const ScoreCard = memo(({ assessment, result }: { assessment: any, result: any }
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-2xl font-medium text-slate-800">{score}</div>
-            <div className="text-xs text-slate-500">/ {max}</div>
+            <div 
+              className="text-2xl font-medium text-slate-800"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '500'
+              }}
+            >
+              {score}
+            </div>
+            <div 
+              className="text-xs text-slate-500"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '400'
+              }}
+            >
+              / {max}
+            </div>
           </div>
         </div>
 
         {/* Score details */}
         <div className="space-y-2">
-          <div className="text-xs text-slate-500">Overall Score</div>
-          <div className="text-2xl font-semibold text-slate-800">{pct}%</div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white border border-slate-200">
+          <div 
+            className="text-xs text-slate-500"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.005em',
+              fontWeight: '400'
+            }}
+          >
+            Overall Score
+          </div>
+          <div 
+            className="text-2xl font-semibold text-slate-800"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.02em',
+              fontWeight: '600'
+            }}
+          >
+            {pct}%
+          </div>
+          <div 
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl"
+            style={{
+              background: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              boxShadow: '0 2px 8px -2px rgba(16, 185, 129, 0.1)'
+            }}
+          >
             <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: stroke }} />
-            <span className="text-xs text-slate-700">{result.level}</span>
+            <span 
+              className="text-xs text-slate-700"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '500'
+              }}
+            >
+              {result.level}
+            </span>
           </div>
         </div>
       </div>
@@ -101,23 +161,81 @@ ScoreCard.displayName = 'ScoreCard'
 
 // Compact Summary Card Component for overview displays
 const CompactSummaryCard = memo(({ assessment, result }: { assessment: any, result: any }) => (
-  <div className="bg-white rounded-xl p-6 border border-slate-200 hover:shadow-md transition-all duration-300">
-    <div className="flex items-center gap-4 mb-4">
-      <div className="w-10 h-10 rounded-lg bg-brand-green-100 flex items-center justify-center">
-        <span className="text-sm font-semibold text-brand-green-700">
-          {assessment?.shortTitle?.charAt(0) || '?'}
+  <div 
+    className="rounded-xl p-6 hover:shadow-md transition-all duration-500"
+    style={{
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(16, 185, 129, 0.1)',
+      boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+    }}
+  >
+    <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-xl"></div>
+    <div className="relative z-10">
+      <div className="flex items-center gap-4 mb-4">
+        <div 
+          className="w-10 h-10 rounded-lg flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+            boxShadow: '0 4px 12px -4px rgba(16, 185, 129, 0.2)'
+          }}
+        >
+          <span 
+            className="text-sm font-semibold"
+            style={{
+              color: '#047857',
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.005em',
+              fontWeight: '600'
+            }}
+          >
+            {assessment?.shortTitle?.charAt(0) || '?'}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 
+            className="font-semibold text-slate-900 truncate"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '600'
+            }}
+          >
+            {assessment?.shortTitle || 'Unknown'}
+          </h3>
+          <p 
+            className="text-sm text-slate-600 font-medium"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.005em',
+              fontWeight: '500'
+            }}
+          >
+            {result.level}
+          </p>
+        </div>
+      </div>
+      <div 
+        className="text-3xl font-bold"
+        style={{
+          color: '#047857',
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          letterSpacing: '-0.02em',
+          fontWeight: '700'
+        }}
+      >
+        {result.score}
+        <span 
+          className="text-sm font-normal text-slate-500 ml-1"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.005em',
+            fontWeight: '400'
+          }}
+        >
+          / {assessment?.scoring?.ranges?.[assessment.scoring.ranges.length - 1]?.max || '?'}
         </span>
       </div>
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-slate-900 truncate">{assessment?.shortTitle || 'Unknown'}</h3>
-        <p className="text-sm text-slate-600 font-medium">{result.level}</p>
-      </div>
-    </div>
-    <div className="text-3xl font-bold text-brand-green-700">
-      {result.score}
-      <span className="text-sm font-normal text-slate-500 ml-1">
-        / {assessment?.scoring?.ranges?.[assessment.scoring.ranges.length - 1]?.max || '?'}
-      </span>
     </div>
   </div>
 ))
@@ -693,8 +811,74 @@ export default function AssessmentResults({
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-50/50 to-white min-h-screen">
-      <div className="container mx-auto px-6 py-16">
+    <div 
+      className="min-h-screen"
+      style={{
+        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%)'
+      }}
+    >
+      {/* Floating animated background elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-32 h-32 rounded-3xl opacity-20"
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+            filter: 'blur(40px)'
+          }}
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+            scale: [1, 1.1, 1],
+            opacity: [0.2, 0.3, 0.2]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-40 right-20 w-24 h-24 rounded-2xl opacity-15"
+          style={{
+            background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #134e4a 100%)',
+            filter: 'blur(30px)'
+          }}
+          animate={{
+            y: [0, 15, 0],
+            x: [0, -8, 0],
+            scale: [1, 0.9, 1],
+            opacity: [0.15, 0.25, 0.15]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+        <motion.div
+          className="absolute bottom-32 left-1/4 w-20 h-20 rounded-xl opacity-10"
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            filter: 'blur(25px)'
+          }}
+          animate={{
+            y: [0, -10, 0],
+            x: [0, 5, 0],
+            scale: [1, 1.05, 1],
+            opacity: [0.1, 0.2, 0.1]
+          }}
+          transition={{
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
+      </div>
+      
+      <div className="container mx-auto px-6 py-16 relative z-10">
         {/* Section 1: Card on the left, content on the right */}
         <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
           {/* Left: Score Card as a featured card */}
@@ -719,17 +903,48 @@ export default function AssessmentResults({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="bg-white/80 rounded-3xl p-8 border border-slate-200/60 shadow-sm backdrop-blur-sm"
+              className="rounded-3xl p-8 shadow-sm backdrop-blur-sm"
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(16, 185, 129, 0.1)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              }}
             >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-10 h-10 bg-slate-100 rounded-2xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-base text-slate-700">verified</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-3xl"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-6">
+                  <div 
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                    style={{
+                      background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                      boxShadow: '0 4px 12px -4px rgba(16, 185, 129, 0.2)'
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-base text-emerald-600">verified</span>
+                  </div>
+                  <span 
+                    className="text-base font-light text-slate-700"
+                    style={{
+                      fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      letterSpacing: '-0.01em',
+                      fontWeight: '300'
+                    }}
+                  >
+                    {result.level}
+                  </span>
                 </div>
-                <span className="text-base font-light text-slate-700">{result.level}</span>
+                <p 
+                  className="text-slate-600 leading-relaxed text-base font-light"
+                  style={{
+                    fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    letterSpacing: '-0.01em',
+                    fontWeight: '300'
+                  }}
+                >
+                  {(aiExplanation && aiExplanation.summary) || result.description}
+                </p>
               </div>
-              <p className="text-slate-600 leading-relaxed text-base font-light">
-                {(aiExplanation && aiExplanation.summary) || result.description}
-              </p>
             </motion.div>
           </motion.div>
         </div>

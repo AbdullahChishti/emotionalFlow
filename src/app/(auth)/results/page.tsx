@@ -53,24 +53,108 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
   const entries = Object.entries(results)
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-6 py-8">
-        {/* Minimal header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-sm font-medium text-slate-800 tabular-nums">
+    <div 
+      className="min-h-screen"
+      style={{
+        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%)'
+      }}
+    >
+      {/* Floating animated background elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-32 h-32 rounded-3xl opacity-20"
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+            filter: 'blur(40px)'
+          }}
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+            scale: [1, 1.1, 1],
+            opacity: [0.2, 0.3, 0.2]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div
+          className="absolute top-40 right-20 w-24 h-24 rounded-2xl opacity-15"
+          style={{
+            background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #134e4a 100%)',
+            filter: 'blur(30px)'
+          }}
+          animate={{
+            y: [0, 15, 0],
+            x: [0, -8, 0],
+            scale: [1, 0.9, 1],
+            opacity: [0.15, 0.25, 0.15]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+      </div>
+      
+      <div className="container mx-auto px-6 py-8 relative z-10">
+        {/* Enhanced header */}
+        <div className="flex items-center justify-between mb-8">
+          <div 
+            className="text-sm font-medium text-slate-800 tabular-nums"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.005em',
+              fontWeight: '500'
+            }}
+          >
             {entries.length}<span className="text-slate-400"> results</span>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={onRetake} className="text-xs text-slate-500 hover:text-slate-700">Retake</button>
-            <button onClick={onNewAssessment} className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700">
+            <motion.button 
+              onClick={onRetake} 
+              className="text-xs text-slate-500 hover:text-slate-700 transition-colors duration-300"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '400'
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Retake
+            </motion.button>
+            <motion.button 
+              onClick={onNewAssessment} 
+              className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 transition-colors duration-300"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '500'
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <span className="material-symbols-outlined text-[16px]">add</span>
               New
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* Minimal divided list */}
-        <div className="rounded-lg border border-slate-200/60 bg-white/50 divide-y divide-slate-100 overflow-hidden max-w-3xl mx-auto">
+        {/* Enhanced results list */}
+        <div 
+          className="rounded-2xl overflow-hidden max-w-3xl mx-auto"
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(16, 185, 129, 0.1)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+          }}
+        >
           {entries.map(([assessmentId, result], index) => {
             const assessment = ASSESSMENTS[assessmentId]
             if (!assessment) return null
@@ -79,23 +163,62 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
               <motion.button
                 key={assessmentId}
                 type="button"
-                className="w-full text-left px-3 py-3 flex items-center gap-3 hover:bg-slate-50/60 transition-colors"
+                className="w-full text-left px-6 py-4 flex items-center gap-4 hover:bg-emerald-50/30 transition-all duration-300 group"
+                style={{
+                  borderBottom: index < entries.length - 1 ? '1px solid rgba(16, 185, 129, 0.1)' : 'none'
+                }}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 + index * 0.03 }}
                 onClick={() => router.push(`/results?assessment=${assessmentId}`)}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
               >
-                <span className="material-symbols-outlined text-slate-600 text-base">analytics</span>
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                    boxShadow: '0 4px 12px -4px rgba(16, 185, 129, 0.2)'
+                  }}
+                >
+                  <span className="material-symbols-outlined text-emerald-600 text-base">analytics</span>
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[13px] text-slate-800 truncate">{assessment.shortTitle || assessment.title}</span>
-                    <span className="text-[10px] text-slate-400">{result.level}</span>
+                    <span 
+                      className="text-sm text-slate-800 truncate"
+                      style={{
+                        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        letterSpacing: '-0.01em',
+                        fontWeight: '500'
+                      }}
+                    >
+                      {assessment.shortTitle || assessment.title}
+                    </span>
+                    <span 
+                      className="text-xs text-slate-400 px-2 py-1 rounded-full"
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        letterSpacing: '-0.005em',
+                        fontWeight: '400'
+                      }}
+                    >
+                      {result.level}
+                    </span>
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
+                  <div 
+                    className="text-xs text-slate-500 mt-1"
+                    style={{
+                      fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      letterSpacing: '-0.005em',
+                      fontWeight: '400'
+                    }}
+                  >
                     Score {result.score} / {max}
                   </div>
                 </div>
-                <span className="material-symbols-outlined text-slate-400 text-sm">chevron_right</span>
+                <span className="material-symbols-outlined text-slate-400 text-sm group-hover:text-emerald-600 transition-colors duration-300">chevron_right</span>
               </motion.button>
             )
           })}
@@ -483,10 +606,25 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%)'
+        }}
+      >
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p className="text-slate-600 mt-4">Loading your assessment results...</p>
+          <p 
+            className="text-slate-600 mt-4"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
+          >
+            Loading your assessment results...
+          </p>
         </div>
       </div>
     )
@@ -494,33 +632,87 @@ export default function ResultsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%)'
+        }}
+      >
         <div className="text-center max-w-md mx-auto px-6">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div 
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{
+              background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+              boxShadow: '0 8px 32px -8px rgba(239, 68, 68, 0.3)'
+            }}
+          >
             <span className="material-symbols-outlined text-2xl text-red-600">error</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">Unable to Load Results</h1>
-          <p className="text-slate-600 mb-6">{error}</p>
+          <h1 
+            className="text-2xl font-bold text-slate-900 mb-4"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.02em',
+              fontWeight: '700'
+            }}
+          >
+            Unable to Load Results
+          </h1>
+          <p 
+            className="text-slate-600 mb-6"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
+          >
+            {error}
+          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
+            <motion.button
               onClick={() => router.push('/assessments')}
-              className="px-6 py-3 bg-brand-green-700 text-white rounded-xl hover:bg-brand-green-800 transition-all duration-300 font-semibold"
-              style={{ backgroundColor: '#1f3d42' }}
+              className="px-6 py-3 text-white rounded-xl transition-all duration-500 font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '500'
+              }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
             >
               Take Assessment
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => router.push('/dashboard')}
-              className="px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-all duration-300 font-semibold"
+              className="px-6 py-3 bg-white border text-slate-700 rounded-xl hover:bg-slate-50 transition-all duration-500 font-semibold"
+              style={{
+                border: '1px solid rgba(16, 185, 129, 0.2)',
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '500'
+              }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
             >
               Back to Dashboard
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={handleClearDataAndRetry}
-              className="px-4 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all duration-300"
+              className="px-4 py-2 text-sm text-white rounded-lg transition-all duration-500"
+              style={{
+                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '500'
+              }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
             >
               Clear & Retry
-            </button>
+            </motion.button>
             {/* Use device data fallback if present */}
             {safeGetFromStorage('assessmentResults') && (
               <button
@@ -615,16 +807,49 @@ export default function ResultsPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
+    <div 
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%, #f8fafc 100%)'
+      }}
+    >
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-slate-900 mb-4">No Results Available</h1>
-        <p className="text-slate-600 mb-6">No assessment results found.</p>
-        <button
+        <h1 
+          className="text-2xl font-bold text-slate-900 mb-4"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.02em',
+            fontWeight: '700'
+          }}
+        >
+          No Results Available
+        </h1>
+        <p 
+          className="text-slate-600 mb-6"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.01em',
+            fontWeight: '300'
+          }}
+        >
+          No assessment results found.
+        </p>
+        <motion.button
           onClick={() => router.push('/assessments')}
-          className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors font-semibold"
+          className="px-6 py-3 text-white rounded-lg transition-all duration-500 font-semibold"
+          style={{
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+            boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.005em',
+            fontWeight: '500'
+          }}
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
         >
           Take Assessment
-        </button>
+        </motion.button>
       </div>
     </div>
   )

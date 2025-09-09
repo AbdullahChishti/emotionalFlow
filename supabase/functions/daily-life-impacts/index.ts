@@ -8,7 +8,7 @@ import { getCorsHeaders, handleCorsPreflight } from '../_shared/cors.ts'
 
 interface AssessmentData {
   userId: string
-  allAssessments: Record<string, any>
+  allAssessments: Record<string, any[]>
   assessmentCount: number
   dateRange: { earliest: string; latest: string }
   summary: {
@@ -46,8 +46,7 @@ Deno.serve(async (req) => {
   if (preflight) return preflight
 
   try {
-
-  // Health check endpoint (no auth required)
+    // Health check endpoint (no auth required)
   if (req.method === 'GET') {
     console.log('[Edge:impacts] 🏥 Health check requested')
     return new Response(
@@ -160,6 +159,33 @@ Deno.serve(async (req) => {
           allAssessmentsType: typeof assessmentData.allAssessments
         }
       }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    // Validate that allAssessments contains arrays of assessments
+    const allAssessmentsKeys = Object.keys(assessmentData.allAssessments)
+    if (allAssessmentsKeys.length === 0) {
+      console.error('[Edge:impacts] ❌ Empty allAssessments object')
+      return new Response(JSON.stringify({
+        error: 'Invalid request data',
+        message: 'allAssessments cannot be empty',
+        received: { allAssessmentsKeys: allAssessmentsKeys.length }
+      }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+    }
+
+    // Validate that each assessment type contains an array
+    for (const [assessmentId, assessments] of Object.entries(assessmentData.allAssessments)) {
+      if (!Array.isArray(assessments)) {
+        console.error(`[Edge:impacts] ❌ Assessment ${assessmentId} is not an array:`, assessments)
+        return new Response(JSON.stringify({
+          error: 'Invalid request data',
+          message: `Assessment ${assessmentId} must be an array`,
+          received: {
+            assessmentId,
+            assessmentsType: typeof assessments,
+            assessments
+          }
+        }), { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } })
+      }
     }
 
     // Get OpenAI key from environment with validation

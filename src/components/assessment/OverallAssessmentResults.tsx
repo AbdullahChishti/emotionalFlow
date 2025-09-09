@@ -236,48 +236,184 @@ export function OverallAssessmentResults({
   }
 
   return (
-    <div className={`max-w-4xl mx-auto space-y-6 ${className}`}>
-      {/* Minimal Header */}
-      <div className="text-center py-6">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">
+    <div 
+      className={`max-w-4xl mx-auto space-y-6 ${className}`}
+      style={{
+        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}
+    >
+      {/* Enhanced Header */}
+      <div className="text-center py-8">
+        <h1 
+          className="text-3xl font-bold text-slate-900 mb-3"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.02em',
+            fontWeight: '700'
+          }}
+        >
           Your Mental Health Profile
         </h1>
-        <p className="text-slate-600">
+        <p 
+          className="text-slate-600"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.01em',
+            fontWeight: '300'
+          }}
+        >
           Analysis based on {assessmentCount} assessments
         </p>
       </div>
 
       {/* Risk Assessment */}
-      <div className="bg-white rounded-lg border border-slate-200 p-6">
-        <div className="flex flex-col md:flex-row items-center gap-6">
+      <div 
+        className="rounded-2xl p-6"
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(16, 185, 129, 0.1)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-2xl"></div>
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
           <RiskDial level={summary.overallRiskLevel} />
           <div className="flex-1 text-center md:text-left">
-            <div className="text-sm text-slate-500 uppercase tracking-wide mb-1">Risk Level</div>
-            <div className="text-2xl font-semibold text-slate-900 capitalize mb-2">
+            <div 
+              className="text-sm text-slate-500 uppercase tracking-wide mb-1"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '0.05em',
+                fontWeight: '400'
+              }}
+            >
+              Risk Level
+            </div>
+            <div 
+              className="text-2xl font-semibold text-slate-900 capitalize mb-2"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '600'
+              }}
+            >
               {summary.overallRiskLevel} Risk
             </div>
-            <div className="text-sm text-slate-600">
+            <div 
+              className="text-sm text-slate-600"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.01em',
+                fontWeight: '300'
+              }}
+            >
               Focus area: {summary.highestRiskArea || 'General Wellness'}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Simple Stats */}
+      {/* Enhanced Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
-          <div className="text-xl font-semibold text-slate-900">{assessmentCount}</div>
-          <div className="text-sm text-slate-500">Assessments</div>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
-          <div className="text-xl font-semibold text-slate-900">{summary.averageScore.toFixed(1)}</div>
-          <div className="text-sm text-slate-500">Avg Score</div>
-        </div>
-        <div className="bg-white rounded-lg border border-slate-200 p-4 text-center">
-          <div className="text-xl font-semibold text-slate-900">
-            {Math.ceil((new Date(dateRange.latest).getTime() - new Date(dateRange.earliest).getTime()) / (1000 * 60 * 60 * 24))}
+        <div 
+          className="rounded-xl p-4 text-center"
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(16, 185, 129, 0.1)',
+            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-xl"></div>
+          <div className="relative z-10">
+            <div 
+              className="text-xl font-semibold text-slate-900"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '600'
+              }}
+            >
+              {assessmentCount}
+            </div>
+            <div 
+              className="text-sm text-slate-500"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '400'
+              }}
+            >
+              Assessments
+            </div>
           </div>
-          <div className="text-sm text-slate-500">Days</div>
+        </div>
+        <div 
+          className="rounded-xl p-4 text-center"
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(16, 185, 129, 0.1)',
+            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-xl"></div>
+          <div className="relative z-10">
+            <div 
+              className="text-xl font-semibold text-slate-900"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '600'
+              }}
+            >
+              {summary.averageScore.toFixed(1)}
+            </div>
+            <div 
+              className="text-sm text-slate-500"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '400'
+              }}
+            >
+              Avg Score
+            </div>
+          </div>
+        </div>
+        <div 
+          className="rounded-xl p-4 text-center"
+          style={{
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid rgba(16, 185, 129, 0.1)',
+            boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-xl"></div>
+          <div className="relative z-10">
+            <div 
+              className="text-xl font-semibold text-slate-900"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '600'
+              }}
+            >
+              {Math.ceil((new Date(dateRange.latest).getTime() - new Date(dateRange.earliest).getTime()) / (1000 * 60 * 60 * 24))}
+            </div>
+            <div 
+              className="text-sm text-slate-500"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.005em',
+                fontWeight: '400'
+              }}
+            >
+              Days
+            </div>
+          </div>
         </div>
       </div>
 

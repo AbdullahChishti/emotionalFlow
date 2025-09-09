@@ -71,9 +71,38 @@ export function AssessmentReport({
   // Handle compact variant for summary displays
   if (variant === 'compact') {
     return (
-      <div className={`bg-white/90 rounded-2xl p-6 shadow-sm ${className}`}>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{assessment.title}</h3>
-        <p className="text-gray-600">Score: {result.score}</p>
+      <div 
+        className={`rounded-2xl p-6 shadow-sm ${className}`}
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(16, 185, 129, 0.1)',
+          boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-2xl"></div>
+        <div className="relative z-10">
+          <h3 
+            className="text-lg font-semibold text-gray-900 mb-2"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '600'
+            }}
+          >
+            {assessment.title}
+          </h3>
+          <p 
+            className="text-gray-600"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
+          >
+            Score: {result.score}
+          </p>
+        </div>
       </div>
     )
   }
@@ -81,10 +110,28 @@ export function AssessmentReport({
   // Handle loading state
   if (isLoading) {
     return (
-      <div className={`bg-white/90 rounded-2xl p-8 shadow-sm ${className}`}>
-        <div className="text-center py-12">
+      <div 
+        className={`rounded-2xl p-8 shadow-sm ${className}`}
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(16, 185, 129, 0.1)',
+          boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-2xl"></div>
+        <div className="relative z-10 text-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading assessment results...</p>
+          <p 
+            className="text-gray-600"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
+          >
+            Loading assessment results...
+          </p>
         </div>
       </div>
     )
@@ -93,17 +140,53 @@ export function AssessmentReport({
   // Handle error state
   if (error) {
     return (
-      <div className={`bg-white/90 rounded-2xl p-8 shadow-sm ${className}`}>
-        <div className="text-center py-12">
+      <div 
+        className={`rounded-2xl p-8 shadow-sm ${className}`}
+        style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(16, 185, 129, 0.1)',
+          boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-2xl"></div>
+        <div className="relative z-10 text-center py-12">
           <span className="material-symbols-outlined text-red-500 text-4xl mb-3">error</span>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Something went wrong</h3>
-          <p className="text-gray-600 mb-6">We couldn't load your assessment results. Please try again later.</p>
-          <button
+          <h3 
+            className="text-lg font-semibold text-gray-900 mb-2"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '600'
+            }}
+          >
+            Something went wrong
+          </h3>
+          <p 
+            className="text-gray-600 mb-6"
+            style={{
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
+          >
+            We couldn't load your assessment results. Please try again later.
+          </p>
+          <motion.button
             onClick={onContinue}
-            className="px-6 py-2 bg-brand-green-700 text-white rounded-lg hover:bg-brand-green-800 transition-colors"
+            className="px-6 py-2 text-white rounded-lg transition-all duration-500"
+            style={{
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+              boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.005em',
+              fontWeight: '500'
+            }}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
           >
             Return to Dashboard
-          </button>
+          </motion.button>
         </div>
       </div>
     )
@@ -111,57 +194,127 @@ export function AssessmentReport({
 
   // Main report view
   return (
-    <div className={`bg-white/90 rounded-2xl shadow-sm overflow-hidden ${className}`}>
-      {/* Header Section */}
-      <ReportHeader 
-        title={assessment.title}
-        category={assessment.category}
-        severity={result?.severity}
-        level={result?.level}
-      />
+    <div 
+      className={`rounded-2xl shadow-sm overflow-hidden ${className}`}
+      style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(16, 185, 129, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10"></div>
+      <div className="relative z-10">
+        {/* Header Section */}
+        <ReportHeader 
+          title={assessment.title}
+          category={assessment.category}
+          severity={result?.severity}
+          level={result?.level}
+        />
 
-      <div className="p-8">
-        {/* Score Display */}
-        <div className="mb-8">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-emerald-600 mb-2">{result.score}</div>
-            <div className="text-lg text-gray-600 mb-1">{result.level}</div>
-            <div className="text-sm text-gray-500">{result.severity}</div>
-          </div>
-        </div>
-
-        {/* Insights Section */}
-        {aiExplanation && (
+        <div className="p-8">
+          {/* Score Display */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Assessment Insights</h3>
-            <div className="prose prose-sm max-w-none">
-              <p className="text-gray-700">{aiExplanation.summary}</p>
+            <div className="text-center">
+              <div 
+                className="text-4xl font-bold text-emerald-600 mb-2"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '700'
+                }}
+              >
+                {result.score}
+              </div>
+              <div 
+                className="text-lg text-gray-600 mb-1"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.01em',
+                  fontWeight: '500'
+                }}
+              >
+                {result.level}
+              </div>
+              <div 
+                className="text-sm text-gray-500"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '400'
+                }}
+              >
+                {result.severity}
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Actions */}
-        {showActions && (
-          <div className="flex gap-4">
-            <button
-              onClick={onRetake}
-              className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Retake Assessment
-            </button>
-            <button
-              onClick={onContinue}
-              className="flex-1 px-6 py-3 text-white rounded-lg transition-colors"
-              style={{
-                backgroundColor: '#335f64'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2a4f52'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#335f64'}
-            >
-              Continue
-            </button>
-          </div>
-        )}
+          {/* Insights Section */}
+          {aiExplanation && (
+            <div className="mb-8">
+              <h3 
+                className="text-lg font-semibold text-gray-900 mb-4"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.01em',
+                  fontWeight: '600'
+                }}
+              >
+                Assessment Insights
+              </h3>
+              <div className="prose prose-sm max-w-none">
+                <p 
+                  className="text-gray-700"
+                  style={{
+                    fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    letterSpacing: '-0.01em',
+                    fontWeight: '300'
+                  }}
+                >
+                  {aiExplanation.summary}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          {showActions && (
+            <div className="flex gap-4">
+              <motion.button
+                onClick={onRetake}
+                className="flex-1 px-6 py-3 text-gray-700 rounded-lg transition-all duration-500"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '500'
+                }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Retake Assessment
+              </motion.button>
+              <motion.button
+                onClick={onContinue}
+                className="flex-1 px-6 py-3 text-white rounded-lg transition-all duration-500"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                  boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '500'
+                }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Continue
+              </motion.button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

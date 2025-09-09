@@ -122,13 +122,68 @@ export default function AssessmentsPage() {
   // Show assessment selection by default
   if (!selectedFlow) {
     return (
-      <div className="min-h-screen bg-white">
-        {/* Minimal Header */}
+      <div 
+        className="min-h-screen relative overflow-hidden"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+          background: 'linear-gradient(135deg, rgba(248, 250, 252, 0.6) 0%, rgba(255, 255, 255, 1) 50%, rgba(248, 250, 252, 0.6) 100%)'
+        }}
+      >
+        {/* Ultra-sophisticated multi-layered background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
+        
+        {/* Sophisticated floating animated elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-emerald-100/25 to-teal-50/15 rounded-full blur-3xl"
+            animate={{
+              y: [0, -30, 0],
+              x: [0, 20, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.6, 0.8, 0.6]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1]
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/20 to-emerald-50/12 rounded-full blur-3xl"
+            animate={{
+              y: [0, 25, 0],
+              x: [0, -25, 0],
+              scale: [1, 0.9, 1],
+              opacity: [0.5, 0.7, 0.5]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1],
+              delay: 2
+            }}
+          />
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-slate-100/15 via-emerald-50/8 to-slate-100/15 rounded-full blur-3xl"
+            animate={{
+              rotate: [0, 180, 360],
+              scale: [1, 1.1, 1],
+              opacity: [0.4, 0.6, 0.4]
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          />
+        </div>
+        {/* Sophisticated Header */}
         <motion.div
-          className="max-w-4xl mx-auto px-6 py-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
+          className="relative max-w-4xl mx-auto px-6 py-16 text-center z-10"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <motion.div
             className="flex justify-center"
@@ -163,11 +218,35 @@ export default function AssessmentsPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                      <h2 className="text-3xl md:text-4xl font-light text-slate-900 tracking-tight leading-tight">
+                      <h2 
+                        className="relative text-3xl md:text-4xl font-extralight text-slate-900 tracking-tight leading-tight"
+                        style={{
+                          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          letterSpacing: '-0.02em',
+                          fontWeight: '200'
+                        }}
+                      >
                         Next step in your{' '}
-                        <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
+                        <span 
+                          className="relative inline-block"
+                          style={{
+                            background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            fontWeight: '300'
+                          }}
+                        >
                           mental Wellness
                         </span>
+                        
+                        {/* Sophisticated underline accent */}
+                        <motion.div
+                          className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
+                          initial={{ width: 0 }}
+                          animate={{ width: '60%' }}
+                          transition={{ duration: 1.5, delay: 1.0, ease: "easeOut" }}
+                        />
                       </h2>
                     </motion.div>
 
@@ -206,23 +285,48 @@ export default function AssessmentsPage() {
           </motion.div>
         </motion.div>
 
-        {/* Premium Main Tab Navigation */}
+        {/* Sophisticated Main Tab Navigation */}
         <motion.div
-          className="max-w-4xl mx-auto px-6 mb-12 flex justify-center"
+          className="relative max-w-4xl mx-auto px-6 mb-12 flex justify-center z-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <div className="bg-white border border-gray-200/60 rounded-2xl p-2 shadow-lg shadow-gray-200/50 backdrop-blur-sm">
+          <div 
+            className="relative overflow-hidden"
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+              borderRadius: '24px'
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-2xl pointer-events-none"></div>
+            <div className="relative p-2">
             <div className="flex items-center gap-2">
             <motion.button
               onClick={() => setActiveTab('browse')}
-                className={`group relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap overflow-hidden ${
+                className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
                 activeTab === 'browse'
-                    ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-200/50'
-                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'
+                    ? 'text-white'
+                    : 'text-emerald-600 hover:text-emerald-800'
                 }`}
-                whileHover={{ scale: activeTab === 'browse' ? 1 : 1.03 }}
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '500',
+                  background: activeTab === 'browse' 
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
+                    : 'transparent',
+                  boxShadow: activeTab === 'browse' 
+                    ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                    : 'none'
+                }}
+                whileHover={{ 
+                  scale: activeTab === 'browse' ? 1 : 1.03,
+                  y: activeTab === 'browse' ? 0 : -2
+                }}
                 whileTap={{ scale: 0.97 }}
               >
                 <div className="relative z-10 flex items-center">
@@ -238,12 +342,26 @@ export default function AssessmentsPage() {
             </motion.button>
             <motion.button
               onClick={() => setActiveTab('history')}
-                className={`group relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap overflow-hidden ${
+                className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
                 activeTab === 'history'
-                    ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-200/50'
-                    : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'
+                    ? 'text-white'
+                    : 'text-emerald-600 hover:text-emerald-800'
                 }`}
-                whileHover={{ scale: activeTab === 'history' ? 1 : 1.03 }}
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '500',
+                  background: activeTab === 'history' 
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
+                    : 'transparent',
+                  boxShadow: activeTab === 'history' 
+                    ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                    : 'none'
+                }}
+                whileHover={{ 
+                  scale: activeTab === 'history' ? 1 : 1.03,
+                  y: activeTab === 'history' ? 0 : -2
+                }}
                 whileTap={{ scale: 0.97 }}
               >
                 <div className="relative z-10 flex items-center">
@@ -258,30 +376,56 @@ export default function AssessmentsPage() {
                 )}
             </motion.button>
             </div>
+            </div>
           </div>
         </motion.div>
 
         {/* Tab Content */}
         {activeTab === 'browse' ? (
           <>
-            {/* Premium Category Tabs */}
+            {/* Sophisticated Category Tabs */}
             <motion.div
-              className="max-w-6xl mx-auto px-6 mb-20 flex justify-center"
+              className="relative max-w-6xl mx-auto px-6 mb-20 flex justify-center z-10"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <div className="bg-white border border-gray-200/60 rounded-2xl p-2 shadow-lg shadow-gray-200/50 backdrop-blur-sm">
+              <div 
+                className="relative overflow-hidden"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  borderRadius: '24px'
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-2xl pointer-events-none"></div>
+                <div className="relative p-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {/* All Assessments Tab */}
                   <motion.button
                     onClick={() => setSelectedCategory(null)}
-                    className={`group relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap overflow-hidden ${
+                    className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
                       selectedCategory === null
-                        ? 'bg-emerald-700 text-white shadow-lg shadow-emerald-200/50'
-                        : 'text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50'
+                        ? 'text-white'
+                        : 'text-emerald-600 hover:text-emerald-800'
                     }`}
-                    whileHover={{ scale: selectedCategory === null ? 1 : 1.03 }}
+                    style={{
+                      fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                      letterSpacing: '-0.005em',
+                      fontWeight: '500',
+                      background: selectedCategory === null 
+                        ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
+                        : 'transparent',
+                      boxShadow: selectedCategory === null 
+                        ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                        : 'none'
+                    }}
+                    whileHover={{ 
+                      scale: selectedCategory === null ? 1 : 1.03,
+                      y: selectedCategory === null ? 0 : -2
+                    }}
                     whileTap={{ scale: 0.97 }}
                   >
                     <div className="relative z-10 flex items-center">
@@ -304,16 +448,28 @@ export default function AssessmentsPage() {
                       <motion.button
                         key={categoryId}
                         onClick={() => setSelectedCategory(categoryId)}
-                        className={`group relative px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 whitespace-nowrap overflow-hidden ${styling.text} ${
-                          isSelected
-                            ? `${styling.gradient} shadow-lg ${styling.shadow}`
-                            : `${styling.gradient} hover:shadow-md ${styling.shadow}`
+                        className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
+                          isSelected ? 'text-white' : 'text-emerald-600 hover:text-emerald-800'
                         }`}
-                        whileHover={{ scale: isSelected ? 1 : 1.03 }}
+                        style={{
+                          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                          letterSpacing: '-0.005em',
+                          fontWeight: '500',
+                          background: isSelected 
+                            ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
+                            : 'transparent',
+                          boxShadow: isSelected 
+                            ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                            : 'none'
+                        }}
+                        whileHover={{ 
+                          scale: isSelected ? 1 : 1.03,
+                          y: isSelected ? 0 : -2
+                        }}
                         whileTap={{ scale: 0.97 }}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
+                        transition={{ duration: 0.6, delay: 0.1 + index * 0.05, ease: [0.25, 0.1, 0.25, 1] }}
                       >
                         <div className="relative z-10 flex items-center">
                           <span className="hidden sm:inline">{category.title}</span>
@@ -329,15 +485,16 @@ export default function AssessmentsPage() {
                     )
                   })}
                 </div>
+                </div>
               </div>
             </motion.div>
 
-            {/* Refined Assessment Cards */}
+            {/* Sophisticated Assessment Cards */}
             <motion.div
-              className="max-w-7xl mx-auto px-6 pb-24"
+              className="relative max-w-7xl mx-auto px-6 pb-24 z-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.6 }}
+              transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {Object.entries(assessmentsByCategory)
@@ -354,27 +511,64 @@ export default function AssessmentsPage() {
                             setCurrentAssessmentId(assessment.id)
                             handleFlowSelect('single')
                           }}
-                          initial={{ opacity: 0, y: 30 }}
-                          animate={{ opacity: 1, y: 0 }}
+                          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
                           whileHover={{
-                            y: -8,
-                            boxShadow: "0 28px 60px -12px rgba(0, 0, 0, 0.18), 0 12px 24px -6px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(148, 163, 184, 0.08)"
+                            y: -12,
+                            scale: 1.03,
+                            rotateY: 2,
+                            transition: { 
+                              duration: 0.4,
+                              ease: [0.25, 0.1, 0.25, 1],
+                              type: "spring",
+                              stiffness: 300,
+                              damping: 20
+                            }
                           }}
                           transition={{
-                            duration: 0.7,
+                            duration: 0.8,
                             delay: 0.6 + index * 0.08,
-                            ease: [0.25, 0.1, 0.25, 1],
-                            boxShadow: { duration: 0.35 }
+                            ease: [0.25, 0.1, 0.25, 1]
                           }}
                         >
-                          {/* Card Container with Depth */}
-                          <div className="relative bg-white rounded-2xl border border-slate-100/60 overflow-hidden shadow-sm group-hover:shadow-2xl group-hover:shadow-slate-200/50 transition-all duration-500">
+                          {/* Sophisticated Card Container */}
+                          <div 
+                            className="relative overflow-hidden"
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.95)',
+                              backdropFilter: 'blur(20px)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                              borderRadius: '24px'
+                            }}
+                          >
 
-                            {/* Subtle Background Pattern */}
-                            <div className="absolute inset-0 opacity-[0.015] group-hover:opacity-[0.03] transition-opacity duration-500">
-                              <div className="absolute top-6 right-6 w-16 h-16 border border-slate-200 rounded-full"></div>
-                              <div className="absolute bottom-6 left-6 w-12 h-12 border border-slate-200 rounded-full"></div>
-                          </div>
+                            {/* Ultra-sophisticated gradient overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 via-transparent to-teal-50/40 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-3xl pointer-events-none"></div>
+
+                            {/* Sophisticated animated background pattern */}
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-25 transition-all duration-700">
+                              <div className="absolute top-6 right-6 w-20 h-20 bg-gradient-to-bl from-emerald-200/60 to-transparent rounded-full transform translate-x-8 -translate-y-8"></div>
+                              <div className="absolute bottom-6 left-6 w-16 h-16 bg-gradient-to-tr from-teal-200/60 to-transparent rounded-full transform -translate-x-6 translate-y-6"></div>
+                            </div>
+
+                            {/* Sophisticated shimmer effect */}
+                            <motion.div
+                              className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100"
+                              style={{
+                                background: 'linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%)',
+                                transform: 'translateX(-100%)'
+                              }}
+                              animate={{
+                                transform: ['translateX(-100%)', 'translateX(100%)']
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                delay: 0.2,
+                                ease: "easeInOut"
+                              }}
+                            />
 
                             {/* Content */}
                             <div className="relative p-8">
@@ -393,7 +587,12 @@ export default function AssessmentsPage() {
 
                               {/* Assessment Title */}
                               <motion.h3
-                                className="text-xl font-semibold text-gray-900 mb-3 pr-24 group-hover:text-gray-800 transition-colors duration-300"
+                                className="text-xl font-medium text-gray-900 mb-3 pr-24 group-hover:text-gray-800 transition-colors duration-300"
+                                style={{
+                                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                  letterSpacing: '-0.01em',
+                                  fontWeight: '500'
+                                }}
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ duration: 0.6, delay: 0.7 + index * 0.05 }}
@@ -404,6 +603,11 @@ export default function AssessmentsPage() {
                           {/* Description */}
                               <motion.p
                                 className="text-gray-600 leading-relaxed mb-6 text-sm"
+                                style={{
+                                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                  letterSpacing: '-0.005em',
+                                  fontWeight: '300'
+                                }}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.6, delay: 0.8 + index * 0.05 }}
@@ -419,13 +623,27 @@ export default function AssessmentsPage() {
                                 transition={{ duration: 0.5, delay: 0.9 + index * 0.05 }}
                               >
                             <div className="flex items-center gap-4">
-                                  <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                  <div 
+                                    className="flex items-center gap-1.5 text-xs text-gray-500 font-medium"
+                                    style={{
+                                      fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                      letterSpacing: '-0.005em',
+                                      fontWeight: '400'
+                                    }}
+                                  >
                                     <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                               <span>{assessment.questions.length} questions</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
+                                  <div 
+                                    className="flex items-center gap-1.5 text-xs text-gray-500 font-medium"
+                                    style={{
+                                      fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                      letterSpacing: '-0.005em',
+                                      fontWeight: '400'
+                                    }}
+                                  >
                                     <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -446,15 +664,23 @@ export default function AssessmentsPage() {
 
                               {/* Sophisticated Bottom Accent */}
                               <motion.div
-                                className="h-px bg-gradient-to-r from-transparent via-slate-200/60 to-transparent"
-                                initial={{ scaleX: 0, opacity: 0 }}
-                                animate={{ scaleX: 1, opacity: 1 }}
+                                className="relative"
+                                initial={{ opacity: 0, scaleX: 0 }}
+                                animate={{ opacity: 1, scaleX: 1 }}
                                 transition={{
-                                  duration: 0.8,
+                                  duration: 1.2,
                                   delay: 1.0 + index * 0.05,
                                   ease: [0.25, 0.1, 0.25, 1]
                                 }}
-                              ></motion.div>
+                              >
+                                <div className="h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent"></div>
+                                <motion.div
+                                  className="absolute top-0 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
+                                  initial={{ width: 0 }}
+                                  animate={{ width: '100%' }}
+                                  transition={{ duration: 1.0, delay: 1.2 + index * 0.05, ease: "easeOut" }}
+                                />
+                              </motion.div>
 
                             </div>
 

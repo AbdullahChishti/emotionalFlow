@@ -60,31 +60,63 @@ function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
 
   return (
     <motion.div
-      className="group relative bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-3xl p-6 shadow-lg shadow-slate-900/20 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-500 overflow-hidden"
+      className="group relative overflow-hidden"
+      style={{
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+        borderRadius: '24px'
+      }}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
-        duration: 0.6,
+        duration: 0.8,
         ease: [0.25, 0.1, 0.25, 1],
         delay: Math.random() * 0.2
       }}
       whileHover={{
-        y: -4,
-        scale: 1.02,
-        transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+        y: -8,
+        scale: 1.03,
+        rotateY: 2,
+        transition: { 
+          duration: 0.4,
+          ease: [0.25, 0.1, 0.25, 1],
+          type: "spring",
+          stiffness: 300,
+          damping: 20
+        }
       }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/30 via-transparent to-teal-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      {/* Ultra-sophisticated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 via-transparent to-teal-50/40 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-3xl pointer-events-none"></div>
 
-      {/* Animated background pattern */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500">
-        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-emerald-200/50 to-transparent rounded-full transform translate-x-8 -translate-y-8"></div>
-        <div className="absolute bottom-0 left-0 w-16 h-16 bg-gradient-to-tr from-teal-200/50 to-transparent rounded-full transform -translate-x-6 translate-y-6"></div>
-        </div>
+      {/* Sophisticated animated background pattern */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-25 transition-all duration-700">
+        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-200/60 to-transparent rounded-full transform translate-x-10 -translate-y-10"></div>
+        <div className="absolute bottom-0 left-0 w-20 h-20 bg-gradient-to-tr from-teal-200/60 to-transparent rounded-full transform -translate-x-8 translate-y-8"></div>
+      </div>
 
-      <div className="relative z-10">
+      {/* Sophisticated shimmer effect */}
+      <motion.div
+        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100"
+        style={{
+          background: 'linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%)',
+          transform: 'translateX(-100%)'
+        }}
+        animate={{
+          transform: ['translateX(-100%)', 'translateX(100%)']
+        }}
+        transition={{
+          duration: 1.5,
+          delay: 0.2,
+          ease: "easeInOut"
+        }}
+      />
+
+      <div className="relative z-10 p-6">
         <div className="flex items-center justify-between mb-5">
           <motion.div
             className="w-12 h-12 bg-gradient-to-br from-slate-50/90 to-slate-100/90 rounded-2xl flex items-center justify-center shadow-sm shadow-slate-200/50 group-hover:shadow-lg group-hover:shadow-slate-300/50 transition-all duration-300"
@@ -111,6 +143,11 @@ function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
 
         <motion.div
           className="text-3xl font-light text-slate-900 mb-3 tracking-tight"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.01em',
+            fontWeight: '300'
+          }}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
@@ -120,6 +157,11 @@ function StatCard({ icon, value, label, loading, trend }: StatCardProps) {
 
         <motion.div
           className="text-sm text-slate-500 font-medium tracking-wide"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.005em',
+            fontWeight: '400'
+          }}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -181,27 +223,59 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
         focus:outline-none focus:ring-2 focus:ring-slate-400/30 focus:ring-offset-2
         shadow-lg hover:shadow-2xl hover:shadow-slate-900/20
       `}
+      style={{
+        background: variant === 'primary' 
+          ? 'rgba(15, 23, 42, 0.95)' 
+          : variant === 'secondary' 
+            ? 'rgba(255, 255, 255, 0.95)'
+            : 'transparent',
+        backdropFilter: 'blur(20px)',
+        border: variant === 'outline' 
+          ? '1px solid rgba(148, 163, 184, 0.3)'
+          : '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+      }}
       whileHover={!disabled && !loading ? {
-        y: -4,
-        scale: 1.02,
-        transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+        y: -8,
+        scale: 1.03,
+        rotateY: 2,
+        transition: { 
+          duration: 0.4,
+          ease: [0.25, 0.1, 0.25, 1],
+          type: "spring",
+          stiffness: 300,
+          damping: 20
+        }
       } : {}}
       whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
-        duration: 0.6,
+        duration: 0.8,
         ease: [0.25, 0.1, 0.25, 1],
         delay: Math.random() * 0.3
       }}
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      {/* Ultra-sophisticated gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20 opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-3xl pointer-events-none"></div>
 
-      {/* Subtle shine effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
-      </div>
+      {/* Sophisticated shimmer effect */}
+      <motion.div
+        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100"
+        style={{
+          background: 'linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%)',
+          transform: 'translateX(-100%)'
+        }}
+        animate={{
+          transform: ['translateX(-100%)', 'translateX(100%)']
+        }}
+        transition={{
+          duration: 1.5,
+          delay: 0.2,
+          ease: "easeInOut"
+        }}
+      />
 
       <motion.div
         className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${currentVariant.icon} group-hover:shadow-lg transition-all duration-300`}
@@ -227,6 +301,11 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
       <div className="text-left flex-1 min-w-0 relative z-10">
         <motion.div
           className="font-semibold text-lg mb-2 tracking-tight"
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.01em',
+            fontWeight: '500'
+          }}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
@@ -235,6 +314,11 @@ function ActionCard({ icon, label, description, onClick, variant = 'primary', di
         </motion.div>
         <motion.div
           className={`text-sm font-light leading-relaxed ${currentVariant.description}`}
+          style={{
+            fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            letterSpacing: '-0.005em',
+            fontWeight: '300'
+          }}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
@@ -1482,12 +1566,37 @@ export function Dashboard() {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-50/20 via-slate-50/10 to-teal-50/20 rounded-xl blur-lg -z-10"></div>
 
                 <motion.h1
-                  className="text-4xl md:text-5xl font-light text-slate-900 mb-6 leading-tight tracking-tight"
+                  className="relative text-4xl md:text-5xl font-extralight text-slate-900 mb-6 leading-tight tracking-tight"
+                  style={{
+                    fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    letterSpacing: '-0.02em',
+                    fontWeight: '200'
+                  }}
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-                  Your <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">Wellness Journey</span>
+                  Your{' '}
+                  <span 
+                    className="relative inline-block"
+                    style={{
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      fontWeight: '300'
+                    }}
+                  >
+                    Wellness Journey
+                  </span>
+                  
+                  {/* Sophisticated underline accent */}
+                  <motion.div
+                    className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
+                    initial={{ width: 0 }}
+                    animate={{ width: '60%' }}
+                    transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
+                  />
                 </motion.h1>
                 <motion.div
                   className="mt-2"
@@ -1495,7 +1604,14 @@ export function Dashboard() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                 >
-              <p className="text-slate-700 text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto font-light">
+              <p 
+                className="text-slate-700 text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto font-light"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.01em',
+                  fontWeight: '300'
+                }}
+              >
                 {hasAssessmentData
                   ? "Discover insights from your assessments and create a personalized path forward."
                   : "Begin your journey to better mental health with a personalized assessment."
@@ -1503,13 +1619,23 @@ export function Dashboard() {
               </p>
                 </motion.div>
 
-                {/* Subtle accent line */}
+                {/* Sophisticated accent line */}
                 <motion.div
-                  className="mt-6 mx-auto w-20 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"
-                  initial={{ scaleX: 0, opacity: 0 }}
-                  animate={{ scaleX: 1, opacity: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-                ></motion.div>
+                  className="mt-8 mx-auto"
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  animate={{ opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 1.2, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <div className="relative">
+                    <div className="w-24 h-px bg-gradient-to-r from-transparent via-slate-400/60 to-transparent"></div>
+                    <motion.div
+                      className="absolute top-0 left-0 h-px bg-gradient-to-r from-emerald-500/80 via-teal-500/60 to-emerald-500/80"
+                      initial={{ width: 0 }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 1.0, delay: 0.8, ease: "easeOut" }}
+                    />
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </div>
@@ -2322,11 +2448,46 @@ export function Dashboard() {
   if (loading) {
     return (
       <motion.div
-        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        className="bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40 min-h-screen relative overflow-hidden"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
       >
+        {/* Sophisticated floating animated elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-emerald-100/25 to-teal-50/15 rounded-full blur-3xl"
+            animate={{
+              y: [0, -30, 0],
+              x: [0, 20, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.6, 0.8, 0.6]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1]
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/20 to-emerald-50/12 rounded-full blur-3xl"
+            animate={{
+              y: [0, 25, 0],
+              x: [0, -25, 0],
+              scale: [1, 0.9, 1],
+              opacity: [0.5, 0.7, 0.5]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1],
+              delay: 2
+            }}
+          />
+        </div>
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
           <motion.div
             className="space-y-8 md:space-y-10"
@@ -2362,16 +2523,38 @@ export function Dashboard() {
               </motion.div>
 
               <motion.h1
-                className="text-3xl md:text-4xl font-light text-slate-900 mb-4 tracking-tight"
+                className="text-3xl md:text-4xl font-extralight text-slate-900 mb-4 tracking-tight"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.02em',
+                  fontWeight: '200'
+                }}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                Loading your dashboard
+                Loading your{' '}
+                <span 
+                  className="relative inline-block"
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    fontWeight: '300'
+                  }}
+                >
+                  dashboard
+                </span>
               </motion.h1>
 
               <motion.p
                 className="text-slate-600 font-light text-lg"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.01em',
+                  fontWeight: '300'
+                }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.8 }}
@@ -2472,11 +2655,46 @@ export function Dashboard() {
   if (error && !loading) {
     return (
       <motion.div
-        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        className="bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40 min-h-screen relative overflow-hidden"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
       >
+        {/* Sophisticated floating animated elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-rose-100/25 to-pink-50/15 rounded-full blur-3xl"
+            animate={{
+              y: [0, -30, 0],
+              x: [0, 20, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.6, 0.8, 0.6]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1]
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-red-100/20 to-rose-50/12 rounded-full blur-3xl"
+            animate={{
+              y: [0, 25, 0],
+              x: [0, -25, 0],
+              scale: [1, 0.9, 1],
+              opacity: [0.5, 0.7, 0.5]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1],
+              delay: 2
+            }}
+          />
+        </div>
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
           <motion.div
             className="text-center py-12 max-w-lg mx-auto"
@@ -2510,16 +2728,38 @@ export function Dashboard() {
             </motion.div>
 
             <motion.h2
-              className="text-3xl font-light text-slate-800 mb-6 tracking-tight"
+              className="text-3xl font-extralight text-slate-800 mb-6 tracking-tight"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '200'
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              Something went wrong
+              Something went{' '}
+              <span 
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: '300'
+                }}
+              >
+                wrong
+              </span>
             </motion.h2>
 
             <motion.p
               className="text-slate-600 font-light mb-8 leading-relaxed text-lg"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.01em',
+                fontWeight: '300'
+              }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -2579,11 +2819,46 @@ export function Dashboard() {
   if (!profile) {
     return (
       <motion.div
-        className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins"
+        className="bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40 min-h-screen relative overflow-hidden"
+        style={{
+          fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
       >
+        {/* Sophisticated floating animated elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <motion.div
+            className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-emerald-100/25 to-teal-50/15 rounded-full blur-3xl"
+            animate={{
+              y: [0, -30, 0],
+              x: [0, 20, 0],
+              scale: [1, 1.2, 1],
+              opacity: [0.6, 0.8, 0.6]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1]
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/20 to-emerald-50/12 rounded-full blur-3xl"
+            animate={{
+              y: [0, 25, 0],
+              x: [0, -25, 0],
+              scale: [1, 0.9, 1],
+              opacity: [0.5, 0.7, 0.5]
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: [0.25, 0.1, 0.25, 1],
+              delay: 2
+            }}
+          />
+        </div>
         <div className="container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">
           <motion.div
             className="text-center py-12 max-w-lg mx-auto"
@@ -2617,16 +2892,38 @@ export function Dashboard() {
             </motion.div>
 
             <motion.h2
-              className="text-3xl font-light text-slate-800 mb-6 tracking-tight"
+              className="text-3xl font-extralight text-slate-800 mb-6 tracking-tight"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '200'
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              Preparing your space
+              Preparing your{' '}
+              <span 
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: '300'
+                }}
+              >
+                space
+              </span>
             </motion.h2>
 
             <motion.p
               className="text-slate-600 font-light leading-relaxed text-lg mb-8"
+              style={{
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.01em',
+                fontWeight: '300'
+              }}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
@@ -2674,16 +2971,77 @@ export function Dashboard() {
 
   return (
     <motion.div
-      className="bg-gradient-to-br from-teal-50/30 via-white to-emerald-50/20 min-h-screen font-poppins relative overflow-hidden"
+      className="bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40 min-h-screen relative overflow-hidden"
+      style={{
+        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-emerald-100/30 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/30 to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-slate-100/10 via-transparent to-slate-100/10 rounded-full blur-3xl"></div>
+      {/* Ultra-sophisticated multi-layered background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
+      
+      {/* Sophisticated floating animated elements */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-20 left-10 w-80 h-80 bg-gradient-to-br from-emerald-100/25 to-teal-50/15 rounded-full blur-3xl"
+          animate={{
+            y: [0, -30, 0],
+            x: [0, 20, 0],
+            scale: [1, 1.2, 1],
+            opacity: [0.6, 0.8, 0.6]
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: [0.25, 0.1, 0.25, 1]
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-teal-100/20 to-emerald-50/12 rounded-full blur-3xl"
+          animate={{
+            y: [0, 25, 0],
+            x: [0, -25, 0],
+            scale: [1, 0.9, 1],
+            opacity: [0.5, 0.7, 0.5]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: 2
+          }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-slate-100/15 via-emerald-50/8 to-slate-100/15 rounded-full blur-3xl"
+          animate={{
+            rotate: [0, 180, 360],
+            scale: [1, 1.1, 1],
+            opacity: [0.4, 0.6, 0.4]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-1/3 w-32 h-32 bg-gradient-to-br from-emerald-200/20 to-teal-100/10 rounded-full blur-2xl"
+          animate={{
+            y: [0, -15, 0],
+            x: [0, 12, 0],
+            scale: [1, 1.15, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: 1
+          }}
+        />
       </div>
 
       <div className="relative container mx-auto px-4 pt-16 pb-12 md:pt-20 md:pb-16">

@@ -107,26 +107,60 @@ const HealingJourneySection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {/* Sophisticated decorative line */}
+            {/* Ultra-sophisticated decorative line */}
             <motion.div
-              className="hidden md:block w-20 h-0.5 bg-gradient-to-r from-transparent via-slate-500 to-transparent mb-4"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
+              className="hidden md:block mb-6"
+              initial={{ opacity: 0, scaleX: 0 }}
+              whileInView={{ opacity: 1, scaleX: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            />
+              transition={{ duration: 1.2, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="relative">
+                <div className="w-24 h-px bg-gradient-to-r from-transparent via-slate-400/60 to-transparent"></div>
+                <motion.div
+                  className="absolute top-0 left-0 h-px bg-gradient-to-r from-emerald-500/80 via-teal-500/60 to-emerald-500/80"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '100%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.0, delay: 0.7, ease: "easeOut" }}
+                />
+              </div>
+            </motion.div>
 
             <motion.h2
-              className="text-3xl md:text-4xl font-light leading-tight tracking-tight text-slate-700"
+              className="relative text-4xl md:text-5xl font-extralight leading-tight tracking-tight text-slate-800"
+              style={{ 
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '200'
+              }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.6 }}
             >
               Your Heart's Gentle{' '}
-              <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
+              <span 
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: '300'
+                }}
+              >
                 Safe Haven
               </span>
+              
+              {/* Sophisticated underline accent */}
+              <motion.div
+                className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
+                initial={{ width: 0 }}
+                whileInView={{ width: '60%' }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, delay: 1.0, ease: "easeOut" }}
+              />
             </motion.h2>
 
             {/* Enhanced decorative therapy symbol */}
@@ -161,7 +195,12 @@ const HealingJourneySection = () => {
             </motion.div>
 
             <motion.p
-              className="text-lg md:text-xl text-slate-500 max-w-[36rem] mx-auto md:mx-0 leading-loose font-light tracking-wide"
+              className="text-xl md:text-2xl text-slate-600 max-w-[40rem] mx-auto md:mx-0 leading-relaxed font-light tracking-wide"
+              style={{ 
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.01em',
+                fontWeight: '300'
+              }}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -171,14 +210,25 @@ const HealingJourneySection = () => {
               Our gentle companion brings the warmth of human understanding—offering you a soft place to land, always here, always free.
             </motion.p>
 
-            {/* Sophisticated decorative line */}
+            {/* Ultra-sophisticated bottom decorative line */}
             <motion.div
-              className="hidden md:block w-32 h-0.5 bg-gradient-to-r from-slate-500 via-slate-600 to-transparent mt-4"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
+              className="hidden md:block mt-6"
+              initial={{ opacity: 0, scaleX: 0 }}
+              whileInView={{ opacity: 1, scaleX: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.9 }}
-            />
+              transition={{ duration: 1.2, delay: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <div className="relative">
+                <div className="w-40 h-px bg-gradient-to-r from-slate-400/60 via-slate-500/80 to-transparent"></div>
+                <motion.div
+                  className="absolute top-0 left-0 h-px bg-gradient-to-r from-teal-500/70 via-emerald-500/80 to-transparent"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: '100%' }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1.2, delay: 1.1, ease: "easeOut" }}
+                />
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -244,20 +294,48 @@ const ChatExperienceSection = () => {
           transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <motion.h2
-            className="text-3xl md:text-4xl font-light text-slate-700 mb-6 leading-tight tracking-tight"
+            className="relative text-4xl md:text-5xl font-extralight text-slate-800 mb-8 leading-tight tracking-tight"
+            style={{ 
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.02em',
+              fontWeight: '200'
+            }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             A Safe Space for Your{' '}
-            <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
+            <span 
+              className="relative inline-block"
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontWeight: '300'
+              }}
+            >
               Thoughts
             </span>
+            
+            {/* Sophisticated underline accent */}
+            <motion.div
+              className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
+              initial={{ width: 0 }}
+              whileInView={{ width: '50%' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
+            />
           </motion.h2>
 
           <motion.p
-            className="text-lg md:text-xl text-slate-500 max-w-3xl mx-auto leading-loose font-light tracking-wide mb-8"
+            className="text-xl md:text-2xl text-slate-600 max-w-4xl mx-auto leading-relaxed font-light tracking-wide mb-8"
+            style={{ 
+              fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+              letterSpacing: '-0.01em',
+              fontWeight: '300'
+            }}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -266,23 +344,52 @@ const ChatExperienceSection = () => {
             When life feels heavy, you deserve a gentle space to breathe. We listen with care and offer tools that help—always here, always free.
           </motion.p>
 
-          {/* Enhanced trust badge */}
+          {/* Johnny Ive-inspired trust badge */}
           <motion.div
-            className="mt-8"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            className="mt-10"
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ 
+              duration: 0.8, 
+              delay: 0.8,
+              ease: [0.25, 0.1, 0.25, 1],
+              type: "spring",
+              stiffness: 100,
+              damping: 20
+            }}
           >
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-slate-50/80 to-slate-100/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 shadow-lg">
+            <div 
+              className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl shadow-xl"
+              style={{
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+              }}
+            >
               <motion.div
-                className="flex items-center justify-center w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-sm"
-                whileHover={{ scale: 1.05 }}
+                className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg"
+                whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ duration: 0.3 }}
               >
-                <span className="material-symbols-outlined text-white text-base">chat</span>
+                <span 
+                  className="material-symbols-outlined text-white text-lg"
+                  style={{
+                    fontVariationSettings: '"FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24'
+                  }}
+                >
+                  chat
+                </span>
               </motion.div>
-              <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-medium">
+              <span 
+                className="font-medium text-slate-700"
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.01em',
+                  fontWeight: '400'
+                }}
+              >
                 Real people. Real support. Always here for you.
               </span>
             </div>
@@ -314,41 +421,109 @@ const ChatExperienceSection = () => {
             <motion.div
               key={feature.title}
               className="group relative"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: feature.delay, ease: [0.25, 0.1, 0.25, 1] }}
-              whileHover={{ y: -5 }}
+              transition={{ 
+                duration: 1.0, 
+                delay: feature.delay, 
+                ease: [0.25, 0.1, 0.25, 1],
+                type: "spring",
+                stiffness: 100,
+                damping: 20
+              }}
+              whileHover={{ 
+                y: -12, 
+                scale: 1.03,
+                rotateY: 2,
+                transition: { 
+                  duration: 0.4,
+                  ease: [0.25, 0.1, 0.25, 1],
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20
+                }
+              }}
             >
-              {/* Multi-layered card background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50/30 to-white/95 rounded-3xl"></div>
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-3xl border border-slate-200/50 shadow-xl group-hover:shadow-2xl transition-all duration-300"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-3xl"></div>
+              {/* Johnny Ive-inspired card background */}
+              <div 
+                className="absolute inset-0 rounded-3xl"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
+                }}
+              ></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-3xl pointer-events-none"></div>
 
-              {/* Subtle animated gradient orb */}
-              <div className="absolute -top-8 -right-8 w-16 h-16 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              {/* Sophisticated animated gradient orb */}
+              <div className="absolute -top-8 -right-8 w-20 h-20 bg-gradient-to-br from-emerald-100/30 to-teal-50/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
+              
+              {/* Subtle shimmer effect */}
+              <motion.div
+                className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100"
+                style={{
+                  background: 'linear-gradient(110deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%)',
+                  transform: 'translateX(-100%)'
+                }}
+                animate={{
+                  transform: ['translateX(-100%)', 'translateX(100%)']
+                }}
+                transition={{
+                  duration: 1.5,
+                  delay: 0.2,
+                  ease: "easeInOut"
+                }}
+              />
 
               <div className="relative p-8 text-center">
-                {/* Enhanced icon container */}
+                {/* Johnny Ive-inspired icon container */}
                 <motion.div
                   className="w-24 h-24 mx-auto mb-6 relative"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
+                  whileHover={{ scale: 1.05, rotate: 5 }}
+                  transition={{ 
+                    duration: 0.4,
+                    ease: [0.25, 0.1, 0.25, 1],
+                    type: "spring",
+                    stiffness: 200,
+                    damping: 15
+                  }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-sm"></div>
+                  <div 
+                    className="absolute inset-0 rounded-2xl shadow-lg"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      boxShadow: '0 8px 32px -8px rgba(0, 0, 0, 0.1)'
+                    }}
+                  ></div>
                   <motion.img
                     src={feature.svg}
                     alt={feature.title}
-                    className="relative w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-                    initial={{ scale: 0.9 }}
-                    whileInView={{ scale: 1 }}
+                    className="relative w-full h-full object-contain p-2 opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                    initial={{ scale: 0.9, opacity: 0.7 }}
+                    whileInView={{ scale: 1, opacity: 0.8 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: feature.delay + 0.2 }}
+                    transition={{ 
+                      duration: 0.8, 
+                      delay: feature.delay + 0.2,
+                      ease: [0.25, 0.1, 0.25, 1],
+                      type: "spring",
+                      stiffness: 120,
+                      damping: 20
+                    }}
                   />
                 </motion.div>
 
                 <motion.h3
-                  className="text-2xl font-medium text-slate-700 mb-4 tracking-tight group-hover:text-emerald-700 transition-colors duration-300"
+                  className="text-2xl font-light text-slate-800 mb-4 tracking-tight group-hover:text-emerald-700 transition-colors duration-300"
+                  style={{ 
+                    fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    letterSpacing: '-0.01em',
+                    fontWeight: '300'
+                  }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -358,7 +533,12 @@ const ChatExperienceSection = () => {
                 </motion.h3>
 
                 <motion.p
-                  className="text-slate-500 leading-relaxed font-light tracking-wide"
+                  className="text-slate-600 leading-relaxed font-light tracking-wide"
+                  style={{ 
+                    fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    letterSpacing: '-0.005em',
+                    fontWeight: '300'
+                  }}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -367,8 +547,19 @@ const ChatExperienceSection = () => {
                   {feature.description}
                 </motion.p>
 
-                {/* Subtle bottom accent */}
-                <div className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-slate-200/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {/* Sophisticated bottom accent */}
+                <motion.div 
+                  className="absolute bottom-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent"
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  whileHover={{ 
+                    opacity: 1, 
+                    scaleX: 1,
+                    transition: { 
+                      duration: 0.6,
+                      ease: [0.25, 0.1, 0.25, 1]
+                    }
+                  }}
+                />
               </div>
             </motion.div>
           ))}
@@ -420,13 +611,36 @@ export default function LandingPage() {
             >
               <span className="material-symbols-outlined text-2xl text-white animate-spin">psychology</span>
             </motion.div>
-            <h2 className="text-2xl font-light text-slate-900 mb-4 tracking-tight">
+            <h2 
+              className="text-3xl font-extralight text-slate-900 mb-4 tracking-tight"
+              style={{ 
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.02em',
+                fontWeight: '200'
+              }}
+            >
               Taking you to your{' '}
-              <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
+              <span 
+                className="relative inline-block"
+                style={{
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  fontWeight: '300'
+                }}
+              >
                 dashboard
               </span>
             </h2>
-            <p className="text-slate-600 font-light">
+            <p 
+              className="text-slate-600 font-light text-lg"
+              style={{ 
+                fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                letterSpacing: '-0.01em',
+                fontWeight: '300'
+              }}
+            >
               Preparing your personalized wellness experience...
             </p>
           </div>
@@ -447,45 +661,63 @@ export default function LandingPage() {
       <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40"></div>
       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
 
-      {/* Floating animated elements */}
+      {/* Ultra-sophisticated floating animated elements */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div
-          className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl"
+          className="absolute top-20 left-10 w-40 h-40 bg-gradient-to-br from-emerald-100/25 to-teal-50/15 rounded-full blur-2xl"
           animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-            scale: [1, 1.1, 1]
+            y: [0, -25, 0],
+            x: [0, 15, 0],
+            scale: [1, 1.15, 1],
+            opacity: [0.6, 0.8, 0.6]
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: [0.25, 0.1, 0.25, 1]
+          }}
+        />
+        <motion.div
+          className="absolute bottom-32 right-16 w-32 h-32 bg-gradient-to-br from-teal-100/20 to-green-50/12 rounded-full blur-2xl"
+          animate={{
+            y: [0, 20, 0],
+            x: [0, -20, 0],
+            scale: [1, 0.85, 1],
+            opacity: [0.5, 0.7, 0.5]
           }}
           transition={{
             duration: 8,
             repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-32 right-16 w-24 h-24 bg-gradient-to-br from-teal-100/15 to-green-50/8 rounded-full blur-xl"
-          animate={{
-            y: [0, 15, 0],
-            x: [0, -15, 0],
-            scale: [1, 0.9, 1]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
+            ease: [0.25, 0.1, 0.25, 1],
             delay: 2
           }}
         />
         <motion.div
-          className="absolute top-1/2 left-1/4 w-20 h-20 bg-gradient-to-br from-green-100/10 to-emerald-50/5 rounded-full blur-lg"
+          className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-green-100/15 to-emerald-50/8 rounded-full blur-xl"
           animate={{
             rotate: [0, 180, 360],
-            scale: [1, 1.2, 1]
+            scale: [1, 1.3, 1],
+            opacity: [0.4, 0.6, 0.4]
           }}
           transition={{
-            duration: 12,
+            duration: 15,
             repeat: Infinity,
             ease: "linear"
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-1/3 w-16 h-16 bg-gradient-to-br from-emerald-200/20 to-teal-100/10 rounded-full blur-lg"
+          animate={{
+            y: [0, -10, 0],
+            x: [0, 8, 0],
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3]
+          }}
+          transition={{
+            duration: 6,
+            repeat: Infinity,
+            ease: [0.25, 0.1, 0.25, 1],
+            delay: 1
           }}
         />
       </div>
@@ -493,12 +725,23 @@ export default function LandingPage() {
       {/* Unified Header */}
       <Navigation />
 
-      {/* Main Content with enhanced spacing */}
+      {/* Main Content with enhanced spacing and parallax */}
       <motion.main
         className="flex-1 relative z-10"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ 
+          duration: 1.2, 
+          delay: 0.3, 
+          ease: [0.25, 0.1, 0.25, 1],
+          type: "spring",
+          stiffness: 100,
+          damping: 20
+        }}
+        style={{
+          transform: 'translateZ(0)',
+          willChange: 'transform'
+        }}
       >
         <Hero />
         <HealingJourneySection />

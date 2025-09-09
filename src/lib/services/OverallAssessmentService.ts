@@ -465,16 +465,19 @@ Please respond with a structured JSON object containing the requested analysis f
    * Convert comprehensive assessment data to Edge Function payload shape
    */
   private static toEdgeOverallPayload(assessmentData: OverallAssessmentData) {
-    // Map assessments to record keyed by assessmentId
-    const allAssessments: Record<string, any> = {}
+    // Map assessments to record keyed by assessmentId (arrays of assessments)
+    const allAssessments: Record<string, any[]> = {}
     for (const a of assessmentData.assessments) {
-      allAssessments[a.assessmentId] = {
+      if (!allAssessments[a.assessmentId]) {
+        allAssessments[a.assessmentId] = []
+      }
+      allAssessments[a.assessmentId].push({
         score: a.score,
         level: a.level,
         severity: a.severity,
         takenAt: a.takenAt,
         assessment: { title: a.assessmentTitle }
-      }
+      })
     }
 
     // Determine highest risk area by severity order
@@ -912,33 +915,33 @@ Please respond with a structured JSON object containing the requested analysis f
         .eq('user_id', userId)
         .order('updated_at', { ascending: false })
         .limit(1)
-        .single()
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         logger.error('❌ Error fetching holistic assessment:', error)
         return null
       }
 
-      if (!data) {
+      if (!data || data.length === 0) {
         logger.debug('No stored holistic assessment found for user:', userId)
         return null
       }
 
+      const latestAssessment = data[0]
       logger.debug('✅ Found stored holistic assessment:', {
-        id: data.id,
-        userId: data.user_id,
-        hasAssessmentData: !!data.overall_assessment_data,
-        hasAiAnalysis: !!data.ai_analysis,
-        updatedAt: data.updated_at
+        id: latestAssessment.id,
+        userId: latestAssessment.user_id,
+        hasAssessmentData: !!latestAssessment.overall_assessment_data,
+        hasAiAnalysis: !!latestAssessment.ai_analysis,
+        updatedAt: latestAssessment.updated_at
       })
 
       return {
-        id: data.id,
-        userId: data.user_id,
-        assessmentData: data.overall_assessment_data as unknown as OverallAssessmentData,
-        holisticAnalysis: data.ai_analysis as unknown as AIHolisticAnalysis,
-        createdAt: data.created_at || new Date().toISOString(),
-        updatedAt: data.updated_at || new Date().toISOString()
+        id: latestAssessment.id,
+        userId: latestAssessment.user_id,
+        assessmentData: latestAssessment.overall_assessment_data as unknown as OverallAssessmentData,
+        holisticAnalysis: latestAssessment.ai_analysis as unknown as AIHolisticAnalysis,
+        createdAt: latestAssessment.created_at || new Date().toISOString(),
+        updatedAt: latestAssessment.updated_at || new Date().toISOString()
       }
     } catch (error) {
       logger.error('❌ Error fetching holistic assessment:', error)
@@ -980,7 +983,7 @@ Please respond with a structured JSON object containing the requested analysis f
 
         const detailedEntry: DetailedAssessmentEntry = {
           id: entry.id,
-          userId: entry.userId,
+          userId: userId, // Use the userId parameter since AssessmentHistoryEntry doesn't have it
           assessmentId: entry.assessmentId,
           assessmentTitle: assessmentMeta.title,
           assessmentDescription: assessmentMeta.description,
@@ -1180,7 +1183,8 @@ Please respond with a structured JSON object containing the requested analysis f
             "The service will be restored shortly"
           ],
           overallRiskLevel: 'low' as const,
-          confidenceLevel: 0
+          confidenceLevel: 0,
+          supportiveMessage: "Don't worry - your assessment data is safe and the analysis will be available once the service is restored. Your mental health journey continues, and we're here to support you."
         }
 
         console.log('✅ [AI_SERVICE] Returning fallback response')
