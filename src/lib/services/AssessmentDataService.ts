@@ -169,6 +169,7 @@ export class AssessmentDataService extends DataService {
       )
 
       // Save to database with resilience
+      console.log('💾 ASSESSMENT DATA SERVICE TRACE: Calling ResilientApi.supabase...')
       const { data: savedResult, error: saveError } = await ResilientApi.supabase(
         () => AssessmentManager.saveAssessmentResult(
           userId,
@@ -181,7 +182,16 @@ export class AssessmentDataService extends DataService {
         { maxRetries: 3, validateAuth: true }
       )
 
+      console.log('💾 ASSESSMENT DATA SERVICE TRACE: ResilientApi.supabase result:', {
+        hasSavedResult: !!savedResult,
+        hasSaveError: !!saveError,
+        saveError: saveError?.message,
+        savedResultType: typeof savedResult,
+        savedResultKeys: savedResult && typeof savedResult === 'object' ? Object.keys(savedResult) : 'not an object'
+      })
+
       if (saveError || !savedResult) {
+        console.log('💾 ASSESSMENT DATA SERVICE TRACE: Save failed, reverting optimistic update')
         // Revert optimistic update on failure
         this.updateStore(
           (data) => assessmentStore.setResults(data),

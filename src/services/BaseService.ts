@@ -21,7 +21,7 @@ export abstract class BaseService {
    * Execute an API operation with standardized error handling
    */
   protected async executeApiCall<T>(
-    operation: () => Promise<T>,
+    operation: () => Promise<ApiResponse<T>>,
     context: string
   ): Promise<T> {
     try {
@@ -42,8 +42,18 @@ export abstract class BaseService {
         console.error(`🔍 BASE SERVICE TRACE: API call failed:`, {
           context,
           error: response.error,
+          errorType: typeof response.error,
+          errorMessage: response.error instanceof Error ? response.error.message : response.error,
+          errorCode: response.error?.code,
+          errorDetails: response.error?.details,
           fullResponse: response
         })
+        
+        // If the error is an Error object, throw it directly to preserve details
+        if (response.error instanceof Error) {
+          throw response.error
+        }
+        
         throw new ServiceError(response.error || `API call failed: ${context}`)
       }
 

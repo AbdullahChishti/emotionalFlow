@@ -56,51 +56,167 @@ export class AssessmentManager {
     friendlyExplanation?: string,
     maxRetries: number = 3
   ): Promise<AssessmentResultRow | null> {
+    
+    console.log(`🔍 ASSESSMENT MANAGER TRACE: saveAssessmentResult called`, {
+      userId,
+      assessmentId,
+      assessmentTitle,
+      resultScore: result.score,
+      resultLevel: result.level,
+      resultSeverity: result.severity,
+      responsesCount: Object.keys(responses).length,
+      hasFriendlyExplanation: !!friendlyExplanation,
+      maxRetries
+    })
+
+    // First, ensure the user has a profile
+    try {
+      console.log(`🔍 ASSESSMENT MANAGER TRACE: Checking if profile exists for user ${userId}`)
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single()
+
+      console.log(`🔍 ASSESSMENT MANAGER TRACE: Profile check result:`, {
+        hasProfile: !!profile,
+        profileError: profileError?.message,
+        profileErrorCode: profileError?.code
+      })
+
+      if (profileError || !profile) {
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Creating missing profile for user ${userId}`)
+        // Create a basic profile
+        const profileData = {
+          id: userId,
+          user_id: userId,  // Also set user_id field (required by schema)
+          display_name: 'User',
+          empathy_credits: 10,
+          total_credits_earned: 10,
+          total_credits_spent: 0,
+          emotional_capacity: 'medium',
+          preferred_mode: 'both',
+          is_anonymous: false,
+          last_active: new Date().toISOString()
+        }
+        
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Profile data to upsert:`, profileData)
+        
+        const { error: createError } = await supabase
+          .from('profiles')
+          .upsert(profileData, {
+            onConflict: 'id',
+            ignoreDuplicates: false
+          })
+
+        if (createError) {
+          console.error(`🔍 ASSESSMENT MANAGER TRACE: Failed to create profile for user ${userId}:`, {
+            error: createError,
+            errorMessage: createError.message,
+            errorCode: createError.code,
+            errorDetails: createError.details,
+            errorHint: createError.hint
+          })
+          throw new Error(`Profile creation failed: ${createError.message}`)
+        }
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Profile created successfully for user ${userId}`)
+      } else {
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Profile already exists for user ${userId}`)
+      }
+    } catch (error) {
+      console.error(`🔍 ASSESSMENT MANAGER TRACE: Error ensuring profile exists for user ${userId}:`, {
+        error,
+        errorMessage: error?.message,
+        errorStack: error?.stack?.split('\n').slice(0, 5)
+      })
+      throw error
+    }
 
     let lastError: any = null
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      console.log(`🔍 ASSESSMENT MANAGER TRACE: Attempt ${attempt}/${maxRetries} to save assessment ${assessmentId}`)
+      
       try {
+        const insertData = {
+          user_id: userId,
+          assessment_id: assessmentId,
+          assessment_title: assessmentTitle,
+          score: result.score,
+          level: result.level,
+          severity: result.severity,
+          responses: responses as any,
+          result_data: result as any,
+          friendly_explanation: friendlyExplanation
+        }
+        
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Insert data for attempt ${attempt}:`, {
+          user_id: insertData.user_id,
+          assessment_id: insertData.assessment_id,
+          assessment_title: insertData.assessment_title,
+          score: insertData.score,
+          level: insertData.level,
+          severity: insertData.severity,
+          responsesCount: Object.keys(insertData.responses || {}).length,
+          hasResultData: !!insertData.result_data,
+          hasFriendlyExplanation: !!insertData.friendly_explanation
+        })
+        
         const { data, error } = await supabase
           .from('assessment_results')
-          .insert({
-            user_id: userId,
-            assessment_id: assessmentId,
-            assessment_title: assessmentTitle,
-            score: result.score,
-            level: result.level,
-            severity: result.severity,
-            responses: responses as any,
-            result_data: result as any,
-            friendly_explanation: friendlyExplanation
-          })
+          .insert(insertData)
           .select()
           .single()
 
+        console.log(`🔍 ASSESSMENT MANAGER TRACE: Supabase insert result for attempt ${attempt}:`, {
+          hasData: !!data,
+          hasError: !!error,
+          errorMessage: error?.message,
+          errorCode: error?.code,
+          errorDetails: error?.details,
+          errorHint: error?.hint,
+          dataKeys: data ? Object.keys(data) : 'no data'
+        })
+
         if (error) {
-          console.error(`Database error saving ${assessmentId} (attempt ${attempt}):`, error)
+          console.error(`🔍 ASSESSMENT MANAGER TRACE: Database error saving ${assessmentId} (attempt ${attempt}):`, {
+            error,
+            errorMessage: error.message,
+            errorCode: error.code,
+            errorDetails: error.details,
+            errorHint: error.hint,
+            errorStatus: error.status,
+            errorStatusText: error.statusText
+          })
           lastError = error
 
           if (error.code === '23505' || error.code === '23503') {
-            console.log(`Non-retryable error for ${assessmentId}, giving up`)
+            console.log(`🔍 ASSESSMENT MANAGER TRACE: Non-retryable error for ${assessmentId}, giving up`)
             break
           }
 
           if (attempt < maxRetries) {
-            console.log(`Retrying ${assessmentId} save in ${attempt * 1000}ms...`)
+            console.log(`🔍 ASSESSMENT MANAGER TRACE: Retrying ${assessmentId} save in ${attempt * 1000}ms...`)
             await new Promise(resolve => setTimeout(resolve, attempt * 1000))
             continue
           }
         } else {
-          console.log(`Successfully saved ${assessmentId} to database`)
+          console.log(`🔍 ASSESSMENT MANAGER TRACE: Successfully saved ${assessmentId} to database on attempt ${attempt}`)
+          console.log(`🔍 ASSESSMENT MANAGER TRACE: Saved data:`, data)
           return data
         }
       } catch (error) {
-        console.error(`💥 Exception saving ${assessmentId} (attempt ${attempt}):`, error)
+        console.error(`🔍 ASSESSMENT MANAGER TRACE: Exception saving ${assessmentId} (attempt ${attempt}):`, {
+          error,
+          errorMessage: error?.message,
+          errorStack: error?.stack?.split('\n').slice(0, 5),
+          errorType: typeof error,
+          errorConstructor: error?.constructor?.name
+        })
         lastError = error
 
         if (attempt < maxRetries) {
-          console.log(`⏳ Retrying in ${attempt * 1000}ms...`)
+          console.log(`🔍 ASSESSMENT MANAGER TRACE: Retrying in ${attempt * 1000}ms...`)
           await new Promise(resolve => setTimeout(resolve, attempt * 1000))
           continue
         }

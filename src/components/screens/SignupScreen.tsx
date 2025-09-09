@@ -439,11 +439,7 @@ export default function SignupScreen() {
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-lg">check_circle</span>
                   <div>
-                    <p className="font-medium">Account created successfully!</p>
-                    <p className="text-sm mt-1">
-                      A confirmation email has been sent to <strong>{email}</strong>. 
-                      Please check your inbox and click the link to confirm your account.
-                    </p>
+                    <p className="font-medium">Your profile has been created. Let's continue to the dashboard.</p>
                   </div>
                 </div>
               </motion.div>
@@ -535,14 +531,14 @@ export default function SignupScreen() {
               </fieldset>
             </form>
             ) : (
-              /* Success State - Back to Login Button */
+              /* Success State - Continue to Dashboard Button */
               <div className="text-center">
                 <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-slate-700 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors"
+                  href="/dashboard"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors"
                 >
-                  <span className="material-symbols-outlined mr-2">arrow_back</span>
-                  Back to Login
+                  <span className="material-symbols-outlined mr-2">arrow_forward</span>
+                  Continue to Dashboard
                 </Link>
               </div>
             )}

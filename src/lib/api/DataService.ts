@@ -128,7 +128,8 @@ export class DataService {
       assessmentId: assessment.assessmentId || assessment.id,
       assessmentKeys: Object.keys(assessment),
       hasResult: !!assessment.result,
-      hasResponses: !!assessment.responses
+      hasResponses: !!assessment.responses,
+      fullAssessment: assessment
     })
 
     // Handle different AssessmentResult object structures
@@ -214,18 +215,29 @@ export class DataService {
       hasData: !!response.data,
       hasError: !!response.error,
       errorMessage: response.error?.message,
-      errorCode: response.error?.code
+      errorCode: response.error?.code,
+      errorType: typeof response.error,
+      errorConstructor: response.error?.constructor?.name,
+      fullResponse: response
     })
 
     if (!response.success) {
       console.error('❌ DATASERVICE TRACE: Failed to save assessment:', {
         error: response.error,
+        errorMessage: response.error?.message,
+        errorCode: response.error?.code,
+        errorDetails: response.error?.details,
+        errorHint: response.error?.hint,
         fullResponse: response
       })
       return false
     }
 
-    console.log('✅ DATASERVICE TRACE: Assessment saved successfully:', response.data)
+    console.log('✅ DATASERVICE TRACE: Assessment saved successfully:', {
+      data: response.data,
+      dataType: typeof response.data,
+      dataKeys: response.data ? Object.keys(response.data) : 'no data'
+    })
     return true
   }
 

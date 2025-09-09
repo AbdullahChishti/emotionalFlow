@@ -70,7 +70,17 @@ export class AssessmentService extends BaseService {
     const apiData = this.transformForApi(assessmentData, userId)
     console.log(`🔍 ASSESSMENT SERVICE TRACE: Transformed API data:`, {
       apiDataKeys: Object.keys(apiData),
-      sampleApiData: apiData
+      sampleApiData: apiData,
+      user_id: apiData.user_id,
+      assessment_id: apiData.assessment_id,
+      hasScore: apiData.score !== undefined,
+      hasLevel: apiData.level !== undefined,
+      hasSeverity: apiData.severity !== undefined,
+      hasResponses: !!apiData.responses,
+      responsesType: typeof apiData.responses,
+      responsesKeys: apiData.responses ? Object.keys(apiData.responses) : 'no responses',
+      hasResultData: !!apiData.result_data,
+      resultDataType: typeof apiData.result_data
     })
 
     console.log(`🔍 ASSESSMENT SERVICE TRACE: Calling executeApiCall...`)
@@ -331,6 +341,7 @@ export class AssessmentService extends BaseService {
       // Create profile using the same structure as AuthManager
       const newProfileData = {
         id: userId,  // Use userId as the profile id
+        user_id: userId,  // Also set user_id field (required by schema)
         display_name: 'User',
         username: null,
         avatar_url: null,
@@ -346,12 +357,23 @@ export class AssessmentService extends BaseService {
         updated_at: new Date().toISOString()
       }
 
-      console.log(`🔍 ASSESSMENT SERVICE TRACE: Inserting profile data:`, newProfileData)
+      console.log(`🔍 ASSESSMENT SERVICE TRACE: Upserting profile data:`, newProfileData)
 
-      await this.executeApiCall(
-        () => this.apiManager.supabaseInsert('profiles', newProfileData),
-        'create missing profile'
-      )
+      // Use direct supabase client for upsert operation
+      const { data, error } = await this.apiManager.supabase
+        .from('profiles')
+        .upsert(newProfileData, {
+          onConflict: 'id',
+          ignoreDuplicates: false
+        })
+        .select()
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      console.log(`🔍 ASSESSMENT SERVICE TRACE: Profile upserted successfully:`, data)
 
       console.log(`🔍 ASSESSMENT SERVICE TRACE: Profile created successfully for user:`, userId)
     } catch (error) {

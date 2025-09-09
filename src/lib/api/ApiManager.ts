@@ -7,15 +7,9 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
+import { ApiResponse } from './types'
 
-// Types
-export interface ApiResponse<T = any> {
-  data: T | null
-  error: string | null
-  success: boolean
-  retryCount: number
-  timestamp: number
-}
+// Types - ApiResponse is imported from types.ts
 
 export interface ApiOptions {
   maxRetries?: number
@@ -307,12 +301,19 @@ export class ApiManager {
       console.error(`🔍 APIMANAGER TRACE: Operation failed:`, {
         error,
         message: error instanceof Error ? error.message : 'Unknown error',
-        context
+        context,
+        errorType: typeof error,
+        errorConstructor: error?.constructor?.name,
+        errorKeys: error ? Object.keys(error) : [],
+        // Preserve the original error object
+        originalError: error
       })
       await this.handleError(error, context)
+      
+      // Preserve the original error object instead of just the message
       return {
         data: null,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: error, // Keep the original error object
         success: false,
         retryCount: opts.maxRetries,
         timestamp: Date.now() - startTime
@@ -496,6 +497,30 @@ export class ApiManager {
             errorPrototype: Object.getPrototypeOf(error),
             errorPrototypeName: Object.getPrototypeOf(error)?.constructor?.name
           })
+          
+          // Additional debugging for empty error objects
+          console.error(`🔍 APIMANAGER TRACE: Error type check:`, {
+            errorType: typeof error,
+            errorConstructor: error?.constructor?.name,
+            errorString: String(error),
+            errorToString: error?.toString(),
+            hasMessage: 'message' in error,
+            hasCode: 'code' in error,
+            errorKeys: Object.keys(error || {}),
+            errorValues: Object.values(error || {}),
+            // Check if error is actually an empty object
+            isEmptyObject: error && Object.keys(error).length === 0,
+            // Check if it's a serialization issue
+            canStringify: (() => {
+              try {
+                JSON.stringify(error)
+                return true
+              } catch (e) {
+                return false
+              }
+            })()
+          })
+          
           throw error
         }
         return result as T

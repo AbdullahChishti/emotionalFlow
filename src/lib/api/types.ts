@@ -7,6 +7,11 @@ import { User, Profile } from '@/types'
 
 // API Response Interface
 export interface ApiResponse<T = any> {
+  data: T | null
+  error: string | Error | null
+  success: boolean
+  retryCount: number
+  timestamp: number
 }
 
 // API Options

@@ -163,7 +163,7 @@ export const useAppDataStore = create<AppDataState>()(
           
           // Convert array to object keyed by assessmentId
           const assessmentsMap = assessments.reduce((acc, assessment) => {
-            acc[assessment.assessmentId] = assessment
+            acc[(assessment as any).assessmentId] = assessment
             return acc
           }, {} as Record<string, AssessmentResult>)
 
@@ -388,7 +388,7 @@ export const useAppDataStore = create<AppDataState>()(
           
           // Convert assessments array to object
           const assessmentsMap = data.assessments.reduce((acc, assessment) => {
-            acc[assessment.assessmentId] = assessment
+            acc[(assessment as any).assessmentId] = assessment
             return acc
           }, {} as Record<string, AssessmentResult>)
 
@@ -417,18 +417,49 @@ export const useAppDataStore = create<AppDataState>()(
 
       // Data operations
       saveAssessment: async (userId: string, assessment: any) => {
+        console.log('🏪 APP DATA STORE TRACE: saveAssessment called', {
+          userId,
+          assessmentId: (assessment as any).assessmentId || assessment.id,
+          assessmentKeys: Object.keys(assessment),
+          hasResult: !!assessment.result,
+          hasResponses: !!assessment.responses,
+          assessmentType: typeof assessment
+        })
+        
         try {
+          console.log('🏪 APP DATA STORE TRACE: Calling DataService.saveAssessment...')
           const success = await DataService.saveAssessment(userId, assessment)
+          
+          console.log('🏪 APP DATA STORE TRACE: DataService.saveAssessment result:', {
+            success,
+            successType: typeof success,
+            isBoolean: typeof success === 'boolean',
+            isTrue: success === true,
+            isFalse: success === false
+          })
+          
           if (success) {
             // Update local state - handle different object structures
-            const assessmentKey = assessment.assessmentId || assessment.id || 'unknown'
+            const assessmentKey = (assessment as any).assessmentId || assessment.id || 'unknown'
+            console.log('🏪 APP DATA STORE TRACE: Updating local state with key:', assessmentKey)
             set(state => ({
               assessments: { ...state.assessments, [assessmentKey]: assessment }
             }))
+            console.log('🏪 APP DATA STORE TRACE: Local state updated successfully')
+          } else {
+            console.log('🏪 APP DATA STORE TRACE: DataService returned false, not updating local state')
           }
+          
+          console.log('🏪 APP DATA STORE TRACE: saveAssessment completed, returning:', success)
           return success
         } catch (error) {
-          console.error('❌ AppDataStore: Failed to save assessment:', error)
+          console.error('❌ AppDataStore: Failed to save assessment:', {
+            error,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          errorStack: error instanceof Error ? error.stack?.split('\n').slice(0, 5) : undefined,
+            errorType: typeof error,
+            errorConstructor: error?.constructor?.name
+          })
           return false
         }
       },

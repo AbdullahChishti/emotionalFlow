@@ -360,8 +360,28 @@ export function AssessmentFlowMigrated({
             console.log(`💾 SAVE TRACE: Transformed assessment ${assessmentId}:`, assessmentResult)
             
             console.log(`💾 SAVE TRACE: Calling saveAssessment(${user.id}, assessmentResult)`)
+            console.log(`💾 SAVE TRACE: Assessment result being passed:`, {
+              id: assessmentResult.id,
+              assessmentId: assessmentResult.assessmentId,
+              title: assessmentResult.title,
+              score: assessmentResult.score,
+              maxScore: assessmentResult.maxScore,
+              responsesCount: Object.keys(assessmentResult.responses || {}).length,
+              completedAt: assessmentResult.completedAt,
+              interpretation: assessmentResult.interpretation
+            })
+            
             return saveAssessment(user.id, assessmentResult).then(result => {
-              console.log(`💾 SAVE TRACE: saveAssessment result for ${assessmentId}:`, result)
+              console.log(`💾 SAVE TRACE: saveAssessment result for ${assessmentId}:`, {
+                result,
+                resultType: typeof result,
+                isBoolean: typeof result === 'boolean',
+                isTrue: result === true,
+                isFalse: result === false,
+                isObject: typeof result === 'object',
+                resultKeys: result && typeof result === 'object' ? Object.keys(result) : 'not an object'
+              })
+              
               // Check if result is false (failed save)
               if (result === false) {
                 console.error(`💾 SAVE TRACE: saveAssessment returned false for ${assessmentId} - treating as error`)
@@ -369,7 +389,13 @@ export function AssessmentFlowMigrated({
               }
               return result
             }).catch(error => {
-              console.error(`💾 SAVE TRACE: saveAssessment error for ${assessmentId}:`, error)
+              console.error(`💾 SAVE TRACE: saveAssessment error for ${assessmentId}:`, {
+                error,
+                errorMessage: error?.message,
+                errorStack: error?.stack?.split('\n').slice(0, 5),
+                errorType: typeof error,
+                errorConstructor: error?.constructor?.name
+              })
               throw error
             })
           })
