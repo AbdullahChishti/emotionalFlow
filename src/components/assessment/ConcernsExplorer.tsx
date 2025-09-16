@@ -183,109 +183,72 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
             >
               <motion.button
                 onClick={() => handleConcernClick(concern.id)}
-                className={`w-full text-left transition-all duration-700 group relative overflow-hidden ${
+                className={`w-full text-left transition-all duration-500 group relative ${
                   isSelected
-                    ? 'bg-white/95 backdrop-blur-2xl border border-slate-200/30 shadow-2xl shadow-slate-900/[0.08]'
-                    : 'bg-white/80 backdrop-blur-xl border border-white/40 hover:border-white/60 hover:shadow-xl shadow-lg shadow-slate-900/[0.04]'
+                    ? 'bg-white/95 backdrop-blur-sm border border-slate-200/20'
+                    : 'bg-white/80 backdrop-blur-sm border border-white/40 hover:border-white/60'
                 }`}
                 style={{
-                  borderRadius: '28px',
-                  padding: '32px',
-                  marginBottom: '8px'
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '16px'
                 }}
                 whileHover={{
-                  scale: 1.01,
-                  y: -2,
-                  transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
+                  scale: 1.005,
+                  y: -1,
+                  transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
                 }}
-                whileTap={{ scale: 0.99 }}
+                whileTap={{ scale: 0.98 }}
               >
-                {/* Subtle background gradient - Johnny Ive style */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${concern.color} opacity-3 group-hover:opacity-6 transition-all duration-700`} />
+                {/* Minimal background accent */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${concern.color} opacity-2 group-hover:opacity-4 transition-opacity duration-500`} />
 
-                {/* Minimal floating accent */}
-                <motion.div
-                  className={`absolute top-8 right-8 w-20 h-20 bg-gradient-to-br ${concern.color} rounded-full blur-3xl`}
-                  style={{ opacity: 0.04 }}
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    opacity: [0.04, 0.06, 0.04]
-                  }}
-                  transition={{
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-
-                <div className="relative z-10">
-                  {/* Elegant icon with subtle shadow */}
+                <div className="relative z-10 flex items-center gap-4">
+                  {/* Clean icon */}
                   <motion.div
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-gradient-to-br ${concern.color} text-white shadow-sm`}
+                    className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br ${concern.color} text-white`}
                     whileHover={{
-                      scale: 1.05,
-                      transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+                      scale: 1.03,
+                      transition: { duration: 0.2 }
                     }}
                   >
-                    <span className="material-symbols-outlined text-2xl">
+                    <span className="material-symbols-outlined text-lg">
                       {concern.icon}
                     </span>
                   </motion.div>
 
-                  {/* Typography hierarchy */}
-                  <div className="space-y-3">
-                    <div>
-                      <h3 className="text-xl font-light text-slate-900 leading-tight tracking-tight mb-2 group-hover:text-slate-800 transition-colors duration-500">
-                        {concern.title}
-                      </h3>
-                      <p className="text-sm text-slate-600 font-light leading-relaxed group-hover:text-slate-700 transition-colors duration-500">
-                        {concern.subtitle}
-                      </p>
-                    </div>
-
-                    {/* Minimal description */}
-                    <p className="text-sm text-slate-500 leading-relaxed font-light">
-                      {concern.description}
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-light text-slate-900 leading-tight tracking-tight mb-1 group-hover:text-slate-800 transition-colors duration-300">
+                      {concern.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 font-light leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
+                      {concern.subtitle}
                     </p>
                   </div>
 
-                  {/* Clean bottom section */}
-                  <motion.div
-                    className="flex items-center justify-between pt-6 mt-6 border-t border-slate-200/40"
-                    initial={{ opacity: 0.8 }}
-                    whileHover={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-                      <span className="text-xs text-slate-600 font-medium tracking-wide">
-                        {assessments.length} ASSESSMENT{assessments.length !== 1 ? 'S' : ''}
-                      </span>
+                  {/* Minimal metadata and action */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                      <span>{assessments.length}</span>
+                      <span className="hidden sm:inline">ASSESSMENTS</span>
                     </div>
 
                     <motion.div
-                      className="flex items-center gap-2 text-xs font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-500 tracking-wide"
+                      className="flex items-center gap-1 text-xs font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-300"
                       animate={{ x: isSelected ? 1 : 0 }}
                     >
                       <span>{isSelected ? 'COLLAPSE' : 'EXPAND'}</span>
                       <motion.span
                         className="material-symbols-outlined text-sm"
                         animate={{ rotate: isSelected ? 180 : 0 }}
-                        transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                        transition={{ duration: 0.3 }}
                       >
                         {isSelected ? 'expand_less' : 'expand_more'}
                       </motion.span>
                     </motion.div>
-                  </motion.div>
+                  </div>
                 </div>
-
-                {/* Subtle hover glow */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-100/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                  style={{
-                    borderRadius: '28px'
-                  }}
-                />
               </motion.button>
 
               {/* Expanded Assessment List - Johnny Ive Style */}
@@ -298,42 +261,31 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                     transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                     className="overflow-hidden"
                   >
-                    {/* Premium Container */}
+                    {/* Minimal Container */}
                     <div
-                      className="mt-8 bg-white/40 backdrop-blur-xl border border-white/30 shadow-lg"
+                      className="mt-6 bg-white/50 backdrop-blur-sm border border-white/40"
                       style={{
-                        borderRadius: '32px',
-                        padding: '40px'
+                        borderRadius: '20px',
+                        padding: '24px'
                       }}
                     >
-                      {/* Elegant Header */}
+                      {/* Simple Header */}
                       <motion.div
-                        className="text-center mb-10"
-                        initial={{ opacity: 0, y: 10 }}
+                        className="text-center mb-6"
+                        initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.4 }}
+                        transition={{ delay: 0.1, duration: 0.3 }}
                       >
-                        <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
-                          <span className="material-symbols-outlined text-slate-600 text-xl">
-                            {concern.icon}
-                          </span>
-                        </div>
-                        <h4 className="text-2xl font-light text-slate-900 mb-3 tracking-tight">
+                        <h4 className="text-xl font-light text-slate-900 mb-2 tracking-tight">
                           Available Assessments
                         </h4>
-                        <p className="text-base text-slate-600 font-light leading-relaxed max-w-sm mx-auto">
-                          Choose an assessment to explore this area of your life
+                        <p className="text-sm text-slate-600 font-light leading-relaxed">
+                          Choose an assessment to explore this area
                         </p>
-                        <motion.div
-                          className="w-16 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent mx-auto mt-6"
-                          initial={{ scaleX: 0 }}
-                          animate={{ scaleX: 1 }}
-                          transition={{ delay: 0.4, duration: 0.6 }}
-                        />
                       </motion.div>
 
                       {/* Assessment Cards */}
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {assessments.map((assessment, assessmentIndex) => (
                           <motion.button
                             key={assessment.id}
@@ -341,114 +293,58 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                               e.stopPropagation()
                               handleAssessmentClick(assessment.id)
                             }}
-                            className="w-full text-left bg-white/70 backdrop-blur-sm border border-slate-200/30 hover:border-slate-300/50 transition-all duration-700 group relative overflow-hidden"
+                            className="w-full text-left bg-white/60 backdrop-blur-sm border border-slate-200/30 hover:border-slate-300/50 transition-all duration-500 group"
                             style={{
-                              padding: '28px',
-                              borderRadius: '24px'
+                              padding: '16px',
+                              borderRadius: '12px'
                             }}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
                             transition={{
-                              delay: 0.3 + assessmentIndex * 0.1,
-                              duration: 0.6,
+                              delay: 0.2 + assessmentIndex * 0.05,
+                              duration: 0.4,
                               ease: [0.25, 0.1, 0.25, 1]
                             }}
                             whileHover={{
                               scale: 1.005,
-                              y: -2,
-                              transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
+                              x: 1,
+                              transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
                             }}
-                            whileTap={{ scale: 0.995 }}
+                            whileTap={{ scale: 0.98 }}
                           >
-                            {/* Subtle background gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-slate-50/30 via-transparent to-slate-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-                            {/* Minimal floating accent */}
-                            <motion.div
-                              className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-slate-100/40 to-transparent rounded-full blur-xl"
-                              animate={{
-                                scale: [1, 1.05, 1],
-                                opacity: [0.3, 0.4, 0.3]
-                              }}
-                              transition={{
-                                duration: 6,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                                delay: assessmentIndex * 0.5
-                              }}
-                            />
-
-                            <div className="relative z-10">
-                              <div className="flex items-start gap-6">
-                                {/* Elegant Icon */}
-                                <motion.div
-                                  className="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-500"
-                                  whileHover={{
-                                    scale: 1.05,
-                                    rotate: 2,
-                                    transition: { duration: 0.3 }
-                                  }}
-                                >
-                                  <span className="material-symbols-outlined text-slate-600 text-xl">
-                                    {assessment.category === 'trauma' ? 'healing' :
-                                     assessment.category === 'depression' ? 'mood' :
-                                     assessment.category === 'anxiety' ? 'psychology' :
-                                     assessment.category === 'resilience' ? 'fitness_center' :
-                                     assessment.category === 'wellbeing' ? 'self_improvement' : 'assessment'}
-                                  </span>
-                                </motion.div>
-
-                                {/* Content Section */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="mb-4">
-                                    <h4 className="text-lg font-light text-slate-900 group-hover:text-slate-800 transition-colors duration-500 leading-tight mb-2">
-                                      {assessment.shortTitle}
-                                    </h4>
-                                    <p className="text-sm text-slate-600 group-hover:text-slate-700 transition-colors duration-500 leading-relaxed font-light">
-                                      {assessment.description}
-                                    </p>
-                                  </div>
-
-                                  {/* Metadata Row */}
-                                  <div className="flex items-center gap-6">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-                                      <span className="text-sm text-slate-600 font-medium tracking-wide">
-                                        {assessment.estimatedTime} MIN
-                                      </span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-                                      <span className="text-sm text-slate-600 font-medium tracking-wide">
-                                        {assessment.questions.length} QUESTIONS
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Elegant Arrow */}
-                                <motion.div
-                                  className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-slate-50/50 group-hover:bg-slate-100/80 transition-colors duration-500"
-                                  whileHover={{
-                                    scale: 1.1,
-                                    x: 2
-                                  }}
-                                  transition={{ duration: 0.3 }}
-                                >
-                                  <span className="material-symbols-outlined text-slate-500 group-hover:text-slate-700 text-lg transition-colors duration-500">
-                                    chevron_right
-                                  </span>
-                                </motion.div>
+                            <div className="flex items-center gap-4">
+                              {/* Clean Icon */}
+                              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300">
+                                <span className="material-symbols-outlined text-slate-600 text-sm">
+                                  {assessment.category === 'trauma' ? 'healing' :
+                                   assessment.category === 'depression' ? 'mood' :
+                                   assessment.category === 'anxiety' ? 'psychology' :
+                                   assessment.category === 'resilience' ? 'fitness_center' :
+                                   assessment.category === 'wellbeing' ? 'self_improvement' : 'assessment'}
+                                </span>
                               </div>
-                            </div>
 
-                            {/* Subtle bottom accent */}
-                            <motion.div
-                              className="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                              initial={{ scaleX: 0 }}
-                              whileHover={{ scaleX: 1 }}
-                              transition={{ duration: 0.4 }}
-                            />
+                              {/* Content */}
+                              <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-light text-slate-800 group-hover:text-slate-900 transition-colors duration-400 leading-tight mb-0.5">
+                                  {assessment.shortTitle}
+                                </h4>
+                                <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
+                                  <span>{assessment.estimatedTime} min</span>
+                                  <span>•</span>
+                                  <span>{assessment.questions.length} questions</span>
+                                </div>
+                              </div>
+
+                              {/* Minimal Arrow */}
+                              <motion.span
+                                className="material-symbols-outlined text-slate-400 group-hover:text-slate-600 text-base transition-colors duration-300"
+                                whileHover={{ x: 1 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                chevron_right
+                              </motion.span>
+                            </div>
                           </motion.button>
                         ))}
                       </div>
