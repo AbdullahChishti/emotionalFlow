@@ -149,9 +149,9 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
       {/* Header */}
       <motion.div
         className="text-center"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
       >
         <h2 className="text-3xl md:text-4xl font-light text-slate-900 tracking-tight mb-4">
           <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent font-normal">
@@ -168,7 +168,7 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
         className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         {MAJOR_CONCERNS.map((concern, index) => {
           const assessments = getAssessmentsForConcern(concern.id)
@@ -177,9 +177,9 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
           return (
             <motion.div
               key={concern.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+              transition={{ duration: 0.5, delay: 0.6 + index * 0.08 }}
             >
               <motion.button
                 onClick={() => handleConcernClick(concern.id)}
