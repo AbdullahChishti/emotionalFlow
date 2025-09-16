@@ -190,7 +190,7 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                 }`}
                 style={{
                   borderRadius: '16px',
-                  padding: '20px',
+                  padding: '24px',
                   marginBottom: '16px'
                 }}
                 whileHover={{
@@ -203,33 +203,36 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                 {/* Minimal background accent */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${concern.color} opacity-2 group-hover:opacity-4 transition-opacity duration-500`} />
 
-                <div className="relative z-10 flex items-center gap-4">
-                  {/* Clean icon */}
-                  <motion.div
-                    className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br ${concern.color} text-white`}
-                    whileHover={{
-                      scale: 1.03,
-                      transition: { duration: 0.2 }
-                    }}
-                  >
-                    <span className="material-symbols-outlined text-lg">
-                      {concern.icon}
-                    </span>
-                  </motion.div>
+                <div className="relative z-10">
+                  {/* Header with icon and title */}
+                  <div className="flex items-center gap-4 mb-3">
+                    <motion.div
+                      className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br ${concern.color} text-white`}
+                      whileHover={{
+                        scale: 1.03,
+                        transition: { duration: 0.2 }
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-xl">
+                        {concern.icon}
+                      </span>
+                    </motion.div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-light text-slate-900 leading-tight tracking-tight mb-1 group-hover:text-slate-800 transition-colors duration-300">
-                      {concern.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 font-light leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
-                      {concern.subtitle}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-light text-slate-900 leading-tight tracking-tight group-hover:text-slate-800 transition-colors duration-300">
+                        {concern.title}
+                      </h3>
+                    </div>
                   </div>
 
-                  {/* Minimal metadata and action */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                  {/* Subtitle */}
+                  <p className="text-sm text-slate-600 font-light leading-relaxed mb-4 group-hover:text-slate-700 transition-colors duration-300">
+                    {concern.subtitle}
+                  </p>
+
+                  {/* Footer with metadata and action */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
                       <span>{assessments.length}</span>
                       <span className="hidden sm:inline">ASSESSMENTS</span>
                     </div>
