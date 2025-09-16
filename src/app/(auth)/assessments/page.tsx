@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { AssessmentFlowMigrated as AssessmentFlow } from '@/components/assessment/AssessmentFlowMigrated'
 import AssessmentHistory from '@/components/assessment/AssessmentHistory'
+import ConcernsExplorer from '@/components/assessment/ConcernsExplorer'
 import { useRouter } from 'next/navigation'
 import { ASSESSMENTS, ASSESSMENT_CATEGORIES } from '@/data/assessments'
 import { AssessmentResult } from '@/data/assessments'
@@ -14,7 +15,7 @@ export default function AssessmentsPage() {
   const [selectedFlow, setSelectedFlow] = useState<string | null>(null)
   const [currentAssessmentId, setCurrentAssessmentId] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'browse' | 'history'>('browse')
+  const [activeTab, setActiveTab] = useState<'browse' | 'concerns' | 'history'>('concerns')
 
   const handleFlowSelect = (flowId: string) => {
     setSelectedFlow(flowId)
@@ -303,8 +304,8 @@ export default function AssessmentsPage() {
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-white/20 rounded-2xl pointer-events-none"></div>
-            <div className="relative p-2">
-            <div className="flex items-center gap-2">
+                <div className="relative p-2">
+                <div className="flex flex-wrap items-center gap-2">
             <motion.button
               onClick={() => setActiveTab('browse')}
                 className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
@@ -316,14 +317,14 @@ export default function AssessmentsPage() {
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                   letterSpacing: '-0.005em',
                   fontWeight: '500',
-                  background: activeTab === 'browse' 
+                  background: activeTab === 'browse'
                     ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
                     : 'transparent',
-                  boxShadow: activeTab === 'browse' 
+                  boxShadow: activeTab === 'browse'
                     ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                     : 'none'
                 }}
-                whileHover={{ 
+                whileHover={{
                   scale: activeTab === 'browse' ? 1 : 1.03,
                   y: activeTab === 'browse' ? 0 : -2
                 }}
@@ -341,6 +342,41 @@ export default function AssessmentsPage() {
                 )}
             </motion.button>
             <motion.button
+              onClick={() => setActiveTab('concerns')}
+                className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
+                activeTab === 'concerns'
+                    ? 'text-white'
+                    : 'text-emerald-600 hover:text-emerald-800'
+                }`}
+                style={{
+                  fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                  letterSpacing: '-0.005em',
+                  fontWeight: '500',
+                  background: activeTab === 'concerns'
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
+                    : 'transparent',
+                  boxShadow: activeTab === 'concerns'
+                    ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                    : 'none'
+                }}
+                whileHover={{
+                  scale: activeTab === 'concerns' ? 1 : 1.03,
+                  y: activeTab === 'concerns' ? 0 : -2
+                }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <div className="relative z-10 flex items-center">
+                  <span className="hidden sm:inline">Explore by Topic</span>
+                  <span className="sm:hidden">Topics</span>
+                  {activeTab === 'concerns' && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  )}
+                </div>
+                {activeTab === 'concerns' && (
+                  <div className="absolute inset-0 bg-white/10 rounded-xl"></div>
+                )}
+            </motion.button>
+            <motion.button
               onClick={() => setActiveTab('history')}
                 className={`group relative px-6 py-3 rounded-xl text-sm font-medium transition-all duration-500 whitespace-nowrap overflow-hidden ${
                 activeTab === 'history'
@@ -351,14 +387,14 @@ export default function AssessmentsPage() {
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                   letterSpacing: '-0.005em',
                   fontWeight: '500',
-                  background: activeTab === 'history' 
+                  background: activeTab === 'history'
                     ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
                     : 'transparent',
-                  boxShadow: activeTab === 'history' 
+                  boxShadow: activeTab === 'history'
                     ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                     : 'none'
                 }}
-                whileHover={{ 
+                whileHover={{
                   scale: activeTab === 'history' ? 1 : 1.03,
                   y: activeTab === 'history' ? 0 : -2
                 }}
@@ -376,7 +412,7 @@ export default function AssessmentsPage() {
                 )}
             </motion.button>
             </div>
-            </div>
+                </div>
           </div>
         </motion.div>
 
@@ -390,7 +426,7 @@ export default function AssessmentsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              <div 
+              <div
                 className="relative overflow-hidden"
                 style={{
                   background: 'rgba(255, 255, 255, 0.95)',
@@ -415,14 +451,14 @@ export default function AssessmentsPage() {
                       fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                       letterSpacing: '-0.005em',
                       fontWeight: '500',
-                      background: selectedCategory === null 
+                      background: selectedCategory === null
                         ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
                         : 'transparent',
-                      boxShadow: selectedCategory === null 
+                      boxShadow: selectedCategory === null
                         ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                         : 'none'
                     }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: selectedCategory === null ? 1 : 1.03,
                       y: selectedCategory === null ? 0 : -2
                     }}
@@ -455,14 +491,14 @@ export default function AssessmentsPage() {
                           fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                           letterSpacing: '-0.005em',
                           fontWeight: '500',
-                          background: isSelected 
+                          background: isSelected
                             ? 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)'
                             : 'transparent',
-                          boxShadow: isSelected 
+                          boxShadow: isSelected
                             ? '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                             : 'none'
                         }}
-                        whileHover={{ 
+                        whileHover={{
                           scale: isSelected ? 1 : 1.03,
                           y: isSelected ? 0 : -2
                         }}
@@ -703,6 +739,21 @@ export default function AssessmentsPage() {
               </div>
             </motion.div>
           </>
+        ) : activeTab === 'concerns' ? (
+          /* Common Concerns Tab */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-6xl mx-auto px-6 pb-20"
+          >
+            <ConcernsExplorer
+              onAssessmentSelect={(assessmentId) => {
+                setCurrentAssessmentId(assessmentId)
+                handleFlowSelect('single')
+              }}
+            />
+          </motion.div>
         ) : (
           /* Assessment History Tab */
           <motion.div

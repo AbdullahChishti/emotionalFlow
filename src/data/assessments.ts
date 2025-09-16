@@ -34,6 +34,8 @@ export interface Assessment {
   isValid: boolean
   source: string
   citations: string[]
+  // New field for user-focused questions/concerns
+  commonConcerns: string[]
 }
 
 export interface AssessmentResult {
@@ -59,6 +61,13 @@ export const ACE_QUESTIONNAIRE: Assessment = {
   isValid: true,
   source: 'CDC-Kaiser ACE Study',
   citations: ['Felitti et al., 1998'],
+  commonConcerns: [
+    'Am I carrying childhood trauma?',
+    'Do I have unresolved childhood experiences?',
+    'Is my past affecting my current relationships?',
+    'Do I struggle with trust issues?',
+    'Am I affected by my family history?'
+  ],
 
   questions: [
     {
@@ -192,6 +201,14 @@ export const PHQ9_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'Pfizer Inc',
   citations: ['Kroenke et al., 2001'],
+  commonConcerns: [
+    'Am I depressed?',
+    'Do I have low motivation?',
+    'Am I losing interest in activities?',
+    'Do I feel hopeless?',
+    'Am I struggling with sadness?',
+    'Do I have trouble sleeping?'
+  ],
 
   questions: [
     {
@@ -349,6 +366,14 @@ export const GAD7_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'Pfizer Inc',
   citations: ['Spitzer et al., 2006'],
+  commonConcerns: [
+    'Am I anxious?',
+    'Do I worry too much?',
+    'Am I always stressed?',
+    'Do I have panic attacks?',
+    'Am I restless or on edge?',
+    'Do I feel overwhelmed?'
+  ],
 
   questions: [
     {
@@ -489,6 +514,14 @@ export const CDRISC_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'Duke University',
   citations: ['Campbell-Sills & Stein, 2007'],
+  commonConcerns: [
+    'Am I resilient?',
+    'Do I handle stress well?',
+    'Can I bounce back from difficulties?',
+    'Am I adaptable?',
+    'Do I stay calm under pressure?',
+    'Am I strong in tough times?'
+  ],
 
   questions: [
     {
@@ -647,6 +680,14 @@ export const PSS10_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'Cohen et al., 1983',
   citations: ['Cohen et al., 1983'],
+  commonConcerns: [
+    'Am I stressed?',
+    'Do I feel overwhelmed?',
+    'Am I always stressed?',
+    'Do I handle stress well?',
+    'Am I dealing with too much?',
+    'Do I feel out of control?'
+  ],
 
   questions: [
     {
@@ -810,6 +851,14 @@ export const WHO5_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'World Health Organization',
   citations: ['Bech, 2004'],
+  commonConcerns: [
+    'Am I happy?',
+    'Do I enjoy life?',
+    'Am I feeling good?',
+    'Do I have energy?',
+    'Am I content?',
+    'Do I feel positive?'
+  ],
 
   questions: [
     {
@@ -945,6 +994,15 @@ export const PCL5_ASSESSMENT: Assessment = {
   isValid: true,
   source: 'National Center for PTSD',
   citations: ['Weathers et al., 2013'],
+  commonConcerns: [
+    'Do I have PTSD?',
+    'Am I reliving traumatic experiences?',
+    'Do I avoid reminders of trauma?',
+    'Am I emotionally numb?',
+    'Do I have flashbacks?',
+    'Am I hypervigilant?',
+    'Do I sabotage my relationships?'
+  ],
 
   questions: [
     {
