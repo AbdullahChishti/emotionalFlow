@@ -745,7 +745,7 @@ export default function AssessmentsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
-            className="max-w-6xl mx-auto px-6 pb-20"
+            className="max-w-6xl mx-auto px-6 pb-20 relative z-20"
           >
             <ConcernsExplorer
               onAssessmentSelect={(assessmentId) => {

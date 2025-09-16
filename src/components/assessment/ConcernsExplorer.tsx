@@ -145,7 +145,7 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
   }
 
   return (
-    <div className={`${className} space-y-8`}>
+    <div className={`${className} space-y-8 relative z-10`}>
       {/* Header */}
       <motion.div
         className="text-center"
