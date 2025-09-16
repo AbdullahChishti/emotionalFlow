@@ -183,22 +183,25 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
             >
               <motion.button
                 onClick={() => handleConcernClick(concern.id)}
-                className={`w-full text-left transition-all duration-500 group relative ${
+                className={`w-full text-left transition-all duration-500 group relative overflow-hidden ${
                   isSelected
-                    ? 'bg-white/95 backdrop-blur-sm border border-slate-200/20'
-                    : 'bg-white/80 backdrop-blur-sm border border-white/40 hover:border-white/60'
+                    ? 'bg-white/98 backdrop-blur-md border border-slate-200/40 shadow-xl shadow-slate-900/[0.15]'
+                    : 'bg-white/85 backdrop-blur-sm border border-white/50 hover:border-slate-200/40 hover:shadow-lg hover:shadow-slate-900/[0.08]'
                 }`}
                 style={{
-                  borderRadius: '16px',
+                  borderRadius: '18px',
                   padding: '24px',
-                  marginBottom: '16px'
+                  marginBottom: '20px',
+                  boxShadow: isSelected
+                    ? '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8)'
+                    : '0 4px 12px -4px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.6)'
                 }}
                 whileHover={{
-                  scale: 1.005,
-                  y: -1,
-                  transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
+                  scale: 1.008,
+                  y: -2,
+                  transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
                 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.99 }}
               >
                 {/* Minimal background accent */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${concern.color} opacity-2 group-hover:opacity-4 transition-opacity duration-500`} />
@@ -264,12 +267,13 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                     transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                     className="overflow-hidden"
                   >
-                    {/* Minimal Container */}
+                    {/* Refined Container */}
                     <div
-                      className="mt-6 bg-white/50 backdrop-blur-sm border border-white/40"
+                      className="mt-6 bg-white/90 backdrop-blur-md border border-slate-200/30 shadow-lg shadow-slate-900/[0.06]"
                       style={{
                         borderRadius: '20px',
-                        padding: '24px'
+                        padding: '28px',
+                        boxShadow: '0 12px 24px -8px rgba(0, 0, 0, 0.12), 0 4px 8px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.8)'
                       }}
                     >
                       {/* Simple Header */}
@@ -296,10 +300,12 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                               e.stopPropagation()
                               handleAssessmentClick(assessment.id)
                             }}
-                            className="w-full text-left bg-white/60 backdrop-blur-sm border border-slate-200/30 hover:border-slate-300/50 transition-all duration-500 group"
+                            className="w-full text-left bg-white/80 backdrop-blur-sm border border-slate-200/40 hover:border-slate-300/60 hover:shadow-md hover:shadow-slate-900/[0.08] transition-all duration-500 group overflow-hidden"
                             style={{
-                              padding: '16px',
-                              borderRadius: '12px'
+                              padding: '18px',
+                              borderRadius: '14px',
+                              marginBottom: '12px',
+                              boxShadow: '0 2px 8px -2px rgba(0, 0, 0, 0.06), 0 1px 4px -1px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.7)'
                             }}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
