@@ -183,78 +183,123 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
             >
               <motion.button
                 onClick={() => handleConcernClick(concern.id)}
-                className={`w-full text-left transition-all duration-500 group relative overflow-hidden ${
+                className={`w-full text-left group relative overflow-hidden ${
                   isSelected
-                    ? 'bg-white/98 backdrop-blur-md border border-slate-200/40 shadow-xl shadow-slate-900/[0.15]'
-                    : 'bg-white/85 backdrop-blur-sm border border-white/50 hover:border-slate-200/40 hover:shadow-lg hover:shadow-slate-900/[0.08]'
+                    ? 'bg-white shadow-2xl'
+                    : 'bg-white/95 hover:bg-white hover:shadow-xl'
                 }`}
                 style={{
-                  borderRadius: '18px',
-                  padding: '24px',
-                  marginBottom: '20px',
+                  borderRadius: '28px',
+                  padding: '32px',
+                  marginBottom: '24px',
+                  border: '1px solid rgba(0, 0, 0, 0.04)',
                   boxShadow: isSelected
-                    ? '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.8)'
-                    : '0 4px 12px -4px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(255, 255, 255, 0.6)'
+                    ? '0 32px 64px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.02)'
+                    : '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02)',
+                  transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)'
                 }}
                 whileHover={{
-                  scale: 1.008,
-                  y: -2,
-                  transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
+                  scale: 1.02,
+                  y: -4,
+                  transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] }
                 }}
-                whileTap={{ scale: 0.99 }}
+                whileTap={{ 
+                  scale: 0.98,
+                  transition: { duration: 0.1 }
+                }}
               >
-                {/* Minimal background accent */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${concern.color} opacity-2 group-hover:opacity-4 transition-opacity duration-500`} />
+                {/* Ultra-subtle accent line */}
+                <motion.div
+                  className={`absolute left-8 top-8 w-1 h-16 bg-gradient-to-b ${concern.color} rounded-full`}
+                  style={{ opacity: 0.15 }}
+                  animate={{ 
+                    opacity: isSelected ? 0.4 : 0.15,
+                    height: isSelected ? '20px' : '16px'
+                  }}
+                  transition={{ duration: 0.6 }}
+                />
 
-                <div className="relative z-10">
-                  {/* Header with icon and title */}
-                  <div className="flex items-center gap-4 mb-3">
-                    <motion.div
-                      className={`flex-shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-gradient-to-br ${concern.color} text-white`}
-                      whileHover={{
-                        scale: 1.03,
-                        transition: { duration: 0.2 }
-                      }}
-                    >
-                      <span className="material-symbols-outlined text-xl">
+                <div className="relative z-10 ml-8">
+                  {/* Minimal icon */}
+                  <motion.div
+                    className="mb-6"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${concern.color} flex items-center justify-center shadow-sm`}>
+                      <span className="material-symbols-outlined text-white text-2xl font-light">
                         {concern.icon}
                       </span>
-                    </motion.div>
-
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-light text-slate-900 leading-tight tracking-tight group-hover:text-slate-800 transition-colors duration-300">
-                        {concern.title}
-                      </h3>
                     </div>
+                  </motion.div>
+
+                  {/* Typography - Pure Johnny Ive */}
+                  <div className="mb-8">
+                    <h3 
+                      className="text-2xl font-extralight text-gray-900 leading-tight mb-3"
+                      style={{
+                        fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif',
+                        letterSpacing: '-0.02em',
+                        fontWeight: '200'
+                      }}
+                    >
+                      {concern.title}
+                    </h3>
+                    <p 
+                      className="text-base text-gray-600 leading-relaxed"
+                      style={{
+                        fontFamily: 'SF Pro Text, -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontWeight: '400',
+                        letterSpacing: '-0.01em'
+                      }}
+                    >
+                      {concern.subtitle}
+                    </p>
                   </div>
 
-                  {/* Subtitle */}
-                  <p className="text-sm text-slate-600 font-light leading-relaxed mb-4 group-hover:text-slate-700 transition-colors duration-300">
-                    {concern.subtitle}
-                  </p>
-
-                  {/* Footer with metadata and action */}
+                  {/* Minimal footer */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                      <span>{assessments.length}</span>
-                      <span className="hidden sm:inline">ASSESSMENTS</span>
+                    <div 
+                      className="text-sm text-gray-500"
+                      style={{
+                        fontFamily: 'SF Pro Text, -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontWeight: '500',
+                        letterSpacing: '0.01em'
+                      }}
+                    >
+                      {assessments.length} assessment{assessments.length !== 1 ? 's' : ''}
                     </div>
 
                     <motion.div
-                      className="flex items-center gap-1 text-xs font-medium text-slate-600 group-hover:text-slate-800 transition-colors duration-300"
-                      animate={{ x: isSelected ? 1 : 0 }}
+                      className="flex items-center gap-2 text-sm text-gray-400"
+                      style={{
+                        fontFamily: 'SF Pro Text, -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontWeight: '500',
+                        letterSpacing: '0.02em'
+                      }}
+                      animate={{ x: isSelected ? 2 : 0 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      <span>{isSelected ? 'COLLAPSE' : 'EXPAND'}</span>
+                      <span className="text-xs">{isSelected ? 'COLLAPSE' : 'EXPLORE'}</span>
                       <motion.span
-                        className="material-symbols-outlined text-sm"
+                        className="material-symbols-outlined text-base"
                         animate={{ rotate: isSelected ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                       >
-                        {isSelected ? 'expand_less' : 'expand_more'}
+                        {isSelected ? 'expand_less' : 'chevron_right'}
                       </motion.span>
                     </motion.div>
                   </div>
                 </div>
+
+                {/* Hover glow effect */}
+                <motion.div
+                  className="absolute inset-0 rounded-[28px] opacity-0 group-hover:opacity-100"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%)',
+                    transition: 'opacity 0.6s ease'
+                  }}
+                />
               </motion.button>
 
               {/* Expanded Assessment List - Johnny Ive Style */}
