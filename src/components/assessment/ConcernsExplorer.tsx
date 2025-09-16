@@ -288,94 +288,170 @@ const ConcernsExplorer: React.FC<ConcernsExplorerProps> = ({
                 />
               </motion.button>
 
-              {/* Expanded Assessment List */}
+              {/* Expanded Assessment List - Johnny Ive Style */}
               <AnimatePresence>
                 {isSelected && (
                   <motion.div
                     initial={{ opacity: 0, height: 0, y: -20 }}
                     animate={{ opacity: 1, height: 'auto', y: 0 }}
                     exit={{ opacity: 0, height: 0, y: -20 }}
-                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
                     className="overflow-hidden"
                   >
-                    <div className="mt-6 space-y-4">
-                      <div className="text-center mb-6">
-                        <h4 className="text-lg font-medium text-slate-800 mb-2">
+                    {/* Premium Container */}
+                    <div
+                      className="mt-8 bg-white/40 backdrop-blur-xl border border-white/30 shadow-lg"
+                      style={{
+                        borderRadius: '32px',
+                        padding: '40px'
+                      }}
+                    >
+                      {/* Elegant Header */}
+                      <motion.div
+                        className="text-center mb-10"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.4 }}
+                      >
+                        <div className="w-12 h-12 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                          <span className="material-symbols-outlined text-slate-600 text-xl">
+                            {concern.icon}
+                          </span>
+                        </div>
+                        <h4 className="text-2xl font-light text-slate-900 mb-3 tracking-tight">
                           Available Assessments
                         </h4>
-                        <p className="text-sm text-slate-600">
-                          Choose an assessment to get started
+                        <p className="text-base text-slate-600 font-light leading-relaxed max-w-sm mx-auto">
+                          Choose an assessment to explore this area of your life
                         </p>
-                      </div>
+                        <motion.div
+                          className="w-16 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent mx-auto mt-6"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ delay: 0.4, duration: 0.6 }}
+                        />
+                      </motion.div>
 
-                      {assessments.map((assessment, assessmentIndex) => (
-                        <motion.button
-                          key={assessment.id}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleAssessmentClick(assessment.id)
-                          }}
-                          className="w-full text-left bg-white/60 backdrop-blur-sm border border-slate-200/40 hover:border-slate-300/60 transition-all duration-500 group"
-                          style={{
-                            padding: '20px',
-                            borderRadius: '20px',
-                            marginBottom: '12px'
-                          }}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: assessmentIndex * 0.08, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-                          whileHover={{
-                            scale: 1.005,
-                            x: 2,
-                            transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }
-                          }}
-                          whileTap={{ scale: 0.99 }}
-                        >
-                          <div className="flex items-center gap-4">
-                            {/* Minimal icon */}
-                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-slate-100/80 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-400">
-                              <span className="material-symbols-outlined text-slate-600 text-lg">
-                                {assessment.category === 'trauma' ? 'healing' :
-                                 assessment.category === 'depression' ? 'mood' :
-                                 assessment.category === 'anxiety' ? 'psychology' :
-                                 assessment.category === 'resilience' ? 'fitness_center' :
-                                 assessment.category === 'wellbeing' ? 'self_improvement' : 'assessment'}
-                              </span>
-                            </div>
+                      {/* Assessment Cards */}
+                      <div className="space-y-4">
+                        {assessments.map((assessment, assessmentIndex) => (
+                          <motion.button
+                            key={assessment.id}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleAssessmentClick(assessment.id)
+                            }}
+                            className="w-full text-left bg-white/70 backdrop-blur-sm border border-slate-200/30 hover:border-slate-300/50 transition-all duration-700 group relative overflow-hidden"
+                            style={{
+                              padding: '28px',
+                              borderRadius: '24px'
+                            }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: 0.3 + assessmentIndex * 0.1,
+                              duration: 0.6,
+                              ease: [0.25, 0.1, 0.25, 1]
+                            }}
+                            whileHover={{
+                              scale: 1.005,
+                              y: -2,
+                              transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }
+                            }}
+                            whileTap={{ scale: 0.995 }}
+                          >
+                            {/* Subtle background gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-slate-50/30 via-transparent to-slate-50/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-base font-light text-slate-800 group-hover:text-slate-900 transition-colors duration-500 leading-tight mb-1">
-                                {assessment.shortTitle}
-                              </h4>
-                              <p className="text-sm text-slate-600 group-hover:text-slate-700 transition-colors duration-500 leading-relaxed font-light">
-                                {assessment.description}
-                              </p>
-                              <div className="flex items-center gap-4 mt-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
-                                  <span className="text-xs text-slate-600 font-medium tracking-wide">
-                                    {assessment.estimatedTime}M
+                            {/* Minimal floating accent */}
+                            <motion.div
+                              className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-slate-100/40 to-transparent rounded-full blur-xl"
+                              animate={{
+                                scale: [1, 1.05, 1],
+                                opacity: [0.3, 0.4, 0.3]
+                              }}
+                              transition={{
+                                duration: 6,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: assessmentIndex * 0.5
+                              }}
+                            />
+
+                            <div className="relative z-10">
+                              <div className="flex items-start gap-6">
+                                {/* Elegant Icon */}
+                                <motion.div
+                                  className="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-500"
+                                  whileHover={{
+                                    scale: 1.05,
+                                    rotate: 2,
+                                    transition: { duration: 0.3 }
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined text-slate-600 text-xl">
+                                    {assessment.category === 'trauma' ? 'healing' :
+                                     assessment.category === 'depression' ? 'mood' :
+                                     assessment.category === 'anxiety' ? 'psychology' :
+                                     assessment.category === 'resilience' ? 'fitness_center' :
+                                     assessment.category === 'wellbeing' ? 'self_improvement' : 'assessment'}
                                   </span>
+                                </motion.div>
+
+                                {/* Content Section */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="mb-4">
+                                    <h4 className="text-lg font-light text-slate-900 group-hover:text-slate-800 transition-colors duration-500 leading-tight mb-2">
+                                      {assessment.shortTitle}
+                                    </h4>
+                                    <p className="text-sm text-slate-600 group-hover:text-slate-700 transition-colors duration-500 leading-relaxed font-light">
+                                      {assessment.description}
+                                    </p>
+                                  </div>
+
+                                  {/* Metadata Row */}
+                                  <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                                      <span className="text-sm text-slate-600 font-medium tracking-wide">
+                                        {assessment.estimatedTime} MIN
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                                      <span className="text-sm text-slate-600 font-medium tracking-wide">
+                                        {assessment.questions.length} QUESTIONS
+                                      </span>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <div className="w-1 h-1 bg-slate-400 rounded-full"></div>
-                                  <span className="text-xs text-slate-600 font-medium tracking-wide">
-                                    {assessment.questions.length} QUESTIONS
+
+                                {/* Elegant Arrow */}
+                                <motion.div
+                                  className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-slate-50/50 group-hover:bg-slate-100/80 transition-colors duration-500"
+                                  whileHover={{
+                                    scale: 1.1,
+                                    x: 2
+                                  }}
+                                  transition={{ duration: 0.3 }}
+                                >
+                                  <span className="material-symbols-outlined text-slate-500 group-hover:text-slate-700 text-lg transition-colors duration-500">
+                                    chevron_right
                                   </span>
-                                </div>
+                                </motion.div>
                               </div>
                             </div>
 
-                            <motion.span
-                              className="material-symbols-outlined text-slate-400 group-hover:text-slate-600 text-lg transition-colors duration-500"
-                              whileHover={{ x: 2 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              chevron_right
-                            </motion.span>
-                          </div>
-                        </motion.button>
-                      ))}
+                            {/* Subtle bottom accent */}
+                            <motion.div
+                              className="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-slate-300/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                              initial={{ scaleX: 0 }}
+                              whileHover={{ scaleX: 1 }}
+                              transition={{ duration: 0.4 }}
+                            />
+                          </motion.button>
+                        ))}
+                      </div>
                     </div>
                   </motion.div>
                 )}
