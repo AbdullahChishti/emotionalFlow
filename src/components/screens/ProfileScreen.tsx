@@ -94,7 +94,7 @@ export function ProfileScreen() {
             <div className="flex items-center gap-6 mb-8">
               {/* Artistic avatar */}
               <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="w-20 h-20 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center shadow-lg">
                   <span className="material-symbols-outlined text-3xl text-white">person</span>
                 </div>
                 {/* Subtle accent dot */}
@@ -169,7 +169,7 @@ export function ProfileScreen() {
                     type="checkbox"
                     checked={isAnonymous}
                     onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="w-5 h-5 text-[#0071E3] border-[#D2D2D7] rounded focus:ring-[#0071E3]/20"
+                    className="w-5 h-5 text-[var(--color-primary)] border-[#D2D2D7] rounded focus:ring-[var(--color-primary)]/20"
                   />
                   <span className="text-[#1D1D1F] font-normal">Remain anonymous in sessions</span>
                 </label>

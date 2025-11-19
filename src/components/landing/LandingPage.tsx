@@ -33,7 +33,7 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-white rounded-3xl shadow-2xl"></div>
           <div className="relative p-8 text-center">
             <motion.div
-              className="w-16 h-16 bg-[#0071E3] rounded-2xl flex items-center justify-center mb-6 shadow-lg mx-auto"
+              className="w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center mb-6 shadow-lg mx-auto"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
@@ -41,7 +41,7 @@ export default function LandingPage() {
             </motion.div>
             <h2 className="text-3xl font-medium text-[#1D1D1F] mb-4 tracking-tight">
               Taking you to your{' '}
-              <span className="text-[#0071E3]">dashboard</span>
+              <span className="text-[var(--color-primary)]">dashboard</span>
             </h2>
             <p className="text-[#86868B] font-light text-lg">
               Preparing your personalized wellness experience...

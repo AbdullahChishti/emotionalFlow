@@ -49,7 +49,7 @@ export default function Hero() {
                     transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 >
                     <Button
-                        className="bg-[#0071E3] hover:bg-[#0077ED] text-white rounded-full px-8 py-6 text-lg font-normal transition-all duration-300 shadow-sm hover:shadow-md"
+                        className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-light)] text-white rounded-full px-8 py-6 text-lg font-normal transition-all duration-300 shadow-sm hover:shadow-md"
                     >
                         Begin Journey
                     </Button>

@@ -65,8 +65,8 @@ export default function SettingsScreen() {
             className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8E8ED]"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#0071E3]">person</span>
+              <div className="w-10 h-10 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[var(--color-primary)]">person</span>
               </div>
               <h2 className="text-xl font-medium text-[#1D1D1F]">Account Information</h2>
             </div>
@@ -117,8 +117,8 @@ export default function SettingsScreen() {
             className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8E8ED]"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#0071E3]">settings</span>
+              <div className="w-10 h-10 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[var(--color-primary)]">settings</span>
               </div>
               <h2 className="text-xl font-medium text-[#1D1D1F]">Account Actions</h2>
             </div>
@@ -162,7 +162,7 @@ export default function SettingsScreen() {
             transition={{ delay: 0.3 }}
             className="text-center py-8"
           >
-            <div className="w-12 h-12 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+            <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
               <span className="material-symbols-outlined text-white text-xl">psychology_alt</span>
             </div>
             <h3 className="text-lg font-medium text-[#1D1D1F] mb-2">MindWell</h3>

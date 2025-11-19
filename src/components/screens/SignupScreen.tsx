@@ -67,7 +67,7 @@ export default function SignupScreen() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex">
       {/* Left side - Illustration/Visual */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[#0071E3] to-[#005BB5] items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] items-center justify-center overflow-hidden">
         <motion.div
           className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -115,7 +115,7 @@ export default function SignupScreen() {
           <div className="bg-white rounded-3xl p-10 shadow-sm border border-[#E8E8ED]">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center">
                   <span className="material-symbols-outlined text-2xl text-white">person_add</span>
                 </div>
                 <div>
@@ -128,7 +128,7 @@ export default function SignupScreen() {
             {success && (
               <div className="mb-6 p-4 bg-[#34C759]/10 border border-[#34C759]/20 rounded-xl">
                 <p className="text-sm text-[#34C759] font-medium mb-2">Account created successfully!</p>
-                <Link href="/dashboard" className="text-sm text-[#0071E3] hover:text-[#0077ED] font-medium">
+                <Link href="/dashboard" className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-light)] font-medium">
                   Continue to Dashboard →
                 </Link>
               </div>

@@ -7,13 +7,13 @@
    ======================================== */
 
 :root {
-  /* PRIMARY GRADIENT - Blue gradient used throughout */
-  --color-primary: #0071E3;
-  --color-primary-dark: #005BB5;
-  --color-primary-light: #0077ED;
-  --color-primary-gradient-from: #0071E3;
-  --color-primary-gradient-mid: #0066CC;
-  --color-primary-gradient-to: #005BB5;
+  /* PRIMARY GRADIENT - Teal/Turquoise (Variation 2: Ocean Calm) */
+  --color-primary: #14B8A6;
+  --color-primary-dark: #0D9488;
+  --color-primary-light: #2DD4BF;
+  --color-primary-gradient-from: #14B8A6;
+  --color-primary-gradient-mid: #0D9488;
+  --color-primary-gradient-to: #0F766E;
 
   /* BACKGROUNDS */
   --color-background: #FAFAFA;
@@ -30,7 +30,7 @@
   /* BORDERS */
   --color-border: #E8E8ED;
   --color-border-light: #D2D2D7;
-  --color-border-primary: rgba(0, 113, 227, 0.1);
+  --color-border-primary: rgba(20, 184, 166, 0.1);
 
   /* STATUS COLORS */
   --color-success: #34C759;
@@ -45,16 +45,16 @@
   --color-error-bg: rgba(255, 59, 48, 0.1);
   --color-error-border: rgba(255, 59, 48, 0.2);
 
-  --color-info: #0071E3;
-  --color-info-bg: rgba(0, 113, 227, 0.1);
-  --color-info-border: rgba(0, 113, 227, 0.2);
+  --color-info: #14B8A6;
+  --color-info-bg: rgba(20, 184, 166, 0.1);
+  --color-info-border: rgba(20, 184, 166, 0.2);
 
   /* SHADOWS */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  --shadow-primary: 0 8px 32px -8px rgba(0, 113, 227, 0.3);
+  --shadow-primary: 0 8px 32px -8px rgba(20, 184, 166, 0.3);
 
   /* BLUR EFFECTS */
   --blur-sm: blur(4px);

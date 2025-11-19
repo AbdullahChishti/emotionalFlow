@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button'
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0071E3] to-[#005BB5]">
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden" style={{ background: 'var(--gradient-primary)' }}>
       {/* Animated background elements */}
       <motion.div
         className="absolute top-20 left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"
@@ -69,7 +69,10 @@ export default function Hero() {
             <Link href="/signup">
               <Button
                 size="lg"
-                className="bg-white text-[#0071E3] hover:bg-white/90 px-8 py-6 text-lg"
+                className="px-8 py-6 text-lg"
+                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-primary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface)'}
               >
                 Get Started Free
               </Button>

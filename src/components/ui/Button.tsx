@@ -13,7 +13,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseClasses = 'inline-flex items-center justify-center font-normal rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variantClasses = {
-      primary: 'bg-[#0071E3] hover:bg-[#0077ED] text-white shadow-sm hover:shadow-md',
+      primary: 'bg-[var(--color-primary)] hover:bg-[var(--color-primary-light)] text-white shadow-sm hover:shadow-md',
       secondary: 'bg-[#86868B] hover:bg-[#6E6E73] text-white shadow-sm hover:shadow-md',
       outline: 'bg-transparent hover:bg-[#F5F5F7] text-[#1D1D1F] border border-[#D2D2D7]',
       ghost: 'bg-transparent hover:bg-[#F5F5F7] text-[#1D1D1F]'

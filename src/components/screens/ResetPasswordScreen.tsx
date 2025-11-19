@@ -73,7 +73,7 @@ export default function ResetPasswordScreen() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex">
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[#0071E3] to-[#005BB5] items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] items-center justify-center overflow-hidden">
         <motion.div className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} />
         <motion.div className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl" animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }} transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }} />
         <div className="relative z-10 text-center px-12">
@@ -101,7 +101,7 @@ export default function ResetPasswordScreen() {
           <div className="bg-white rounded-3xl p-10 shadow-sm border border-[#E8E8ED]">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center">
                   <span className="material-symbols-outlined text-2xl text-white">vpn_key</span>
                 </div>
                 <div>

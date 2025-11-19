@@ -50,7 +50,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
           <motion.div
             className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl"
             style={{
-              background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+              background: 'var(--gradient-primary)',
               opacity: 0.15
             }}
             animate={{
@@ -68,7 +68,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
           <motion.div
             className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full blur-2xl"
             style={{
-              background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+              background: 'var(--gradient-primary)',
               opacity: 0.12
             }}
             animate={{
@@ -96,7 +96,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               <motion.div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
                 style={{
-                  background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                  background: 'var(--gradient-primary)',
                   boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                 }}
                 whileHover={{
@@ -152,7 +152,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                       <div
                         className="absolute inset-0 rounded-2xl"
                         style={{
-                          background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                          background: 'var(--gradient-primary)',
                           boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                         }}
                       />
@@ -295,7 +295,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                     <motion.div
                       className="absolute -top-5 -right-5 w-16 h-16 rounded-full blur-xl"
                       style={{
-                        background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                        background: 'var(--gradient-primary)',
                         opacity: 0.2
                       }}
                       animate={{
@@ -458,13 +458,13 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                   background: 'rgba(255, 255, 255, 0.6)',
                   backdropFilter: 'blur(10px)',
                   border: '1px solid rgba(0, 113, 227, 0.3)',
-                  color: '#0071E3',
+                  color: 'var(--color-primary)',
                   boxShadow: '0 2px 8px -2px rgba(0, 113, 227, 0.1)'
                 }}
                 whileHover={{
                   y: -1,
                   scale: 1.02,
-                  background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                  background: 'var(--gradient-primary)',
                   boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                 }}
                 whileTap={{ scale: 0.98 }}
@@ -490,7 +490,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               onClick={() => router.push('/login')}
               className="group relative px-8 py-3 text-white rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden shadow-lg hover:shadow-xl hidden md:flex"
               style={{
-                background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                background: 'var(--gradient-primary)',
                 boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
               }}
               whileHover={{

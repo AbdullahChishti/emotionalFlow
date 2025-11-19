@@ -32,12 +32,12 @@ const moodData = {
     {
       label: 'Mood',
       data: [60, 75, 65, 80, 70, 85, 90],
-      borderColor: '#0071E3',
+      borderColor: 'var(--color-primary)',
       backgroundColor: 'rgba(0, 113, 227, 0.1)',
       fill: true,
       tension: 0.4,
       pointBackgroundColor: '#FFFFFF',
-      pointBorderColor: '#0071E3',
+      pointBorderColor: 'var(--color-primary)',
       pointBorderWidth: 2,
       pointRadius: 4,
       pointHoverRadius: 6,
@@ -103,8 +103,8 @@ export default function ProgressDashboardScreen() {
             transition={{ delay: 0.1 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#0071E3]">show_chart</span>
+              <div className="w-10 h-10 bg-[var(--color-primary)]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[var(--color-primary)]">show_chart</span>
               </div>
               <h2 className="text-xl font-medium text-[#1D1D1F]">Mood Trend</h2>
             </div>
@@ -115,7 +115,7 @@ export default function ProgressDashboardScreen() {
 
           {/* Streak Card - Artistic */}
           <motion.div
-            className="bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-3xl p-8 shadow-lg text-white"
+            className="bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-3xl p-8 shadow-lg text-white"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -149,7 +149,7 @@ export default function ProgressDashboardScreen() {
         >
           {[
             { icon: 'trending_up', label: 'This Week', value: '+15%', color: 'text-[#34C759]' },
-            { icon: 'self_improvement', label: 'Sessions', value: '24', color: 'text-[#0071E3]' },
+            { icon: 'self_improvement', label: 'Sessions', value: '24', color: 'text-[var(--color-primary)]' },
             { icon: 'schedule', label: 'Avg. Mood', value: '7.8', color: 'text-[#FF9500]' },
             { icon: 'emoji_events', label: 'Achievements', value: '12', color: 'text-[#AF52DE]' }
           ].map((stat, index) => (

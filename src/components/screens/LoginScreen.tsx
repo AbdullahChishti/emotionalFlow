@@ -97,7 +97,7 @@ export default function LoginScreen() {
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex">
       {/* Left side - Illustration/Visual */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[#0071E3] to-[#005BB5] items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] items-center justify-center overflow-hidden">
         <motion.div
           className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"
           animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -145,7 +145,7 @@ export default function LoginScreen() {
           <div className="bg-white rounded-3xl p-10 shadow-sm border border-[#E8E8ED]">
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center">
                   <span className="material-symbols-outlined text-2xl text-white">lock</span>
                 </div>
                 <div>
@@ -182,7 +182,7 @@ export default function LoginScreen() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password" className="text-xs text-[#0071E3] hover:text-[#0077ED] transition-colors">
+                  <Link href="/forgot-password" className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-light)] transition-colors">
                     Forgot?
                   </Link>
                 </div>
@@ -190,7 +190,7 @@ export default function LoginScreen() {
               </div>
 
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="remember" className="rounded w-4 h-4 text-[#0071E3] border-[#D2D2D7]" />
+                <input type="checkbox" id="remember" className="rounded w-4 h-4 text-[var(--color-primary)] border-[#D2D2D7]" />
                 <label htmlFor="remember" className="text-sm text-[#86868B] cursor-pointer">Keep me signed in</label>
               </div>
 
