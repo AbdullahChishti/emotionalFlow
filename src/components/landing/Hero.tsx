@@ -32,6 +32,31 @@ export default function Hero() {
           ease: "easeInOut"
         }}
       />
+      <motion.div
+        className="absolute top-1/2 left-1/3 w-64 h-64 bg-white/5 rounded-full blur-2xl"
+        animate={{
+          x: [0, 30, 0],
+          y: [0, -30, 0],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute top-1/3 right-1/4 w-80 h-80 bg-white/5 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.3, 0.2],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
@@ -53,15 +78,20 @@ export default function Hero() {
           </motion.div>
 
           {/* Heading */}
-          <h1 className="text-5xl md:text-7xl font-medium text-white mb-6 tracking-tight">
-            Your Mental Wellness
+          <h1 className="text-5xl md:text-7xl font-medium text-white mb-6 tracking-tight leading-tight">
+            Understand Yourself.
             <br />
-            <span className="text-white/80">Journey Starts Here</span>
+            <span className="text-white/90">Transform Your Life.</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl md:text-2xl text-white/80 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
-            Professional psychology assessments and personalized insights for better mental health
+          <p className="text-xl md:text-2xl text-white/80 font-light max-w-3xl mx-auto mb-4 leading-relaxed">
+            Professional psychology assessments designed to help you discover insights,
+            track your emotional well-being, and build a healthier relationship with your mind.
+          </p>
+
+          <p className="text-lg text-white/60 font-light max-w-2xl mx-auto mb-12">
+            Evidence-based. Personalized. Private.
           </p>
 
           {/* CTA Buttons */}
