@@ -11,8 +11,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          'w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 outline-none',
-          error && 'border-red-300 focus:border-red-300 focus:ring-red-200',
+          'w-full bg-white border border-[#E8E8ED] rounded-xl px-4 py-3 text-[#1D1D1F] placeholder:text-[#86868B] focus:ring-2 focus:ring-[#0071E3]/20 focus:border-[#0071E3] transition-all duration-300 outline-none',
+          error && 'border-[#FF3B30] focus:border-[#FF3B30] focus:ring-[#FF3B30]/20',
           className
         )}
         ref={ref}
@@ -32,8 +32,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         className={cn(
-          'w-full bg-white/80 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-secondary-800 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300 focus:border-primary-300 transition-all duration-300 outline-none resize-none min-h-[80px]',
-          error && 'border-red-300 focus:border-red-300 focus:ring-red-200',
+          'w-full bg-white border border-[#E8E8ED] rounded-xl px-4 py-3 text-[#1D1D1F] placeholder:text-[#86868B] focus:ring-2 focus:ring-[#0071E3]/20 focus:border-[#0071E3] transition-all duration-300 outline-none resize-none min-h-[80px]',
+          error && 'border-[#FF3B30] focus:border-[#FF3B30] focus:ring-[#FF3B30]/20',
           className
         )}
         ref={ref}
@@ -44,7 +44,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 )
 Textarea.displayName = 'Textarea'
 
-interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {}
+interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> { }
 
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(
   ({ className, ...props }, ref) => {
@@ -52,7 +52,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
       <label
         ref={ref}
         className={cn(
-          'text-sm font-semibold text-secondary-700 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+          'text-sm font-medium text-[#1D1D1F] leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
           className
         )}
         {...props}

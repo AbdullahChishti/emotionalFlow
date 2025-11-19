@@ -7,7 +7,7 @@ import { AuthProvider } from '@/components/providers/AuthProvider'
 
 // Setup the fonts
 const inter = Inter({ subsets: ['latin'] })
-const poppins = Poppins({ 
+const poppins = Poppins({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-poppins'
@@ -17,6 +17,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: 'MindWell - Your Personal Therapy Companion',
   description: 'Connect with our AI-powered therapy bot for personalized support and guidance, anytime, anywhere.',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 }
 
 // Define the root layout for the application

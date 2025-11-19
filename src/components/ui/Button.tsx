@@ -2,7 +2,7 @@ import { forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'glass'
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
   children: React.ReactNode
 }
@@ -10,19 +10,19 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', size = 'md', className, children, ...props }, ref) => {
 
-    const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md transform hover:scale-105'
+    const baseClasses = 'inline-flex items-center justify-center font-normal rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
     const variantClasses = {
-      primary: 'text-white border border-transparent shadow-lg',
-      secondary: 'bg-secondary-100 hover:bg-secondary-200 text-secondary-800 border border-secondary-200',
-      outline: 'bg-transparent hover:bg-slate-50 text-slate-600 border border-slate-300',
-      glass: 'glassmorphic text-secondary-800 hover:bg-white/50 border border-white/30'
+      primary: 'bg-[#0071E3] hover:bg-[#0077ED] text-white shadow-sm hover:shadow-md',
+      secondary: 'bg-[#86868B] hover:bg-[#6E6E73] text-white shadow-sm hover:shadow-md',
+      outline: 'bg-transparent hover:bg-[#F5F5F7] text-[#1D1D1F] border border-[#D2D2D7]',
+      ghost: 'bg-transparent hover:bg-[#F5F5F7] text-[#1D1D1F]'
     }
 
     const sizeClasses = {
-      sm: 'px-3 py-2 text-sm',
-      md: 'px-4 py-3 text-base',
-      lg: 'px-6 py-4 text-lg'
+      sm: 'px-4 py-2 text-sm',
+      md: 'px-6 py-3 text-base',
+      lg: 'px-8 py-4 text-lg'
     }
 
     return (
@@ -34,10 +34,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           sizeClasses[size],
           className
         )}
-        style={variant === 'primary' ? {
-          backgroundColor: '#059669',
-          '--tw-ring-color': '#059669'
-        } : {}}
         {...props}
       >
         {children}

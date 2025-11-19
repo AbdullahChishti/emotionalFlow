@@ -68,18 +68,14 @@ export class DataService {
   static async getAssessments(userId: string, forceRefresh: boolean = false): Promise<AssessmentResult[]> {
     console.log(`📊 DataService: Fetching assessments for user ${userId}`)
     
-    const response = await api.query<AssessmentHistoryEntry[]>(
-      'assessment_results',
-      {
-        select: '*',
-        match: { user_id: userId },
-        order: 'taken_at',
-        limit: 1000
-      },
+    const response = await api.function<any[]>(
+      'assessments/results',
+      {},
       {
         cache: !forceRefresh,
         cacheTTL: 300000, // 5 minutes
-        validateAuth: true
+        validateAuth: true,
+        method: 'GET'
       }
     )
 
@@ -89,155 +85,65 @@ export class DataService {
     }
 
     // Transform to AssessmentResult format
-    const assessments: AssessmentResult[] = []
-    const groupedByType = new Map<string, AssessmentHistoryEntry>()
-
-    // Get latest of each assessment type
-    response.data.forEach(entry => {
-      const existing = groupedByType.get(entry.assessmentId)
-      if (!existing || new Date(entry.completedAt) > new Date(existing.completedAt)) {
-        groupedByType.set(entry.assessmentId, entry)
-      }
-    })
-
-    // Convert to AssessmentResult format
-    groupedByType.forEach((entry, assessmentId) => {
-      const assessment = ASSESSMENTS.find(a => a.id === assessmentId)
-      if (assessment) {
-        assessments.push({
-          id: entry.id,
-          assessmentId: entry.assessmentId,
-          title: assessment.title,
-          score: entry.score,
-          maxScore: assessment.maxScore,
-          responses: entry.responses,
-          completedAt: entry.completedAt,
-          interpretation: this.interpretScore(entry.score, assessment.maxScore, assessment.interpretation)
-        })
-      }
-    })
+    const assessments: AssessmentResult[] = response.data.map((entry: any) => ({
+      score: entry.score,
+      level: entry.level,
+      severity: entry.severity,
+      description: entry.friendlyExplanation || `Assessment completed with score ${entry.score}`,
+      recommendations: entry.resultData?.recommendations || [],
+      insights: entry.resultData?.insights || [],
+      nextSteps: entry.resultData?.nextSteps || [],
+      manifestations: entry.resultData?.manifestations || [],
+      takenAt: new Date(entry.takenAt),
+      assessmentId: entry.assessmentId
+    }))
 
     console.log(`✅ DataService: Fetched ${assessments.length} assessments`)
     return assessments
   }
 
   static async saveAssessment(userId: string, assessment: any): Promise<boolean> {
-    console.log(`🔍 DATASERVICE TRACE: Starting saveAssessment`)
-    console.log(`🔍 DATASERVICE TRACE: Input params:`, {
-      userId,
-      assessmentId: assessment.assessmentId || assessment.id,
-      assessmentKeys: Object.keys(assessment),
-      hasResult: !!assessment.result,
-      hasResponses: !!assessment.responses,
-      fullAssessment: assessment
-    })
+    console.log(`💾 DataService: Saving assessment for user ${userId}`)
 
-    // Handle different AssessmentResult object structures
-    let assessmentData: any = {}
-
-    // Handle structure from useAssessmentData hook: { id, result, responses, friendlyExplanation }
-    if (assessment.result && assessment.responses) {
-      console.log(`🔍 DATASERVICE TRACE: Using structure 1 (useAssessmentData hook)`)
-      const result = assessment.result
-      assessmentData = {
-        user_id: userId,
-        assessment_id: assessment.id,
-        assessment_title: result.description || 'Assessment',
-        score: result.score || 0,
-        level: result.level || 'unknown',
-        severity: result.severity || 'normal',
-        responses: assessment.responses || {},
-        result_data: {
-          score: result.score || 0,
-          level: result.level || 'unknown',
-          severity: result.severity || 'normal',
-          recommendations: result.recommendations || [],
-          insights: result.insights || [],
-          nextSteps: result.nextSteps || [],
-          manifestations: result.manifestations || [],
-          interpretation: 'Assessment completed'
-        },
-        friendly_explanation: assessment.friendlyExplanation || result.description || 'Assessment completed',
-        taken_at: new Date().toISOString()
-      }
-    }
-    // Handle structure from AssessmentFlowMigrated: { assessmentId, title, score, responses, completedAt, ... }
-    else {
-      console.log(`🔍 DATASERVICE TRACE: Using structure 2 (AssessmentFlowMigrated)`)
-      assessmentData = {
-        user_id: userId,
-        assessment_id: assessment.assessmentId || assessment.id?.split('-')[1] || 'unknown',
-        assessment_title: assessment.title || assessment.description || 'Assessment',
-        score: assessment.score || 0,
-        level: assessment.level || 'unknown',
-        severity: assessment.severity || 'normal',
-        responses: assessment.responses || {},
-        result_data: {
-          score: assessment.score || 0,
-          level: assessment.level || 'unknown',
-          severity: assessment.severity || 'normal',
-          recommendations: assessment.recommendations || [],
-          insights: assessment.insights || [],
-          nextSteps: assessment.nextSteps || [],
-          manifestations: assessment.manifestations || [],
-          interpretation: assessment.interpretation || 'No interpretation available'
-        },
-        friendly_explanation: assessment.interpretation || 'Assessment completed',
-        taken_at: assessment.completedAt || new Date().toISOString()
-      }
+    // Prepare data for API
+    const requestData = {
+      assessmentId: assessment.id || assessment.assessmentId,
+      assessmentTitle: assessment.result?.description || assessment.title || 'Assessment',
+      result: assessment.result || {
+        score: assessment.score,
+        level: assessment.level,
+        severity: assessment.severity,
+        description: assessment.description || assessment.interpretation
+      },
+      responses: assessment.responses || {},
+      friendlyExplanation: assessment.friendlyExplanation || assessment.result?.description
     }
 
-    console.log(`🔍 DATASERVICE TRACE: Transformed assessment data:`, {
-      user_id: assessmentData.user_id,
-      assessment_id: assessmentData.assessment_id,
-      assessment_title: assessmentData.assessment_title,
-      score: assessmentData.score,
-      level: assessmentData.level,
-      severity: assessmentData.severity,
-      responsesKeys: Object.keys(assessmentData.responses || {}),
-      responsesCount: Object.keys(assessmentData.responses || {}).length,
-      hasResultData: !!assessmentData.result_data,
-      hasFriendlyExplanation: !!assessmentData.friendly_explanation
+    console.log(`💾 DataService: Calling /api/assessments/save with data:`, {
+      assessmentId: requestData.assessmentId,
+      hasResult: !!requestData.result,
+      hasResponses: !!requestData.responses
     })
 
-    console.log(`🔍 DATASERVICE TRACE: Calling api.insert with validateAuth: true`)
-
-    const response = await api.insert<AssessmentHistoryEntry>(
-      'assessment_results',
-      assessmentData,
+    const response = await api.function<any>(
+      'assessments/save',
+      requestData,
       {
-        validateAuth: true
+        validateAuth: true,
+        method: 'POST'
       }
     )
 
-    console.log(`🔍 DATASERVICE TRACE: api.insert response:`, {
-      success: response.success,
-      hasData: !!response.data,
-      hasError: !!response.error,
-      errorMessage: response.error?.message,
-      errorCode: response.error?.code,
-      errorType: typeof response.error,
-      errorConstructor: response.error?.constructor?.name,
-      fullResponse: response
-    })
-
     if (!response.success) {
-      console.error('❌ DATASERVICE TRACE: Failed to save assessment:', {
-        error: response.error,
-        errorMessage: response.error?.message,
-        errorCode: response.error?.code,
-        errorDetails: response.error?.details,
-        errorHint: response.error?.hint,
-        fullResponse: response
-      })
+      console.error('❌ DataService: Failed to save assessment:', response.error)
       return false
     }
 
-    console.log('✅ DATASERVICE TRACE: Assessment saved successfully:', {
-      data: response.data,
-      dataType: typeof response.data,
-      dataKeys: response.data ? Object.keys(response.data) : 'no data'
-    })
+    console.log('✅ DataService: Assessment saved successfully')
+    
+    // Invalidate cache to force fresh data on next fetch
+    api.invalidateCache('assessments/results')
+    
     return true
   }
 

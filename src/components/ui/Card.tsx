@@ -2,16 +2,15 @@ import { forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'elevated' | 'glass'
+  variant?: 'default' | 'elevated'
   children: React.ReactNode
 }
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ variant = 'default', className, children, ...props }, ref) => {
     const variantClasses = {
-      default: 'bg-white/80 backdrop-blur-sm border border-white/30 rounded-2xl shadow-lg',
-      elevated: 'bg-white/90 backdrop-blur-sm border border-white/40 rounded-2xl shadow-xl',
-      glass: 'glassmorphic rounded-3xl shadow-xl'
+      default: 'bg-white border border-[#E8E8ED] rounded-2xl shadow-sm',
+      elevated: 'bg-white border border-[#E8E8ED] rounded-2xl shadow-lg'
     }
 
     return (
@@ -32,7 +31,7 @@ export const CardHeader = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      className={cn('flex flex-col space-y-2 p-6', className)}
       {...props}
     />
   )
@@ -43,7 +42,7 @@ export const CardTitle = forwardRef<HTMLParagraphElement, React.HTMLAttributes<H
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-2xl font-bold leading-none tracking-tight text-secondary-800', className)}
+      className={cn('text-2xl font-medium leading-tight tracking-tight text-[#1D1D1F]', className)}
       {...props}
     />
   )
@@ -54,7 +53,7 @@ export const CardDescription = forwardRef<HTMLParagraphElement, React.HTMLAttrib
   ({ className, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('text-sm text-secondary-600', className)}
+      className={cn('text-sm text-[#86868B] font-light', className)}
       {...props}
     />
   )

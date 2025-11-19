@@ -120,11 +120,76 @@ export const themes = {
         excited: '#FF1493'
       }
     }
+  },
+  jonyIve: {
+    name: 'Jony Ive Minimalist',
+    description: 'Simple, meaningful, and modern - inspired by Apple design',
+    colors: {
+      backgroundLight: '#FAFAFA', // Apple-style light gray
+      primarySurface: '#FFFFFF',
+      accent: '#0071E3', // Apple blue
+      textPrimary: '#1D1D1F', // Near black
+      secondaryAccent: '#86868B', // Gray
+      
+      background: {
+        primary: '#FAFAFA',
+        secondary: '#F5F5F7',
+        tertiary: '#FFFFFF'
+      },
+      surface: {
+        primary: '#FFFFFF',
+        secondary: '#F5F5F7',
+        elevated: '#FFFFFF',
+        shadow: '#F0F0F0'
+      },
+      text: {
+        primary: '#1D1D1F', // Near black
+        secondary: '#86868B', // Gray
+        tertiary: '#A1A1A6', // Light gray
+        supportive: '#0071E3', // Apple blue for links
+        inverse: '#FFFFFF',
+        disabled: '#D2D2D7',
+        warm: '#1D1D1F'
+      },
+      button: {
+        primary: '#0071E3', // Apple blue
+        primaryHover: '#0077ED',
+        secondary: '#86868B',
+        secondaryHover: '#6E6E73',
+        disabled: '#D2D2D7',
+        outline: '#0071E3',
+        outlineHover: '#0077ED',
+        gentle: '#F5F5F7',
+        gentleHover: '#E8E8ED'
+      },
+      border: {
+        primary: '#D2D2D7',
+        secondary: '#E8E8ED',
+        light: '#F5F5F7',
+        warm: '#D2D2D7'
+      },
+      status: {
+        success: '#34C759', // Apple green
+        warning: '#FF9500', // Apple orange
+        error: '#FF3B30', // Apple red
+        info: '#0071E3', // Apple blue
+        therapeutic: '#E3F2FD'
+      },
+      mood: {
+        calm: '#E3F2FD',
+        peaceful: '#F3E5F5',
+        hopeful: '#E8F5E8',
+        supported: '#FFF8E1',
+        understanding: '#FCE4EC',
+        gentle: '#F1F8E9'
+      }
+    }
   }
 } as const
 
 // Legacy color exports for backward compatibility
-export const colors = themes.therapeutic.colors
+// Updated to use Jony Ive theme as default
+export const colors = themes.jonyIve.colors
 
 // Spacing system - 4px base grid
 export const spacing = {

@@ -611,20 +611,52 @@ export class ApiManager {
    * Health check
    */
   async healthCheck(): Promise<{ healthy: boolean; latency: number; error?: string }> {
-    const startTime = Date.now()
-    
+    const start = Date.now()
     try {
-      await this.supabase.from('assessment_results').select('count').limit(1)
-      return {
-        healthy: true,
-        latency: Date.now() - startTime
+      const { data, error } = await this.supabase.from('profiles').select('count').limit(1)
+      const latency = Date.now() - start
+
+      if (error) {
+        return { healthy: false, latency, error: error.message }
       }
+
+      return { healthy: true, latency }
     } catch (error) {
+      const latency = Date.now() - start
       return {
         healthy: false,
-        latency: Date.now() - startTime,
+        latency,
         error: error instanceof Error ? error.message : 'Unknown error'
       }
+    }
+  }
+
+  // Invalidate cache by key pattern
+  invalidateCache(pattern: string): void {
+    const keysToDelete: string[] = []
+    this.cache.forEach((_, key) => {
+      if (key.includes(pattern)) {
+        keysToDelete.push(key)
+      }
+    })
+    keysToDelete.forEach(key => this.cache.delete(key))
+    console.log(`🗑️ ApiManager: Invalidated ${keysToDelete.length} cache entries matching "${pattern}"`)
+  }
+
+  // Alias for Edge Function calls (maps to post for now)
+  async function<T>(
+    functionName: string,
+    payload: any,
+    options: ApiOptions & { method?: 'GET' | 'POST' } = {}
+  ): Promise<ApiResponse<T>> {
+    const { method = 'POST', ...apiOptions } = options
+    
+    if (method === 'GET') {
+      // For GET requests to API routes, use the get method
+      return this.get<T>(`/api/${functionName}`, apiOptions)
+    } else {
+      // For POST requests, use the post method
+      return this.post<T>(`/api/${functionName}`, payload, apiOptions)
     }
   }
 }
@@ -644,10 +676,11 @@ export const api = {
   insert: <T>(table: string, data: any, options?: ApiOptions) => apiManager.supabaseInsert<T>(table, data, options),
   update: <T>(table: string, data: any, match: any, options?: ApiOptions) => apiManager.supabaseUpdate<T>(table, data, match, options),
   deleteRecord: <T>(table: string, match: any, options?: ApiOptions) => apiManager.supabaseDelete<T>(table, match, options),
-  function: <T>(functionName: string, payload: any, options?: ApiOptions) => apiManager.supabaseFunction<T>(functionName, payload, options),
+  function: <T>(functionName: string, payload: any, options?: ApiOptions & { method?: 'GET' | 'POST' }) => apiManager.function<T>(functionName, payload, options),
   
   // Utilities
   clearCache: () => apiManager.clearCache(),
   getCacheStats: () => apiManager.getCacheStats(),
-  healthCheck: () => apiManager.healthCheck()
+  healthCheck: () => apiManager.healthCheck(),
+  invalidateCache: (pattern: string) => apiManager.invalidateCache(pattern)
 }

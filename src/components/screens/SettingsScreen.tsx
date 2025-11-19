@@ -4,15 +4,12 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useAuthContext } from '@/components/providers/AuthProvider'
-// Account deletion not yet implemented in centralized API
-
-// Material Symbols icons import
+import { Button } from '@/components/ui/Button'
 import 'material-symbols/outlined.css'
 
 export default function SettingsScreen() {
   const { user, profile, signOut } = useAuthContext()
   const [loading, setLoading] = useState(false)
-  const [message] = useState('')
   const [error, setError] = useState('')
 
   const handleSignOut = async () => {
@@ -20,7 +17,6 @@ export default function SettingsScreen() {
     setError('')
     try {
       await signOut()
-      // AuthProvider handles the redirect automatically
     } catch (error) {
       console.error('Sign out failed:', error)
       setError('Failed to sign out. Please try again.')
@@ -32,95 +28,82 @@ export default function SettingsScreen() {
     if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       return
     }
-
-    setLoading(true)
-    setError('')
-    try {
-      // TODO: Implement account deletion in centralized API
-      // For now, show a message that this feature is coming soon
-      setError('Account deletion feature is coming soon. Please contact support for assistance.')
-
-      // Uncomment when implemented:
-      // const success = await useAppDataStore.getState().deleteAccount(user?.id!)
-      // if (success) {
-      //   setMessage('Account deleted successfully.')
-      //   setTimeout(() => {
-      //     router.push('/login?message=account_deleted')
-      //   }, 2000)
-      // } else {
-      //   setError('Failed to delete account. Please try again.')
-      // }
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete account. Please try again.'
-      setError(errorMessage)
-    } finally {
-      setLoading(false)
-    }
+    setError('Account deletion feature is coming soon. Please contact support for assistance.')
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full border border-white/20 shadow-lg transition-all duration-300 text-slate-700 hover:text-slate-900 mb-6"
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
+        {/* Back Button */}
+        <Link href="/dashboard" className="inline-block mb-8">
+          <motion.button
+            whileHover={{ x: -2 }}
+            className="flex items-center gap-2 text-[#86868B] hover:text-[#1D1D1F] transition-colors"
           >
             <span className="material-symbols-outlined text-lg">arrow_back</span>
-            <span className="text-sm font-medium">Back to Dashboard</span>
-          </Link>
+            <span className="text-sm font-normal">Back to Dashboard</span>
+          </motion.button>
+        </Link>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center"
-          >
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Settings</h1>
-            <p className="text-slate-600">Manage your account and preferences</p>
-          </motion.div>
-        </div>
+        {/* Header with artistic touch */}
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-[#0071E3]/30 to-transparent mb-8 mx-auto rounded-full" />
+          <h1 className="text-4xl font-medium text-[#1D1D1F] mb-3 tracking-tight">Settings</h1>
+          <p className="text-[#86868B] font-light">Manage your account preferences</p>
+        </motion.div>
 
-        <div className="max-w-2xl mx-auto space-y-6">
-          {/* Account Information */}
+        <div className="space-y-6">
+          {/* Account Information - Aesthetic Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+            className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8E8ED]"
           >
-            <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-slate-600">person</span>
-              Account Information
-            </h2>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#0071E3]">person</span>
+              </div>
+              <h2 className="text-xl font-medium text-[#1D1D1F]">Account Information</h2>
+            </div>
 
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-400">mail</span>
-                  <span className="text-slate-900">{user?.email}</span>
-                  {user?.email_confirmed_at && (
-                    <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>
-                  )}
+              <div className="flex items-center justify-between p-4 bg-[#FAFAFA] rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#86868B] text-xl">mail</span>
+                  <div>
+                    <div className="text-xs text-[#86868B] uppercase tracking-wider mb-1">Email</div>
+                    <div className="text-[#1D1D1F] font-normal">{user?.email}</div>
+                  </div>
+                </div>
+                {user?.email_confirmed_at && (
+                  <span className="material-symbols-outlined text-[#34C759]">check_circle</span>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-[#FAFAFA] rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#86868B] text-xl">badge</span>
+                  <div>
+                    <div className="text-xs text-[#86868B] uppercase tracking-wider mb-1">Display Name</div>
+                    <div className="text-[#1D1D1F] font-normal">{profile?.display_name || 'Not set'}</div>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Display Name</label>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-400">badge</span>
-                  <span className="text-slate-900">{profile?.display_name || 'Not set'}</span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Account Created</label>
-                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-400">calendar_today</span>
-                  <span className="text-slate-900">
-                    {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
-                  </span>
+              <div className="flex items-center justify-between p-4 bg-[#FAFAFA] rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#86868B] text-xl">calendar_today</span>
+                  <div>
+                    <div className="text-xs text-[#86868B] uppercase tracking-wider mb-1">Member Since</div>
+                    <div className="text-[#1D1D1F] font-normal">
+                      {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -131,86 +114,63 @@ export default function SettingsScreen() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20"
+            className="bg-white rounded-3xl p-8 shadow-sm border border-[#E8E8ED]"
           >
-            <h2 className="text-xl font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <span className="material-symbols-outlined text-slate-600">settings</span>
-              Account Actions
-            </h2>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#0071E3]">settings</span>
+              </div>
+              <h2 className="text-xl font-medium text-[#1D1D1F]">Account Actions</h2>
+            </div>
+
+            {error && (
+              <div className="mb-6 p-4 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded-2xl">
+                <p className="text-sm text-[#FF3B30] font-medium">{error}</p>
+              </div>
+            )}
 
             <div className="space-y-4">
-              {/* Error Message */}
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-                  {error}
-                </div>
-              )}
-
-              {/* Success Message */}
-              {message && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
-                  {message}
-                </div>
-              )}
-
-              <button
+              <Button
                 onClick={handleSignOut}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-700 hover:bg-slate-800 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                variant="outline"
+                className="w-full"
+                size="lg"
               >
-                {loading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Signing out...
-                  </>
-                ) : (
-                  <>
-                    <span className="material-symbols-outlined">logout</span>
-                    Sign Out
-                  </>
-                )}
-              </button>
+                {loading ? 'Signing out...' : 'Sign Out'}
+              </Button>
 
-              <div className="pt-4 border-t border-slate-200">
+              <div className="pt-4 border-t border-[#E8E8ED]">
                 <button
                   onClick={handleDeleteAccount}
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-3 bg-[#FF3B30] hover:bg-[#FF3B30]/90 text-white font-normal rounded-full transition-colors disabled:opacity-50"
                 >
-                  {loading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Deleting...
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined">delete_forever</span>
-                      Delete Account
-                    </>
-                  )}
+                  Delete Account
                 </button>
-                <p className="text-xs text-slate-500 text-center mt-2">
-                  This action cannot be undone. All your data will be permanently deleted.
+                <p className="text-xs text-[#86868B] text-center mt-3 font-light">
+                  This action cannot be undone
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* App Information */}
+          {/* App Info - Minimal & Artistic */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 text-center"
+            className="text-center py-8"
           >
-            <h2 className="text-xl font-semibold text-slate-900 mb-4">MindWell</h2>
-            <p className="text-slate-600 text-sm mb-4">
-              Your wellness journey companion
-            </p>
-            <div className="flex items-center justify-center gap-2 text-slate-500 text-xs">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+              <span className="material-symbols-outlined text-white text-xl">psychology_alt</span>
+            </div>
+            <h3 className="text-lg font-medium text-[#1D1D1F] mb-2">MindWell</h3>
+            <p className="text-sm text-[#86868B] font-light mb-3">Your wellness journey companion</p>
+            <div className="flex items-center justify-center gap-2 text-xs text-[#A1A1A6]">
               <span>Version 1.0.0</span>
               <span>•</span>
-              <span>© 2024 MindWell</span>
+              <span>© 2024</span>
             </div>
           </motion.div>
         </div>
@@ -218,4 +178,3 @@ export default function SettingsScreen() {
     </div>
   )
 }
-

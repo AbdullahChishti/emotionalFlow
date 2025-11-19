@@ -1,9 +1,9 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthContext } from '@/components/providers/AuthProvider'
 import { handleSignOutError } from '@/lib/utils/authRedirects'
 
@@ -18,9 +18,10 @@ interface NavigationProps {
 export function Navigation({ className = '', user, onSignOut, currentPage }: NavigationProps) {
   const { signOut: authSignOut } = useAuthContext()
   const router = useRouter()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   return (
-    <motion.nav 
+    <motion.nav
       className={`fixed top-0 left-0 right-0 z-40 ${className || ''}`}
       style={{
         fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
@@ -30,26 +31,26 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
       transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <motion.div 
+        <motion.div
           className="relative flex justify-between items-center overflow-hidden rounded-3xl px-8 py-5"
           style={{
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(16, 185, 129, 0.1)',
+            border: '1px solid rgba(0, 113, 227, 0.1)',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)'
           }}
           whileHover={{ y: -1 }}
           transition={{ duration: 0.3 }}
         >
           {/* Multi-layered sophisticated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/5 via-teal-50/3 to-emerald-50/5"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/5 via-blue-100/3 to-blue-50/5"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
-          
+
           {/* Floating animated gradient orbs */}
-          <motion.div 
+          <motion.div
             className="absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl"
             style={{
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+              background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
               opacity: 0.15
             }}
             animate={{
@@ -64,10 +65,10 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               ease: "easeInOut"
             }}
           />
-          <motion.div 
+          <motion.div
             className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full blur-2xl"
             style={{
-              background: 'linear-gradient(135deg, #0d9488 0%, #0f766e 50%, #134e4a 100%)',
+              background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
               opacity: 0.12
             }}
             animate={{
@@ -86,7 +87,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
 
           {/* Enhanced Brand Logo */}
           <Link href="/" className="relative z-10">
-            <motion.div 
+            <motion.div
               className="flex items-center gap-3"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -95,19 +96,19 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               <motion.div
                 className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg"
                 style={{
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-                  boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                  background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                  boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                 }}
-                whileHover={{ 
-                  rotate: 5, 
+                whileHover={{
+                  rotate: 5,
                   scale: 1.05,
-                  boxShadow: '0 12px 40px -8px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)'
+                  boxShadow: '0 12px 40px -8px rgba(0, 113, 227, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)'
                 }}
                 transition={{ duration: 0.3 }}
               >
                 <span className="material-symbols-outlined text-white text-lg">psychology</span>
               </motion.div>
-              <motion.span 
+              <motion.span
                 className="text-xl font-light text-slate-900 tracking-tight"
                 style={{
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -117,8 +118,8 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 whileHover={{ x: 2 }}
                 transition={{ duration: 0.2 }}
               >
-                Mind<span 
-                  className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent font-normal"
+                Mind<span
+                  className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent font-normal"
                   style={{
                     fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     letterSpacing: '-0.02em',
@@ -130,14 +131,13 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
           </Link>
 
           {user && (
-            <div className="relative z-10 flex items-center gap-2">
+            <div className="relative z-10 hidden md:flex items-center gap-2">
               <Link href="/dashboard">
                 <motion.div
-                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${
-                    currentPage === 'dashboard'
-                      ? 'text-white shadow-lg'
-                      : 'text-slate-700 hover:text-slate-900'
-                  }`}
+                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${currentPage === 'dashboard'
+                    ? 'text-white shadow-lg'
+                    : 'text-slate-700 hover:text-slate-900'
+                    }`}
                   style={{
                     fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     letterSpacing: '-0.005em',
@@ -149,23 +149,23 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 >
                   {currentPage === 'dashboard' && (
                     <>
-                      <div 
+                      <div
                         className="absolute inset-0 rounded-2xl"
                         style={{
-                          background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-                          boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                          background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                          boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
                     </>
                   )}
                   {currentPage !== 'dashboard' && (
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-2xl transition-all duration-300"
                       style={{
                         background: 'rgba(255, 255, 255, 0.6)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(16, 185, 129, 0.1)'
+                        border: '1px solid rgba(0, 113, 227, 0.1)'
                       }}
                     />
                   )}
@@ -175,14 +175,13 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                   </span>
                 </motion.div>
               </Link>
-              
+
               <Link href="/assessments">
                 <motion.div
-                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${
-                    currentPage === 'assessments'
-                      ? 'text-white shadow-lg'
-                      : 'text-slate-700 hover:text-slate-900'
-                  }`}
+                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${currentPage === 'assessments'
+                    ? 'text-white shadow-lg'
+                    : 'text-slate-700 hover:text-slate-900'
+                    }`}
                   style={{
                     fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     letterSpacing: '-0.005em',
@@ -194,7 +193,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 >
                   {currentPage === 'assessments' && (
                     <>
-                      <div 
+                      <div
                         className="absolute inset-0 rounded-2xl"
                         style={{
                           background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
@@ -205,12 +204,12 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                     </>
                   )}
                   {currentPage !== 'assessments' && (
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-2xl transition-all duration-300"
                       style={{
                         background: 'rgba(255, 255, 255, 0.6)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(16, 185, 129, 0.1)'
+                        border: '1px solid rgba(0, 113, 227, 0.1)'
                       }}
                     />
                   )}
@@ -222,11 +221,10 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               </Link>
               <div className="relative group">
                 <motion.button
-                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${
-                    currentPage === 'therapy'
-                      ? 'text-white shadow-lg'
-                      : 'text-slate-700 hover:text-slate-900'
-                  }`}
+                  className={`relative px-5 py-2.5 rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden ${currentPage === 'therapy'
+                    ? 'text-white shadow-lg'
+                    : 'text-slate-700 hover:text-slate-900'
+                    }`}
                   style={{
                     fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                     letterSpacing: '-0.005em',
@@ -239,7 +237,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 >
                   {currentPage === 'therapy' && (
                     <>
-                      <div 
+                      <div
                         className="absolute inset-0 rounded-2xl"
                         style={{
                           background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
@@ -250,19 +248,19 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                     </>
                   )}
                   {currentPage !== 'therapy' && (
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-2xl transition-all duration-300"
                       style={{
                         background: 'rgba(255, 255, 255, 0.6)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(16, 185, 129, 0.1)'
+                        border: '1px solid rgba(0, 113, 227, 0.1)'
                       }}
                     />
                   )}
                   <span className="relative flex items-center gap-2">
                     <span className="material-symbols-outlined text-base">psychology</span>
                     Therapy
-                    <motion.span 
+                    <motion.span
                       className="material-symbols-outlined text-sm"
                       animate={{ rotate: 0 }}
                       whileHover={{ rotate: 180 }}
@@ -272,9 +270,9 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                     </motion.span>
                   </span>
                 </motion.button>
-                
+
                 {/* Ultra-sophisticated dropdown menu */}
-                <motion.div 
+                <motion.div
                   className="absolute top-full left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50"
                   initial={{ opacity: 0, y: -10 }}
                   whileHover={{ opacity: 1, y: 0 }}
@@ -282,22 +280,22 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 >
                   <div className="relative">
                     {/* Multi-layered background with depth */}
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-2xl"
                       style={{
                         background: 'rgba(255, 255, 255, 0.95)',
                         backdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(16, 185, 129, 0.1)',
+                        border: '1px solid rgba(0, 113, 227, 0.1)',
                         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05)'
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/10 via-teal-50/5 to-emerald-50/10 rounded-2xl"></div>
-                    
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/10 via-blue-100/5 to-blue-50/10 rounded-2xl"></div>
+
                     {/* Floating animated gradient orb */}
-                    <motion.div 
+                    <motion.div
                       className="absolute -top-5 -right-5 w-16 h-16 rounded-full blur-xl"
                       style={{
-                        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+                        background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
                         opacity: 0.2
                       }}
                       animate={{
@@ -315,17 +313,17 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
 
                     <div className="relative p-2">
                       <Link href="/session">
-                        <motion.div 
+                        <motion.div
                           className="group/item flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-500"
                           style={{
                             background: 'rgba(255, 255, 255, 0.6)',
                             backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(16, 185, 129, 0.1)'
+                            border: '1px solid rgba(0, 113, 227, 0.1)'
                           }}
-                          whileHover={{ 
+                          whileHover={{
                             x: 2,
-                            background: 'rgba(16, 185, 129, 0.05)',
-                            boxShadow: '0 4px 12px -4px rgba(16, 185, 129, 0.15)'
+                            background: 'rgba(0, 113, 227, 0.05)',
+                            boxShadow: '0 4px 12px -4px rgba(0, 113, 227, 0.15)'
                           }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
@@ -336,16 +334,16 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                               background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
                               boxShadow: '0 2px 8px -2px rgba(16, 185, 129, 0.1)'
                             }}
-                            whileHover={{ 
+                            whileHover={{
                               scale: 1.05,
-                              boxShadow: '0 4px 12px -2px rgba(16, 185, 129, 0.2)'
+                              boxShadow: '0 4px 12px -2px rgba(0, 113, 227, 0.2)'
                             }}
                           >
-                            <span className="material-symbols-outlined text-emerald-600 text-base">psychology</span>
+                            <span className="material-symbols-outlined text-blue-600 text-base">psychology</span>
                           </motion.div>
                           <div>
-                            <h4 
-                              className="text-sm font-medium text-slate-900 group-hover/item:text-emerald-700 transition-colors duration-300"
+                            <h4
+                              className="text-sm font-medium text-slate-900 group-hover/item:text-blue-700 transition-colors duration-300"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                                 letterSpacing: '-0.005em',
@@ -354,7 +352,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                             >
                               Therapy Session
                             </h4>
-                            <p 
+                            <p
                               className="text-xs text-slate-500 font-light"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -367,19 +365,19 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                           </div>
                         </motion.div>
                       </Link>
-                      
+
                       <Link href="/meditation">
-                        <motion.div 
+                        <motion.div
                           className="group/item flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-500"
                           style={{
                             background: 'rgba(255, 255, 255, 0.6)',
                             backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(16, 185, 129, 0.1)'
+                            border: '1px solid rgba(0, 113, 227, 0.1)'
                           }}
-                          whileHover={{ 
+                          whileHover={{
                             x: 2,
-                            background: 'rgba(16, 185, 129, 0.05)',
-                            boxShadow: '0 4px 12px -4px rgba(16, 185, 129, 0.15)'
+                            background: 'rgba(0, 113, 227, 0.05)',
+                            boxShadow: '0 4px 12px -4px rgba(0, 113, 227, 0.15)'
                           }}
                           whileTap={{ scale: 0.98 }}
                           transition={{ duration: 0.2 }}
@@ -390,16 +388,16 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                               background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
                               boxShadow: '0 2px 8px -2px rgba(16, 185, 129, 0.1)'
                             }}
-                            whileHover={{ 
+                            whileHover={{
                               scale: 1.05,
-                              boxShadow: '0 4px 12px -2px rgba(16, 185, 129, 0.2)'
+                              boxShadow: '0 4px 12px -2px rgba(0, 113, 227, 0.2)'
                             }}
                           >
-                            <span className="material-symbols-outlined text-emerald-600 text-base">self_improvement</span>
+                            <span className="material-symbols-outlined text-blue-600 text-base">self_improvement</span>
                           </motion.div>
                           <div>
-                            <h4 
-                              className="text-sm font-medium text-slate-900 group-hover/item:text-emerald-700 transition-colors duration-300"
+                            <h4
+                              className="text-sm font-medium text-slate-900 group-hover/item:text-blue-700 transition-colors duration-300"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                                 letterSpacing: '-0.005em',
@@ -408,7 +406,7 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                             >
                               Meditation
                             </h4>
-                            <p 
+                            <p
                               className="text-xs text-slate-500 font-light"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -459,20 +457,20 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
                 style={{
                   background: 'rgba(255, 255, 255, 0.6)',
                   backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  color: '#10b981',
-                  boxShadow: '0 2px 8px -2px rgba(16, 185, 129, 0.1)'
+                  border: '1px solid rgba(0, 113, 227, 0.3)',
+                  color: '#0071E3',
+                  boxShadow: '0 2px 8px -2px rgba(0, 113, 227, 0.1)'
                 }}
-                whileHover={{ 
-                  y: -1, 
+                whileHover={{
+                  y: -1,
                   scale: 1.02,
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-                  boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                  background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                  boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.3 }}
               >
-                <span 
+                <span
                   className="relative flex items-center gap-2 transition-colors duration-300 group-hover:text-white"
                   style={{
                     fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -490,21 +488,21 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
           {!user && (
             <motion.button
               onClick={() => router.push('/login')}
-              className="group relative px-8 py-3 text-white rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden shadow-lg hover:shadow-xl"
+              className="group relative px-8 py-3 text-white rounded-2xl font-medium text-sm transition-all duration-500 overflow-hidden shadow-lg hover:shadow-xl hidden md:flex"
               style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-                boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
+                background: 'linear-gradient(135deg, #0071E3 0%, #0066CC 50%, #005BB5 100%)',
+                boxShadow: '0 8px 32px -8px rgba(0, 113, 227, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
               }}
-              whileHover={{ 
-                y: -2, 
+              whileHover={{
+                y: -2,
                 scale: 1.02,
-                boxShadow: '0 12px 40px -8px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)'
+                boxShadow: '0 12px 40px -8px rgba(0, 113, 227, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)'
               }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.3 }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span 
+              <span
                 className="relative flex items-center gap-2"
                 style={{
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -517,7 +515,71 @@ export function Navigation({ className = '', user, onSignOut, currentPage }: Nav
               </span>
             </motion.button>
           )}
+          {/* Mobile Toggle */}
+          <button
+            className="relative z-10 md:hidden p-2 text-slate-600 hover:text-blue-600 transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <span className="material-symbols-outlined text-2xl">
+              {isMobileMenuOpen ? 'close' : 'menu'}
+            </span>
+          </button>
         </motion.div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="md:hidden mt-4 overflow-hidden rounded-3xl bg-white/95 backdrop-blur-xl border border-blue-500/10 shadow-2xl"
+            >
+              <div className="p-4 flex flex-col gap-2">
+                {user ? (
+                  <>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div className={`p-4 rounded-2xl flex items-center gap-3 ${currentPage === 'dashboard' ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
+                        <span className="material-symbols-outlined">dashboard</span>
+                        <span className="font-medium">Dashboard</span>
+                      </div>
+                    </Link>
+                    <Link href="/assessments" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div className={`p-4 rounded-2xl flex items-center gap-3 ${currentPage === 'assessments' ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
+                        <span className="material-symbols-outlined">assignment</span>
+                        <span className="font-medium">Assessments</span>
+                      </div>
+                    </Link>
+                    <Link href="/session" onClick={() => setIsMobileMenuOpen(false)}>
+                      <div className={`p-4 rounded-2xl flex items-center gap-3 ${currentPage === 'therapy' ? 'bg-blue-50 text-blue-700' : 'hover:bg-slate-50 text-slate-600'}`}>
+                        <span className="material-symbols-outlined">psychology</span>
+                        <span className="font-medium">Therapy Session</span>
+                      </div>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        if (onSignOut) onSignOut()
+                        else authSignOut()
+                      }}
+                      className="p-4 rounded-2xl flex items-center gap-3 text-red-600 hover:bg-red-50 mt-2 w-full"
+                    >
+                      <span className="material-symbols-outlined">logout</span>
+                      <span className="font-medium">Sign Out</span>
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <div className="p-4 rounded-2xl flex items-center gap-3 bg-blue-600 text-white shadow-lg">
+                      <span className="material-symbols-outlined">psychology</span>
+                      <span className="font-medium">Find Peace (Login)</span>
+                    </div>
+                  </Link>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.nav>
   )

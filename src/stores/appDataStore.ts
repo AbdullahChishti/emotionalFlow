@@ -417,49 +417,81 @@ export const useAppDataStore = create<AppDataState>()(
 
       // Data operations
       saveAssessment: async (userId: string, assessment: any) => {
-        console.log('🏪 APP DATA STORE TRACE: saveAssessment called', {
+        console.log('💾 appDataStore: saveAssessment called', {
           userId,
-          assessmentId: (assessment as any).assessmentId || assessment.id,
-          assessmentKeys: Object.keys(assessment),
-          hasResult: !!assessment.result,
-          hasResponses: !!assessment.responses,
-          assessmentType: typeof assessment
+          assessmentId: assessment.id || assessment.assessmentId,
+          hasResult: !!assessment.result
         })
         
         try {
-          console.log('🏪 APP DATA STORE TRACE: Calling DataService.saveAssessment...')
-          const success = await DataService.saveAssessment(userId, assessment)
+          // Get current state for rollback
+          const currentAssessments = get().assessments
+          const assessmentKey = assessment.id || assessment.assessmentId
           
-          console.log('🏪 APP DATA STORE TRACE: DataService.saveAssessment result:', {
-            success,
-            successType: typeof success,
-            isBoolean: typeof success === 'boolean',
-            isTrue: success === true,
-            isFalse: success === false
-          })
-          
-          if (success) {
-            // Update local state - handle different object structures
-            const assessmentKey = (assessment as any).assessmentId || assessment.id || 'unknown'
-            console.log('🏪 APP DATA STORE TRACE: Updating local state with key:', assessmentKey)
-            set(state => ({
-              assessments: { ...state.assessments, [assessmentKey]: assessment }
-            }))
-            console.log('🏪 APP DATA STORE TRACE: Local state updated successfully')
-          } else {
-            console.log('🏪 APP DATA STORE TRACE: DataService returned false, not updating local state')
+          // Optimistic update - update UI immediately
+          const optimisticResult = assessment.result || {
+            score: assessment.score,
+            level: assessment.level,
+            severity: assessment.severity,
+            description: assessment.description || assessment.interpretation,
+            recommendations: assessment.recommendations || [],
+            insights: assessment.insights || [],
+            nextSteps: assessment.nextSteps || [],
+            manifestations: assessment.manifestations || [],
+            takenAt: new Date()
           }
           
-          console.log('🏪 APP DATA STORE TRACE: saveAssessment completed, returning:', success)
-          return success
+          set(state => ({
+            assessments: {
+              ...state.assessments,
+              [assessmentKey]: optimisticResult
+            }
+          }))
+          
+          console.log('✅ appDataStore: Optimistic update applied')
+          
+          // Save to backend
+          const success = await DataService.saveAssessment(userId, assessment)
+          
+          if (!success) {
+            console.error('❌ appDataStore: Save failed, reverting optimistic update')
+            // Revert optimistic update
+            set({ assessments: currentAssessments })
+            set(state => ({
+              errors: { ...state.errors, assessments: 'Failed to save assessment' }
+            }))
+            return false
+          }
+          
+          console.log('✅ appDataStore: Assessment saved successfully')
+          
+          // Clear any previous errors
+          set(state => ({
+            errors: { ...state.errors, assessments: null }
+          }))
+          
+          // Invalidate cache to ensure fresh data on next fetch
+          set(state => ({
+            lastFetch: { ...state.lastFetch, assessments: null }
+          }))
+          
+          return true
         } catch (error) {
-          console.error('❌ AppDataStore: Failed to save assessment:', {
-            error,
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
-          errorStack: error instanceof Error ? error.stack?.split('\n').slice(0, 5) : undefined,
-            errorType: typeof error,
-            errorConstructor: error?.constructor?.name
-          })
+          console.error('❌ appDataStore: Failed to save assessment:', error)
+          
+          // Revert optimistic update on error
+          const currentAssessments = get().assessments
+          const assessmentKey = assessment.id || assessment.assessmentId
+          const { [assessmentKey]: removed, ...remaining } = currentAssessments
+          set({ assessments: remaining })
+          
+          set(state => ({
+            errors: {
+              ...state.errors,
+              assessments: error instanceof Error ? error.message : 'Failed to save assessment'
+            }
+          }))
+          
           return false
         }
       },

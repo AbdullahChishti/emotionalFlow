@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useApp } from '@/hooks/useApp'
-import { AssessmentManager } from '@/lib/services/AssessmentManager'
+import { useAssessmentData } from '@/hooks/useAssessmentData'
 import AssessmentResults from '@/components/assessment/AssessmentResults'
 import { ASSESSMENTS } from '@/data/assessments'
 import { AssessmentResult } from '@/data/assessments'
@@ -53,7 +53,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
   const entries = Object.entries(results)
 
   return (
-    <div 
+    <div
       className="min-h-screen"
       style={{
         fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -100,11 +100,11 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
           }}
         />
       </div>
-      
+
       <div className="container mx-auto px-6 py-8 relative z-10">
         {/* Enhanced header */}
         <div className="flex items-center justify-between mb-8">
-          <div 
+          <div
             className="text-sm font-medium text-slate-800 tabular-nums"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -115,8 +115,8 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
             {entries.length}<span className="text-slate-400"> results</span>
           </div>
           <div className="flex items-center gap-3">
-            <motion.button 
-              onClick={onRetake} 
+            <motion.button
+              onClick={onRetake}
               className="text-xs text-slate-500 hover:text-slate-700 transition-colors duration-300"
               style={{
                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -128,8 +128,8 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
             >
               Retake
             </motion.button>
-            <motion.button 
-              onClick={onNewAssessment} 
+            <motion.button
+              onClick={onNewAssessment}
               className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 transition-colors duration-300"
               style={{
                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -146,7 +146,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
         </div>
 
         {/* Enhanced results list */}
-        <div 
+        <div
           className="rounded-2xl overflow-hidden max-w-3xl mx-auto"
           style={{
             background: 'rgba(255, 255, 255, 0.95)',
@@ -174,7 +174,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
               >
-                <div 
+                <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
                   style={{
                     background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
@@ -185,7 +185,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span 
+                    <span
                       className="text-sm text-slate-800 truncate"
                       style={{
                         fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -195,7 +195,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
                     >
                       {assessment.shortTitle || assessment.title}
                     </span>
-                    <span 
+                    <span
                       className="text-xs text-slate-400 px-2 py-1 rounded-full"
                       style={{
                         background: 'rgba(16, 185, 129, 0.1)',
@@ -207,7 +207,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
                       {result.level}
                     </span>
                   </div>
-                  <div 
+                  <div
                     className="text-xs text-slate-500 mt-1"
                     style={{
                       fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -231,6 +231,7 @@ function MultipleResultsDisplay({ results, onRetake, onNewAssessment }: Multiple
 export default function ResultsPage() {
   const { auth } = useApp()
   const { user } = auth
+  const { getAssessmentHistory } = useAssessmentData()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(true)
@@ -281,14 +282,14 @@ export default function ResultsPage() {
     const effectiveUserId = userId || user?.id
     if (!effectiveUserId) throw new Error('No user ID available')
 
-    console.log('🔍 ResultsPage: Fetching assessment history...')
+    console.log('🔍 ResultsPage: Fetching assessment history using centralized hook...')
 
     // Add timeout to prevent hanging
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Database fetch timeout')), 8000)
     })
 
-    const fetchPromise = AssessmentManager.getAssessmentHistory(effectiveUserId)
+    const fetchPromise = getAssessmentHistory()
 
     let history
     try {
@@ -299,92 +300,10 @@ export default function ResultsPage() {
       throw error
     }
 
-    // If no results, try to get data from user profile as fallback
+    // If no results found, return null (removed profile fallback as it's deprecated)
     if (!history || (Array.isArray(history) && history.length === 0)) {
-      try {
-        const profile = await AssessmentManager.getLatestUserProfile(effectiveUserId)
-        if (profile?.profile_data) {
-          const profileData = profile.profile_data as any
-          const extractedResults: any[] = []
-
-          // Extract each assessment type
-          if (profileData.currentSymptoms?.depression?.score > 0) {
-            extractedResults.push({
-              id: 'profile-phq9',
-              assessmentId: 'phq9',
-              assessmentTitle: 'PHQ-9 Depression Assessment',
-              score: profileData.currentSymptoms.depression.score,
-              level: profileData.currentSymptoms.depression.level || 'Unknown',
-              severity: profileData.currentSymptoms.depression.needsIntervention ? 'moderate' : 'normal',
-              takenAt: profile.last_assessed || new Date().toISOString(),
-              friendlyExplanation: profileData.currentSymptoms.depression.friendlyExplanation
-            })
-          }
-
-          if (profileData.currentSymptoms?.anxiety?.score > 0) {
-            extractedResults.push({
-              id: 'profile-gad7',
-              assessmentId: 'gad7',
-              assessmentTitle: 'GAD-7 Anxiety Assessment',
-              score: profileData.currentSymptoms.anxiety.score,
-              level: profileData.currentSymptoms.anxiety.level || 'Unknown',
-              severity: profileData.currentSymptoms.anxiety.needsIntervention ? 'moderate' : 'normal',
-              takenAt: profile.last_assessed || new Date().toISOString(),
-              friendlyExplanation: profileData.currentSymptoms.anxiety.friendlyExplanation
-            })
-          }
-
-          if (profileData.currentSymptoms?.stress?.score > 0) {
-            extractedResults.push({
-              id: 'profile-pss10',
-              assessmentId: 'pss10',
-              assessmentTitle: 'PSS-10 Perceived Stress Scale',
-              score: profileData.currentSymptoms.stress.score,
-              level: profileData.currentSymptoms.stress.level || 'Unknown',
-              severity: profileData.currentSymptoms.stress.needsIntervention ? 'moderate' : 'normal',
-              takenAt: profile.last_assessed || new Date().toISOString(),
-              friendlyExplanation: profileData.currentSymptoms.stress.friendlyExplanation
-            })
-          }
-
-          if (profileData.currentSymptoms?.wellbeing?.score > 0) {
-            extractedResults.push({
-              id: 'profile-who5',
-              assessmentId: 'who5',
-              assessmentTitle: 'WHO-5 Well-Being Index',
-              score: profileData.currentSymptoms.wellbeing.score,
-              level: profileData.currentSymptoms.wellbeing.level || 'Unknown',
-              severity: profileData.currentSymptoms.wellbeing.needsEnhancement ? 'moderate' : 'normal',
-              takenAt: profile.last_assessed || new Date().toISOString(),
-              friendlyExplanation: profileData.currentSymptoms.wellbeing.friendlyExplanation
-            })
-          }
-
-          if (profileData.resilience?.score > 0) {
-            extractedResults.push({
-              id: 'profile-cd-risc',
-              assessmentId: 'cd-risc',
-              assessmentTitle: 'CD-RISC Resilience Scale',
-              score: profileData.resilience.score,
-              level: profileData.resilience.level || 'Unknown',
-              severity: 'normal',
-              takenAt: profile.last_assessed || new Date().toISOString(),
-              friendlyExplanation: profileData.resilience.friendlyExplanation
-            })
-          }
-
-          if (extractedResults.length > 0) {
-            history = extractedResults
-          } else {
-            return null
-          }
-        } else {
-          return null
-        }
-      } catch (profileError) {
-        console.warn('Error fetching user profile:', profileError)
-        return null
-      }
+      console.log('❌ ResultsPage: No assessment history found')
+      return null
     }
 
     if (assessmentId) {
@@ -399,24 +318,24 @@ export default function ResultsPage() {
       const latest: Record<string, any> = {}
       if (Array.isArray(history)) {
         history.forEach((entry: any) => {
-        const existing = latest[entry.assessmentId]
-        if (!existing || new Date(entry.takenAt) > new Date(existing.takenAt)) {
-          latest[entry.assessmentId] = {
-            ...createAssessmentResult(entry, entry.assessmentId),
-            takenAt: entry.takenAt
+          const existing = latest[entry.assessmentId]
+          if (!existing || new Date(entry.takenAt) > new Date(existing.takenAt)) {
+            latest[entry.assessmentId] = {
+              ...createAssessmentResult(entry, entry.assessmentId),
+              takenAt: entry.takenAt
+            }
           }
-        }
-      })
+        })
       }
       return latest
     }
-  }, [user?.id, createAssessmentResult])
+  }, [user?.id, getAssessmentHistory, createAssessmentResult])
 
   const fetchFromStorage = useCallback((assessmentId?: string): any => {
     console.log('🔍 ResultsPage: fetchFromStorage called with assessmentId:', assessmentId)
     const storedResults = safeGetFromStorage('assessmentResults')
     console.log('🔍 ResultsPage: storedResults from localStorage:', storedResults)
-    
+
     if (!storedResults || typeof storedResults !== 'object') {
       console.log('❌ ResultsPage: No valid stored results found')
       return null
@@ -456,11 +375,11 @@ export default function ResultsPage() {
 
       const assessmentParam = targetParam ?? searchParams.get('assessment')
       let result: any = null
-      
+
       // Check localStorage first for immediate results, then try database
       console.log('🔍 ResultsPage: Checking localStorage first...')
       result = fetchFromStorage(assessmentParam || undefined)
-      
+
       if (result) {
         console.log('✅ ResultsPage: Found results in localStorage, using them immediately')
         setUsingFallback(true)
@@ -606,7 +525,7 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{
           fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -615,7 +534,7 @@ export default function ResultsPage() {
       >
         <div className="text-center">
           <LoadingSpinner size="lg" />
-          <p 
+          <p
             className="text-slate-600 mt-4"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -632,7 +551,7 @@ export default function ResultsPage() {
 
   if (error) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{
           fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -640,7 +559,7 @@ export default function ResultsPage() {
         }}
       >
         <div className="text-center max-w-md mx-auto px-6">
-          <div 
+          <div
             className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
             style={{
               background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
@@ -649,7 +568,7 @@ export default function ResultsPage() {
           >
             <span className="material-symbols-outlined text-2xl text-red-600">error</span>
           </div>
-          <h1 
+          <h1
             className="text-2xl font-bold text-slate-900 mb-4"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -659,7 +578,7 @@ export default function ResultsPage() {
           >
             Unable to Load Results
           </h1>
-          <p 
+          <p
             className="text-slate-600 mb-6"
             style={{
               fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -764,11 +683,10 @@ export default function ResultsPage() {
         <button
           onClick={retrySync}
           disabled={syncing}
-          className={`px-4 py-2 text-sm rounded-xl border transition-all duration-300 ${
-            syncing
-              ? 'opacity-60 cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
-              : 'hover:bg-slate-50 border-slate-200 bg-white text-slate-700 hover:shadow-sm'
-          }`}
+          className={`px-4 py-2 text-sm rounded-xl border transition-all duration-300 ${syncing
+            ? 'opacity-60 cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400'
+            : 'hover:bg-slate-50 border-slate-200 bg-white text-slate-700 hover:shadow-sm'
+            }`}
         >
           {syncing ? 'Syncing…' : 'Retry Sync'}
         </button>
@@ -807,7 +725,7 @@ export default function ResultsPage() {
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center"
       style={{
         fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -815,7 +733,7 @@ export default function ResultsPage() {
       }}
     >
       <div className="text-center">
-        <h1 
+        <h1
           className="text-2xl font-bold text-slate-900 mb-4"
           style={{
             fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -825,7 +743,7 @@ export default function ResultsPage() {
         >
           No Results Available
         </h1>
-        <p 
+        <p
           className="text-slate-600 mb-6"
           style={{
             fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',

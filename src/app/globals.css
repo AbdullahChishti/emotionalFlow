@@ -1,71 +1,94 @@
 @import "tailwindcss";
 
-@theme {
-  /* MindWell Landing Hero Tokens */
-  --brand-50: #ECF6F4;
-  --brand-500: #2E7D74;
-  --brand-600: #24685F;
-  --accent-300: #C8D6F0;
-  --ink-900: #0F172A;
-  --ink-600: #475569;
+/* ========================================
+   CONCEPT 3: MODERN PSYCHOLOGY COLOR SYSTEM
+   Single source of truth for all app colors
+   Change these values to change the entire app
+   ======================================== */
 
-  /* MindWell Design System Colors */
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
+:root {
+  /* PRIMARY GRADIENT - Blue gradient used throughout */
+  --color-primary: #0071E3;
+  --color-primary-dark: #005BB5;
+  --color-primary-light: #0077ED;
+  --color-primary-gradient-from: #0071E3;
+  --color-primary-gradient-mid: #0066CC;
+  --color-primary-gradient-to: #005BB5;
 
-  /* Primary colors (Sky blue theme) */
-  --color-primary: #0ea5e9;
-  --color-primary-foreground: #ffffff;
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
+  /* BACKGROUNDS */
+  --color-background: #FAFAFA;
+  --color-background-white: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
 
-  /* Secondary colors (Slate theme) */
-  --color-secondary: #64748b;
-  --color-secondary-foreground: #0f172a;
-  --color-secondary-50: #f8fafc;
-  --color-secondary-100: #f1f5f9;
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
-  --color-secondary-800: #1e293b;
-  --color-secondary-900: #0f172a;
+  /* TEXT COLORS */
+  --color-text-primary: #1D1D1F;
+  --color-text-secondary: #86868B;
+  --color-text-tertiary: #A1A1A6;
+  --color-text-inverse: #FFFFFF;
 
-  /* Other colors */
-  --color-muted: #f8fafc;
-  --color-muted-foreground: #64748b;
-  --color-accent: #0ea5e9;
-  --color-accent-foreground: #ffffff;
-  --color-destructive: #ef4444;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #0ea5e9;
-  --radius: 0.75rem;
+  /* BORDERS */
+  --color-border: #E8E8ED;
+  --color-border-light: #D2D2D7;
+  --color-border-primary: rgba(0, 113, 227, 0.1);
 
-  /* MindWell brand tokens */
-  --brand-50: #ECF6F4;
-  --brand-500: #2E7D74;
-  --brand-600: #24685F;
-  --ink-900: #0F172A;
-  --ink-600: #475569;
-  --ink-400: #94A3B8;
-  --error-600: #B91C1C;
-  --success-600: #177245;
+  /* STATUS COLORS */
+  --color-success: #34C759;
+  --color-success-bg: rgba(52, 199, 89, 0.1);
+  --color-success-border: rgba(52, 199, 89, 0.2);
+
+  --color-warning: #FF9500;
+  --color-warning-bg: rgba(255, 149, 0, 0.1);
+  --color-warning-border: rgba(255, 149, 0, 0.2);
+
+  --color-error: #FF3B30;
+  --color-error-bg: rgba(255, 59, 48, 0.1);
+  --color-error-border: rgba(255, 59, 48, 0.2);
+
+  --color-info: #0071E3;
+  --color-info-bg: rgba(0, 113, 227, 0.1);
+  --color-info-border: rgba(0, 113, 227, 0.2);
+
+  /* SHADOWS */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-primary: 0 8px 32px -8px rgba(0, 113, 227, 0.3);
+
+  /* BLUR EFFECTS */
+  --blur-sm: blur(4px);
+  --blur-md: blur(12px);
+  --blur-lg: blur(20px);
+  --blur-xl: blur(40px);
+
+  /* OPACITY LEVELS */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.8;
+  --opacity-overlay: 0.95;
+
+  /* GRADIENTS */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary-gradient-from) 0%, var(--color-primary-gradient-mid) 50%, var(--color-primary-gradient-to) 100%);
+  --gradient-overlay: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
+
+  /* LEGACY TAILWIND COMPATIBILITY */
+  --color-foreground: var(--color-text-primary);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-text-primary);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-text-primary);
+  --color-primary-foreground: var(--color-text-inverse);
+  --color-secondary: var(--color-text-secondary);
+  --color-secondary-foreground: var(--color-text-inverse);
+  --color-muted: #F5F5F7;
+  --color-muted-foreground: var(--color-text-secondary);
+  --color-accent: var(--color-primary);
+  --color-accent-foreground: var(--color-text-inverse);
+  --color-destructive: var(--color-error);
+  --color-destructive-foreground: var(--color-text-inverse);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-primary);
+  --radius: 1rem;
 }
 
 /* Dark theme overrides for Purple Sparkle */
@@ -91,11 +114,12 @@
 
 @layer base {
   * {
-    border-color: theme(colors.border);
+    border-color: var(--color-border);
   }
+
   body {
-    background-color: theme(colors.background);
-    color: theme(colors.foreground);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
   }
 }
 
@@ -114,53 +138,75 @@
   /* Radial gradient helper for hero */
   .hero-radial {
     background:
-      radial-gradient(1600px 900px at 15% 15%, var(--brand-50, #ECF6F4) 0%, rgba(236,246,244,0.8) 25%, rgba(236,246,244,0.4) 50%, rgba(255,255,255,0.1) 80%, rgba(255,255,255,0) 100%),
-      linear-gradient(180deg, rgba(236,246,244,0.2) 0%, rgba(255,255,255,0) 70%);
+      radial-gradient(1600px 900px at 15% 15%, var(--brand-50, #ECF6F4) 0%, rgba(236, 246, 244, 0.8) 25%, rgba(236, 246, 244, 0.4) 50%, rgba(255, 255, 255, 0.1) 80%, rgba(255, 255, 255, 0) 100%),
+      linear-gradient(180deg, rgba(236, 246, 244, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
   }
 
   @keyframes floaty {
-    0% { transform: translateY(0) translateX(0); }
-    50% { transform: translateY(-12px) translateX(8px); }
-    100% { transform: translateY(0) translateX(0); }
+    0% {
+      transform: translateY(0) translateX(0);
+    }
+
+    50% {
+      transform: translateY(-12px) translateX(8px);
+    }
+
+    100% {
+      transform: translateY(0) translateX(0);
+    }
   }
+
   .animate-floaty-slow {
     animation: floaty 14s ease-in-out infinite;
   }
+
   .animate-floaty-slower {
     animation: floaty 18s ease-in-out infinite;
   }
 
   @keyframes chaos-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   @keyframes chaos-subtle {
-    0% { 
+    0% {
       transform: rotate(-1deg) translateX(0px);
       opacity: 0.8;
     }
-    50% { 
+
+    50% {
       transform: rotate(0.5deg) translateX(1px);
       opacity: 0.6;
     }
-    100% { 
+
+    100% {
       transform: rotate(-1deg) translateX(0px);
       opacity: 0.8;
     }
   }
 
   @keyframes chaos-drift {
-    0% { 
+    0% {
       transform: translateX(1px) translateY(1px) rotate(0.5deg);
       opacity: 0.3;
     }
-    50% { 
+
+    50% {
       transform: translateX(-0.5px) translateY(-0.5px) rotate(-0.3deg);
       opacity: 0.2;
     }
-    100% { 
+
+    100% {
       transform: translateX(1px) translateY(1px) rotate(0.5deg);
       opacity: 0.3;
     }

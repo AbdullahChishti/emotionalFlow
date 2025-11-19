@@ -1,120 +1,119 @@
-// Centralized Color System for MindWell Therapy App
-// All colors should reference this file for consistency
+/**
+ * Centralized Color System
+ * 
+ * This file provides TypeScript access to CSS custom properties.
+ * All colors are defined in globals.css as CSS variables.
+ * 
+ * Usage:
+ * import { colors } from '@/styles/colors'
+ * 
+ * // In inline styles:
+ * style={{ background: colors.primary.gradient }}
+ * 
+ * // In Tailwind (use arbitrary values):
+ * className="bg-[var(--color-primary)]"
+ */
 
 export const colors = {
-  // Primary Therapeutic Color - #335f64
-  primary: '#335f64',
-  primaryHover: '#2a4f52',
-  primaryLight: 'rgba(51, 95, 100, 0.1)',
-  primaryMedium: 'rgba(51, 95, 100, 0.2)',
-
-  // Secondary Colors for UI Elements
-  secondary: {
-    50: '#f8fafc',
-    100: '#f1f5f9',
-    200: '#e2e8f0',
-    300: '#cbd5e1',
-    400: '#94a3b8',
-    500: '#64748b',
-    600: '#475569',
-    700: '#334155',
-    800: '#1e293b',
-    900: '#0f172a',
+  // Primary gradient
+  primary: {
+    DEFAULT: 'var(--color-primary)',
+    dark: 'var(--color-primary-dark)',
+    light: 'var(--color-primary-light)',
+    gradient: 'var(--gradient-primary)',
+    gradientFrom: 'var(--color-primary-gradient-from)',
+    gradientMid: 'var(--color-primary-gradient-mid)',
+    gradientTo: 'var(--color-primary-gradient-to)',
   },
 
-  // Neutral Colors for Text and Backgrounds
-  neutral: {
-    50: '#fafafa',
-    100: '#f5f5f5',
-    200: '#e5e5e5',
-    300: '#d4d4d4',
-    400: '#a3a3a3',
-    500: '#737373',
-    600: '#525252',
-    700: '#404040',
-    800: '#262626',
-    900: '#171717',
+  // Backgrounds
+  background: {
+    DEFAULT: 'var(--color-background)',
+    white: 'var(--color-background-white)',
+    surface: 'var(--color-surface)',
+    elevated: 'var(--color-surface-elevated)',
   },
 
-  // Status Colors
+  // Text
+  text: {
+    primary: 'var(--color-text-primary)',
+    secondary: 'var(--color-text-secondary)',
+    tertiary: 'var(--color-text-tertiary)',
+    inverse: 'var(--color-text-inverse)',
+  },
+
+  // Borders
+  border: {
+    DEFAULT: 'var(--color-border)',
+    light: 'var(--color-border-light)',
+    primary: 'var(--color-border-primary)',
+  },
+
+  // Status
   status: {
-    success: '#10b981',
-    warning: '#f59e0b',
-    error: '#ef4444',
-    info: '#3b82f6',
+    success: 'var(--color-success)',
+    successBg: 'var(--color-success-bg)',
+    successBorder: 'var(--color-success-border)',
+    warning: 'var(--color-warning)',
+    warningBg: 'var(--color-warning-bg)',
+    warningBorder: 'var(--color-warning-border)',
+    error: 'var(--color-error)',
+    errorBg: 'var(--color-error-bg)',
+    errorBorder: 'var(--color-error-border)',
+    info: 'var(--color-info)',
+    infoBg: 'var(--color-info-bg)',
+    infoBorder: 'var(--color-info-border)',
   },
 
-  // Glassmorphic Effects
-  glass: {
-    background: 'rgba(255, 255, 255, 0.1)',
-    border: 'rgba(255, 255, 255, 0.2)',
-    shadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+  // Shadows
+  shadow: {
+    sm: 'var(--shadow-sm)',
+    md: 'var(--shadow-md)',
+    lg: 'var(--shadow-lg)',
+    xl: 'var(--shadow-xl)',
+    primary: 'var(--shadow-primary)',
   },
 
-  // Therapeutic Specific Colors
-  therapeutic: {
-    calm: '#e0f2fe',
-    peace: '#f3e5f5',
-    hope: '#e8f5e8',
-    trust: '#fff8e1',
-    care: '#fce4ec',
-  }
+  // Blur
+  blur: {
+    sm: 'var(--blur-sm)',
+    md: 'var(--blur-md)',
+    lg: 'var(--blur-lg)',
+    xl: 'var(--blur-xl)',
+  },
+
+  // Opacity
+  opacity: {
+    disabled: 'var(--opacity-disabled)',
+    hover: 'var(--opacity-hover)',
+    overlay: 'var(--opacity-overlay)',
+  },
+
+  // Gradients
+  gradient: {
+    primary: 'var(--gradient-primary)',
+    overlay: 'var(--gradient-overlay)',
+  },
 } as const
 
-// Button Styles
-export const buttonStyles = {
-  primary: {
-    backgroundColor: colors.primary,
-    color: '#ffffff',
-    hoverBackgroundColor: colors.primaryHover,
-    border: 'none',
-    borderRadius: '0.5rem',
-    boxShadow: `0 4px 14px 0 ${colors.primaryLight}`,
-  },
-  secondary: {
-    backgroundColor: colors.secondary[100],
-    color: colors.secondary[800],
-    hoverBackgroundColor: colors.secondary[200],
-    border: `1px solid ${colors.secondary[200]}`,
-    borderRadius: '0.5rem',
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    color: colors.primary,
-    hoverBackgroundColor: colors.primaryLight,
-    border: `2px solid ${colors.primary}`,
-    borderRadius: '0.5rem',
-  }
+/**
+ * Helper function to get a CSS variable value
+ * Useful for inline styles that need the actual color value
+ */
+export function getCSSVar(varName: string): string {
+  if (typeof window === 'undefined') return ''
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
 }
 
-// Typography Colors
-export const textColors = {
-  primary: colors.secondary[900],
-  secondary: colors.secondary[600],
-  tertiary: colors.secondary[500],
-  inverse: '#ffffff',
-  accent: colors.primary,
-}
-
-// Background Colors
-export const backgroundColors = {
-  primary: '#ffffff',
-  secondary: colors.secondary[50],
-  accent: colors.primaryLight,
-  glass: colors.glass.background,
-}
-
-// Border Colors
-export const borderColors = {
-  light: colors.secondary[200],
-  medium: colors.secondary[300],
-  accent: colors.primary,
-}
-
-// Shadow Colors
-export const shadowColors = {
-  sm: `0 1px 2px 0 ${colors.primaryLight}`,
-  md: `0 4px 6px -1px ${colors.primaryLight}`,
-  lg: `0 10px 15px -3px ${colors.primaryLight}`,
-  xl: `0 20px 25px -5px ${colors.primaryLight}`,
-}
+/**
+ * Example usage in components:
+ * 
+ * // Tailwind classes (recommended):
+ * <div className="bg-[var(--color-primary)] text-[var(--color-text-inverse)]" />
+ * 
+ * // Inline styles:
+ * <div style={{ background: colors.primary.gradient }} />
+ * 
+ * // Get computed value:
+ * const primaryColor = getCSSVar('--color-primary')
+ */

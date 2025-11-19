@@ -8,7 +8,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useApp } from '@/hooks/useApp'
-import { AssessmentManager, AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
+import { useAssessmentData } from '@/hooks/useAssessmentData'
+import { AssessmentHistoryEntry } from '@/lib/services/AssessmentManager'
 import { ASSESSMENTS } from '@/data/assessments'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
@@ -24,6 +25,7 @@ interface AssessmentHistoryProps {
 export default function AssessmentHistory({ className = '' }: AssessmentHistoryProps) {
   const { auth } = useApp()
   const { user, isLoading: authLoading } = auth
+  const { getAssessmentHistory } = useAssessmentData()
   const router = useRouter()
   const [assessmentHistory, setAssessmentHistory] = useState<AssessmentHistoryEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -42,16 +44,12 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   const loadHistory = useCallback(async () => {
     setError(null)
     try {
-      // Resolve userId from context or Supabase as a fallback
-      const ctxUserId = user?.id
-      const authUserId = ctxUserId || (await supabase.auth.getUser()).data.user?.id
-
-      if (!authUserId) {
+      if (!user?.id) {
         setLoading(false)
         return
       }
 
-      const cacheKey = `assessment-history-${authUserId}`
+      const cacheKey = `assessment-history-${user.id}`
       const cachedData = typeof window !== 'undefined' ? localStorage.getItem(cacheKey) : null
 
       let usedCache = false
@@ -71,14 +69,14 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
 
       if (!usedCache) setLoading(true)
 
-      // Fetch fresh data (stale-while-revalidate)
-      const history = await AssessmentManager.getAssessmentHistory(authUserId)
+      // Fetch fresh data using centralized hook
+      const history = await getAssessmentHistory()
 
       // Update cache & UI if different/new
-      if (typeof window !== 'undefined') {
+      if (history && typeof window !== 'undefined') {
         localStorage.setItem(cacheKey, JSON.stringify({ data: history, timestamp: Date.now() }))
+        setAssessmentHistory(history)
       }
-      setAssessmentHistory(history)
     } catch (error) {
       console.error('Error loading assessment history:', error)
       setError('Failed to load assessment history. Please try again.')
@@ -86,7 +84,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
     } finally {
       setLoading(false)
     }
-  }, [user, retryCount])
+  }, [user?.id, retryCount, getAssessmentHistory])
 
   useEffect(() => {
     mountedRef.current = true
@@ -113,7 +111,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
       })
       .subscribe()
     return () => {
-      try { supabase.removeChannel(channel) } catch (_) {}
+      try { supabase.removeChannel(channel) } catch (_) { }
     }
   }, [user?.id, loadHistory])
 
@@ -269,7 +267,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 Loading Your{' '}
-                <span 
+                <span
                   className="relative inline-block bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent font-normal"
                   style={{
                     fontWeight: '300'
@@ -453,7 +451,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
   }
 
   return (
-    <div 
+    <div
       className={`${className} relative overflow-hidden`}
       style={{
         fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
@@ -525,7 +523,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <h2 
+              <h2
                 className="relative text-4xl md:text-5xl font-extralight text-gray-900 tracking-tight leading-tight mb-4"
                 style={{
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -534,7 +532,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                 }}
               >
                 Your{' '}
-                <span 
+                <span
                   className="relative inline-block bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent font-normal"
                   style={{
                     fontWeight: '300'
@@ -542,7 +540,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                 >
                   Assessment Journey
                 </span>
-                
+
                 {/* Sophisticated underline accent */}
                 <motion.div
                   className="absolute -bottom-2 left-0 h-px bg-gradient-to-r from-emerald-400/60 via-teal-400/80 to-emerald-400/60"
@@ -564,7 +562,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
             >
-              <p 
+              <p
                 className="text-lg md:text-xl text-gray-600 font-light leading-relaxed"
                 style={{
                   fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -615,7 +613,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
               <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/40 via-teal-50/30 to-emerald-50/40 rounded-3xl blur-xl opacity-60 -z-10"></div>
               <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90 rounded-3xl -z-10"></div>
               <div className="absolute inset-0 shadow-xl shadow-emerald-900/[0.08] rounded-3xl -z-10"></div>
-              <div 
+              <div
                 className="relative rounded-3xl p-12 border shadow-lg"
                 style={{
                   background: 'rgba(255, 255, 255, 0.95)',
@@ -654,7 +652,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.8 }}
                 >
-                  <h3 
+                  <h3
                     className="text-3xl font-light text-gray-900 mb-4 tracking-tight"
                     style={{
                       fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -664,7 +662,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                   >
                     Begin Your Journey
                   </h3>
-                  <p 
+                  <p
                     className="text-gray-600 font-light mb-8 leading-relaxed max-w-sm mx-auto"
                     style={{
                       fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -691,8 +689,8 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                       background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
                       boxShadow: '0 8px 32px -8px rgba(16, 185, 129, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1)'
                     }}
-                    whileHover={{ 
-                      scale: 1.02, 
+                    whileHover={{
+                      scale: 1.02,
                       y: -2,
                       boxShadow: '0 12px 40px -8px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2)'
                     }}
@@ -703,7 +701,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out"></div>
                     </div>
                     <div className="relative flex items-center justify-center gap-3">
-                      <span 
+                      <span
                         className="text-base"
                         style={{
                           fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -760,7 +758,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div 
+                <div
                   className="relative overflow-hidden group-hover:shadow-2xl group-hover:shadow-emerald-900/[0.12] transition-all duration-500"
                   style={{
                     background: 'rgba(255, 255, 255, 0.95)',
@@ -868,7 +866,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.3, duration: 0.5 }}
                         >
-                          <div 
+                          <div
                             className="text-center rounded-xl px-4 py-3 min-w-[80px] group-hover:bg-emerald-50/60 transition-all duration-300"
                             style={{
                               background: 'rgba(248, 250, 252, 0.8)',
@@ -889,7 +887,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                             >
                               {entry.score}
                             </motion.div>
-                            <div 
+                            <div
                               className="text-xs text-gray-500 uppercase font-medium"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -901,7 +899,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                             </div>
                           </div>
 
-                          <div 
+                          <div
                             className="text-center rounded-xl px-4 py-3 min-w-[80px] group-hover:bg-emerald-50/60 transition-all duration-300"
                             style={{
                               background: 'rgba(248, 250, 252, 0.8)',
@@ -911,12 +909,11 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                             }}
                           >
                             <motion.div
-                              className={`text-sm font-medium mb-1 ${
-                                entry.severity === 'normal' ? 'text-green-600' :
-                                entry.severity === 'mild' ? 'text-yellow-600' :
-                                entry.severity === 'moderate' ? 'text-orange-600' :
-                                entry.severity === 'severe' ? 'text-red-600' : 'text-red-800'
-                              }`}
+                              className={`text-sm font-medium mb-1 ${entry.severity === 'normal' ? 'text-green-600' :
+                                  entry.severity === 'mild' ? 'text-yellow-600' :
+                                    entry.severity === 'moderate' ? 'text-orange-600' :
+                                      entry.severity === 'severe' ? 'text-red-600' : 'text-red-800'
+                                }`}
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                                 letterSpacing: '-0.005em',
@@ -927,7 +924,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                             >
                               {entry.level}
                             </motion.div>
-                            <div 
+                            <div
                               className="text-xs text-gray-500 uppercase font-medium"
                               style={{
                                 fontFamily: 'SF Pro Display, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -946,7 +943,7 @@ export default function AssessmentHistory({ className = '' }: AssessmentHistoryP
                         whileHover={{ x: 4, scale: 1.1 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <div 
+                        <div
                           className="w-10 h-10 rounded-xl flex items-center justify-center"
                           style={{
                             background: 'rgba(255, 255, 255, 0.9)',

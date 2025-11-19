@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Line } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +12,8 @@ import {
   Title,
   Tooltip,
   Legend,
-} from 'chart.js';
+  Filler
+} from 'chart.js'
 
 ChartJS.register(
   CategoryScale,
@@ -21,193 +22,152 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
-);
+  Legend,
+  Filler
+)
 
 const moodData = {
   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
   datasets: [
     {
-      label: 'Mood Trend',
+      label: 'Mood',
       data: [60, 75, 65, 80, 70, 85, 90],
-      borderColor: 'rgba(14, 165, 233, 0.8)',
-      backgroundColor: 'rgba(14, 165, 233, 0.1)',
+      borderColor: '#0071E3',
+      backgroundColor: 'rgba(0, 113, 227, 0.1)',
       fill: true,
       tension: 0.4,
-      pointBackgroundColor: 'white',
-      pointBorderColor: 'rgba(14, 165, 233, 1)',
-      pointRadius: 5,
+      pointBackgroundColor: '#FFFFFF',
+      pointBorderColor: '#0071E3',
+      pointBorderWidth: 2,
+      pointRadius: 4,
+      pointHoverRadius: 6,
     },
   ],
-};
+}
 
 const chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1D1D1F',
+      padding: 12,
+      borderRadius: 8,
+      titleColor: '#FFFFFF',
+      bodyColor: '#FFFFFF',
+    }
   },
   scales: {
     y: {
       beginAtZero: true,
       max: 100,
-      grid: { color: 'rgba(148, 163, 184, 0.1)' },
-      ticks: { color: '#64748b' },
+      grid: { color: '#E8E8ED', drawBorder: false },
+      ticks: { color: '#86868B', font: { size: 12 } },
     },
     x: {
       grid: { display: false },
-      ticks: { color: '#64748b' },
+      ticks: { color: '#86868B', font: { size: 12 } },
     },
   },
-};
+}
 
 export default function ProgressDashboardScreen() {
-  const streak = 7;
+  const streak = 7
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary-100 via-white to-primary-50 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
+        {/* Header - Aesthetic & Minimal */}
         <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 300,
-            height: 300,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            top: '10%',
-            right: '10%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut'
-          }}
-        />
-        <motion.div
-          className="absolute rounded-full opacity-20"
-          style={{
-            width: 250,
-            height: 250,
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-            filter: 'blur(60px)',
-            bottom: '20%',
-            left: '15%'
-          }}
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: 8
-          }}
-        />
-      </div>
-
-      <motion.div
-        className="relative w-full max-w-6xl mx-auto p-4 sm:p-6 md:p-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Header */}
-        <motion.header
-          className="mb-12 text-center"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
         >
-          <motion.div
-            className="flex items-center justify-center gap-3 mb-4"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-          >
-            <span className="material-symbols-outlined text-4xl text-primary-600">psychology</span>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-              MindWell
-            </h1>
-          </motion.div>
-          <h2 className="text-3xl font-semibold text-secondary-800 mb-2">Your Progress Dashboard</h2>
-          <p className="text-secondary-600 max-w-2xl mx-auto">Track your emotional wellness journey and celebrate your growth</p>
-        </motion.header>
+          <div className="w-16 h-1 bg-gradient-to-r from-transparent via-[#0071E3]/30 to-transparent mb-8 mx-auto rounded-full" />
+          <h1 className="text-4xl font-medium text-[#1D1D1F] mb-3 tracking-tight">
+            Your Progress
+          </h1>
+          <p className="text-[#86868B] font-light text-lg">
+            Track your wellness journey
+          </p>
+        </motion.div>
 
         {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Mood Trend Chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Mood Chart - Takes 2 columns */}
           <motion.div
-            className="md:col-span-2 glassmorphic rounded-3xl shadow-xl p-8"
-            initial={{ opacity: 0, y: 30 }}
+            className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-[#E8E8ED]"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            whileHover={{ scale: 1.02 }}
+            transition={{ delay: 0.1 }}
           >
             <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-3xl text-primary-600">show_chart</span>
-              <h2 className="text-2xl font-bold text-secondary-800">Mood Trend</h2>
+              <div className="w-10 h-10 bg-[#0071E3]/10 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-[#0071E3]">show_chart</span>
+              </div>
+              <h2 className="text-xl font-medium text-[#1D1D1F]">Mood Trend</h2>
             </div>
-            <div className="h-80">
+            <div className="h-64">
               <Line options={chartOptions} data={moodData} />
             </div>
           </motion.div>
 
-          {/* Streaks Card */}
+          {/* Streak Card - Artistic */}
           <motion.div
-            className="glassmorphic rounded-3xl shadow-xl p-8 flex flex-col items-center justify-center text-center"
-            initial={{ opacity: 0, y: 30 }}
+            className="bg-gradient-to-br from-[#0071E3] to-[#005BB5] rounded-3xl p-8 shadow-lg text-white"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            whileHover={{ scale: 1.02 }}
+            transition={{ delay: 0.2 }}
           >
-            <span className="material-symbols-outlined text-5xl text-amber-500 mb-4">local_fire_department</span>
-            <h2 className="text-2xl font-bold text-secondary-800 mb-2">Daily Streak</h2>
-            <p className="text-6xl font-extrabold text-primary-600 my-3">{streak}</p>
-            <p className="text-secondary-600 mb-6">days in a row!</p>
-            <div className="w-full bg-primary-100 rounded-full h-3">
-              <motion.div
-                className="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full shadow-sm"
-                initial={{ width: 0 }}
-                animate={{ width: `${(streak / 30) * 100}%` }} // Example: 30 day goal
-                transition={{ duration: 1.5, ease: 'easeOut' }}
-              />
+            <div className="text-center">
+              <span className="material-symbols-outlined text-5xl mb-4 block opacity-90">local_fire_department</span>
+              <h2 className="text-lg font-normal mb-2 opacity-90">Daily Streak</h2>
+              <p className="text-6xl font-light my-4">{streak}</p>
+              <p className="text-sm opacity-75 mb-6">days in a row</p>
+
+              {/* Progress bar */}
+              <div className="w-full bg-white/20 rounded-full h-2">
+                <motion.div
+                  className="bg-white h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(streak / 30) * 100}%` }}
+                  transition={{ duration: 1.5, ease: 'easeOut' }}
+                />
+              </div>
+              <p className="text-xs mt-3 opacity-75">Keep going! 🎉</p>
             </div>
-            <p className="text-sm text-secondary-500 mt-2">Keep it up! 🎉</p>
           </motion.div>
         </div>
 
-        {/* Quick Stats Row */}
+        {/* Stats Grid - Minimal & Clean */}
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12"
-          initial={{ opacity: 0, y: 30 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+          transition={{ delay: 0.3 }}
         >
           {[
-            { icon: 'trending_up', label: 'This Week', value: '+15%', color: 'text-green-600' },
-            { icon: 'self_improvement', label: 'Sessions', value: '24', color: 'text-primary-600' },
-            { icon: 'schedule', label: 'Avg. Mood', value: '7.8/10', color: 'text-amber-600' },
-            { icon: 'emoji_events', label: 'Achievements', value: '12', color: 'text-purple-600' }
+            { icon: 'trending_up', label: 'This Week', value: '+15%', color: 'text-[#34C759]' },
+            { icon: 'self_improvement', label: 'Sessions', value: '24', color: 'text-[#0071E3]' },
+            { icon: 'schedule', label: 'Avg. Mood', value: '7.8', color: 'text-[#FF9500]' },
+            { icon: 'emoji_events', label: 'Achievements', value: '12', color: 'text-[#AF52DE]' }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
-              className="glassmorphic rounded-2xl p-6 text-center"
-              whileHover={{ scale: 1.05 }}
+              className="bg-white rounded-2xl p-6 text-center shadow-sm border border-[#E8E8ED]"
+              whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
-              <span className={`material-symbols-outlined text-3xl ${stat.color} mb-2 block`}>{stat.icon}</span>
-              <p className="text-2xl font-bold text-secondary-800">{stat.value}</p>
-              <p className="text-sm text-secondary-600">{stat.label}</p>
+              <span className={`material-symbols-outlined text-3xl ${stat.color} mb-2 block`}>
+                {stat.icon}
+              </span>
+              <p className="text-2xl font-light text-[#1D1D1F] mb-1">{stat.value}</p>
+              <p className="text-xs text-[#86868B] uppercase tracking-wider">{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>
-
-      </motion.div>
+      </div>
     </div>
   )
 }

@@ -1,225 +1,120 @@
 'use client'
 
-// Image import removed - using regular img tag for SVG
-import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
-import { track, getOrAssignABBuck } from '@/lib/analytics'
+import Link from 'next/link'
+import { Button } from '@/components/ui/Button'
 
-type Props = {
-  variant?: 'A' | 'B'
-}
-
-export function Hero({ variant = 'B' }: Props) {
-  const router = useRouter()
-
-  useEffect(() => {
-    const abBucket = getOrAssignABBuck()
-    track('hero_view', { variant, abBucket })
-  }, [variant])
-
-  const onChat = () => {
-    track('cta_click', { id: 'chat' })
-    // Gate via login, pass intent
-    router.push('/login?intent=chat')
-  }
-
+export default function Hero() {
   return (
-    <motion.section
-      aria-label="MindWell hero"
-      className="relative isolate overflow-hidden py-20 md:py-32"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-    >
-      {/* Multi-layered sophisticated background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50/60 via-white to-slate-50/40"></div>
-      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-emerald-50/10 to-transparent"></div>
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#0071E3] to-[#005BB5]">
+      {/* Animated background elements */}
+      <motion.div
+        className="absolute top-20 left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl"
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.5, 0.3, 0.5],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
 
-      {/* Enhanced floating decorative elements */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <motion.div
-          className="absolute -top-4 -left-4 h-32 w-32 rounded-full bg-gradient-to-br from-emerald-100/20 to-teal-50/10 blur-3xl"
-          animate={{
-            y: [0, -15, 0],
-            x: [0, 10, 0],
-            scale: [1, 1.1, 1]
-          }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
+            duration: 1,
+            ease: [0.16, 1, 0.3, 1]
           }}
-        />
-        <motion.div
-          className="absolute top-20 -right-6 h-24 w-24 rounded-full bg-gradient-to-br from-teal-100/15 to-green-50/8 blur-2xl"
-          animate={{
-            y: [0, 12, 0],
-            x: [0, -8, 0],
-            scale: [1, 0.9, 1]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        />
-        <motion.div
-          className="absolute bottom-40 right-1/4 w-20 h-20 rounded-full bg-gradient-to-br from-green-100/10 to-emerald-50/5 blur-lg"
-          animate={{
-            rotate: [0, 180, 360],
-            scale: [1, 1.2, 1]
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </div>
-
-      <div className="mx-auto max-w-[1200px] px-6 md:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-          {/* Enhanced Copy Section */}
+        >
+          {/* Icon */}
           <motion.div
-            className="order-2 md:order-1 space-y-8"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-8"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
           >
-            <div className="space-y-6">
-              <motion.h1
-                className="text-4xl md:text-5xl font-light leading-tight tracking-tight text-slate-700"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                Find{' '}
-                <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent font-normal">
-                  calm
-                </span>{' '}
-                in the chaos.
-              </motion.h1>
-
-              <motion.p
-                className="text-lg md:text-xl text-slate-500 max-w-[36rem] mx-auto md:mx-0 leading-loose font-light tracking-wide"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
-              >
-                When life feels heavy, you deserve a gentle space to breathe. We listen with care and offer tools that help—always here, always free.
-              </motion.p>
-            </div>
-
-            {/* Enhanced CTA Group */}
-            <motion.div
-              className="mt-10"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              <motion.button
-                id="cta-chat"
-                aria-label="Chat with MindWell"
-                onClick={onChat}
-                className="group relative overflow-hidden px-10 py-4 bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 text-white rounded-2xl font-medium text-lg shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-emerald-400/20 focus:ring-offset-2 transition-all duration-300"
-                whileHover={{ y: -3, scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="relative flex items-center gap-3">
-                  <span className="material-symbols-outlined text-xl">psychology</span>
-                  Start Chatting with MindWell
-                </span>
-              </motion.button>
-            </motion.div>
-
-            {/* Enhanced Trust Cluster */}
-            <motion.div
-              className="mt-12 space-y-6"
-              aria-label="Trust and privacy"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1.0 }}
-            >
-              <div className="space-y-4">
-                {/* Enhanced trust items */}
-                <div className="flex items-start gap-3">
-                  <motion.div
-                    className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <span className="material-symbols-outlined text-white text-lg">shield</span>
-                  </motion.div>
-                  <div>
-                    <h4 className="text-slate-900 font-medium mb-1">Private & Secure</h4>
-                    <p className="text-slate-600 font-light">Your data stays with you</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <motion.div
-                    className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-sm"
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <span className="material-symbols-outlined text-white text-lg">analytics</span>
-                  </motion.div>
-                  <div>
-                    <h4 className="text-slate-900 font-medium mb-1">Evidence-Based Tools</h4>
-                    <p className="text-slate-600 font-light">Created with clinicians</p>
-                  </div>
-                </div>
-              </div>
-
-
-              <motion.p
-                className="text-sm leading-6 text-slate-500 text-center mt-6"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 1.4 }}
-              >
-                MindWell is for support and self-help. It's not a substitute for emergency care.
-              </motion.p>
-            </motion.div>
+            <span className="material-symbols-outlined text-6xl text-white">psychology_alt</span>
           </motion.div>
 
-          {/* Enhanced Illustration */}
-          <motion.div
-            className="order-1 md:order-2 relative w-full"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <div className="relative mx-auto max-w-[560px] aspect-[4/3] w-full">
-              {/* Multi-layered background effects */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-slate-200/80 to-slate-400/60 rounded-3xl transform rotate-3 shadow-2xl"></div>
-              <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-3xl border border-slate-200/40 shadow-xl"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-3xl"></div>
+          {/* Heading */}
+          <h1 className="text-5xl md:text-7xl font-medium text-white mb-6 tracking-tight">
+            Your Mental Wellness
+            <br />
+            <span className="text-white/80">Journey Starts Here</span>
+          </h1>
 
-              {/* Subtle gradient orb */}
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br from-emerald-100/20 to-teal-50/10 rounded-full blur-xl"></div>
+          {/* Subheading */}
+          <p className="text-xl md:text-2xl text-white/80 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
+            Professional psychology assessments and personalized insights for better mental health
+          </p>
 
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/signup">
+              <Button
+                size="lg"
+                className="bg-white text-[#0071E3] hover:bg-white/90 px-8 py-6 text-lg"
+              >
+                Get Started Free
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg backdrop-blur-sm"
+              >
+                Sign In
+              </Button>
+            </Link>
+          </div>
+
+          {/* Decorative dots */}
+          <div className="flex justify-center gap-2 mt-16">
+            {[...Array(3)].map((_, i) => (
               <motion.div
-                className="relative"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.5 }}
-              >
-                <img
-                  src="/assets/Psychologist-rafiki_1.svg"
-                  alt="Warm, inclusive therapy illustration"
-                  className="w-full h-full object-contain rounded-3xl shadow-lg"
-                />
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
+                key={i}
+                className="w-2 h-2 bg-white/40 rounded-full"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.4, 0.8, 0.4],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                }}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
-    </motion.section>
+
+      {/* Bottom wave */}
+      <div className="absolute bottom-0 left-0 right-0">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+          <path
+            d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z"
+            fill="#FAFAFA"
+          />
+        </svg>
+      </div>
+    </section>
   )
 }
-
-export default Hero
