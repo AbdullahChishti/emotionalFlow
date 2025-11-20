@@ -62,7 +62,7 @@ export function LandingPage() {
       <div className="relative z-20">
         {/* Minimal Header */}
         <header className="container mx-auto px-6 py-8 flex justify-between items-center">
-          <motion.div 
+          <motion.div
             className="flex items-center space-x-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -73,8 +73,8 @@ export function LandingPage() {
             </div>
             <span className="text-2xl font-light text-white">EmotionEconomy</span>
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             className="flex items-center space-x-3"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -134,7 +134,7 @@ export function LandingPage() {
                 Emotional Balance
               </span>
             </h1>
-            
+
             <p className="text-2xl md:text-3xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
               A gentle space where empathy flows naturally. Give support when you can, receive it when you need it.
             </p>
@@ -161,14 +161,14 @@ export function LandingPage() {
 
         {/* Features Section - Stellar Navigation */}
         <section className="container mx-auto px-6 py-32">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.3 }}
             transition={{ staggerChildren: 0.2 }}
             className="text-center mb-20"
           >
-            <motion.h2 
+            <motion.h2
               variants={{
                 hidden: { opacity: 0, y: 40 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
@@ -177,7 +177,7 @@ export function LandingPage() {
             >
               An Ecosystem of Care
             </motion.h2>
-            <motion.p 
+            <motion.p
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
@@ -187,7 +187,7 @@ export function LandingPage() {
               Every feature is a star in a constellation, crafted with deep understanding for your wellbeing.
             </motion.p>
           </motion.div>
-          
+
           <div className="relative max-w-5xl mx-auto min-h-[500px] flex items-center justify-center">
             {/* Connecting Lines */}
             <svg className="absolute w-full h-full" style={{ zIndex: 0 }}>
@@ -220,7 +220,7 @@ export function LandingPage() {
             <div className="absolute top-[15%] right-[10%]">
               <FeatureNode feature={features[2]} onClick={setSelectedFeatureId} selectedId={selectedFeatureId} />
             </div>
-            
+
             {/* Contextual Description Display */}
             <div className="absolute w-full h-full pointer-events-none">
               <AnimatePresence>
@@ -235,7 +235,7 @@ export function LandingPage() {
                   >
                     <div className="bg-gradient-to-br from-gray-900/80 to-gray-900/70 backdrop-blur-lg border border-white/10 rounded-2xl p-6">
                       <div className="flex items-center gap-4 mb-3">
-                        <selectedFeature.icon className="w-8 h-8 text-primary flex-shrink-0"/>
+                        <selectedFeature.icon className="w-8 h-8 text-primary flex-shrink-0" />
                         <h3 className="text-xl font-light text-white">{selectedFeature.title}</h3>
                       </div>
                       <p className="text-md text-gray-300 font-light leading-relaxed">
@@ -252,16 +252,16 @@ export function LandingPage() {
         {/* CTA Section - Celestial Vortex */}
         <section className="relative container mx-auto px-6 py-40 overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div 
+            <motion.div
               className="absolute w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(138,43,226,0.15)_0%,transparent_50%)]"
               animate={{ rotate: 360 }}
               transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
             />
             <div className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(76,147,255,0.1)_0%,transparent_45%)]"></div>
-             <div className="absolute w-[1000px] h-[1000px] border border-blue-500/10 rounded-full animate-pulse-slow"></div>
-             <div className="absolute w-[700px] h-[700px] border border-primary/10 rounded-full animate-pulse-slower"></div>
+            <div className="absolute w-[1000px] h-[1000px] border border-blue-500/10 rounded-full animate-pulse-slow"></div>
+            <div className="absolute w-[700px] h-[700px] border border-primary/10 rounded-full animate-pulse-slower"></div>
           </div>
-          
+
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -269,7 +269,7 @@ export function LandingPage() {
             transition={{ staggerChildren: 0.3 }}
             className="relative z-10 max-w-2xl mx-auto text-center"
           >
-            <motion.h2 
+            <motion.h2
               variants={{
                 hidden: { opacity: 0, y: 50, scale: 0.8 },
                 visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
@@ -278,7 +278,7 @@ export function LandingPage() {
             >
               Ready to Rediscover Balance?
             </motion.h2>
-            <motion.p 
+            <motion.p
               variants={{
                 hidden: { opacity: 0, y: 30 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 } }
@@ -342,6 +342,8 @@ const getDescriptionPosition = (id: string) => {
   }
 };
 
+console.log('hello')
+
 const FeatureNode = ({ feature, onClick, selectedId }: { feature: any, onClick: (id: string) => void, selectedId: string | null }) => {
   const isSelected = feature.id === selectedId;
   return (
@@ -351,24 +353,24 @@ const FeatureNode = ({ feature, onClick, selectedId }: { feature: any, onClick: 
       whileHover={{ scale: 1.1 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <motion.div 
+      <motion.div
         className="absolute inset-0 rounded-full border-2"
-        animate={{ 
+        animate={{
           borderColor: isSelected ? 'rgba(138, 43, 226, 0.8)' : 'rgba(255, 255, 255, 0.1)',
           boxShadow: isSelected ? '0 0 20px rgba(138, 43, 226, 0.5)' : 'none',
           opacity: isSelected ? 1 : 0.5,
         }}
         transition={{ duration: 0.5 }}
       />
-      <motion.div 
+      <motion.div
         className="w-2 h-2 rounded-full"
-        animate={{ 
+        animate={{
           backgroundColor: isSelected ? 'rgba(138, 43, 226, 1)' : 'rgba(255, 255, 255, 0.5)',
           scale: isSelected ? 1.5 : 1
         }}
         transition={{ duration: 0.5 }}
       />
-      <motion.span 
+      <motion.span
         className="mt-4 text-center text-sm font-light text-gray-300"
         animate={{ opacity: isSelected ? 1 : 0.7 }}
       >
