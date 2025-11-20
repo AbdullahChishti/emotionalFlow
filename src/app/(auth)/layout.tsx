@@ -24,6 +24,7 @@ export default function AuthLayout({
 }: {
   children: React.ReactNode
 }) {
+  // TEMPORARY: Auth bypass for development - remove this comment to re-enable auth
   return (
     <ProtectedRoute>
       <AuthenticatedContent>
@@ -32,4 +33,3 @@ export default function AuthLayout({
     </ProtectedRoute>
   )
 }
-

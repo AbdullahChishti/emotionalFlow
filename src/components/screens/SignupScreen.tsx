@@ -66,38 +66,32 @@ export default function SignupScreen() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex">
-      {/* Left side - Illustration/Visual */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] items-center justify-center overflow-hidden">
+      {/* Left side - Minimal visual */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-white items-center justify-center overflow-hidden">
+        {/* Soft breathing circle */}
         <motion.div
-          className="absolute top-20 left-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-20 w-96 h-96 bg-white/10 rounded-full blur-3xl"
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.5, 0.3, 0.5] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute w-[400px] h-[400px] rounded-full opacity-20"
+          style={{
+            background: 'radial-gradient(circle at 35% 35%, #E8F5F3, var(--color-primary-light) 50%, var(--color-primary) 100%)',
+            filter: 'blur(60px)',
+          }}
+          animate={{
+            scale: [1, 1.1, 1],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
         />
 
         <div className="relative z-10 text-center px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-8">
-              <span className="material-symbols-outlined text-6xl text-white">psychology_alt</span>
-            </div>
-            <h2 className="text-4xl font-medium text-white mb-4">Join MindWell</h2>
-            <p className="text-xl text-white/80 font-light leading-relaxed">
-              Begin your journey to better mental health
+            <h2 className="text-6xl font-extralight text-[#1D1D1F] mb-4 tracking-tight">Begin</h2>
+            <p className="text-lg text-[#6E6E73] font-light leading-relaxed">
+              Your journey to clarity starts here
             </p>
-            <div className="flex justify-center gap-2 mt-12">
-              {[...Array(3)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="w-2 h-2 bg-white/40 rounded-full"
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                />
-              ))}
-            </div>
           </motion.div>
         </div>
       </div>
@@ -107,42 +101,35 @@ export default function SignupScreen() {
         <Link href="/" className="absolute top-6 left-6">
           <motion.button whileHover={{ x: -2 }} className="flex items-center gap-2 text-[#86868B] hover:text-[#1D1D1F] transition-colors">
             <span className="material-symbols-outlined text-lg">arrow_back</span>
-            <span className="text-sm font-normal">Back to Home</span>
+            <span className="text-sm font-light">Back to Home</span>
           </motion.button>
         </Link>
 
         <motion.div className="w-full max-w-md" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
           <div className="bg-white rounded-3xl p-10 shadow-sm border border-[#E8E8ED]">
             <div className="mb-8">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary-gradient-from)] to-[var(--color-primary-gradient-to)] rounded-2xl flex items-center justify-center">
-                  <span className="material-symbols-outlined text-2xl text-white">person_add</span>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-medium text-[#1D1D1F]">Create Account</h1>
-                  <p className="text-sm text-[#86868B]">Join MindWell today</p>
-                </div>
-              </div>
+              <h1 className="text-3xl font-extralight text-[#1D1D1F] mb-2 tracking-tight">Create Account</h1>
+              <p className="text-sm text-[#86868B] font-light">Join MindWell today</p>
             </div>
 
             {success && (
-              <div className="mb-6 p-4 bg-[#34C759]/10 border border-[#34C759]/20 rounded-xl">
-                <p className="text-sm text-[#34C759] font-medium mb-2">Account created successfully!</p>
-                <Link href="/dashboard" className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-light)] font-medium">
+              <div className="mb-6 p-4 bg-[#34C759]/10 border border-[#34C759]/20 rounded-2xl">
+                <p className="text-sm text-[#34C759] font-normal mb-2">Account created successfully!</p>
+                <Link href="/dashboard" className="text-sm text-[#1D1D1F] hover:text-[#6E6E73] font-normal">
                   Continue to Dashboard →
                 </Link>
               </div>
             )}
 
             {!isOnline && (
-              <div className="mb-6 p-4 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-xl">
-                <p className="text-sm text-[#FF9500] font-medium">You appear to be offline</p>
+              <div className="mb-6 p-4 bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-2xl">
+                <p className="text-sm text-[#FF9500] font-normal">You appear to be offline</p>
               </div>
             )}
 
             {error && (
-              <div className="mb-6 p-4 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded-xl">
-                <p className="text-sm text-[#FF3B30] font-medium">{error}</p>
+              <div className="mb-6 p-4 bg-[#FF3B30]/10 border border-[#FF3B30]/20 rounded-2xl">
+                <p className="text-sm text-[#FF3B30] font-normal">{error}</p>
               </div>
             )}
 
@@ -172,7 +159,7 @@ export default function SignupScreen() {
                     <div className="w-full border-t border-[#E8E8ED]"></div>
                   </div>
                   <div className="relative flex justify-center text-xs">
-                    <span className="bg-white px-2 text-[#86868B]">Already have an account?</span>
+                    <span className="bg-white px-2 text-[#86868B] font-light">Already have an account?</span>
                   </div>
                 </div>
 
@@ -185,7 +172,7 @@ export default function SignupScreen() {
             )}
           </div>
 
-          <p className="text-center text-xs text-[#A1A1A6] mt-6">
+          <p className="text-center text-xs text-[#A1A1A6] mt-6 font-light">
             By creating an account, you agree to our Terms of Service
           </p>
         </motion.div>

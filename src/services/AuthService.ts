@@ -6,6 +6,10 @@
 import { createClient } from '@supabase/supabase-js'
 import { User, Profile } from '@/types'
 import { classifySupabaseError, AUTH_ERROR_CODES, AUTH_ERRORS, type AuthError as AuthErrorType } from '@/lib/constants/auth-errors'
+import { createLogger } from '@/lib/utils/logger'
+
+// Create scoped logger for this service
+const logger = createLogger('AuthService')
 
 // Custom error classes (simplified versions)
 export class AuthError extends Error {
@@ -200,10 +204,7 @@ export class AuthService {
   async getCurrentSession(): Promise<{ user: User; session: any } | null> {
     const operationId = Math.random().toString(36).substr(2, 9)
     
-    console.log('🔐 [AUTH_SERVICE] getCurrentSession started:', {
-      operationId,
-      timestamp: new Date().toISOString()
-    })
+    logger.debug('getCurrentSession started', { operationId })
     
     try {
       // Add timeout to prevent hanging
@@ -214,47 +215,34 @@ export class AuthService {
       const sessionPromise = supabase.auth.getSession()
       const { data: { session }, error } = await Promise.race([sessionPromise, timeoutPromise]) as any
 
-      console.log('🔐 [AUTH_SERVICE] Supabase getSession result:', {
+      logger.debug('Supabase getSession result', {
         operationId,
         hasSession: !!session,
         hasUser: !!session?.user,
-        userId: session?.user?.id,
-        userEmail: session?.user?.email,
-        expiresAt: session?.expires_at,
-        hasAccessToken: !!session?.access_token,
-        hasRefreshToken: !!session?.refresh_token,
-        error: error?.message,
-        timestamp: new Date().toISOString()
+        userId: session?.user?.id
       })
 
       if (error) {
-        console.error('❌ [AUTH_SERVICE] Session error:', { operationId, error: error.message })
-        this.logOperation('getCurrentSession.failed', { error: error.message })
+        logger.error('Session error', { operationId, error: error.message })
         return null
       }
 
       if (!session?.user) {
-        console.log('ℹ️ [AUTH_SERVICE] No user in session:', { operationId })
-        this.logOperation('getCurrentSession.noUser')
+        logger.debug('No user in session', { operationId })
         return null
       }
 
-      console.log('✅ [AUTH_SERVICE] Session retrieved successfully:', { 
-        operationId, 
-        userId: session.user.id 
-      })
+      logger.debug('Session retrieved successfully', { operationId, userId: session.user.id })
       
       return {
         user: session.user as unknown as User,
         session
       }
     } catch (error) {
-      console.error('❌ [AUTH_SERVICE] getCurrentSession error:', {
+      logger.error('getCurrentSession error', {
         operationId,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        error: error instanceof Error ? error.message : 'Unknown error'
       })
-      this.logOperation('getCurrentSession.failed', { error })
       return null
     }
   }
@@ -300,30 +288,24 @@ export class AuthService {
   async getCurrentUser(): Promise<User | null> {
     const operationId = Math.random().toString(36).substr(2, 9)
 
-    console.log('🔐 [AUTH_SERVICE] getCurrentUser started:', {
-      operationId,
-      timestamp: new Date().toISOString()
-    })
+    logger.debug('getCurrentUser started', { operationId })
 
     try {
       const session = await this.getCurrentSession()
       const user = session?.user || null
 
-      console.log('🔐 [AUTH_SERVICE] getCurrentUser result:', {
+      logger.debug('getCurrentUser result', {
         operationId,
         hasSession: !!session,
         hasUser: !!user,
-        userId: user?.id,
-        userEmail: user?.email,
-        timestamp: new Date().toISOString()
+        userId: user?.id
       })
 
       return user
     } catch (error) {
-      console.error('❌ [AUTH_SERVICE] getCurrentUser error:', {
+      logger.error('getCurrentUser error', {
         operationId,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString()
+        error: error instanceof Error ? error.message : 'Unknown error'
       })
       return null
     }
