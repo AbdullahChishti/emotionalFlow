@@ -25,7 +25,7 @@ export const InteractiveStarfield = () => {
       fullScreen: { enable: false },
       background: {
         color: {
-          value: '#0d1117',
+          value: 'transparent',
         },
       },
       fpsLimit: 120,
@@ -33,39 +33,52 @@ export const InteractiveStarfield = () => {
         events: {
           onHover: {
             enable: true,
-            mode: 'repulse',
+            mode: ["grab", "bubble"],
           },
           resize: {
             enable: true,
           },
         },
         modes: {
-          repulse: {
-            distance: 60,
-            duration: 0.4,
+          grab: {
+            distance: 250,
+            links: {
+              color: "#ffffff",
+              opacity: 0.3,
+            },
+          },
+          bubble: {
+            distance: 200,
+            size: 2,
+            duration: 1,
+            opacity: 1,
           },
         },
       },
       particles: {
         color: {
-          value: '#ffffff',
+          value: ['#ffffff', '#f2f2f2', '#e6e6e6', '#d9d9d9'],
         },
         links: {
-          enable: false,
+          color: "random",
+          distance: 150,
+          enable: true,
+          opacity: 0.1,
+          width: 1,
         },
         move: {
-          direction: 'none',
+          direction: "none",
           enable: true,
           outModes: {
-            default: 'bounce',
+            default: "out",
           },
-          random: false,
+          random: true,
           speed: 0.1,
           straight: false,
           attract: {
             enable: true,
             rotate: {
-              x: 600,
+              x: 1200,
               y: 1200,
             },
           },
@@ -73,19 +86,28 @@ export const InteractiveStarfield = () => {
         number: {
           density: {
             enable: true,
-            width: 1920,
-            height: 1080,
+            value_area: 800,
           },
-          value: 400,
+          value: 300,
         },
         opacity: {
           value: { min: 0.1, max: 0.5 },
+          animation: {
+            enable: true,
+            speed: 0.2,
+            sync: false,
+          },
         },
         shape: {
           type: 'circle',
         },
         size: {
           value: { min: 0.5, max: 1.5 },
+           animation: {
+            enable: true,
+            speed: 1,
+            sync: false,
+          }
         },
       },
       detectRetina: true,
@@ -99,7 +121,7 @@ export const InteractiveStarfield = () => {
         id="tsparticles-interactive"
         particlesLoaded={particlesLoaded}
         options={options}
-        className="fixed inset-0 z-0"
+        className="fixed inset-0 z-10"
       />
     );
   }
